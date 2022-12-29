@@ -25,6 +25,10 @@ firebase-crashlytics-gradle = "2.9.2"
 firebase-messaging = "23.1.1"
 turbine = "0.12.1"
 mockk = "1.12.4"
+kotlinxSerializationJson = "1.4.1"
+retrofitKotlinxSerializationJson = "0.8.0"
+moshi = "1.14.0"
+moshi-converter = "2.9.0"
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidxCore" }
@@ -68,6 +72,11 @@ coil-kt-svg = { group = "io.coil-kt", name = "coil-svg", version.ref = "coil" }
 androidx-recyclerview = "androidx.recyclerview:recyclerview:1.2.1"
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi"}
+moshi-converter = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "moshi-converter"}
+moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshi"}
+moshi-codegen = { module = "com.squareup.moshi:moshi-kotlin-codegen", version.ref = "moshi"}
 
 [bundles]
 com-squareup-retrofit2 = [
@@ -89,6 +98,11 @@ testing = [
     "mockk",
     "turbine"
 ]
+moshi = [
+    "moshi",
+    "moshi-converter",
+    "moshi-kotlin"
+]
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
@@ -98,3 +112,6 @@ kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt-gradle = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 firebase-crashlitycs = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics-gradle" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+nl-littlerobots-version-catalog-update = "nl.littlerobots.version-catalog-update:0.7.0"
+com-github-ben-manes-versions = "com.github.ben-manes.versions:0.44.0"
