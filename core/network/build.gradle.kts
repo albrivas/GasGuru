@@ -1,3 +1,14 @@
+/*
+ * File: build.gradle.kts
+ * Project: FuelPump
+ * Module: FuelPump.core.network
+ * Last modified: 12/29/22, 4:59 PM
+ *
+ * Created by albertorivas on 12/29/22, 5:33 PM
+ * Copyright © 2022 Alberto Rivas. All rights reserved.
+ *
+ */
+
 @Suppress("DSL_SCOPE_VIOLATION") // Remove when fixed https://youtrack.jetbrains.com/issue/KTIJ-19369
 plugins {
     alias(libs.plugins.android.library)
@@ -27,6 +38,12 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
+
     kotlinOptions {
         jvmTarget = "1.8"
     }
@@ -51,6 +68,13 @@ android {
             )
         }
     }
+    sourceSets {
+        getByName("main") {
+            resources {
+                srcDirs("src/main/resources", "src/test/resources")
+            }
+        }
+    }
 }
 
 dependencies {
@@ -70,4 +94,5 @@ dependencies {
     // Local tests: jUnit, coroutines, Android runner
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mock.webserver)
 }
