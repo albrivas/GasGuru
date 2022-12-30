@@ -25,9 +25,19 @@ android {
     }
 
     buildTypes {
-        getByName("release") {
+        release {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            isDebuggable = false
+            manifestPlaceholders["enabledCrashlytics"] = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+        debug {
+            isMinifyEnabled = false
+            isDebuggable = true
+            manifestPlaceholders["enabledCrashlytics"] = false
         }
     }
 
@@ -43,9 +53,9 @@ android {
     buildFeatures {
         compose = true
         aidl = false
-        buildConfig = false
         renderScript = false
         shaders = false
+        buildConfig = true
     }
 
     composeOptions {
