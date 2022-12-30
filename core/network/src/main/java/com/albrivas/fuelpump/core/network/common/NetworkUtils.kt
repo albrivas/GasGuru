@@ -19,5 +19,5 @@ import com.albrivas.fuelpump.core.network.model.NetworkError
 suspend fun <T> tryCall(action: suspend () -> T): Either<NetworkError, T> = try {
     action().right()
 } catch (e: Exception) {
-    NetworkError().left()
+    NetworkError(exception = e).left()
 }
