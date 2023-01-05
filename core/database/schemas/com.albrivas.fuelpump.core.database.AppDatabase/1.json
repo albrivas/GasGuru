@@ -2,28 +2,208 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "b5e20c7a462b145a911d54ad30df802f",
+    "identityHash": "e507abdee6484cf5228de047feaac187",
     "entities": [
       {
-        "tableName": "Task",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "tableName": "fuel-station",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`bioEthanolPercentage` TEXT NOT NULL, `esterMethylPercentage` TEXT NOT NULL, `postalCode` TEXT NOT NULL, `direction` TEXT NOT NULL, `schedule` TEXT NOT NULL, `idAutonomousCommunity` TEXT NOT NULL, `idServiceStation` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `idMunicipality` TEXT NOT NULL, `idProvince` TEXT NOT NULL, `latitude` TEXT NOT NULL, `locality` TEXT NOT NULL, `longitudeWGS84` TEXT NOT NULL, `margin` TEXT NOT NULL, `municipality` TEXT NOT NULL, `priceBiodiesel` TEXT NOT NULL, `priceBioEthanol` TEXT NOT NULL, `priceGasNaturalCompressed` TEXT NOT NULL, `priceLiquefiedNaturalGas` TEXT NOT NULL, `priceLiquefiedPetroleumGas` TEXT NOT NULL, `priceGasoilA` TEXT NOT NULL, `priceGasoilB` TEXT NOT NULL, `priceGasoilPremium` TEXT NOT NULL, `priceGasoline95_E10` TEXT NOT NULL, `priceGasoline95_E5` TEXT NOT NULL, `priceGasoline95_E5_Premium` TEXT NOT NULL, `priceGasoline98_E10` TEXT NOT NULL, `priceGasoline98_E5` TEXT NOT NULL, `priceHydrogen` TEXT NOT NULL, `province` TEXT NOT NULL, `referral` TEXT NOT NULL, `brandStation` TEXT NOT NULL, `typeSale` TEXT NOT NULL)",
         "fields": [
           {
-            "fieldPath": "name",
-            "columnName": "name",
+            "fieldPath": "bioEthanolPercentage",
+            "columnName": "bioEthanolPercentage",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "uid",
-            "columnName": "uid",
+            "fieldPath": "esterMethylPercentage",
+            "columnName": "esterMethylPercentage",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "postalCode",
+            "columnName": "postalCode",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "direction",
+            "columnName": "direction",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "schedule",
+            "columnName": "schedule",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "idAutonomousCommunity",
+            "columnName": "idAutonomousCommunity",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "idServiceStation",
+            "columnName": "idServiceStation",
             "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "idMunicipality",
+            "columnName": "idMunicipality",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "idProvince",
+            "columnName": "idProvince",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "latitude",
+            "columnName": "latitude",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "locality",
+            "columnName": "locality",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "longitudeWGS84",
+            "columnName": "longitudeWGS84",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "margin",
+            "columnName": "margin",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "municipality",
+            "columnName": "municipality",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceBiodiesel",
+            "columnName": "priceBiodiesel",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceBioEthanol",
+            "columnName": "priceBioEthanol",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceGasNaturalCompressed",
+            "columnName": "priceGasNaturalCompressed",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceLiquefiedNaturalGas",
+            "columnName": "priceLiquefiedNaturalGas",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceLiquefiedPetroleumGas",
+            "columnName": "priceLiquefiedPetroleumGas",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceGasoilA",
+            "columnName": "priceGasoilA",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceGasoilB",
+            "columnName": "priceGasoilB",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceGasoilPremium",
+            "columnName": "priceGasoilPremium",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceGasoline95_E10",
+            "columnName": "priceGasoline95_E10",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceGasoline95_E5",
+            "columnName": "priceGasoline95_E5",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceGasoline95_E5_Premium",
+            "columnName": "priceGasoline95_E5_Premium",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceGasoline98_E10",
+            "columnName": "priceGasoline98_E10",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceGasoline98_E5",
+            "columnName": "priceGasoline98_E5",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceHydrogen",
+            "columnName": "priceHydrogen",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "province",
+            "columnName": "province",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "referral",
+            "columnName": "referral",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "brandStation",
+            "columnName": "brandStation",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "typeSale",
+            "columnName": "typeSale",
+            "affinity": "TEXT",
             "notNull": true
           }
         ],
         "primaryKey": {
           "columnNames": [
-            "uid"
+            "idServiceStation"
           ],
           "autoGenerate": true
         },
@@ -34,7 +214,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b5e20c7a462b145a911d54ad30df802f')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e507abdee6484cf5228de047feaac187')"
     ]
   }
 }

@@ -22,12 +22,12 @@ interface DataModule {
     ): TaskRepository
 }
 
-class FakeTaskRepository @Inject constructor() : TaskRepository {
-    override val tasks: Flow<List<String>> = flowOf(fakeTasks)
-
-    override suspend fun add(name: String) {
-        throw NotImplementedError()
-    }
-}
-
-val fakeTasks = listOf("One", "Two", "Three")
+//class FakeTaskRepository @Inject constructor() : TaskRepository {
+//    override val tasks: Flow<List<String>> = flowOf(fakeTasks)
+//
+//    override suspend fun add(name: String) {
+//        throw NotImplementedError()
+//    }
+//}
+//
+//val fakeTasks = listOf("One", "Two", "Three")

@@ -1,3 +1,14 @@
+/*
+ * File: build.gradle.kts
+ * Project: FuelPump
+ * Module: FuelPump.core.database
+ * Last modified: 12/26/22, 11:13 PM
+ *
+ * Created by albertorivas on 1/5/23, 12:13 AM
+ * Copyright © 2023 Alberto Rivas. All rights reserved.
+ *
+ */
+
 @Suppress("DSL_SCOPE_VIOLATION") // Remove when fixed https://youtrack.jetbrains.com/issue/KTIJ-19369
 plugins {
     alias(libs.plugins.android.library)
