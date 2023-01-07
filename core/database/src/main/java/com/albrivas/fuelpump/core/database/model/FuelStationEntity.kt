@@ -24,7 +24,7 @@ data class FuelStationEntity(
     val direction: String,
     val schedule: String,
     val idAutonomousCommunity: String,
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey(autoGenerate = false)
     val idServiceStation: Int,
     val idMunicipality: String,
     val idProvince: String,

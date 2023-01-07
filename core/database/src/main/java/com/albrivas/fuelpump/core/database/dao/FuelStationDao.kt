@@ -13,6 +13,7 @@ package com.albrivas.fuelpump.core.database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.albrivas.fuelpump.core.database.model.FuelStationEntity
 import kotlinx.coroutines.flow.Flow
@@ -22,6 +23,6 @@ interface FuelStationDao {
     @Query("SELECT * FROM `fuel-station` ORDER BY locality")
     fun getFuelStations(): Flow<List<FuelStationEntity>>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFuelStation(items: List<FuelStationEntity>)
 }

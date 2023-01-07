@@ -36,12 +36,16 @@ android {
 
 dependencies {
     implementation(project(":core:database"))
+    implementation(project(":core:network"))
+
+    testImplementation(project(":core:testing"))
 
     // Arch Components
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
 
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.io.arrow.kt.arrow.core)
 
     // Local tests: jUnit, coroutines, Android runner
     testImplementation(libs.junit)
