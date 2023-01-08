@@ -46,8 +46,4 @@ dependencies {
 
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.io.arrow.kt.arrow.core)
-
-    // Local tests: jUnit, coroutines, Android runner
-    testImplementation(libs.junit)
-    testImplementation(libs.kotlinx.coroutines.test)
 }

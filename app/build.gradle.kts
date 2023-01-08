@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.hilt.gradle)
     alias(libs.plugins.firebase.crashlitycs)
+    alias(libs.plugins.kotlin.jvm) apply false
 }
 
 android {
@@ -85,11 +86,11 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
     // Hilt and instrumented tests.
-    androidTestImplementation(libs.hilt.android.testing)
-    kaptAndroidTest(libs.hilt.android.compiler)
-    // Hilt and Robolectric tests.
-    testImplementation(libs.hilt.android.testing)
-    kaptTest(libs.hilt.android.compiler)
+//    androidTestImplementation(libs.hilt.android.testing)
+//    kaptAndroidTest(libs.hilt.android.compiler)
+//    // Hilt and Robolectric tests.
+//    testImplementation(libs.hilt.android.testing)
+//    kaptTest(libs.hilt.android.compiler)
 
     // Arch Components
     implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -105,17 +106,17 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.bundles.firebase)
 
-    // Tooling
-    debugImplementation(libs.androidx.compose.ui.tooling)
-    // Instrumented tests
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
-
-    // Local tests: jUnit, coroutines, Android runner
-    testImplementation(libs.junit)
-    testImplementation(libs.kotlinx.coroutines.test)
-
-    // Instrumented tests: jUnit rules and runners
-    androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.androidx.test.runner)
+//    // Tooling
+//    debugImplementation(libs.androidx.compose.ui.tooling)
+//    // Instrumented tests
+//    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+//    debugImplementation(libs.androidx.compose.ui.test.manifest)
+//
+//    // Local tests: jUnit, coroutines, Android runner
+//    testImplementation(libs.junit)
+//    testImplementation(libs.kotlinx.coroutines.test)
+//
+//    // Instrumented tests: jUnit rules and runners
+//    androidTestImplementation(libs.androidx.test.ext.junit)
+//    androidTestImplementation(libs.androidx.test.runner)
 }
