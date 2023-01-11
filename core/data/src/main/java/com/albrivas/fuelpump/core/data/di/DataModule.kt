@@ -4,11 +4,8 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
-import com.albrivas.fuelpump.core.data.TaskRepository
-import com.albrivas.fuelpump.core.data.DefaultTaskRepository
-import javax.inject.Inject
+import com.albrivas.fuelpump.core.data.repository.FuelStationRepository
+import com.albrivas.fuelpump.core.data.repository.OfflineFuelStationRepository
 import javax.inject.Singleton
 
 @Module
@@ -18,16 +15,6 @@ interface DataModule {
     @Singleton
     @Binds
     fun bindsTaskRepository(
-        taskRepository: DefaultTaskRepository
-    ): TaskRepository
+        fuelStationRepository: OfflineFuelStationRepository
+    ): FuelStationRepository
 }
-
-class FakeTaskRepository @Inject constructor() : TaskRepository {
-    override val tasks: Flow<List<String>> = flowOf(fakeTasks)
-
-    override suspend fun add(name: String) {
-        throw NotImplementedError()
-    }
-}
-
-val fakeTasks = listOf("One", "Two", "Three")

@@ -19,5 +19,5 @@ data class NetworkFuelStation(
     @Json(name = "Fecha")
     val date: String,
     @Json(name = "ListaEESSPrecio")
-    val listPriceFuelStation: List<PriceFuelStation>
+    val listPriceFuelStation: List<NetworkPriceFuelStation>
 )

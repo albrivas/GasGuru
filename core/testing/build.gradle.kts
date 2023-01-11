@@ -35,6 +35,17 @@ android {
 
 dependencies {
 
-    implementation(libs.androidx.test.runner)
-    implementation(libs.hilt.android.testing)
+    implementation(project(":core:data"))
+    api(libs.junit)
+    api(libs.androidx.test.core)
+    api(libs.kotlinx.coroutines.test)
+
+    api(libs.androidx.test.espresso.core)
+    api(libs.androidx.test.runner)
+    api(libs.androidx.test.rules)
+    //api(libs.androidx.compose.ui.test)
+    api(libs.hilt.android.testing)
+    api(libs.bundles.testing)
+
+    debugApi(libs.androidx.compose.ui.test.manifest)
 }
