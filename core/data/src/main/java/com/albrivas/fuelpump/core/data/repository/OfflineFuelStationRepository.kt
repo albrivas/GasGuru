@@ -14,6 +14,8 @@ package com.albrivas.fuelpump.core.data.repository
 import com.albrivas.fuelpump.core.data.mapper.asEntity
 import com.albrivas.fuelpump.core.database.dao.FuelStationDao
 import com.albrivas.fuelpump.core.database.model.FuelStationEntity
+import com.albrivas.fuelpump.core.database.model.asExternalModel
+import com.albrivas.fuelpump.core.model.FuelStation
 import com.albrivas.fuelpump.core.network.datasource.RemoteDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -24,11 +26,11 @@ class OfflineFuelStationRepository @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
 ) : FuelStationRepository {
 
-    override val listFuelStation: Flow<List<String>> =
-        fuelStationDao.getFuelStations().map { items -> items.map { it.locality } }
+    override val listFuelStation: Flow<List<FuelStation>> =
+        fuelStationDao.getFuelStations().map { items -> items.map { it.asExternalModel() } }
 
 
-    override suspend fun addAllStations(listStations: List<FuelStationEntity>) {
+    override suspend fun addAllStations() {
         remoteDataSource.getListFuelStations().fold(ifLeft = {}, ifRight = { data ->
             fuelStationDao.insertFuelStation(data.listPriceFuelStation.map { it.asEntity() })
         })
