@@ -15,7 +15,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class PriceFuelStation(
+data class NetworkPriceFuelStation(
     @Json(name = "% BioEtanol")
     val bioEthanolPercentage: String,
     @Json(name = "% Éster metílico")
@@ -29,7 +29,7 @@ data class PriceFuelStation(
     @Json(name = "IDCCAA")
     val idAutonomousCommunity: String,
     @Json(name = "IDEESS")
-    val idServiceStations: String,
+    val idServiceStation: String,
     @Json(name = "IDMunicipio")
     val idMunicipality: String,
     @Json(name = "IDProvincia")
