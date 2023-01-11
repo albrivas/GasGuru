@@ -13,6 +13,7 @@ package com.albrivas.fuelpump.core.database.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.albrivas.fuelpump.core.model.FuelStation
 
 @Entity(
     tableName = "fuel-station"
@@ -52,3 +53,40 @@ data class FuelStationEntity(
     val brandStation: String,
     val typeSale: String
 )
+
+//TODO: create converter to parse brandStation to local drawable
+fun FuelStationEntity.asExternalModel() = FuelStation(
+    bioEthanolPercentage,
+    esterMethylPercentage,
+    postalCode,
+    direction,
+    schedule,
+    idAutonomousCommunity,
+    idServiceStation,
+    idMunicipality,
+    idProvince,
+    latitude,
+    locality,
+    longitudeWGS84,
+    margin,
+    municipality,
+    priceBiodiesel,
+    priceBioEthanol,
+    priceGasNaturalCompressed,
+    priceLiquefiedNaturalGas,
+    priceLiquefiedPetroleumGas,
+    priceGasoilA,
+    priceGasoilB,
+    priceGasoilPremium,
+    priceGasoline95_E10,
+    priceGasoline95_E5,
+    priceGasoline95_E5_Premium,
+    priceGasoline98_E10,
+    priceGasoline98_E5,
+    priceHydrogen,
+    province,
+    referral,
+    brandStation,
+    typeSale
+)
+
