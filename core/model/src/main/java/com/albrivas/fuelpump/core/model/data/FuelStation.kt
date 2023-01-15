@@ -1,4 +1,4 @@
-package com.albrivas.fuelpump.core.model
+package com.albrivas.fuelpump.core.model.data
 
 data class FuelStation(
     val bioEthanolPercentage: String,

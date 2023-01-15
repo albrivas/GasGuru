@@ -13,7 +13,7 @@ package com.albrivas.fuelpump.core.database.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.albrivas.fuelpump.core.model.FuelStation
+import com.albrivas.fuelpump.core.model.data.FuelStation
 
 @Entity(
     tableName = "fuel-station"
