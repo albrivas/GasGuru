@@ -11,7 +11,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * UI tests for [TaskScreen].
+ * UI tests for [HomeScreen].
  */
 @RunWith(AndroidJUnit4::class)
 class TaskScreenTest {
@@ -22,7 +22,7 @@ class TaskScreenTest {
     @Before
     fun setup() {
         composeTestRule.setContent {
-            TaskScreen(FAKE_DATA, onSave = {})
+            HomeScreen(FAKE_DATA, onSave = {})
         }
     }
     @Test
