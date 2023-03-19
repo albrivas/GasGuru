@@ -1,5 +1,5 @@
 /*
- * File: FuelStation.kt
+ * File: FuelStationModel.kt
  * Project: FuelPump
  * Module: FuelPump.core.data.main
  * Last modified: 1/7/23, 1:33 PM
