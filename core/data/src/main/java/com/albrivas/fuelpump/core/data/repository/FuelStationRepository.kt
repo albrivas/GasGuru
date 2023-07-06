@@ -12,14 +12,10 @@
 package com.albrivas.fuelpump.core.data.repository
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import com.albrivas.fuelpump.core.database.dao.FuelStationDao
-import com.albrivas.fuelpump.core.database.model.FuelStationEntity
-import com.albrivas.fuelpump.core.model.FuelStation
-import javax.inject.Inject
+import com.albrivas.fuelpump.core.model.data.FuelStationModel
 
 interface FuelStationRepository {
-    val listFuelStation: Flow<List<FuelStation>>
+    val listFuelStation: Flow<List<FuelStationModel>>
 
     suspend fun addAllStations(/*listStations: List<FuelStationEntity>*/)
 }
