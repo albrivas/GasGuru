@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
 }
-
+////
 android {
     namespace = "com.albrivas.fuelpump.core.model"
     compileSdk = 33
@@ -11,12 +11,10 @@ android {
     defaultConfig {
         minSdk = 23
         targetSdk = 33
-
-        testInstrumentationRunner = "com.albrivas.fuelpump.core.testing.HiltTestRunner"
     }
 
     buildFeatures {
-        compose = true
+        compose = false
         aidl = false
         buildConfig = false
         renderScript = false
