@@ -1,0 +1,26 @@
+package com.albrivas.fuelpump.core.model.data
+
+enum class FuelStationBrandsType {
+    ALCAMPO,
+    BALLENOIL,
+    BONAREA,
+    BP,
+    CARREFOUR,
+    CEPSA,
+    DISA,
+    ECLERC,
+    ELECLERC,
+    EROSKI,
+    ESSO,
+    GALP,
+    MAKRO,
+    MEROIL,
+    PC,
+    PETRONOR,
+    REPSOL,
+    SHELL,
+    TEXACO,
+    TGAS,
+    ZOLOIL,
+    UNKOWN,
+}

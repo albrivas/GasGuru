@@ -42,6 +42,9 @@ android {
 dependencies {
     implementation(project(":core:data"))
     implementation(project(":core:ui"))
+    implementation(project(":core:domain"))
+    implementation(project(":core:model"))
+    implementation(project(":core:uikit"))
     androidTestImplementation(project(":core:testing"))
 
     // Core Android dependencies

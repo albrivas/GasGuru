@@ -1,6 +1,8 @@
-package com.albrivas.fuelpump.core.model
+package com.albrivas.fuelpump.core.domain.model
 
-data class FuelStation(
+import com.albrivas.fuelpump.core.model.data.FuelStationBrandsType
+
+data class FuelStationDomain(
     val bioEthanolPercentage: String,
     val esterMethylPercentage: String,
     val postalCode: String,
@@ -15,11 +17,6 @@ data class FuelStation(
     val longitudeWGS84: String,
     val margin: String,
     val municipality: String,
-    val priceBiodiesel: String,
-    val priceBioEthanol: String,
-    val priceGasNaturalCompressed: String,
-    val priceLiquefiedNaturalGas: String,
-    val priceLiquefiedPetroleumGas: String,
     val priceGasoilA: String,
     val priceGasoilB: String,
     val priceGasoilPremium: String,
@@ -31,6 +28,39 @@ data class FuelStation(
     val priceHydrogen: String,
     val province: String,
     val referral: String,
-    val brandStation: String,
+    val brandStationName: String,
+    val brandStationBrandsType: FuelStationBrandsType,
     val typeSale: String
 )
+
+fun previewFuelStationDomain() =  FuelStationDomain(
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    1,
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "1,65",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "REPSOL",
+    FuelStationBrandsType.REPSOL,
+    ""
+)
+
