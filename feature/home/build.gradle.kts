@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.albrivas.fuelpump.feature.task"
+    namespace = "com.albrivas.fuelpump.feature.home"
     compileSdk = 33
 
     defaultConfig {
@@ -14,7 +14,6 @@ android {
         targetSdk = 33
 
         testInstrumentationRunner = "com.albrivas.fuelpump.core.testing.HiltTestRunner"
-        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildFeatures {
@@ -30,12 +29,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = JavaVersion.VERSION_17.toString()
     }
 }
 
