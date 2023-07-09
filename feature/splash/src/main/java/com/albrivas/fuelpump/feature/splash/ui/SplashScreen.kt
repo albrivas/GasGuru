@@ -1,4 +1,4 @@
-package com.albrivas.fuelpump.feature.splash
+package com.albrivas.fuelpump.feature.splash.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

@@ -5,7 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import com.albrivas.fuelpump.feature.splash.SplashScreen
+import com.albrivas.fuelpump.feature.splash.ui.SplashScreen
 
 const val splashRoute = "splash_route"
 
