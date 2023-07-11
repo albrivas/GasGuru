@@ -5,5 +5,7 @@
 
 <resources>
 
-    <style name="Theme.FuelPump" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.FuelPump" parent="android:Theme.Material.Light.NoActionBar" >
+        <item name="android:windowBackground">@color/color_primary</item>
+    </style>
 </resources>

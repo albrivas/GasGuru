@@ -43,12 +43,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
     buildFeatures {
@@ -62,12 +62,6 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.androidxComposeCompiler.get()
     }
-
-    packagingOptions {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
 }
 
 dependencies {
@@ -75,6 +69,7 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":core:data"))
     implementation(project(":feature:home"))
+    implementation(project(":feature:splash"))
     implementation(project(":core:model"))
     androidTestImplementation(project(":core:testing"))
 
@@ -86,12 +81,6 @@ dependencies {
     // Hilt Dependency Injection
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
-    // Hilt and instrumented tests.
-//    androidTestImplementation(libs.hilt.android.testing)
-//    kaptAndroidTest(libs.hilt.android.compiler)
-//    // Hilt and Robolectric tests.
-//    testImplementation(libs.hilt.android.testing)
-//    kaptTest(libs.hilt.android.compiler)
 
     // Arch Components
     implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -106,18 +95,4 @@ dependencies {
     // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.bundles.firebase)
-
-//    // Tooling
-//    debugImplementation(libs.androidx.compose.ui.tooling)
-//    // Instrumented tests
-//    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-//    debugImplementation(libs.androidx.compose.ui.test.manifest)
-//
-//    // Local tests: jUnit, coroutines, Android runner
-//    testImplementation(libs.junit)
-//    testImplementation(libs.kotlinx.coroutines.test)
-//
-//    // Instrumented tests: jUnit rules and runners
-//    androidTestImplementation(libs.androidx.test.ext.junit)
-//    androidTestImplementation(libs.androidx.test.runner)
 }

@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.albrivas.fuelpump.feature.home"
+    namespace = "com.albrivas.fuelpump.feature.splash"
     compileSdk = 33
 
     defaultConfig {
@@ -35,6 +35,14 @@ android {
 
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
+    }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            merges += "META-INF/LICENSE.md"
+            merges += "META-INF/LICENSE-notice.md"
+        }
     }
 }
 
