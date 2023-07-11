@@ -33,19 +33,19 @@ android {
         buildConfig = true
     }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
         }
     }
 
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
     val baseUrl = "\"https://sedeaplicaciones.minetur.gob.es/\""
@@ -84,7 +84,7 @@ dependencies {
     kapt(libs.hilt.compiler)
 
     implementation(libs.bundles.moshi)
-    kapt(libs.moshi.codegen)
+    ksp(libs.moshi.codegen)
 
     implementation(libs.bundles.com.squareup.retrofit2)
     implementation(libs.kotlinx.coroutines.android)
