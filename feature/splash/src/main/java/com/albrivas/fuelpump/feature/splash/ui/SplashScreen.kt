@@ -16,27 +16,28 @@ import androidx.navigation.NavHostController
 import com.albrivas.fuelpump.core.ui.GreenPrimary
 
 @Composable
-fun SplashScreen(navController: NavHostController) {
-    Splash()
+fun SplashScreenRoute(navController: NavHostController) {
+    SplashScreen()
 }
 
 @Composable
-fun Splash() {
-
+internal fun SplashScreen() {
     Column(
-        modifier = Modifier.fillMaxSize().background(GreenPrimary),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(GreenPrimary),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
         Image(
             painter = painterResource(id = R.drawable.ic_fuel_pump),
-            contentDescription = ""
+            contentDescription = "",
         )
     }
 }
 
 @Composable
 @Preview
-fun SplashScreenPreview() {
-    Splash()
+private fun SplashScreenPreview() {
+    SplashScreen()
 }
