@@ -8,9 +8,8 @@ import javax.inject.Inject
 class GetFuelStationUseCase @Inject constructor(
     private val repository: OfflineFuelStationRepository
 ) {
-    operator fun invoke(): Flow<List<FuelStationModel>> {
-        return repository.listFuelStation
-    }
+    operator fun invoke(): Flow<List<FuelStationModel>> = repository.listFuelStation
+
 
     //TODO: remove when create CoroutineWorker
     suspend fun temporalFillBBDD() {

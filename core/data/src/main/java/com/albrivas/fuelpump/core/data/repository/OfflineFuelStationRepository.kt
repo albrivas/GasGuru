@@ -1,5 +1,5 @@
 /*
- * File: OffileFuelStationRepository.kt
+ * File: OfflineFuelStationRepository.kt
  * Project: FuelPump
  * Module: FuelPump.core.data.main
  * Last modified: 1/7/23, 1:06 PM
@@ -26,7 +26,8 @@ class OfflineFuelStationRepository @Inject constructor(
 ) : FuelStationRepository {
 
     override val listFuelStation: Flow<List<FuelStationModel>> =
-        fuelStationDao.getFuelStations().map { items -> items.map { it.asExternalModel() }.take(20) }
+        fuelStationDao.getFuelStations()
+            .map { items -> items.map { it.asExternalModel() }.take(20) }
 
 
     override suspend fun addAllStations() {
