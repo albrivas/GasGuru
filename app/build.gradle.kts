@@ -70,6 +70,7 @@ dependencies {
     implementation(project(":core:data"))
     implementation(project(":feature:home"))
     implementation(project(":feature:splash"))
+    implementation(project(":feature:onboarding-welcome"))
     implementation(project(":core:model"))
     androidTestImplementation(project(":core:testing"))
 
