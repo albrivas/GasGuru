@@ -1,4 +1,4 @@
-package com.albrivas.fuelpump.core.ui
+package com.albrivas.fuelpump.core.uikit.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
@@ -7,6 +7,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.albrivas.fuelpump.core.uikit.R
 
 val interFamily = FontFamily(
     Font(R.font.inter_black, FontWeight.Black, FontStyle.Normal),
@@ -20,7 +21,6 @@ val interFamily = FontFamily(
     Font(R.font.inter_thin, FontWeight.Thin, FontStyle.Normal),
 )
 
-// Set of Material typography styles to start with
 val Typography = Typography(
     bodyLarge = TextStyle(
         fontFamily = interFamily,
@@ -28,7 +28,28 @@ val Typography = Typography(
         fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
-    )
+    ),
+    bodyMedium = TextStyle(
+        fontFamily = interFamily,
+        fontWeight = FontWeight.ExtraBold,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.5.sp
+    ),
+    titleLarge = TextStyle(
+        fontFamily = interFamily,
+        fontWeight = FontWeight.ExtraBold,
+        fontSize = 32.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.5.sp
+    ),
+    displayMedium = TextStyle(
+        fontFamily = interFamily,
+        fontWeight = FontWeight.Light,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.5.sp
+    ),
 )
 
 
