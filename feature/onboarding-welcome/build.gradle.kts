@@ -7,11 +7,11 @@ plugins {
 
 android {
     namespace = "com.albrivas.fuelpump.feature.onboarding_welcome"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         minSdk = 23
-        targetSdk = 33
+        targetSdk = 34
 
         testInstrumentationRunner = "com.albrivas.fuelpump.core.testing.HiltTestRunner"
     }
@@ -66,6 +66,7 @@ dependencies {
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.permission)
     // Tooling
     debugImplementation(libs.androidx.compose.ui.tooling)
     // Instrumented tests

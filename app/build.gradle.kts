@@ -10,12 +10,12 @@ plugins {
 
 android {
     namespace = "com.albrivas.fuelpump"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.albrivas.fuelpump"
         minSdk = 23
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -66,7 +66,7 @@ android {
 
 dependencies {
 
-    implementation(project(":core:ui"))
+    implementation(project(":core:uikit"))
     implementation(project(":core:data"))
     implementation(project(":feature:home"))
     implementation(project(":feature:splash"))
