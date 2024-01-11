@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.albrivas.fuelpump.core.domain.model.FuelStationDomain
 import com.albrivas.fuelpump.core.domain.model.previewFuelStationDomain
-import com.albrivas.fuelpump.core.ui.MyApplicationTheme
+import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
 import com.albrivas.fuelpump.core.uikit.icon.FuelStationIcons
 
 @Composable

@@ -1,4 +1,4 @@
-package com.albrivas.fuelpump.core.ui
+package com.albrivas.fuelpump.core.uikit.theme
 
 import android.app.Activity
 import android.os.Build

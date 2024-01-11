@@ -20,11 +20,11 @@ plugins {
 
 android {
     namespace = "com.albrivas.fuelpump.core.network"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         minSdk = 23
-        targetSdk = 33
+        targetSdk = 34
 
         consumerProguardFiles("consumer-rules.pro")
     }
