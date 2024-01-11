@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.albrivas.fuelpump.feature.home"
+    namespace = "com.albrivas.fuelpump.feature.onboarding_welcome"
     compileSdk = 34
 
     defaultConfig {
@@ -36,6 +36,14 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            merges += "META-INF/LICENSE.md"
+            merges += "META-INF/LICENSE-notice.md"
+        }
+    }
 }
 
 dependencies {
@@ -58,6 +66,7 @@ dependencies {
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.permission)
     // Tooling
     debugImplementation(libs.androidx.compose.ui.tooling)
     // Instrumented tests
