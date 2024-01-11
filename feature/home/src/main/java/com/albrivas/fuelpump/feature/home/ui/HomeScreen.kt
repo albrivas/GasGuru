@@ -24,7 +24,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle.State.STARTED
 import androidx.lifecycle.repeatOnLifecycle
 import com.albrivas.fuelpump.feature.home.ui.TaskUiState.Success
-import com.albrivas.fuelpump.core.ui.MyApplicationTheme
+import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
 
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel = hiltViewModel()) {

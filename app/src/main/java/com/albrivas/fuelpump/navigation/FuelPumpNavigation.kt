@@ -16,8 +16,11 @@ fun MainNavigation() {
     NavHost(navController = navController, startDestination = splashRoute) {
         splashScreen(
             navigateToOnboarding = navController::navigateToOnboardingWelcomeRoute,
-            navigateToHome = {})
-        onboardingWelcomeScreen(navController)
+            navigateToHome = {}
+        )
+        onboardingWelcomeScreen(
+            navigateToSelectFuel = {}
+        )
         homeScreen(navController)
     }
 }
