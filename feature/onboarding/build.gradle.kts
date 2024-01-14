@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.albrivas.fuelpump.feature.onboarding_welcome"
+    namespace = "com.albrivas.fuelpump.feature.onboarding"
     compileSdk = 34
 
     defaultConfig {
