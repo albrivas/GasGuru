@@ -26,7 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.albrivas.fuelpump.core.uikit.components.FuelPumpButton
 import com.albrivas.fuelpump.core.uikit.theme.GrayLight
-import com.albrivas.fuelpump.feature.onboarding_welcome.R
+import com.albrivas.fuelpump.feature.onboarding.R
 import com.albrivas.fuelpump.core.uikit.R as RUikit
 
 
