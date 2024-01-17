@@ -26,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.albrivas.fuelpump.core.uikit.components.FuelPumpButton
 import com.albrivas.fuelpump.core.uikit.theme.GrayLight
+import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
 import com.albrivas.fuelpump.feature.onboarding.R
 import com.albrivas.fuelpump.core.uikit.R as RUikit
 
@@ -82,11 +83,12 @@ internal fun OnboardingWelcomeScreen(navigateToSelectFuel: () -> Unit = {}) {
             style = MaterialTheme.typography.displayMedium
         )
 
-        Spacer(modifier = Modifier.height(106.dp))
+        Spacer(modifier = Modifier.weight(1f))
         FuelPumpButton(
             onClick = navigateToSelectFuel,
             enabled = locationPermissionGranted,
             text = R.string.welcome_button,
+            modifier = Modifier.padding(bottom = 17.dp)
         )
     }
 }
@@ -94,5 +96,7 @@ internal fun OnboardingWelcomeScreen(navigateToSelectFuel: () -> Unit = {}) {
 @Composable
 @Preview
 private fun OnboardingWelcomeScreenPreview() {
-    OnboardingWelcomeScreen()
+    MyApplicationTheme {
+        OnboardingWelcomeScreen()
+    }
 }
