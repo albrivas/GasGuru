@@ -24,6 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.albrivas.fuelpump.core.model.data.FuelType
+import com.albrivas.fuelpump.core.ui.toFuelType
+import com.albrivas.fuelpump.core.ui.translation
 import com.albrivas.fuelpump.core.uikit.components.BasicSelectedItem
 import com.albrivas.fuelpump.core.uikit.components.BasicSelectedItemModel
 import com.albrivas.fuelpump.core.uikit.components.FuelPumpButton
@@ -39,16 +41,21 @@ internal fun OnboardingFuelPreferencesRoute(
     navigateToHome: () -> Unit,
     viewModel: OnboardingViewModel = hiltViewModel()
 ) {
-    OnboardingFuelPreferences(navigateToHome, viewModel.state)
+    OnboardingFuelPreferences(
+        navigateToHome = navigateToHome,
+        saveSelection = viewModel::saveSelectedFuel,
+        uiState = viewModel.state
+    )
 }
 
 @Composable
 internal fun OnboardingFuelPreferences(
     navigateToHome: () -> Unit,
+    saveSelection: (FuelType) -> Unit = {},
     uiState: OnboardingUiState,
 ) {
 
-    var selectedFuel by remember { mutableStateOf<String?>(null) }
+    var selectedFuel by remember { mutableStateOf<Int?>(null) }
 
     Column(
         modifier = Modifier
@@ -76,21 +83,25 @@ internal fun OnboardingFuelPreferences(
         LazyColumn(modifier = Modifier.weight(1f)) {
             when (uiState) {
                 is OnboardingUiState.ListFuelPreferences -> {
-                    items(uiState.list.toStringList()) { fuelName ->
-                        val isSelected = fuelName == selectedFuel
+                    items(uiState.list.sorted()) { fuelName ->
+                        val titleTranslation = fuelName.translation()
+                        val isSelected = titleTranslation == selectedFuel
                         val model = BasicSelectedItemModel(
-                            title = fuelName,
+                            title = titleTranslation,
                             isSelected = isSelected
                         )
                         BasicSelectedItem(
                             model = model,
-                            onItemSelected = { selectedFuel = fuelName })
+                            onItemSelected = { selectedFuel = titleTranslation })
                     }
                 }
             }
         }
         FuelPumpButton(
-            onClick = navigateToHome,
+            onClick = {
+                selectedFuel?.let { saveSelection(it.toFuelType()) }
+                navigateToHome()
+            },
             enabled = selectedFuel != null,
             text = R.string.welcome_button,
             modifier = Modifier.padding(bottom = 17.dp, top = 36.dp)
@@ -98,24 +109,14 @@ internal fun OnboardingFuelPreferences(
     }
 }
 
-fun List<FuelType>.toStringList() = map { fuelType ->
-    when (fuelType) {
-        FuelType.ELECTRIC -> "Electric"
-        FuelType.DIESEL_PLUS -> "Diesel Plus"
-        FuelType.DIESEL -> "Diesel"
-        FuelType.GASOLINE_98 -> "Gasoline 98"
-        FuelType.GASOLINE_95 -> "Gasoline 95"
-    }
-}.sorted()
-
-
 @Composable
 @Preview(name = "Onboarding - Fuel preferences preview")
 private fun PreviewOnboardingFuelPreferences() {
     MyApplicationTheme {
         OnboardingFuelPreferences(
             navigateToHome = {},
-            OnboardingUiState.ListFuelPreferences(
+            saveSelection = {},
+            uiState = OnboardingUiState.ListFuelPreferences(
                 listOf(
                     FuelType.ELECTRIC,
                     FuelType.DIESEL_PLUS,

@@ -1,6 +1,8 @@
 package com.albrivas.fuelpump.core.uikit.components
 
+import androidx.annotation.StringRes
+
 data class BasicSelectedItemModel(
-    val title: String,
+    @StringRes val title: Int,
     val isSelected: Boolean,
 )

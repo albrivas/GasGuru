@@ -29,4 +29,8 @@ class OnboardingViewModel @Inject constructor(
             FuelType.ELECTRIC
         ).also { state = OnboardingUiState.ListFuelPreferences(it) }
     }
+
+    fun saveSelectedFuel(selectedFuel: FuelType) {
+        //TODO: save selected fuel in db with userdata
+    }
 }
