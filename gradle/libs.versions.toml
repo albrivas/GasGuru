@@ -1,10 +1,10 @@
 [versions]
-androidGradlePlugin = "8.1.2"
+androidGradlePlugin = "8.2.0"
 androidx-room = "2.5.2"
 androidxActivity = "1.7.2"
-androidxComposeCompiler = "1.4.8"
+androidxComposeCompiler = "1.5.8"
 androidxComposeMaterial3 = "1.1.1"
-androidxComposeUi = "1.4.3"
+androidxComposeUi = "1.5.4"
 androidxCore = "1.9.0"
 androidxEspresso = "3.5.1"
 androidxHilt = "1.0.0"
@@ -20,7 +20,7 @@ firebase-bom = "32.1.1"
 firebase-crashlytics-gradle = "2.9.6"
 hilt = "2.46.1"
 junit = "4.13.2"
-kotlin = "1.9.0"
+kotlin = "1.9.22"
 kotlinxSerializationJson = "1.5.1"
 ksp = "1.9.0-1.0.11"
 mock-webserver = "4.11.0"
@@ -30,6 +30,8 @@ moshi-converter = "2.9.0"
 turbine = "1.0.0"
 googleAccompanist = "0.32.0"
 loggingInterceptor = "4.9.2"
+appcompat = "1.6.1"
+material = "1.11.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
@@ -77,6 +79,8 @@ moshi-codegen = { module = "com.squareup.moshi:moshi-kotlin-codegen", version.re
 moshi-converter = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "moshi-converter" }
 moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshi" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 [bundles]
 androidx-room = [
