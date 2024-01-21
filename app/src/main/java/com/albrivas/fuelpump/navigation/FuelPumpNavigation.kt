@@ -4,7 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.albrivas.fuelpump.feature.home.ui.homeScreen
+import com.albrivas.fuelpump.feature.onboarding_welcome.navigation.navigateToOnboardingFuelPreferencesRoute
 import com.albrivas.fuelpump.feature.onboarding_welcome.navigation.navigateToOnboardingWelcomeRoute
+import com.albrivas.fuelpump.feature.onboarding_welcome.navigation.onboardingFuelPreferencesScreen
 import com.albrivas.fuelpump.feature.onboarding_welcome.navigation.onboardingWelcomeScreen
 import com.albrivas.fuelpump.feature.splash.navigation.splashRoute
 import com.albrivas.fuelpump.feature.splash.navigation.splashScreen
@@ -19,7 +21,10 @@ fun MainNavigation() {
             navigateToHome = {}
         )
         onboardingWelcomeScreen(
-            navigateToSelectFuel = {}
+            navigateToSelectFuel = navController::navigateToOnboardingFuelPreferencesRoute
+        )
+        onboardingFuelPreferencesScreen(
+            navigateToHome = {}
         )
         homeScreen(navController)
     }

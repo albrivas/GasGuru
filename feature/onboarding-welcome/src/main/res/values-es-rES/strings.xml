@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="welcome">¡Bienvenido!</string>
-    <string name="welcome_text">Encuentra gasolineras cercanas al instante. Accede a precios actualizados y ahorra tiempo en tu búsqueda</string>
-    <string name="welcome_permission">Concede permisos de locaclización para comenzar a explorar</string>
-    <string name="welcome_button">Siguiente</string>
-</resources>
