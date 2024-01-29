@@ -20,12 +20,16 @@ fun NavController.navigateToOnboardingFuelPreferencesRoute(navOptions: NavOption
 
 fun NavGraphBuilder.onboardingWelcomeScreen(navigateToSelectFuel: () -> Unit) {
     composable(route = onboardingWelcomeRoute) {
-        OnboardingWelcomeScreenRoute(navigateToSelectFuel)
+        OnboardingWelcomeScreenRoute(
+            navigateToSelectFuel = navigateToSelectFuel
+        )
     }
 }
 
 fun NavGraphBuilder.onboardingFuelPreferencesScreen(navigateToHome: () -> Unit) {
     composable(route = onboardingFuelPreferencesRoute) {
-        OnboardingFuelPreferencesRoute(navigateToHome)
+        OnboardingFuelPreferencesRoute(
+            navigateToHome = navigateToHome
+        )
     }
 }

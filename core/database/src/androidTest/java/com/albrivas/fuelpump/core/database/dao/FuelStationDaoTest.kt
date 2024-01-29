@@ -15,7 +15,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import app.cash.turbine.test
-import com.albrivas.fuelpump.core.database.AppDatabase
+import com.albrivas.fuelpump.core.database.FuelPumpDatabase
 import com.albrivas.fuelpump.core.database.model.FuelStationEntity
 import com.albrivas.fuelpump.core.testing.CoroutinesTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -31,7 +31,7 @@ import org.junit.Test
 class FuelStationDaoTest {
 
     private lateinit var fuelStationDao: FuelStationDao
-    private lateinit var db: AppDatabase
+    private lateinit var db: FuelPumpDatabase
 
     @get: Rule
     val dispatcherRule = CoroutinesTestRule()
@@ -41,7 +41,7 @@ class FuelStationDaoTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
         db = Room.inMemoryDatabaseBuilder(
             context,
-            AppDatabase::class.java
+            FuelPumpDatabase::class.java
         ).build()
         fuelStationDao = db.fuelStationDao()
     }

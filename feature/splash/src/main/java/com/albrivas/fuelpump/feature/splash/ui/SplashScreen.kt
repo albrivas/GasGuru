@@ -15,18 +15,25 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.albrivas.fuelpump.core.uikit.R
 import com.albrivas.fuelpump.core.uikit.theme.GreenPrimary
 import com.albrivas.fuelpump.feature.splash.viewmodel.SplashViewModel
-import kotlinx.coroutines.delay
 
 @Composable
-fun SplashScreenRoute(navigateToOnboarding: () -> Unit, navigateToHome: () -> Unit) {
-    SplashScreen(navigateToOnboarding, navigateToHome)
+fun SplashScreenRoute(
+    navigateToOnboarding: () -> Unit,
+    navigateToHome: () -> Unit,
+    viewModel: SplashViewModel = hiltViewModel()
+) {
+    SplashScreen(
+        navigateToOnboarding = navigateToOnboarding,
+        navigateToHome = navigateToHome,
+        isOnboardingComplete = viewModel.state,
+    )
 }
 
 @Composable
 internal fun SplashScreen(
     navigateToOnboarding: () -> Unit = {},
     navigateToHome: () -> Unit = {},
-    viewModel: SplashViewModel = hiltViewModel(),
+    isOnboardingComplete: Boolean,
 ) {
     Column(
         modifier = Modifier
@@ -41,14 +48,16 @@ internal fun SplashScreen(
         )
     }
 
-    LaunchedEffect(Unit) {
-        delay(1000)
-        navigateToOnboarding()
+    LaunchedEffect(isOnboardingComplete) {
+        if (isOnboardingComplete)
+            navigateToHome()
+        else
+            navigateToOnboarding()
     }
 }
 
 @Composable
 @Preview
 private fun SplashScreenPreview() {
-    SplashScreen()
+    SplashScreen(isOnboardingComplete = false)
 }
