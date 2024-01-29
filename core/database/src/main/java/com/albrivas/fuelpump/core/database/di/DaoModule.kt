@@ -11,8 +11,9 @@
 
 package com.albrivas.fuelpump.core.database.di
 
-import com.albrivas.fuelpump.core.database.AppDatabase
+import com.albrivas.fuelpump.core.database.FuelPumpDatabase
 import com.albrivas.fuelpump.core.database.dao.FuelStationDao
+import com.albrivas.fuelpump.core.database.dao.UserDataDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,7 +24,10 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 object DaoModule {
     @Provides
-    fun provideFuelStationDao(appDatabase: AppDatabase): FuelStationDao {
-        return appDatabase.fuelStationDao()
-    }
+    fun provideFuelStationDao(appDatabase: FuelPumpDatabase): FuelStationDao =
+        appDatabase.fuelStationDao()
+
+    @Provides
+    fun provideUserDataDao(appDatabase: FuelPumpDatabase): UserDataDao =
+        appDatabase.userDataDao()
 }

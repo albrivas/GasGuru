@@ -18,7 +18,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import com.albrivas.fuelpump.core.database.AppDatabase
+import com.albrivas.fuelpump.core.database.FuelPumpDatabase
 import javax.inject.Singleton
 
 @Module
@@ -27,10 +27,10 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideAppDatabase(@ApplicationContext appContext: Context): AppDatabase {
+    fun provideAppDatabase(@ApplicationContext appContext: Context): FuelPumpDatabase {
         return Room.databaseBuilder(
             appContext,
-            AppDatabase::class.java,
+            FuelPumpDatabase::class.java,
             "fuel-pump-database"
         ).build()
     }

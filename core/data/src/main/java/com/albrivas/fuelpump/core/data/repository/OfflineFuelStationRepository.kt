@@ -35,5 +35,4 @@ class OfflineFuelStationRepository @Inject constructor(
             fuelStationDao.insertFuelStation(data.listPriceFuelStation.map { it.asEntity() })
         })
     }
-
 }
