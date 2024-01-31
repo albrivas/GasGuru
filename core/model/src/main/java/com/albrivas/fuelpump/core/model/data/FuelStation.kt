@@ -33,53 +33,34 @@ data class FuelStation(
     val priceCategory: PriceCategory = PriceCategory.NORMAL
 )
 
-fun FuelStation.getPriceForFuelType(fuelType: FuelType): Double {
-    return when (fuelType) {
-        FuelType.GASOLINE_95 -> this.priceGasoline95_E10
-        FuelType.GASOLINE_98 -> this.priceGasoline98_E10
-        FuelType.DIESEL -> this.priceGasoilA
-        FuelType.DIESEL_PLUS -> this.priceGasoilPremium
-        FuelType.ELECTRIC -> 0.0
-    }
-}
-
-fun FuelStation.hasNonZeroPriceForFuelType(fuelType: FuelType): Boolean {
-    return when (fuelType) {
-        FuelType.GASOLINE_95 -> priceGasoline95_E10 != 0.0 || priceGasoline95_E5 != 0.0
-        FuelType.GASOLINE_98 -> priceGasoline98_E10 != 0.0 || priceGasoline98_E5 != 0.0
-        FuelType.DIESEL -> priceGasoilA != 0.0 || priceGasoilB != 0.0
-        FuelType.DIESEL_PLUS -> priceGasoilPremium != 0.0
-        FuelType.ELECTRIC -> false
-    }
-}
-
 fun previewFuelStationDomain() =  FuelStation(
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    1,
-    "",
-    "",
-    Location(""),
-    "",
-    "",
-    "",
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    1.65,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    "",
-    "",
-    "REPSOL",
-    FuelStationBrandsType.REPSOL,
-    ""
+    bioEthanolPercentage = "",
+    esterMethylPercentage = "",
+    postalCode = "",
+    direction = " C/Rios Rosas - Madrid",
+    schedule = "",
+    idAutonomousCommunity = "",
+    idServiceStation = 1,
+    idMunicipality = "",
+    idProvince = "",
+    location = Location(""),
+    locality = "",
+    margin = "",
+    municipality = "",
+    priceGasoilA = 0.0,
+    priceGasoilB = 0.0,
+    priceGasoilPremium = 0.0,
+    priceGasoline95_E10 = 1.659,
+    priceGasoline95_E5 = 1.659,
+    priceGasoline95_E5_Premium = 1.759,
+    priceGasoline98_E10 = 1.759,
+    priceGasoline98_E5 = 1.659,
+    priceHydrogen = 0.0,
+    province = "",
+    referral = "",
+    brandStationName = "REPSOL",
+    brandStationBrandsType = FuelStationBrandsType.REPSOL,
+    typeSale = "",
+    priceCategory = PriceCategory.CHEAP
 )
 
