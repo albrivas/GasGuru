@@ -13,3 +13,8 @@ val Pink40 = Color(0xFF7D5260)
 val GreenPrimary = Color(0xFF00CC99)
 val GreenDark = Color(0xFF56A66D)
 val GrayLight = Color(0xFF626161)
+val GrayExtraLight = Color(0xFFAFAFAF)
+
+val PriceCheap = Color(0xFF3EB489)
+val PriceNormal = Color(0xFFFFA858)
+val PriceExpensive = Color(0xFFFF674E)

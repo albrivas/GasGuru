@@ -11,10 +11,11 @@
 
 package com.albrivas.fuelpump.core.database.model
 
+import android.location.Location
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.albrivas.fuelpump.core.model.data.FuelStation
 import com.albrivas.fuelpump.core.model.data.FuelStationBrandsType
-import com.albrivas.fuelpump.core.model.data.FuelStationModel
 
 @Entity(
     tableName = "fuel-station"
@@ -30,25 +31,25 @@ data class FuelStationEntity(
     val idServiceStation: Int,
     val idMunicipality: String,
     val idProvince: String,
-    val latitude: String,
+    val latitude: Double,
     val locality: String,
-    val longitudeWGS84: String,
+    val longitudeWGS84: Double,
     val margin: String,
     val municipality: String,
-    val priceBiodiesel: String,
-    val priceBioEthanol: String,
-    val priceGasNaturalCompressed: String,
-    val priceLiquefiedNaturalGas: String,
-    val priceLiquefiedPetroleumGas: String,
-    val priceGasoilA: String,
-    val priceGasoilB: String,
-    val priceGasoilPremium: String,
-    val priceGasoline95_E10: String,
-    val priceGasoline95_E5: String,
-    val priceGasoline95_E5_Premium: String,
-    val priceGasoline98_E10: String,
-    val priceGasoline98_E5: String,
-    val priceHydrogen: String,
+    val priceBiodiesel: Double,
+    val priceBioEthanol: Double,
+    val priceGasNaturalCompressed: Double,
+    val priceLiquefiedNaturalGas: Double,
+    val priceLiquefiedPetroleumGas: Double,
+    val priceGasoilA: Double,
+    val priceGasoilB: Double,
+    val priceGasoilPremium: Double,
+    val priceGasoline95_E10: Double,
+    val priceGasoline95_E5: Double,
+    val priceGasoline95_E5_Premium: Double,
+    val priceGasoline98_E10: Double,
+    val priceGasoline98_E5: Double,
+    val priceHydrogen: Double,
     val province: String,
     val referral: String,
     val brandStation: String,
@@ -56,7 +57,7 @@ data class FuelStationEntity(
 )
 
 
-fun FuelStationEntity.asExternalModel() = FuelStationModel(
+fun FuelStationEntity.asExternalModel() = FuelStation(
     bioEthanolPercentage,
     esterMethylPercentage,
     postalCode,
@@ -66,16 +67,10 @@ fun FuelStationEntity.asExternalModel() = FuelStationModel(
     idServiceStation,
     idMunicipality,
     idProvince,
-    latitude,
+    getLocation(),
     locality,
-    longitudeWGS84,
     margin,
     municipality,
-    priceBiodiesel,
-    priceBioEthanol,
-    priceGasNaturalCompressed,
-    priceLiquefiedNaturalGas,
-    priceLiquefiedPetroleumGas,
     priceGasoilA,
     priceGasoilB,
     priceGasoilPremium,
@@ -94,8 +89,33 @@ fun FuelStationEntity.asExternalModel() = FuelStationModel(
 
 fun String.toBrandStation(): FuelStationBrandsType {
     return when {
-        contains("repsol") -> FuelStationBrandsType.REPSOL
+        lowercase().contains("repsol") -> FuelStationBrandsType.REPSOL
+        lowercase().contains("petronor") -> FuelStationBrandsType.PETRONOR
+        lowercase().contains("galp") -> FuelStationBrandsType.GALP
+        lowercase().contains("bp") -> FuelStationBrandsType.BP
+        lowercase().contains("shell") -> FuelStationBrandsType.SHELL
+        lowercase().contains("carrefour") -> FuelStationBrandsType.CARREFOUR
+        lowercase().contains("cepsa") -> FuelStationBrandsType.CEPSA
+        lowercase().contains("eroski") -> FuelStationBrandsType.EROSKI
+        lowercase().contains("bonarea") -> FuelStationBrandsType.BONAREA
+        lowercase().contains("alcampo") -> FuelStationBrandsType.ALCAMPO
+        lowercase().contains("meroil") -> FuelStationBrandsType.MEROIL
+        lowercase().contains("ballenoil") -> FuelStationBrandsType.BALLENOIL
+        lowercase().contains("esso") -> FuelStationBrandsType.ESSO
+        lowercase().contains("makro") -> FuelStationBrandsType.MAKRO
+        lowercase().contains("tgas") -> FuelStationBrandsType.TGAS
+        lowercase().contains("eleclerc") -> FuelStationBrandsType.ELECLERC
+        lowercase().contains("eclerc") -> FuelStationBrandsType.ECLERC
+        lowercase().contains("disa") -> FuelStationBrandsType.DISA
+        lowercase().contains("pc") -> FuelStationBrandsType.PC
+        lowercase().contains("texaco") -> FuelStationBrandsType.TEXACO
+        lowercase().contains("zoloil") -> FuelStationBrandsType.ZOLOIL
         else -> FuelStationBrandsType.UNKOWN
     }
+}
+
+fun FuelStationEntity.getLocation() = Location("").apply {
+    latitude = this@getLocation.latitude
+    longitude = this@getLocation.longitudeWGS84
 }
 

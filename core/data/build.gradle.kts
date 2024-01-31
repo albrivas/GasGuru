@@ -46,5 +46,7 @@ dependencies {
     kapt(libs.hilt.compiler)
 
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlin.coroutines.play)
     implementation(libs.io.arrow.kt.arrow.core)
+    implementation(libs.play.services.location)
 }

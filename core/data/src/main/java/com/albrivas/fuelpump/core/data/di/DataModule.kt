@@ -5,6 +5,8 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import com.albrivas.fuelpump.core.data.repository.FuelStationRepository
+import com.albrivas.fuelpump.core.data.repository.LocationTracker
+import com.albrivas.fuelpump.core.data.repository.LocationTrackerRepository
 import com.albrivas.fuelpump.core.data.repository.OfflineFuelStationRepository
 import com.albrivas.fuelpump.core.data.repository.OfflineUserDataRepository
 import com.albrivas.fuelpump.core.data.repository.UserDataRepository
@@ -29,5 +31,10 @@ interface DataModule {
     fun bindUserDataRepository(
         userDataRepository: OfflineUserDataRepository
     ): UserDataRepository
+
+    @Binds
+    fun bindLocationTrackerRepository(
+        locationTrackerRepository: LocationTrackerRepository
+    ): LocationTracker
 
 }
