@@ -32,6 +32,7 @@ googleAccompanist = "0.32.0"
 loggingInterceptor = "4.9.2"
 appcompat = "1.6.1"
 material = "1.11.0"
+playServicesLocation = "21.1.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
@@ -82,7 +83,8 @@ moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "mosh
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
-
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
+kotlin-coroutines-play = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "coroutines" }
 
 [bundles]
 androidx-room = [

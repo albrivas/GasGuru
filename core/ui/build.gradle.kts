@@ -41,6 +41,7 @@ android {
 dependencies {
 
     implementation(project(":core:model"))
+    implementation(project(":core:uikit"))
     // Core Android dependencies
     implementation(libs.androidx.core.ktx)
 
