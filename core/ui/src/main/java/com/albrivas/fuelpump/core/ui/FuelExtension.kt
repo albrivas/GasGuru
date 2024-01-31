@@ -47,7 +47,7 @@ fun FuelStationBrandsType.toBrandStationIcon() = when(this) {
         FuelStationBrandsType.TGAS -> FuelStationIcons.Tgas
         FuelStationBrandsType.ZOLOIL -> FuelStationIcons.Tgas
         FuelStationBrandsType.PC -> FuelStationIcons.Pcan
-        FuelStationBrandsType.UNKOWN -> FuelStationIcons.Tgas
+        FuelStationBrandsType.UNKOWN -> FuelStationIcons.Uknown
 }
 
 fun PriceCategory.toColor() = when (this) {
