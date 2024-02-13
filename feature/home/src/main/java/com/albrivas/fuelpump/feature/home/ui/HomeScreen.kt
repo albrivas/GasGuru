@@ -20,9 +20,10 @@ import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
 @Composable
 fun HomeScreenRoute(
     modifier: Modifier = Modifier,
+    navigateToDetailStation: (String) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    HomeScreen(modifier = modifier, uiState = viewModel.state)
+    HomeScreen(modifier = modifier, uiState = viewModel.state, navigateToDetailStation)
 }
 
 
@@ -30,6 +31,7 @@ fun HomeScreenRoute(
 internal fun HomeScreen(
     modifier: Modifier = Modifier,
     uiState: HomeUiState,
+    navigateToDetailStation: (String) -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -46,6 +48,7 @@ internal fun HomeScreen(
                 is HomeUiState.Success -> {
                     items(uiState.fuelStations) { item ->
                         FuelStationItem(item = item)
+//                        navigateToDetailStation(item)
                     }
                 }
             }
