@@ -71,6 +71,7 @@ dependencies {
     implementation(project(":feature:home"))
     implementation(project(":feature:splash"))
     implementation(project(":feature:onboarding"))
+    implementation(project(":feature:detail-station"))
     implementation(project(":core:model"))
     androidTestImplementation(project(":core:testing"))
 
