@@ -47,8 +47,9 @@ internal fun HomeScreen(
 
                 is HomeUiState.Success -> {
                     items(uiState.fuelStations) { item ->
-                        FuelStationItem(item = item)
-//                        navigateToDetailStation(item)
+                        FuelStationItem(item = item) { fuelStation ->
+                            navigateToDetailStation("${fuelStation.idServiceStation}")
+                        }
                     }
                 }
             }

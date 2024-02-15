@@ -2,6 +2,7 @@ package com.albrivas.fuelpump.feature.home.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -34,11 +35,16 @@ import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
 import java.util.Locale
 
 @Composable
-fun FuelStationItem(item: FuelStation, modifier: Modifier = Modifier) {
+fun FuelStationItem(
+    item: FuelStation,
+    modifier: Modifier = Modifier,
+    onItemClick: (FuelStation) -> Unit
+) {
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
-            .padding(6.dp),
+            .padding(6.dp)
+            .clickable { onItemClick(item) },
         elevation = CardDefaults.cardElevation(defaultElevation = 16.dp),
         shape = RoundedCornerShape(
             topStart = CornerSize(8.dp),
@@ -124,6 +130,6 @@ fun FuelStationItem(item: FuelStation, modifier: Modifier = Modifier) {
 @Preview(showBackground = true, backgroundColor = 0xFFFFFF)
 fun PreviewFuelItem() {
     MyApplicationTheme {
-        FuelStationItem(item = previewFuelStationDomain())
+        FuelStationItem(item = previewFuelStationDomain()) {}
     }
 }
