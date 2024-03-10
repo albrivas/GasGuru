@@ -85,10 +85,9 @@ internal fun OnboardingFuelPreferences(
                 is OnboardingUiState.ListFuelPreferences -> {
                     items(uiState.list.sorted()) { fuelName ->
                         val titleTranslation = fuelName.translation()
-                        val isSelected = titleTranslation == selectedFuel
                         val model = BasicSelectedItemModel(
-                            title = titleTranslation,
-                            isSelected = isSelected
+                            title = fuelName.translation(),
+                            isSelected = titleTranslation == selectedFuel
                         )
                         BasicSelectedItem(
                             model = model,

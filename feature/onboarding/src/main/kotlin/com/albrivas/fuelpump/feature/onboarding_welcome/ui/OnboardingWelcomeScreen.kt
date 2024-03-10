@@ -1,5 +1,6 @@
 package com.albrivas.fuelpump.feature.onboarding_welcome.ui
 
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -41,13 +42,20 @@ internal fun OnboardingWelcomeScreen(navigateToSelectFuel: () -> Unit = {}) {
 
     var locationPermissionGranted by remember { mutableStateOf(false) }
 
-    val requestPermissionLauncher =
+    val requestMultiplePermissionsLauncher =
         rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.RequestPermission(),
-            onResult = { isGranted: Boolean -> locationPermissionGranted = isGranted })
+            contract = ActivityResultContracts.RequestMultiplePermissions(),
+            onResult = { permissions ->
+                locationPermissionGranted =
+                    permissions[ACCESS_FINE_LOCATION] == true || permissions[ACCESS_COARSE_LOCATION] == true
+            }
+        )
 
-
-    LaunchedEffect(Unit) { requestPermissionLauncher.launch(ACCESS_FINE_LOCATION) }
+    LaunchedEffect(Unit) {
+        requestMultiplePermissionsLauncher.launch(
+            arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)
+        )
+    }
 
     Column(
         modifier = Modifier
