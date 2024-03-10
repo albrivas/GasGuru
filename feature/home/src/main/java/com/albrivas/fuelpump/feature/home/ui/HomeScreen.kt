@@ -1,13 +1,9 @@
 package com.albrivas.fuelpump.feature.home.ui
 
 
-import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -30,7 +26,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
@@ -48,11 +44,11 @@ import com.albrivas.fuelpump.core.model.data.FuelStation
 import com.albrivas.fuelpump.core.model.data.previewFuelStationDomain
 import com.albrivas.fuelpump.core.ui.toBrandStationIcon
 import com.albrivas.fuelpump.core.uikit.components.FuelPumpButton
+import com.albrivas.fuelpump.core.uikit.components.alert.AlertTemplate
+import com.albrivas.fuelpump.core.uikit.components.alert.AlertTemplateModel
 import com.albrivas.fuelpump.core.uikit.theme.GrayBackground
 import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
 import com.albrivas.fuelpump.feature.home.R
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
 
 @Composable
 fun HomeScreenRoute(
@@ -109,13 +105,18 @@ internal fun HomeScreen(
             }
         }
 
-        HomeUiState.DisableLocation -> Unit
+        HomeUiState.DisableLocation -> AlertTemplate(model = AlertTemplateModel(
+            animation = com.albrivas.fuelpump.core.ui.R.raw.enable_location,
+            description = stringResource(id = R.string.location_disable_description),
+            buttonText = stringResource(id = R.string.button_enable_location),
+            onClick = { }
+        ))
     }
 
     if (showBottomSheet)
         DetailBottomSheet(
             onDismiss = { showBottomSheet = false; selectedStation = null },
-            selectedStation
+            station = selectedStation
         )
 }
 
@@ -168,12 +169,11 @@ private fun ContentBottomSheet(station: FuelStation) {
                     startRoute(context, location.latitude, location.longitude)
                 },
                 enabled = true,
-                text = R.string.go_station
+                text = stringResource(id = R.string.go_station)
             )
         }
     }
 }
-
 
 private fun startRoute(context: Context, lat: Double, lng: Double) {
     val intent = Intent(Intent.ACTION_VIEW)
