@@ -30,8 +30,24 @@ data class FuelStation(
     val brandStationName: String,
     val brandStationBrandsType: FuelStationBrandsType,
     val typeSale: String,
-    val priceCategory: PriceCategory = PriceCategory.NORMAL
-)
+    val priceCategory: PriceCategory = PriceCategory.NORMAL,
+    val distance: Float = 0.0f
+) {
+    fun formatDistance(): String {
+        return when {
+            distance >= 1000 -> {
+                val kilometers = distance / 1000
+                String.format("%.2f Km", kilometers)
+            }
+            distance == distance.toInt().toFloat() -> {
+                String.format("%.0f m", distance)
+            }
+            else -> {
+                String.format("%.2f m", distance)
+            }
+        }
+    }
+}
 
 fun previewFuelStationDomain() =  FuelStation(
     bioEthanolPercentage = "",
@@ -61,6 +77,7 @@ fun previewFuelStationDomain() =  FuelStation(
     brandStationName = "REPSOL",
     brandStationBrandsType = FuelStationBrandsType.REPSOL,
     typeSale = "",
-    priceCategory = PriceCategory.CHEAP
+    priceCategory = PriceCategory.CHEAP,
+    distance = 0.0f
 )
 

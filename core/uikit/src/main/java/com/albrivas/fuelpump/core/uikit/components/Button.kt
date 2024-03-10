@@ -20,7 +20,7 @@ fun FuelPumpButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    @StringRes text: Int,
+    text: String,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
 ) {
     Button(
@@ -34,7 +34,7 @@ fun FuelPumpButton(
         )
     ) {
         Text(
-            text = stringResource(id = text),
+            text = text,
             style = MaterialTheme.typography.bodyMedium
         )
     }

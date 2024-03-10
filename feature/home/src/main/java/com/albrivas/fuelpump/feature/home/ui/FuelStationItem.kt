@@ -2,6 +2,8 @@ package com.albrivas.fuelpump.feature.home.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -34,11 +38,24 @@ import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
 import java.util.Locale
 
 @Composable
-fun FuelStationItem(item: FuelStation, modifier: Modifier = Modifier) {
+fun FuelStationItem(
+    item: FuelStation,
+    modifier: Modifier = Modifier,
+    onItemClick: (FuelStation) -> Unit
+) {
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
-            .padding(6.dp),
+            .padding(6.dp)
+            .clip(
+                shape = RoundedCornerShape(
+                    topStart = CornerSize(8.dp),
+                    topEnd = CornerSize(0.dp),
+                    bottomStart = CornerSize(8.dp),
+                    bottomEnd = CornerSize(0.dp)
+                )
+            )
+            .clickable { onItemClick(item) },
         elevation = CardDefaults.cardElevation(defaultElevation = 16.dp),
         shape = RoundedCornerShape(
             topStart = CornerSize(8.dp),
@@ -67,23 +84,43 @@ fun FuelStationItem(item: FuelStation, modifier: Modifier = Modifier) {
                     .align(Alignment.CenterVertically)
             ) {
                 Image(
+                    modifier = Modifier.size(40.dp),
                     painter = painterResource(id = item.brandStationBrandsType.toBrandStationIcon()),
                     contentDescription = "Fuel station brand"
                 )
             }
             Column(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(end = 16.dp, top = 16.dp, bottom = 16.dp)
                     .align(Alignment.CenterVertically)
                     .weight(1f)
             ) {
-                Text(text = item.brandStationName, style = typography.labelMedium)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        modifier = Modifier.weight(0.6f),
+                        text = item.brandStationName,
+                        style = typography.labelMedium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        modifier = Modifier.weight(0.4f),
+                        text = item.formatDistance(),
+                        style = typography.labelSmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
                 Text(
                     text = item.direction.lowercase(Locale.getDefault()).replaceFirstChar {
                         if (it.isLowerCase()) it.titlecase(
                             Locale.getDefault()
                         ) else it.toString()
                     },
+                    maxLines = 2,
                     style = typography.labelMedium,
                     color = GrayExtraLight,
                     overflow = TextOverflow.Ellipsis
@@ -108,7 +145,7 @@ fun FuelStationItem(item: FuelStation, modifier: Modifier = Modifier) {
                 Text(
                     text = "${item.priceGasoline95_E5} €/L",
                     color = Color.White,
-                    style = typography.bodySmall,
+                    style = typography.labelLarge,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
                         .padding(4.dp)
@@ -124,6 +161,6 @@ fun FuelStationItem(item: FuelStation, modifier: Modifier = Modifier) {
 @Preview(showBackground = true, backgroundColor = 0xFFFFFF)
 fun PreviewFuelItem() {
     MyApplicationTheme {
-        FuelStationItem(item = previewFuelStationDomain())
+        FuelStationItem(item = previewFuelStationDomain()) {}
     }
 }
