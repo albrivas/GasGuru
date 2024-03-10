@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="go_station">Ir a la estación</string>
     <string name="button_enable_location">Activar localización</string>
     <string name="location_disable_description">Para poder ver las estaciones cercanas a tu ubicación necesitamos que actives la localización en tu movil</string>
 </resources>
