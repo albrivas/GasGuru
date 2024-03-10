@@ -102,7 +102,7 @@ internal fun OnboardingFuelPreferences(
                 navigateToHome()
             },
             enabled = selectedFuel != null,
-            text = R.string.welcome_button,
+            text = stringResource(id = R.string.welcome_button) ,
             modifier = Modifier.padding(bottom = 17.dp, top = 36.dp)
         )
     }

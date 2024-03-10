@@ -95,7 +95,7 @@ internal fun OnboardingWelcomeScreen(navigateToSelectFuel: () -> Unit = {}) {
         FuelPumpButton(
             onClick = navigateToSelectFuel,
             enabled = locationPermissionGranted,
-            text = R.string.welcome_button,
+            text = stringResource(id = R.string.welcome_button),
             modifier = Modifier.padding(bottom = 17.dp)
         )
     }
