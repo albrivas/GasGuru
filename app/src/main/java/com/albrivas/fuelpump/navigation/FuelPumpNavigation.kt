@@ -32,9 +32,5 @@ fun MainNavigation() {
         homeScreen(
             navigateToDetailStation = navController::navigateToFuelStationDetail
         )
-
-        detailStationScreen(
-
-        )
     }
 }
