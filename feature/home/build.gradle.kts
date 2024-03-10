@@ -36,6 +36,13 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            merges += "META-INF/LICENSE.md"
+            merges += "META-INF/LICENSE-notice.md"
+        }
+    }
 }
 
 dependencies {
@@ -44,7 +51,10 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:model"))
     implementation(project(":core:uikit"))
+    implementation(project(":core:common"))
     androidTestImplementation(project(":core:testing"))
+    implementation(libs.play.services.location)
+
 
     // Core Android dependencies
     implementation(libs.androidx.activity.compose)
