@@ -54,6 +54,7 @@ dependencies {
     implementation(project(":core:common"))
     androidTestImplementation(project(":core:testing"))
     implementation(libs.play.services.location)
+    implementation(libs.lottie.compose)
 
 
     // Core Android dependencies
