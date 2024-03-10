@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -63,12 +64,17 @@ private fun ContentBottomSheet(station: FuelStation) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 8.dp, start = 24.dp, end = 24.dp, bottom = 32.dp)
+                .padding(top = 8.dp, start = 24.dp, end = 24.dp)
                 .verticalScroll(scroll)
+                .navigationBarsPadding()
         ) {
             Image(
                 painter = painterResource(id = brandStationBrandsType.toBrandStationIcon()),
                 contentDescription = "station image"
+            )
+            Text(
+                text = "Distancia: ${formatDistance()}",
+                style = MaterialTheme.typography.bodyLarge
             )
             Text(text = "Dirección:", style = MaterialTheme.typography.bodyLarge)
             Text(text = direction.trim())
@@ -99,10 +105,10 @@ private fun startRoute(context: Context, lat: Double, lng: Double) {
     ContextCompat.startActivity(context, intent, null)
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun DetailStationPreview() {
     MyApplicationTheme {
-        DetailStationScreen(station = previewFuelStationDomain(), onDismiss = {})
+        ContentBottomSheet(station = previewFuelStationDomain())
     }
 }

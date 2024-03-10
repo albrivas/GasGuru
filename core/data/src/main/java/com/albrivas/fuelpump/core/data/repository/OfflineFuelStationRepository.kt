@@ -51,7 +51,7 @@ class OfflineFuelStationRepository @Inject constructor(
             fuelStationDao.getFuelStations(user.fuelSelection.name).map { items ->
                 val externalModel = items.map { it.asExternalModel() }
                     .sortedBy { it.location.distanceTo(userLocation) }
-                    .take(20)
+                    .take(12)
 
                 val (minPrice, maxPrice) = externalModel.calculateFuelPrices(user.fuelSelection)
 
@@ -61,7 +61,10 @@ class OfflineFuelStationRepository @Inject constructor(
                         minPrice,
                         maxPrice
                     )
-                    fuelStation.copy(priceCategory = priceCategory)
+                    fuelStation.copy(
+                        priceCategory = priceCategory,
+                        distance = fuelStation.location.distanceTo(userLocation)
+                    )
                 }
             }
         }.flowOn(dispatcherIo)

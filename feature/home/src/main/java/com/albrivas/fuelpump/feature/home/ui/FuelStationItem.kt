@@ -3,6 +3,7 @@ package com.albrivas.fuelpump.feature.home.ui
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -90,11 +91,29 @@ fun FuelStationItem(
             }
             Column(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(end = 16.dp, top = 16.dp, bottom = 16.dp)
                     .align(Alignment.CenterVertically)
                     .weight(1f)
             ) {
-                Text(text = item.brandStationName, style = typography.labelMedium)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        modifier = Modifier.weight(0.6f),
+                        text = item.brandStationName,
+                        style = typography.labelMedium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        modifier = Modifier.weight(0.4f),
+                        text = item.formatDistance(),
+                        style = typography.labelSmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
                 Text(
                     text = item.direction.lowercase(Locale.getDefault()).replaceFirstChar {
                         if (it.isLowerCase()) it.titlecase(
@@ -126,7 +145,7 @@ fun FuelStationItem(
                 Text(
                     text = "${item.priceGasoline95_E5} €/L",
                     color = Color.White,
-                    style = typography.bodySmall,
+                    style = typography.labelLarge,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
                         .padding(4.dp)
