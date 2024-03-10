@@ -62,6 +62,14 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.androidxComposeCompiler.get()
     }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            merges += "META-INF/LICENSE.md"
+            merges += "META-INF/LICENSE-notice.md"
+        }
+    }
 }
 
 dependencies {
@@ -71,6 +79,7 @@ dependencies {
     implementation(project(":feature:home"))
     implementation(project(":feature:splash"))
     implementation(project(":feature:onboarding"))
+    implementation(project(":feature:detail-station"))
     implementation(project(":core:model"))
     androidTestImplementation(project(":core:testing"))
 

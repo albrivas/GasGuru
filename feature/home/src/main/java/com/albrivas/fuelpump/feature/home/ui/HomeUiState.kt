@@ -6,4 +6,5 @@ sealed interface HomeUiState {
     data object Loading : HomeUiState
     data object Error: HomeUiState
     data class Success(val fuelStations: List<FuelStation>): HomeUiState
+    data object DisableLocation: HomeUiState
 }
