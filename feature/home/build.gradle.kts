@@ -52,6 +52,7 @@ dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:uikit"))
     implementation(project(":core:common"))
+    implementation(project(":feature:detail-station"))
     androidTestImplementation(project(":core:testing"))
     implementation(libs.play.services.location)
     implementation(libs.lottie.compose)
