@@ -14,6 +14,7 @@ val GreenPrimary = Color(0xFF00CC99)
 val GreenDark = Color(0xFF56A66D)
 val GrayLight = Color(0xFF626161)
 val GrayExtraLight = Color(0xFFAFAFAF)
+val GrayBackground = Color(0xFFF0F0F0)
 
 val PriceCheap = Color(0xFF3EB489)
 val PriceNormal = Color(0xFFFFA858)
