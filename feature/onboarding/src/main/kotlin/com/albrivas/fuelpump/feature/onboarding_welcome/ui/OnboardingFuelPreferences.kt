@@ -85,10 +85,9 @@ internal fun OnboardingFuelPreferences(
                 is OnboardingUiState.ListFuelPreferences -> {
                     items(uiState.list.sorted()) { fuelName ->
                         val titleTranslation = fuelName.translation()
-                        val isSelected = titleTranslation == selectedFuel
                         val model = BasicSelectedItemModel(
-                            title = titleTranslation,
-                            isSelected = isSelected
+                            title = fuelName.translation(),
+                            isSelected = titleTranslation == selectedFuel
                         )
                         BasicSelectedItem(
                             model = model,
@@ -103,7 +102,7 @@ internal fun OnboardingFuelPreferences(
                 navigateToHome()
             },
             enabled = selectedFuel != null,
-            text = R.string.welcome_button,
+            text = stringResource(id = R.string.welcome_button) ,
             modifier = Modifier.padding(bottom = 17.dp, top = 36.dp)
         )
     }

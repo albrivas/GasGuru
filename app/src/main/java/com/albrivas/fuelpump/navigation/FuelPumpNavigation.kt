@@ -27,6 +27,6 @@ fun MainNavigation() {
         onboardingFuelPreferencesScreen(
             navigateToHome = navController::navigateToHome
         )
-        homeScreen(navController)
+        homeScreen()
     }
 }
