@@ -7,11 +7,11 @@ plugins {
 
 android {
     namespace = "com.albrivas.fuelpump.feature.splash"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         minSdk = 23
-        targetSdk = 33
+        targetSdk = 34
 
         testInstrumentationRunner = "com.albrivas.fuelpump.core.testing.HiltTestRunner"
     }
@@ -60,6 +60,7 @@ dependencies {
     // Arch Components
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.runtimeCompose)
     implementation(libs.androidx.hilt.navigation.compose)
 
     // Compose

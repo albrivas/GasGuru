@@ -7,11 +7,11 @@ plugins {
 
 android {
     namespace = "com.albrivas.fuelpump.feature.home"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         minSdk = 23
-        targetSdk = 33
+        targetSdk = 34
 
         testInstrumentationRunner = "com.albrivas.fuelpump.core.testing.HiltTestRunner"
     }
@@ -36,6 +36,13 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            merges += "META-INF/LICENSE.md"
+            merges += "META-INF/LICENSE-notice.md"
+        }
+    }
 }
 
 dependencies {
@@ -44,7 +51,12 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:model"))
     implementation(project(":core:uikit"))
+    implementation(project(":core:common"))
+    implementation(project(":feature:detail-station"))
     androidTestImplementation(project(":core:testing"))
+    implementation(libs.play.services.location)
+    implementation(libs.lottie.compose)
+
 
     // Core Android dependencies
     implementation(libs.androidx.activity.compose)
@@ -53,6 +65,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.lifecycle.runtimeCompose)
 
     // Compose
     implementation(libs.androidx.compose.ui)

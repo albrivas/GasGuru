@@ -10,12 +10,12 @@ plugins {
 
 android {
     namespace = "com.albrivas.fuelpump"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.albrivas.fuelpump"
         minSdk = 23
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -62,14 +62,24 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.androidxComposeCompiler.get()
     }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            merges += "META-INF/LICENSE.md"
+            merges += "META-INF/LICENSE-notice.md"
+        }
+    }
 }
 
 dependencies {
 
-    implementation(project(":core:ui"))
+    implementation(project(":core:uikit"))
     implementation(project(":core:data"))
     implementation(project(":feature:home"))
     implementation(project(":feature:splash"))
+    implementation(project(":feature:onboarding"))
+    implementation(project(":feature:detail-station"))
     implementation(project(":core:model"))
     androidTestImplementation(project(":core:testing"))
 

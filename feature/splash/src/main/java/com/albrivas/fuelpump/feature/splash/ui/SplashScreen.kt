@@ -6,22 +6,35 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.albrivas.fuelpump.core.uikit.R
-
-import androidx.navigation.NavHostController
-import com.albrivas.fuelpump.core.ui.GreenPrimary
+import com.albrivas.fuelpump.core.uikit.theme.GreenPrimary
+import com.albrivas.fuelpump.feature.splash.viewmodel.SplashViewModel
 
 @Composable
-fun SplashScreenRoute(navController: NavHostController) {
-    SplashScreen()
+fun SplashScreenRoute(
+    navigateToOnboarding: () -> Unit,
+    navigateToHome: () -> Unit,
+    viewModel: SplashViewModel = hiltViewModel()
+) {
+    SplashScreen(
+        navigateToOnboarding = navigateToOnboarding,
+        navigateToHome = navigateToHome,
+        isOnboardingComplete = viewModel.state,
+    )
 }
 
 @Composable
-internal fun SplashScreen() {
+internal fun SplashScreen(
+    navigateToOnboarding: () -> Unit = {},
+    navigateToHome: () -> Unit = {},
+    isOnboardingComplete: Boolean,
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -34,10 +47,17 @@ internal fun SplashScreen() {
             contentDescription = "",
         )
     }
+
+    LaunchedEffect(isOnboardingComplete) {
+        if (isOnboardingComplete)
+            navigateToHome()
+        else
+            navigateToOnboarding()
+    }
 }
 
 @Composable
 @Preview
 private fun SplashScreenPreview() {
-    SplashScreen()
+    SplashScreen(isOnboardingComplete = false)
 }

@@ -7,11 +7,11 @@ plugins {
 
 android {
     namespace = "com.albrivas.fuelpump.core.domain"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         minSdk = 23
-        targetSdk = 33
+        targetSdk = 34
 
         testInstrumentationRunner = "com.albrivas.fuelpump.core.testing.HiltTestRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -33,12 +33,20 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            merges += "META-INF/LICENSE.md"
+            merges += "META-INF/LICENSE-notice.md"
+        }
+    }
 }
 
 dependencies {
 
     implementation(project(":core:data"))
     implementation(project(":core:model"))
+    implementation(project(":core:common"))
 
     testImplementation(project(":core:testing"))
 
