@@ -1,6 +1,7 @@
 [versions]
 androidGradlePlugin = "8.2.0"
 androidx-room = "2.5.2"
+roomGradlePlugin = "2.6.1"
 androidxActivity = "1.7.2"
 androidxComposeCompiler = "1.5.8"
 androidxComposeMaterial3 = "1.2.0"
@@ -18,7 +19,7 @@ com-squareup-retrofit2 = "2.9.0"
 coroutines = "1.7.3"
 firebase-bom = "32.1.1"
 firebase-crashlytics-gradle = "2.9.6"
-hilt = "2.46.1"
+hilt = "2.50"
 junit = "4.13.2"
 kotlin = "1.9.22"
 kotlinxSerializationJson = "1.5.1"
@@ -34,10 +35,15 @@ appcompat = "1.6.1"
 material = "1.11.0"
 playServicesLocation = "21.1.0"
 lottie = "6.4.0"
+androidTools = "31.2.0"
+androidxComposeBom = "2024.02.00"
+androidDesugarJdkLibs = "2.0.4"
 
 [libraries]
+android-desugarJdkLibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "androidDesugarJdkLibs" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
 androidx-compose-compiler = { module = "androidx.compose.compiler:compiler", version.ref = "androidxComposeCompiler" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidxComposeBom" }
 androidx-compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "androidxComposeMaterial3" }
 androidx-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "androidxComposeUi" }
 androidx-compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "androidxComposeUi" }
@@ -88,6 +94,13 @@ play-services-location = { group = "com.google.android.gms", name = "play-servic
 kotlin-coroutines-play = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "coroutines" }
 lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
 
+# Dependencies of the included build-logic
+android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
+android-tools-common = { group = "com.android.tools", name = "common", version.ref = "androidTools" }
+kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
+room-gradlePlugin = { group = "androidx.room", name = "room-gradle-plugin", version.ref = "roomGradlePlugin" }
+
 [bundles]
 androidx-room = [
     "androidx-room-compiler",
@@ -126,3 +139,10 @@ kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 nl-littlerobots-version-catalog-update = "nl.littlerobots.version-catalog-update:0.8.0"
+
+# Plugins defined by this project
+fuelpump-android-application = { id = "fuelpump.android.application", version = "unspecified" }
+fuelpump-android-application-compose = { id = "fuelpump.android.application.compose", version = "unspecified" }
+fuelpump-android-hilt = { id = "fuelpump.android.hilt", version = "unspecified" }
+fuelpump-jvm-library = { id = "fuelpump.jvm.library", version = "unspecified" }
+fuelpump-android-library = { id = "fuelpump.android.library", version = "unspecified" }

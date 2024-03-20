@@ -1,4 +1,5 @@
 pluginManagement {
+    includeBuild("build-logic")
     repositories {
         gradlePluginPortal()
         google()
@@ -28,4 +29,3 @@ include(":core:uikit")
 include(":feature:onboarding")
 include(":core:common")
 include(":feature:detail-station")
-include(":build-logic")

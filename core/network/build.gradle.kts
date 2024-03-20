@@ -1,17 +1,5 @@
-/*
- * File: build.gradle.kts
- * Project: FuelPump
- * Module: FuelPump.core.network
- * Last modified: 12/29/22, 4:59 PM
- *
- * Created by albertorivas on 12/29/22, 5:33 PM
- * Copyright © 2022 Alberto Rivas. All rights reserved.
- *
- */
-
-@Suppress("DSL_SCOPE_VIOLATION") // Remove when fixed https://youtrack.jetbrains.com/issue/KTIJ-19369
 plugins {
-    alias(libs.plugins.android.library)
+    alias(libs.plugins.fuelpump.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.kotlin.serialization)
@@ -37,15 +25,6 @@ android {
         unitTests {
             isIncludeAndroidResources = true
         }
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
     packaging {
