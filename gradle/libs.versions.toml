@@ -9,7 +9,7 @@ androidxCore = "1.9.0"
 androidxEspresso = "3.5.1"
 androidxHilt = "1.0.0"
 androidxLifecycle = "2.6.2"
-androidxNavigation = "2.6.0"
+androidxNavigation = "2.8.0-beta01"
 androidxTestCore = "1.5.0"
 androidxTestExt = "1.1.5"
 androidxTestRules = "1.5.0"
@@ -21,7 +21,7 @@ firebase-crashlytics-gradle = "2.9.6"
 hilt = "2.46.1"
 junit = "4.13.2"
 kotlin = "1.9.22"
-kotlinxSerializationJson = "1.5.1"
+kotlinxSerializationJson = "1.6.3"
 ksp = "1.9.0-1.0.11"
 mock-webserver = "4.11.0"
 mockk = "1.13.5"
@@ -87,6 +87,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 kotlin-coroutines-play = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "coroutines" }
 lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
+
 
 [bundles]
 androidx-room = [
