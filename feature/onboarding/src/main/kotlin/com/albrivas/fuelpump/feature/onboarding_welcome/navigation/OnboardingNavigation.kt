@@ -6,20 +6,18 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.albrivas.fuelpump.feature.onboarding_welcome.ui.OnboardingFuelPreferencesRoute
 import com.albrivas.fuelpump.feature.onboarding_welcome.ui.OnboardingWelcomeScreenRoute
-
-const val onboardingWelcomeRoute = "onboarding_welcome"
-const val onboardingFuelPreferencesRoute = "onboarding_fuel_preferences"
+import kotlinx.serialization.Serializable
 
 fun NavController.navigateToOnboardingWelcomeRoute(navOptions: NavOptions? = null) {
-    this.navigate(onboardingWelcomeRoute, navOptions)
+    this.navigate(OnboardingRoutes.OnboardingWelcomeRoute, navOptions)
 }
 
 fun NavController.navigateToOnboardingFuelPreferencesRoute(navOptions: NavOptions? = null) {
-    this.navigate(onboardingFuelPreferencesRoute, navOptions)
+    this.navigate(OnboardingRoutes.OnboardingFuelPreferencesRoute, navOptions)
 }
 
 fun NavGraphBuilder.onboardingWelcomeScreen(navigateToSelectFuel: () -> Unit) {
-    composable(route = onboardingWelcomeRoute) {
+    composable<OnboardingRoutes.OnboardingWelcomeRoute> {
         OnboardingWelcomeScreenRoute(
             navigateToSelectFuel = navigateToSelectFuel
         )
@@ -27,9 +25,17 @@ fun NavGraphBuilder.onboardingWelcomeScreen(navigateToSelectFuel: () -> Unit) {
 }
 
 fun NavGraphBuilder.onboardingFuelPreferencesScreen(navigateToHome: () -> Unit) {
-    composable(route = onboardingFuelPreferencesRoute) {
+    composable<OnboardingRoutes.OnboardingFuelPreferencesRoute> {
         OnboardingFuelPreferencesRoute(
             navigateToHome = navigateToHome
         )
     }
+}
+
+@Serializable
+sealed class OnboardingRoutes {
+    @Serializable
+    data object OnboardingWelcomeRoute : OnboardingRoutes()
+    @Serializable
+    data object OnboardingFuelPreferencesRoute : OnboardingRoutes()
 }

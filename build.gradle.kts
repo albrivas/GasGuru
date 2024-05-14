@@ -4,6 +4,7 @@ import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 plugins {
     alias(libs.plugins.com.github.ben.manes.versions)
     alias(libs.plugins.nl.littlerobots.version.catalog.update)
+    alias(libs.plugins.kotlin.serialization) apply false
 }
 
 fun isNonStable(version: String): Boolean {
