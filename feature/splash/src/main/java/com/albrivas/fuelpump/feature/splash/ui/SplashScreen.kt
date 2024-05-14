@@ -7,11 +7,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.albrivas.fuelpump.core.uikit.R
 import com.albrivas.fuelpump.core.uikit.theme.GreenPrimary
 import com.albrivas.fuelpump.feature.splash.viewmodel.SplashViewModel
@@ -22,10 +24,11 @@ fun SplashScreenRoute(
     navigateToHome: () -> Unit,
     viewModel: SplashViewModel = hiltViewModel()
 ) {
+    val state by  viewModel.state.collectAsStateWithLifecycle()
     SplashScreen(
         navigateToOnboarding = navigateToOnboarding,
         navigateToHome = navigateToHome,
-        isOnboardingComplete = viewModel.state,
+        isOnboardingComplete = state.isOnboardingComplete,
     )
 }
 
@@ -33,7 +36,7 @@ fun SplashScreenRoute(
 internal fun SplashScreen(
     navigateToOnboarding: () -> Unit = {},
     navigateToHome: () -> Unit = {},
-    isOnboardingComplete: Boolean,
+    isOnboardingComplete: Boolean?,
 ) {
     Column(
         modifier = Modifier
@@ -49,10 +52,10 @@ internal fun SplashScreen(
     }
 
     LaunchedEffect(isOnboardingComplete) {
-        if (isOnboardingComplete)
-            navigateToHome()
-        else
-            navigateToOnboarding()
+        isOnboardingComplete?.let { complete ->
+            if (complete) navigateToHome()
+            else navigateToOnboarding()
+        }
     }
 }
 
