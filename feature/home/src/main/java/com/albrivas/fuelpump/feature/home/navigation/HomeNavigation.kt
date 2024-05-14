@@ -5,15 +5,19 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.albrivas.fuelpump.feature.home.ui.HomeScreenRoute
+import kotlinx.serialization.Serializable
 
-const val homeRoute = "home_route"
 
 fun NavController.navigateToHome(navOptions: NavOptions? = null) {
-    this.navigate(homeRoute, navOptions)
+    this.navigate(HomeRoute, navOptions)
 }
 
 fun NavGraphBuilder.homeScreen() {
-    composable(route = homeRoute) {
+    composable<HomeRoute> {
         HomeScreenRoute()
     }
 }
+
+@Serializable
+data object HomeRoute
+
