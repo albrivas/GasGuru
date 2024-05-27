@@ -49,7 +49,7 @@ data class FuelStation(
     }
 }
 
-fun previewFuelStationDomain() =  FuelStation(
+fun previewFuelStationDomain() = FuelStation(
     bioEthanolPercentage = "",
     esterMethylPercentage = "",
     postalCode = "",
