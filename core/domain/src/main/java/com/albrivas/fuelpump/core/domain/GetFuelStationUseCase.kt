@@ -6,7 +6,7 @@ import javax.inject.Inject
 class GetFuelStationUseCase @Inject constructor(
     private val repository: OfflineFuelStationRepository
 ) {
-    suspend fun temporalFillBBDD() {
+    suspend fun getFuelInAllStations() {
         repository.addAllStations()
     }
 }

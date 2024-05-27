@@ -16,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SplashViewModel @Inject constructor(
     private val fuelStation: GetFuelStationUseCase,
-    private val userData: GetUserDataUseCase
+    private val userData: GetUserDataUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SplashUiState())
@@ -29,7 +29,7 @@ class SplashViewModel @Inject constructor(
 
     private fun getFuelStations() {
         viewModelScope.launch {
-            fuelStation.temporalFillBBDD()
+            fuelStation.getFuelInAllStations()
         }
     }
 

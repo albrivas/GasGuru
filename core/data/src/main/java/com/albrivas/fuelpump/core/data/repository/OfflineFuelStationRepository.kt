@@ -22,11 +22,14 @@ import com.albrivas.fuelpump.core.model.data.FuelType
 import com.albrivas.fuelpump.core.model.data.PriceCategory
 import com.albrivas.fuelpump.core.network.datasource.RemoteDataSource
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -37,11 +40,14 @@ class OfflineFuelStationRepository @Inject constructor(
     @IoDispatcher private val dispatcherIo: CoroutineDispatcher
 ) : FuelStationRepository {
 
-    override suspend fun addAllStations() = withContext(dispatcherIo) {
+    private val ioScope = CoroutineScope(dispatcherIo + SupervisorJob())
+
+    override suspend fun addAllStations() = withContext(ioScope.coroutineContext) {
         remoteDataSource.getListFuelStations().fold(ifLeft = {}, ifRight = { data ->
             fuelStationDao.insertFuelStation(data.listPriceFuelStation.map { it.asEntity() })
         })
     }
+
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getFuelStationByLocation(

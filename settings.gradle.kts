@@ -15,7 +15,6 @@ dependencyResolutionManagement {
 rootProject.name = "FuelPump"
 
 include(":app")
-include(":feature:home")
 include(":feature:splash")
 include(":core:database")
 include(":core:testing")
@@ -28,3 +27,4 @@ include(":core:uikit")
 include(":feature:onboarding")
 include(":core:common")
 include(":feature:detail-station")
+include(":feature:fuel-list-station")

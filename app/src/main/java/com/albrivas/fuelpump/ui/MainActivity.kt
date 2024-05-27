@@ -9,7 +9,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import dagger.hilt.android.AndroidEntryPoint
 import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
-import com.albrivas.fuelpump.navigation.MainNavigation
+import com.albrivas.fuelpump.navigation.root.MainNavigation
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

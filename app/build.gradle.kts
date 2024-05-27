@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.hilt.gradle)
     alias(libs.plugins.firebase.crashlitycs)
     alias(libs.plugins.kotlin.jvm) apply false
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -76,10 +77,10 @@ dependencies {
 
     implementation(project(":core:uikit"))
     implementation(project(":core:data"))
-    implementation(project(":feature:home"))
     implementation(project(":feature:splash"))
     implementation(project(":feature:onboarding"))
     implementation(project(":feature:detail-station"))
+    implementation(project(":feature:fuel-list-station"))
     implementation(project(":core:model"))
     androidTestImplementation(project(":core:testing"))
 
@@ -101,6 +102,7 @@ dependencies {
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.kotlinx.serialization.json)
 
     // Firebase
     implementation(platform(libs.firebase.bom))
