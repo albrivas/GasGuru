@@ -15,7 +15,6 @@ dependencyResolutionManagement {
 rootProject.name = "FuelPump"
 
 include(":app")
-include(":feature:home")
 include(":feature:splash")
 include(":core:database")
 include(":core:testing")
