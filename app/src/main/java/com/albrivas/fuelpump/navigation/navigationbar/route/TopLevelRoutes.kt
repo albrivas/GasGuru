@@ -1,6 +1,6 @@
 package com.albrivas.fuelpump.navigation.navigationbar.route
 
-import com.albrivas.fuelpump.feature.home.R
+import com.albrivas.fuelpump.core.uikit.R
 import kotlinx.serialization.Serializable
 
 @Serializable
