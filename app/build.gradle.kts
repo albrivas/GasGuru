@@ -1,12 +1,12 @@
-@Suppress("DSL_SCOPE_VIOLATION") // Remove when fixed https://youtrack.jetbrains.com/issue/KTIJ-19369
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.hilt.gradle)
-    alias(libs.plugins.firebase.crashlitycs)
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.gms)
+    alias(libs.plugins.firebase.crashlitycs)
 }
 
 android {
@@ -30,7 +30,6 @@ android {
         release {
             isMinifyEnabled = false
             isDebuggable = false
-            manifestPlaceholders["enabledCrashlytics"] = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -39,7 +38,6 @@ android {
         debug {
             isMinifyEnabled = false
             isDebuggable = true
-            manifestPlaceholders["enabledCrashlytics"] = false
         }
     }
 
@@ -106,5 +104,5 @@ dependencies {
 
     // Firebase
     implementation(platform(libs.firebase.bom))
-    implementation(libs.bundles.firebase)
+    implementation(libs.firebase.crashlytics)
 }
