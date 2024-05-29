@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "50457862783",
+    "project_id": "fuelpump-422418",
+    "storage_bucket": "fuelpump-422418.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:50457862783:android:ec921e96c7a9d2eca7154a",
+        "android_client_info": {
+          "package_name": "com.albrivas.fuelpump"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAneO9dVMQ0eVtBito5yoFNw_qpcLcLykM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
