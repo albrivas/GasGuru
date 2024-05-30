@@ -22,7 +22,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-object DaoModule {
+class DaoModule {
     @Provides
     fun provideFuelStationDao(appDatabase: FuelPumpDatabase): FuelStationDao =
         appDatabase.fuelStationDao()
