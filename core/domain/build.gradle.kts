@@ -11,7 +11,6 @@ android {
 
     defaultConfig {
         minSdk = 23
-        targetSdk = 34
 
         testInstrumentationRunner = "com.albrivas.fuelpump.core.testing.HiltTestRunner"
         consumerProguardFiles("consumer-rules.pro")
