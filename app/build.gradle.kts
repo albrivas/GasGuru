@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.gms)
     alias(libs.plugins.firebase.crashlitycs)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -56,10 +57,6 @@ android {
         renderScript = false
         shaders = false
         buildConfig = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.androidxComposeCompiler.get()
     }
 
     packaging {
