@@ -1,19 +1,6 @@
-/*
- * File: build.gradle.kts
- * Project: FuelPump
- * Module: FuelPump.core.network
- * Last modified: 12/29/22, 4:59 PM
- *
- * Created by albertorivas on 12/29/22, 5:33 PM
- * Copyright © 2022 Alberto Rivas. All rights reserved.
- *
- */
-
-@Suppress("DSL_SCOPE_VIOLATION") // Remove when fixed https://youtrack.jetbrains.com/issue/KTIJ-19369
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
 }
@@ -88,7 +75,7 @@ dependencies {
     testImplementation(project(":core:testing"))
 
     implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
 
     implementation(libs.bundles.moshi)
     ksp(libs.moshi.codegen)
