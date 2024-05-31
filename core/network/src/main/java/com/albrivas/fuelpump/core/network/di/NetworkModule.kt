@@ -26,7 +26,7 @@ import com.albrivas.fuelpump.core.network.BuildConfig
 
 @Module
 @InstallIn(SingletonComponent::class)
-object NetworkModule {
+class NetworkModule {
 
     @Singleton
     @Provides

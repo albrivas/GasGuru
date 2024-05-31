@@ -1,9 +1,9 @@
-@Suppress("DSL_SCOPE_VIOLATION") // Remove when fixed https://youtrack.jetbrains.com/issue/KTIJ-19369
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -12,7 +12,6 @@ android {
 
     defaultConfig {
         minSdk = 23
-        targetSdk = 34
 
         testInstrumentationRunner = "com.albrivas.fuelpump.core.testing.HiltTestRunner"
     }
@@ -23,10 +22,6 @@ android {
         buildConfig = false
         renderScript = false
         shaders = false
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.androidxComposeCompiler.get()
     }
 
     compileOptions {
