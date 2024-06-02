@@ -214,3 +214,6 @@ gradle/wrapper/*
 
 # Detekt report
 config/detekt/detekt_report.html
+
+# Google services
+google-services.json
