@@ -20,7 +20,7 @@ fun MainNavigation() {
 
     NavHost(navController = navController, startDestination = SplashRoute) {
         val navOptions =
-            NavOptions.Builder().setPopUpTo(SplashRoute,true).build()
+            NavOptions.Builder().setPopUpTo(SplashRoute, true).build()
         splashScreen(
             navigateToOnboarding = navController::navigateToOnboardingWelcomeRoute,
             navigateToHome = { navController.navigateToNavigationBar(navOptions) }
@@ -29,7 +29,7 @@ fun MainNavigation() {
             navigateToSelectFuel = navController::navigateToOnboardingFuelPreferencesRoute
         )
         onboardingFuelPreferencesScreen(
-            navigateToHome = { navController.navigateToNavigationBar(navOptions)  }
+            navigateToHome = { navController.navigateToNavigationBar(navOptions) }
         )
         navigationBarHost(navController = navigationBarController)
     }

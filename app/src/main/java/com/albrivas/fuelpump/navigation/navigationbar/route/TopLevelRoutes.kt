@@ -4,7 +4,7 @@ import com.albrivas.fuelpump.core.uikit.R
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed class TopLevelRoutes  {
+sealed class TopLevelRoutes {
     @Serializable
     data class Map(
         val icon: Int = R.drawable.ic_map,
