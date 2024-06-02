@@ -7,9 +7,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import dagger.hilt.android.AndroidEntryPoint
 import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
 import com.albrivas.fuelpump.navigation.root.MainNavigation
+import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

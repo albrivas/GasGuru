@@ -24,7 +24,6 @@ internal fun NavigationBottomBar(navController: NavHostController) {
     NavigationBar(
         containerColor = Color.White,
     ) {
-
         state.topLevelRoutes.forEach { destination ->
             when (destination) {
                 is TopLevelRoutes.List ->
