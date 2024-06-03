@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.detekt)
+    alias(libs.plugins.secrets)
 }
 
 android {
@@ -111,6 +112,7 @@ dependencies {
     implementation(project(":feature:onboarding"))
     implementation(project(":feature:detail-station"))
     implementation(project(":feature:fuel-list-station"))
+    implementation(project(":feature:station-map"))
     implementation(project(":core:model"))
     androidTestImplementation(project(":core:testing"))
     detektPlugins(libs.detekt.formatting)
@@ -138,4 +140,5 @@ dependencies {
     // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.analytics)
 }

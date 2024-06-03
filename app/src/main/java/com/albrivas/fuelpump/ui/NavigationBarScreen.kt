@@ -8,6 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import com.albrivas.feature.station_map.navigation.StationMapRoute
+import com.albrivas.feature.station_map.navigation.stationMapScreen
 import com.albrivas.fuelpump.feature.fuel_list_station.navigation.FuelStationListRoute
 import com.albrivas.fuelpump.feature.fuel_list_station.navigation.fuelStationListScreen
 import com.albrivas.fuelpump.navigation.navigationbar.NavigationBottomBar
@@ -32,7 +34,8 @@ internal fun NavigationBarHost(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            NavHost(navController = navController, startDestination = FuelStationListRoute) {
+            NavHost(navController = navController, startDestination = StationMapRoute) {
+                stationMapScreen()
                 fuelStationListScreen()
             }
         }
