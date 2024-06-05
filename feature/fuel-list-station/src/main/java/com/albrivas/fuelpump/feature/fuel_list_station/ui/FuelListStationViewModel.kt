@@ -28,7 +28,7 @@ class FuelListStationViewModel @Inject constructor(
     private fun getStationsByLocation() {
         viewModelScope.launch {
             userLocation.getCurrentLocation()?.let { location ->
-                fuelStationByLocation(location)
+                fuelStationByLocation(location, 50)
                     .catch { _state.update { FuelStationListUiState.Error } }
                     .collect { fuelStations ->
                         _state.update { FuelStationListUiState.Success(fuelStations) }

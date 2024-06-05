@@ -1,43 +1,84 @@
 package com.albrivas.feature.station_map.ui
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.albrivas.fuelpump.core.common.centerOnLocation
+import com.albrivas.fuelpump.core.common.hasLocationPermission
+import com.albrivas.fuelpump.core.common.isLocationEnabled
+import com.albrivas.fuelpump.core.common.toLatLng
+import com.albrivas.fuelpump.core.model.data.FuelStation
+import com.albrivas.fuelpump.core.ui.toBrandStationIcon
+import com.albrivas.fuelpump.core.ui.toColor
+import com.albrivas.fuelpump.core.uikit.components.marker.StationMarker
+import com.albrivas.fuelpump.core.uikit.components.marker.StationMarkerModel
+import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.MarkerComposable
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
 fun StationMapScreenRoute(viewModel: StationMapViewModel = hiltViewModel()) {
-    StationMapScreen()
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    StationMapScreen(
+        getStations = viewModel::getStationsByLocation,
+        stations = state.fuelStations,
+        centerMap = state.centerMap,
+        zoomLevel = state.zoomLevel
+    )
 }
 
 @Composable
-internal fun StationMapScreen() {
+internal fun StationMapScreen(
+    getStations: () -> Unit,
+    stations: List<FuelStation>,
+    centerMap: LatLng,
+    zoomLevel: Float,
+) {
+    val context = LocalContext.current
+    val cameraState = rememberCameraPositionState()
+    LaunchedEffect(key1 = centerMap) {
+        cameraState.centerOnLocation(location = centerMap, zoomLevel = zoomLevel)
+    }
     Box(modifier = Modifier.fillMaxSize()) {
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
-            //cameraPositionState = cameraState,
-            contentPadding = PaddingValues(bottom = 74.dp),
+            cameraPositionState = cameraState,
             uiSettings = MapUiSettings(
                 myLocationButtonEnabled = true,
                 zoomControlsEnabled = false,
                 compassEnabled = false,
             ),
             properties = MapProperties(
-                //isMyLocationEnabled = context.hasLocationPermission() && context.isLocationEnabled()
+                isMyLocationEnabled = context.hasLocationPermission() && context.isLocationEnabled()
             ),
             onMyLocationButtonClick = {
                 true
             },
-            onMapLoaded = {}
+            onMapLoaded = getStations,
         ) {
-
+            stations.forEach { station ->
+                val state = MarkerState(position = station.location.toLatLng())
+                MarkerComposable(state = state) {
+                    StationMarker(
+                        model = StationMarkerModel(
+                            icon = station.brandStationBrandsType.toBrandStationIcon(),
+                            price = "€${station.priceGasoline95_E5}",
+                            color = station.priceCategory.toColor()
+                        )
+                    )
+                }
+            }
         }
     }
 }
@@ -45,5 +86,10 @@ internal fun StationMapScreen() {
 @Preview
 @Composable
 private fun StationMapScreenPreview() {
-    StationMapScreen()
+    StationMapScreen(
+        getStations = {},
+        stations = emptyList(),
+        centerMap = LatLng(0.0, 0.0),
+        zoomLevel = 15f
+    )
 }
