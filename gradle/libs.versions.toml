@@ -36,7 +36,7 @@ playServicesLocation = "21.1.0"
 lottie = "6.4.0"
 googleGmsGoogleServices = "4.4.1"
 detekt = "1.23.5"
-mapsCompose = "2.11.4"
+mapsCompose = "5.0.1"
 playServicesMaps = "18.2.0"
 secrets = "2.0.1"
 
