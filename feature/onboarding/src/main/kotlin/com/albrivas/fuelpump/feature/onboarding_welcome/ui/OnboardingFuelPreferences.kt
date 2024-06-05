@@ -117,7 +117,6 @@ private fun PreviewOnboardingFuelPreferences() {
             saveSelection = {},
             uiState = OnboardingUiState.ListFuelPreferences(
                 listOf(
-                    FuelType.ELECTRIC,
                     FuelType.DIESEL_PLUS,
                     FuelType.DIESEL,
                     FuelType.GASOLINE_98,

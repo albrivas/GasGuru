@@ -5,12 +5,15 @@ import androidx.lifecycle.viewModelScope
 import com.albrivas.fuelpump.core.common.toLatLng
 import com.albrivas.fuelpump.core.data.repository.LocationTracker
 import com.albrivas.fuelpump.core.domain.FuelStationByLocationUseCase
+import com.albrivas.fuelpump.core.domain.GetUserDataUseCase
 import com.albrivas.fuelpump.core.model.data.FuelStation
+import com.albrivas.fuelpump.core.model.data.FuelType
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,6 +22,7 @@ import javax.inject.Inject
 class StationMapViewModel @Inject constructor(
     private val fuelStationByLocation: FuelStationByLocationUseCase,
     private val userLocation: LocationTracker,
+    private val getUserDataUseCase: GetUserDataUseCase
 ) : ViewModel() {
 
     companion object {
@@ -32,17 +36,22 @@ class StationMapViewModel @Inject constructor(
     fun getStationsByLocation() {
         viewModelScope.launch {
             userLocation.getCurrentLocation()?.let { location ->
-                fuelStationByLocation(userLocation = location, maxStations = 30)
-                    .catch { error -> _state.update { it.copy(error = error) } }
-                    .collect { fuelStations ->
-                        _state.update {
-                            it.copy(
-                                fuelStations = fuelStations,
-                                centerMap = location.toLatLng(),
-                                zoomLevel = 14f
-                            )
-                        }
+                combine(
+                    fuelStationByLocation(userLocation = location, maxStations = 30),
+                    getUserDataUseCase()
+                ) { fuelStations, userData -> Pair(fuelStations, userData)
+                }.catch { error ->
+                    _state.update { it.copy(error = error) }
+                }.collect { (fuelStations, userData) ->
+                    _state.update {
+                        it.copy(
+                            fuelStations = fuelStations,
+                            centerMap = location.toLatLng(),
+                            zoomLevel = 14f,
+                            selectedType = userData.fuelSelection
+                        )
                     }
+                }
             }
         }
     }
@@ -51,6 +60,7 @@ class StationMapViewModel @Inject constructor(
         val fuelStations: List<FuelStation> = emptyList(),
         val centerMap: LatLng = LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE),
         val zoomLevel: Float = 1f,
-        val error: Throwable? = null
+        val error: Throwable? = null,
+        val selectedType: FuelType? = null
     )
 }

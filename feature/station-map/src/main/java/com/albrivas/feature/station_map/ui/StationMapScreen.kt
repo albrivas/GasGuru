@@ -15,6 +15,8 @@ import com.albrivas.fuelpump.core.common.hasLocationPermission
 import com.albrivas.fuelpump.core.common.isLocationEnabled
 import com.albrivas.fuelpump.core.common.toLatLng
 import com.albrivas.fuelpump.core.model.data.FuelStation
+import com.albrivas.fuelpump.core.model.data.FuelType
+import com.albrivas.fuelpump.core.ui.getPrice
 import com.albrivas.fuelpump.core.ui.toBrandStationIcon
 import com.albrivas.fuelpump.core.ui.toColor
 import com.albrivas.fuelpump.core.uikit.components.marker.StationMarker
@@ -34,7 +36,8 @@ fun StationMapScreenRoute(viewModel: StationMapViewModel = hiltViewModel()) {
         getStations = viewModel::getStationsByLocation,
         stations = state.fuelStations,
         centerMap = state.centerMap,
-        zoomLevel = state.zoomLevel
+        zoomLevel = state.zoomLevel,
+        userSelectedFuelType = state.selectedType
     )
 }
 
@@ -44,6 +47,7 @@ internal fun StationMapScreen(
     stations: List<FuelStation>,
     centerMap: LatLng,
     zoomLevel: Float,
+    userSelectedFuelType: FuelType?,
 ) {
     val context = LocalContext.current
     val cameraState = rememberCameraPositionState()
@@ -73,7 +77,7 @@ internal fun StationMapScreen(
                     StationMarker(
                         model = StationMarkerModel(
                             icon = station.brandStationBrandsType.toBrandStationIcon(),
-                            price = "€${station.priceGasoline95_E5}",
+                            price = "€${userSelectedFuelType.getPrice(station)}",
                             color = station.priceCategory.toColor()
                         )
                     )
@@ -90,6 +94,7 @@ private fun StationMapScreenPreview() {
         getStations = {},
         stations = emptyList(),
         centerMap = LatLng(0.0, 0.0),
-        zoomLevel = 15f
+        zoomLevel = 15f,
+        userSelectedFuelType = FuelType.GASOLINE_95
     )
 }

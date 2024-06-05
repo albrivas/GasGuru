@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.albrivas.fuelpump.core.model.data.FuelStation
+import com.albrivas.fuelpump.core.model.data.FuelType
 import com.albrivas.fuelpump.core.model.data.previewFuelStationDomain
 import com.albrivas.fuelpump.core.uikit.components.alert.AlertTemplate
 import com.albrivas.fuelpump.core.uikit.components.alert.AlertTemplateModel
@@ -66,7 +67,10 @@ internal fun FuelStationListScreen(uiState: FuelStationListUiState, modifier: Mo
                     contentPadding = PaddingValues(top = 24.dp, bottom = 24.dp)
                 ) {
                     items(uiState.fuelStations) { item ->
-                        FuelStationItem(item = item) { station ->
+                        FuelStationItem(
+                            item = item,
+                            userSelectedFuelType = uiState.userSelectedFuelType
+                        ) { station ->
                             showBottomSheet = true
                             selectedStation = station
                         }
@@ -88,6 +92,9 @@ internal fun FuelStationListScreen(uiState: FuelStationListUiState, modifier: Mo
 @Composable
 fun FuelListStationScreenPreview() {
     FuelStationListScreen(
-        uiState = FuelStationListUiState.Success(listOf(previewFuelStationDomain()))
+        uiState = FuelStationListUiState.Success(
+            listOf(previewFuelStationDomain()),
+            userSelectedFuelType = FuelType.GASOLINE_95
+        )
     )
 }

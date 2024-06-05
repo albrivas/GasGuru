@@ -1,5 +1,6 @@
 package com.albrivas.fuelpump.core.ui
 
+import com.albrivas.fuelpump.core.model.data.FuelStation
 import com.albrivas.fuelpump.core.model.data.FuelStationBrandsType
 import com.albrivas.fuelpump.core.model.data.FuelType
 import com.albrivas.fuelpump.core.model.data.PriceCategory
@@ -55,3 +56,12 @@ fun PriceCategory.toColor() = when (this) {
         PriceCategory.NORMAL -> PriceNormal
         PriceCategory.EXPENSIVE -> PriceExpensive
 }
+
+fun FuelType?.getPrice(fuelStation: FuelStation) = when (this) {
+        FuelType.GASOLINE_95 -> "${fuelStation.priceGasoline95_E5}"
+        FuelType.GASOLINE_98 -> "${fuelStation.priceGasoline98_E5}"
+        FuelType.DIESEL -> "${fuelStation.priceGasoilA}"
+        FuelType.DIESEL_PLUS -> "${fuelStation.priceGasoilPremium}"
+        FuelType.ELECTRIC -> "0.0"
+        null -> "0.0"
+    }
