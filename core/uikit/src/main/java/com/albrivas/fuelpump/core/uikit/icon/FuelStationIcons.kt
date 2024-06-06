@@ -23,5 +23,8 @@ object FuelStationIcons {
     val Shell = R.drawable.ic_logo_shell
     val Texaco = R.drawable.ic_logo_texaco
     val Tgas = R.drawable.ic_logo_tgas
+    val Q8 = R.drawable.ic_logo_q8
+    val SilverFuel = R.drawable.ic_logo_silver_fuel
+    val AzulOil = R.drawable.ic_logo_azul_oil
     val Uknown = R.drawable.ic_fuel_pump
 }

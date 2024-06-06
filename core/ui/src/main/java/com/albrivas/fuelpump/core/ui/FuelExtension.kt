@@ -48,6 +48,9 @@ fun FuelStationBrandsType.toBrandStationIcon() = when(this) {
         FuelStationBrandsType.TGAS -> FuelStationIcons.Tgas
         FuelStationBrandsType.ZOLOIL -> FuelStationIcons.Tgas
         FuelStationBrandsType.PC -> FuelStationIcons.Pcan
+        FuelStationBrandsType.Q8 -> FuelStationIcons.Q8
+        FuelStationBrandsType.SILVER_FUEL -> FuelStationIcons.SilverFuel
+        FuelStationBrandsType.AZUL_OIL -> FuelStationIcons.AzulOil
         FuelStationBrandsType.UNKOWN -> FuelStationIcons.Uknown
 }
 
