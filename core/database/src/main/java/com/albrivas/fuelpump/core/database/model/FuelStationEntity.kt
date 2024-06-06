@@ -113,6 +113,8 @@ fun String.toBrandStation(): FuelStationBrandsType {
         lowercase().contains("q8") -> FuelStationBrandsType.Q8
         lowercase().contains("azul-oil") -> FuelStationBrandsType.AZUL_OIL
         lowercase().contains("silver") -> FuelStationBrandsType.SILVER_FUEL
+        lowercase().contains("farruco") -> FuelStationBrandsType.FARRUCO
+        lowercase().contains("fernandez bermejo") -> FuelStationBrandsType.REPOSTAR
         else -> FuelStationBrandsType.UNKOWN
     }
 }

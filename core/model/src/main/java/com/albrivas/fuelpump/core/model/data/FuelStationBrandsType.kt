@@ -25,5 +25,7 @@ enum class FuelStationBrandsType {
     Q8,
     SILVER_FUEL,
     AZUL_OIL,
+    FARRUCO,
+    REPOSTAR,
     UNKOWN,
 }
