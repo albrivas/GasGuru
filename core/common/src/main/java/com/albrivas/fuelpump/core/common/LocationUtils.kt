@@ -18,6 +18,13 @@ fun Location?.toLatLng(): LatLng {
     }
 }
 
+fun LatLng?.toLocation() = Location("").apply {
+    this@toLocation?.let { location ->
+        latitude = location.latitude
+        longitude = location.longitude
+    }
+}
+
 suspend fun CameraPositionState.centerOnLocation(location: LatLng, zoomLevel: Float) =
     animate(
         update = CameraUpdateFactory.newLatLngZoom(location, zoomLevel),

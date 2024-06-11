@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="label_empty_suggestions">No suggestions for this search</string>
+    <string name="label_empty_recents">No recent searches</string>
+    <string name="label_suggestion">Suggestions</string>
+    <string name="label_recent">Recent</string>
+</resources>
