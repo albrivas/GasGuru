@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hilt.gradle)
-    alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.gms)
     alias(libs.plugins.firebase.crashlitycs)
@@ -22,8 +21,8 @@ android {
         applicationId = "com.albrivas.fuelpump"
         minSdk = 23
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 3
+        versionName = "1.0.2"
 
         testInstrumentationRunner = "com.albrivas.fuelpump.core.testing.HiltTestRunner"
         vectorDrawables {
@@ -43,6 +42,8 @@ android {
         debug {
             isMinifyEnabled = false
             isDebuggable = true
+            applicationIdSuffix = ".debug"
+            resValue("string", "app_name", "FuelPump Debug")
         }
     }
 
