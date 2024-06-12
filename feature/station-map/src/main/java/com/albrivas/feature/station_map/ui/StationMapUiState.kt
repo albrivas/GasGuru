@@ -10,6 +10,4 @@ data class StationMapUiState(
     val zoomLevel: Float = 1f,
     val error: Throwable? = null,
     val selectedType: FuelType? = null,
-    val suggestionList: List<SearchPlace> = emptyList(),
-    val querySearch: String = "",
 )

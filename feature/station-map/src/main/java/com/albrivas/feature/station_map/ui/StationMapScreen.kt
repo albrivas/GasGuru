@@ -20,11 +20,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,11 +43,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.albrivas.feature.station_map.R
+import com.albrivas.fuelpump.feature.station_map.R
 import com.albrivas.fuelpump.core.common.centerOnLocation
 import com.albrivas.fuelpump.core.common.toLatLng
 import com.albrivas.fuelpump.core.model.data.FuelStation
 import com.albrivas.fuelpump.core.model.data.FuelType
+import com.albrivas.fuelpump.core.model.data.SearchPlace
 import com.albrivas.fuelpump.core.ui.getPrice
 import com.albrivas.fuelpump.core.ui.toBrandStationIcon
 import com.albrivas.fuelpump.core.ui.toColor
@@ -88,19 +91,26 @@ internal fun StationMapScreen(
     searchResultUiState: SearchResultUiState,
     onSearchQueryChanged: (String) -> Unit,
     searchQuery: String,
-    getStationsByPlace: (String) -> Unit
+    getStationsByPlace: (String) -> Unit,
 ) {
     val cameraState = rememberCameraPositionState()
     LaunchedEffect(key1 = centerMap) {
         cameraState.centerOnLocation(location = centerMap, zoomLevel = zoomLevel)
     }
     Box(modifier = Modifier.fillMaxSize()) {
-        SearchPlaces(
-            searchQuery = searchQuery,
-            onSearchQueryChanged = onSearchQueryChanged,
-            searchResultUiState = searchResultUiState,
-            getStationsByPlace = getStationsByPlace
-        )
+        CompositionLocalProvider(
+            value = LocalTextStyle provides MaterialTheme.typography.bodyMedium.copy(
+                color = Color.Black
+            )
+        ) {
+            SearchPlaces(
+                searchQuery = searchQuery,
+                onSearchQueryChanged = onSearchQueryChanged,
+                searchResultUiState = searchResultUiState,
+                getStationsByPlace = getStationsByPlace
+            )
+        }
+
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraState,
@@ -139,7 +149,7 @@ fun SearchPlaces(
     searchQuery: String,
     onSearchQueryChanged: (String) -> Unit,
     searchResultUiState: SearchResultUiState,
-    getStationsByPlace: (String) -> Unit
+    getStationsByPlace: (String) -> Unit,
 ) {
 
     var active by remember { mutableStateOf(false) }
@@ -152,7 +162,10 @@ fun SearchPlaces(
         onQueryChange = onSearchQueryChanged,
         onSearch = {},
         placeholder = {
-            Text(text = "Buscar lugares")
+            Text(
+                text = stringResource(id = R.string.hint_search_bar),
+                style = MaterialTheme.typography.displayMedium
+            )
         },
         leadingIcon = {
             if (active) {
@@ -186,7 +199,7 @@ fun SearchPlaces(
         colors = SearchBarDefaults.colors(containerColor = Color.White)
     ) {
         when (searchResultUiState) {
-            SearchResultUiState.Loading -> Unit
+            SearchResultUiState.Loading, SearchResultUiState.LoadFailed -> Unit
             SearchResultUiState.EmptyQuery -> {
                 RecentSearchBody()
             }
@@ -212,7 +225,7 @@ fun SearchResultBody(
     places: List<SearchPlace>,
     onActiveChange: (Boolean) -> Unit,
     onSearchQueryChanged: (String) -> Unit,
-    getStationsByPlace: (String) -> Unit
+    getStationsByPlace: (String) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier

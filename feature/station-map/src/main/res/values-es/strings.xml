@@ -4,4 +4,6 @@
     <string name="label_empty_recents">No hay búsquedas recientes</string>
     <string name="label_suggestion">Sugerencias</string>
     <string name="label_recent">Recientes</string>
+    <string name="hint_search_bar">Buscar por lugares</string>
+
 </resources>

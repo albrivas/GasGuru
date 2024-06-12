@@ -1,5 +1,7 @@
 package com.albrivas.feature.station_map.ui
 
+import com.albrivas.fuelpump.core.model.data.SearchPlace
+
 sealed interface SearchResultUiState {
     /**
      * When user has not typed anything in the search bar
@@ -16,9 +18,9 @@ sealed interface SearchResultUiState {
      */
     data class Success(val places: List<SearchPlace>) : SearchResultUiState
     data object Loading : SearchResultUiState
-}
 
-data class SearchPlace(
-    val name: String,
-    val id: String,
-)
+    /**
+     * When the search failed to load data
+     */
+    data object LoadFailed : SearchResultUiState
+}
