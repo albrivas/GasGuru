@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "com.albrivas.feature.station_map"
+    namespace = "com.albrivas.fuelpump.feature.station_map"
     compileSdk = 34
 
     defaultConfig {

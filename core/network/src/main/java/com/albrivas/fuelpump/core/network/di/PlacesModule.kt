@@ -1,7 +1,7 @@
-package com.albrivas.feature.station_map.di
+package com.albrivas.fuelpump.core.network.di
 
 import android.content.Context
-import com.albrivas.feature.station_map.BuildConfig
+import com.albrivas.fuelpump.core.network.BuildConfig
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.net.PlacesClient
 import dagger.Module
