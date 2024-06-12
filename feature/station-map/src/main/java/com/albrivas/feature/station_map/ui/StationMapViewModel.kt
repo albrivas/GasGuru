@@ -6,10 +6,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.albrivas.fuelpump.core.common.toLatLng
 import com.albrivas.fuelpump.core.data.repository.LocationTracker
+import com.albrivas.fuelpump.core.domain.ClearRecentSearchQueriesUseCase
 import com.albrivas.fuelpump.core.domain.FuelStationByLocationUseCase
 import com.albrivas.fuelpump.core.domain.GetLocationPlaceUseCase
 import com.albrivas.fuelpump.core.domain.GetPlacesUseCase
+import com.albrivas.fuelpump.core.domain.GetRecentSearchQueryUseCase
 import com.albrivas.fuelpump.core.domain.GetUserDataUseCase
+import com.albrivas.fuelpump.core.domain.InsertRecentSearchQueryUseCase
+import com.albrivas.fuelpump.core.model.data.RecentSearchQuery
 import com.albrivas.fuelpump.core.model.data.SearchPlace
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -37,6 +41,9 @@ class StationMapViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val getPlacesUseCase: GetPlacesUseCase,
     private val getLocationPlaceUseCase: GetLocationPlaceUseCase,
+    private val clearRecentSearchQueriesUseCase: ClearRecentSearchQueriesUseCase,
+    private val insertRecentSearchQueryUseCase: InsertRecentSearchQueryUseCase,
+    getRecentSearchQueryUseCase: GetRecentSearchQueryUseCase,
 ) : ViewModel() {
 
     val searchQuery = savedStateHandle.getStateFlow(key = SEARCH_QUERY, initialValue = "")
@@ -51,7 +58,7 @@ class StationMapViewModel @Inject constructor(
                 flowOf(SearchResultUiState.EmptyQuery)
             } else {
                 getPlacesUseCase(query).map { predictions ->
-                    if(predictions.isEmpty())
+                    if (predictions.isEmpty())
                         SearchResultUiState.EmptySearchResult
                     else
                         SearchResultUiState.Success(predictions)
@@ -61,6 +68,15 @@ class StationMapViewModel @Inject constructor(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = SearchResultUiState.Loading,
+        )
+
+    val recentSearchQueriesUiState: StateFlow<RecentSearchQueriesUiState> =
+        getRecentSearchQueryUseCase().map { recentQueries ->
+            RecentSearchQueriesUiState.Success(recentQueries)
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = RecentSearchQueriesUiState.Loading,
         )
 
     fun onSearchQueryChanged(query: String) {
@@ -73,6 +89,14 @@ class StationMapViewModel @Inject constructor(
                 getStationByLocation(location)
             }
         }
+    }
+
+    fun clearRecentSearches() = viewModelScope.launch {
+        clearRecentSearchQueriesUseCase()
+    }
+
+    fun insertRecentSearch(searchQuery: SearchPlace) = viewModelScope.launch {
+        insertRecentSearchQueryUseCase(placeId = searchQuery.id, name = searchQuery.name)
     }
 
     fun getStationByPlace(placeId: String) =

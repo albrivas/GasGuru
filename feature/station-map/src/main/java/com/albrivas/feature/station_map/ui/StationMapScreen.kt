@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -48,6 +49,7 @@ import com.albrivas.fuelpump.core.common.centerOnLocation
 import com.albrivas.fuelpump.core.common.toLatLng
 import com.albrivas.fuelpump.core.model.data.FuelStation
 import com.albrivas.fuelpump.core.model.data.FuelType
+import com.albrivas.fuelpump.core.model.data.RecentSearchQuery
 import com.albrivas.fuelpump.core.model.data.SearchPlace
 import com.albrivas.fuelpump.core.ui.getPrice
 import com.albrivas.fuelpump.core.ui.toBrandStationIcon
@@ -68,6 +70,7 @@ fun StationMapScreenRoute(viewModel: StationMapViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val searchResult by viewModel.searchResultUiState.collectAsStateWithLifecycle()
+    val recentSearchQuery by viewModel.recentSearchQueriesUiState.collectAsStateWithLifecycle()
     StationMapScreen(
         getStationByCurrentLocation = viewModel::getStationByCurrentLocation,
         stations = state.fuelStations,
@@ -77,7 +80,10 @@ fun StationMapScreenRoute(viewModel: StationMapViewModel = hiltViewModel()) {
         searchResultUiState = searchResult,
         onSearchQueryChanged = viewModel::onSearchQueryChanged,
         searchQuery = searchQuery,
-        getStationsByPlace = viewModel::getStationByPlace
+        getStationsByPlace = viewModel::getStationByPlace,
+        recentSearchQueries = recentSearchQuery,
+        saveSearchResultClicked = viewModel::insertRecentSearch,
+        clearRecentSearches = viewModel::clearRecentSearches,
     )
 }
 
@@ -92,6 +98,9 @@ internal fun StationMapScreen(
     onSearchQueryChanged: (String) -> Unit,
     searchQuery: String,
     getStationsByPlace: (String) -> Unit,
+    recentSearchQueries: RecentSearchQueriesUiState,
+    saveSearchResultClicked: (SearchPlace) -> Unit,
+    clearRecentSearches: () -> Unit,
 ) {
     val cameraState = rememberCameraPositionState()
     LaunchedEffect(key1 = centerMap) {
@@ -107,7 +116,10 @@ internal fun StationMapScreen(
                 searchQuery = searchQuery,
                 onSearchQueryChanged = onSearchQueryChanged,
                 searchResultUiState = searchResultUiState,
-                getStationsByPlace = getStationsByPlace
+                getStationsByPlace = getStationsByPlace,
+                recentSearchQueries = recentSearchQueries,
+                saveSearchResultClicked = saveSearchResultClicked,
+                clearRecentSearches = clearRecentSearches,
             )
         }
 
@@ -150,6 +162,9 @@ fun SearchPlaces(
     onSearchQueryChanged: (String) -> Unit,
     searchResultUiState: SearchResultUiState,
     getStationsByPlace: (String) -> Unit,
+    recentSearchQueries: RecentSearchQueriesUiState,
+    saveSearchResultClicked: (SearchPlace) -> Unit,
+    clearRecentSearches: () -> Unit,
 ) {
 
     var active by remember { mutableStateOf(false) }
@@ -185,12 +200,14 @@ fun SearchPlaces(
             }
         },
         trailingIcon = {
-            IconButton(onClick = { onSearchQueryChanged("") }) {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    contentDescription = "Icon search",
-                )
+            if (searchQuery.isNotEmpty()) {
+                IconButton(onClick = { onSearchQueryChanged("") }) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        contentDescription = "Icon search",
+                    )
+                }
             }
         },
         active = active,
@@ -199,9 +216,26 @@ fun SearchPlaces(
         colors = SearchBarDefaults.colors(containerColor = Color.White)
     ) {
         when (searchResultUiState) {
-            SearchResultUiState.Loading, SearchResultUiState.LoadFailed -> Unit
+            SearchResultUiState.Loading,
+            SearchResultUiState.LoadFailed,
+            -> Unit
+
             SearchResultUiState.EmptyQuery -> {
-                RecentSearchBody()
+                if (recentSearchQueries is RecentSearchQueriesUiState.Success) {
+                    if (recentSearchQueries.recentQueries.isEmpty()) {
+                        EmptyRecentSearchesBody()
+                    } else {
+                        RecentSearchQueriesBody(
+                            recentSearchQueries = recentSearchQueries.recentQueries,
+                            onRecentSearchClicked = {
+                                onSearchQueryChanged(it.name)
+                                getStationsByPlace(it.id)
+                                active = false
+                            },
+                            onClearRecentSearches = clearRecentSearches,
+                        )
+                    }
+                }
             }
 
             SearchResultUiState.EmptySearchResult -> {
@@ -213,7 +247,8 @@ fun SearchPlaces(
                     places = searchResultUiState.places,
                     onSearchQueryChanged = onSearchQueryChanged,
                     getStationsByPlace = getStationsByPlace,
-                    onActiveChange = { active = it }
+                    onActiveChange = { active = it },
+                    onSearchResultClicked = saveSearchResultClicked
                 )
             }
         }
@@ -226,44 +261,57 @@ fun SearchResultBody(
     onActiveChange: (Boolean) -> Unit,
     onSearchQueryChanged: (String) -> Unit,
     getStationsByPlace: (String) -> Unit,
+    onSearchResultClicked: (SearchPlace) -> Unit,
 ) {
-    LazyColumn(
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
     ) {
-        items(places) { place ->
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .clickable {
-                            onActiveChange(false)
-                            onSearchQueryChanged(place.name)
-                            getStationsByPlace(place.id)
-                        },
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(id = com.albrivas.fuelpump.core.uikit.R.drawable.ic_default_marker),
-                        contentDescription = "location image",
-                        colorFilter = ColorFilter.tint(Color.Black)
-                    )
-                    Text(
-                        modifier = Modifier,
-                        text = place.name,
-                        style = MaterialTheme.typography.displayMedium
-                    )
+        Text(
+            text = stringResource(id = R.string.label_suggestion),
+            modifier = Modifier
+                .align(Alignment.Start),
+            style = MaterialTheme.typography.titleMedium
+        )
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize(),
+        ) {
+            items(places) { place ->
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable {
+                                onActiveChange(false)
+                                onSearchQueryChanged(place.name)
+                                getStationsByPlace(place.id)
+                                onSearchResultClicked(place)
+                            },
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            painter = painterResource(id = com.albrivas.fuelpump.core.uikit.R.drawable.ic_default_marker),
+                            contentDescription = "location image",
+                            colorFilter = ColorFilter.tint(Color.Black)
+                        )
+                        Text(
+                            modifier = Modifier,
+                            text = place.name,
+                            style = MaterialTheme.typography.displayMedium
+                        )
+                    }
                 }
+                HorizontalDivider(
+                    color = GrayExtraLight,
+                    thickness = 0.5.dp,
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+                )
             }
-            HorizontalDivider(
-                color = GrayExtraLight,
-                thickness = 0.5.dp,
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp)
-            )
         }
     }
 }
@@ -276,6 +324,13 @@ fun EmptyResultBody() {
             .padding(16.dp)
     ) {
         Text(
+            text = stringResource(id = R.string.label_suggestion),
+            modifier = Modifier
+                .align(Alignment.Start)
+                .padding(bottom = 8.dp),
+            style = MaterialTheme.typography.titleMedium
+        )
+        Text(
             text = stringResource(id = R.string.label_empty_suggestions),
             modifier = Modifier.align(Alignment.Start),
             style = MaterialTheme.typography.displayMedium
@@ -285,7 +340,7 @@ fun EmptyResultBody() {
 }
 
 @Composable
-fun RecentSearchBody() {
+fun EmptyRecentSearchesBody() {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -293,16 +348,67 @@ fun RecentSearchBody() {
     ) {
         Text(
             text = stringResource(id = R.string.label_recent),
-            modifier = Modifier.align(Alignment.Start),
+            modifier = Modifier
+                .align(Alignment.Start)
+                .padding(bottom = 8.dp),
             style = MaterialTheme.typography.titleMedium
         )
         Text(
-            text = stringResource(id = R.string.label_recent),
+            text = stringResource(id = R.string.label_empty_recents),
             modifier = Modifier.align(Alignment.Start),
             style = MaterialTheme.typography.displayMedium
         )
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
 
+    }
+}
+
+@Composable
+fun RecentSearchQueriesBody(
+    recentSearchQueries: List<RecentSearchQuery>,
+    onRecentSearchClicked: (RecentSearchQuery) -> Unit = {},
+    onClearRecentSearches: () -> Unit = {},
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(
+                text = stringResource(id = R.string.label_recent),
+                modifier = Modifier
+                    .padding(bottom = 8.dp),
+                style = MaterialTheme.typography.titleMedium
+            )
+            if (recentSearchQueries.isNotEmpty()) {
+                IconButton(
+                    onClick = onClearRecentSearches,
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Close,
+                        contentDescription = "Clear recent searches",
+                        tint = MaterialTheme.colorScheme.onSurface,
+                    )
+                }
+            }
+        }
+
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            items(recentSearchQueries) { recentSearchQuery ->
+                Text(
+                    text = recentSearchQuery.name,
+                    style = MaterialTheme.typography.displayMedium,
+                    modifier = Modifier
+                        .padding(vertical = 8.dp)
+                        .clickable { onRecentSearchClicked(recentSearchQuery) }
+                        .fillMaxWidth(),
+                )
+            }
         }
     }
 }
@@ -319,6 +425,9 @@ private fun StationMapScreenPreview() {
         searchResultUiState = SearchResultUiState.EmptyQuery,
         onSearchQueryChanged = {},
         searchQuery = "",
-        getStationsByPlace = {}
+        getStationsByPlace = {},
+        recentSearchQueries = RecentSearchQueriesUiState.Loading,
+        saveSearchResultClicked = {},
+        clearRecentSearches = {},
     )
 }
