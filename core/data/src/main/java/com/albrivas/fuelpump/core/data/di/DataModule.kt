@@ -8,6 +8,8 @@ import com.albrivas.fuelpump.core.data.repository.FuelStationRepository
 import com.albrivas.fuelpump.core.data.repository.LocationTracker
 import com.albrivas.fuelpump.core.data.repository.LocationTrackerRepository
 import com.albrivas.fuelpump.core.data.repository.OfflineFuelStationRepository
+import com.albrivas.fuelpump.core.data.repository.OfflineRecentSearchRepository
+import com.albrivas.fuelpump.core.data.repository.OfflineRecentSearchRepositoryImp
 import com.albrivas.fuelpump.core.data.repository.OfflineUserDataRepository
 import com.albrivas.fuelpump.core.data.repository.PlacesRepository
 import com.albrivas.fuelpump.core.data.repository.PlacesRepositoryImp
@@ -51,4 +53,8 @@ interface DataModule {
         placesDataSource: PlacesDataSourceImp
     ): PlacesDataSource
 
+    @Binds
+    fun bindRecentSearchRepository(
+        recentSearchRepository: OfflineRecentSearchRepositoryImp
+    ): OfflineRecentSearchRepository
 }
