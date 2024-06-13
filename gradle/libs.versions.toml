@@ -33,7 +33,7 @@ loggingInterceptor = "4.9.2"
 appcompat = "1.7.0"
 material = "1.12.0"
 playServicesLocation = "21.1.0"
-lottie = "6.4.0"
+lottie = "6.4.1"
 googleGmsGoogleServices = "4.4.1"
 detekt = "1.23.5"
 
