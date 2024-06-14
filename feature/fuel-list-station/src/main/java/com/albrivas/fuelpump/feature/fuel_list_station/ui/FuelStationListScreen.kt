@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
@@ -16,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,7 +33,7 @@ import com.albrivas.fuelpump.feature.fuel_list_station.R
 
 @Composable
 fun FuelStationListScreenRoute(
-    viewModel: FuelListStationViewModel = hiltViewModel()
+    viewModel: FuelListStationViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     FuelStationListScreen(uiState = state)
@@ -47,7 +49,9 @@ internal fun FuelStationListScreen(uiState: FuelStationListUiState, modifier: Mo
         FuelStationListUiState.Loading -> {
             Box(
                 modifier = modifier
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    .background(Color.White)
+                    .statusBarsPadding(),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -59,7 +63,8 @@ internal fun FuelStationListScreen(uiState: FuelStationListUiState, modifier: Mo
                 modifier = modifier
                     .fillMaxSize()
                     .background(color = GrayBackground)
-                    .padding(start = 16.dp, end = 16.dp),
+                    .padding(start = 16.dp, end = 16.dp)
+                    .statusBarsPadding(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 LazyColumn(

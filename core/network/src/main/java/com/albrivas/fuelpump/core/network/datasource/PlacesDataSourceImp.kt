@@ -14,18 +14,19 @@ import javax.inject.Inject
 class PlacesDataSourceImp @Inject constructor(
     private val placesClient: PlacesClient,
 ) : PlacesDataSource {
-    override fun getPlaces(query: String, countryCode: String): Flow<List<AutocompletePrediction>> = flow {
-        try {
-            val request = FindAutocompletePredictionsRequest.builder()
-                .setQuery(query)
-                .setCountries(countryCode)
-                .build()
-            val result = placesClient.findAutocompletePredictions(request).await()
-            emit(result.autocompletePredictions)
-        } catch (e: Exception) {
-            emit(emptyList())
+    override fun getPlaces(query: String, countryCode: String): Flow<List<AutocompletePrediction>> =
+        flow {
+            try {
+                val request = FindAutocompletePredictionsRequest.builder()
+                    .setQuery(query)
+                    .setCountries(countryCode)
+                    .build()
+                val result = placesClient.findAutocompletePredictions(request).await()
+                emit(result.autocompletePredictions)
+            } catch (e: Exception) {
+                emit(emptyList())
+            }
         }
-    }
 
     override fun getLocationPlace(placeId: String): Flow<LatLng?> = flow {
         try {

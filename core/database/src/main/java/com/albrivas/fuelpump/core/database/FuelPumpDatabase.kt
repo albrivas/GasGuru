@@ -1,14 +1,3 @@
-/*
- * File: AppDatabase.kt
- * Project: FuelPump
- * Module: FuelPump.core.database.main
- * Last modified: 1/4/23, 9:20 PM
- *
- * Created by albertorivas on 1/5/23, 12:13 AM
- * Copyright © 2023 Alberto Rivas. All rights reserved.
- *
- */
-
 package com.albrivas.fuelpump.core.database
 
 import androidx.room.Database
@@ -28,7 +17,7 @@ import com.albrivas.fuelpump.core.database.model.UserDataEntity
         UserDataEntity::class,
         RecentSearchQueryEntity::class
     ],
-    version = 1
+    version = 2,
 )
 @TypeConverters(UserDataConverters::class)
 abstract class FuelPumpDatabase : RoomDatabase() {

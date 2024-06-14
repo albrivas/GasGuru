@@ -1,5 +1,7 @@
 package com.albrivas.feature.station_map.ui
 
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,6 +43,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -57,9 +60,11 @@ import com.albrivas.fuelpump.core.ui.toColor
 import com.albrivas.fuelpump.core.uikit.components.marker.StationMarker
 import com.albrivas.fuelpump.core.uikit.components.marker.StationMarkerModel
 import com.albrivas.fuelpump.core.uikit.theme.GrayExtraLight
+import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.MarkerComposable
 import com.google.maps.android.compose.MarkerState
@@ -108,7 +113,7 @@ internal fun StationMapScreen(
     }
     Box(modifier = Modifier.fillMaxSize()) {
         CompositionLocalProvider(
-            value = LocalTextStyle provides MaterialTheme.typography.bodyMedium.copy(
+            value = LocalTextStyle provides MaterialTheme.typography.displayMedium.copy(
                 color = Color.Black
             )
         ) {
@@ -132,8 +137,10 @@ internal fun StationMapScreen(
                 compassEnabled = false,
             ),
             properties = MapProperties(
-                isMyLocationEnabled = false
-            ),
+                isMyLocationEnabled = false,
+                mapType = MapType.NORMAL,
+
+                ),
             onMyLocationButtonClick = {
                 true
             },
@@ -169,17 +176,31 @@ fun SearchPlaces(
 
     var active by remember { mutableStateOf(false) }
 
+    val paddingAnimation: Dp by animateDpAsState(
+        targetValue = if (active) 0.dp else 16.dp,
+        animationSpec = tween(durationMillis = 300), label = ""
+    )
+
+    val statusBarPaddingAnimation: Dp by animateDpAsState(
+        targetValue = 0.dp,
+        animationSpec = tween(durationMillis = 300), label = ""
+    )
+
     SearchBar(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(if (active) 0.dp else 16.dp),
+            .padding(
+                top = statusBarPaddingAnimation,
+                start = paddingAnimation,
+                end = paddingAnimation
+            ),
         query = searchQuery,
         onQueryChange = onSearchQueryChanged,
         onSearch = {},
         placeholder = {
             Text(
                 text = stringResource(id = R.string.hint_search_bar),
-                style = MaterialTheme.typography.displayMedium
+                style = MaterialTheme.typography.displayMedium,
             )
         },
         leadingIcon = {
@@ -343,7 +364,7 @@ fun EmptyResultBody() {
 fun EmptyRecentSearchesBody() {
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .padding(16.dp)
     ) {
         Text(
@@ -370,41 +391,41 @@ fun RecentSearchQueriesBody(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .padding(16.dp)
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.Top,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
         ) {
             Text(
                 text = stringResource(id = R.string.label_recent),
-                modifier = Modifier
-                    .padding(bottom = 8.dp),
                 style = MaterialTheme.typography.titleMedium
             )
             if (recentSearchQueries.isNotEmpty()) {
-                IconButton(
-                    onClick = onClearRecentSearches,
-                    modifier = Modifier.padding(horizontal = 8.dp),
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Close,
-                        contentDescription = "Clear recent searches",
-                        tint = MaterialTheme.colorScheme.onSurface,
-                    )
-                }
+                Icon(
+                    imageVector = Icons.Rounded.Close,
+                    contentDescription = "Clear recent searches",
+                    tint = Color.Black,
+                    modifier = Modifier
+                        .align(Alignment.Top)
+                        .clickable { onClearRecentSearches() }
+                )
             }
         }
 
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             items(recentSearchQueries) { recentSearchQuery ->
                 Text(
                     text = recentSearchQuery.name,
                     style = MaterialTheme.typography.displayMedium,
                     modifier = Modifier
-                        .padding(vertical = 8.dp)
                         .clickable { onRecentSearchClicked(recentSearchQuery) }
                         .fillMaxWidth(),
                 )
@@ -416,18 +437,42 @@ fun RecentSearchQueriesBody(
 @Preview(showBackground = true)
 @Composable
 private fun StationMapScreenPreview() {
-    StationMapScreen(
-        getStationByCurrentLocation = {},
-        stations = emptyList(),
-        centerMap = LatLng(0.0, 0.0),
-        zoomLevel = 15f,
-        userSelectedFuelType = FuelType.GASOLINE_95,
-        searchResultUiState = SearchResultUiState.EmptyQuery,
-        onSearchQueryChanged = {},
-        searchQuery = "",
-        getStationsByPlace = {},
-        recentSearchQueries = RecentSearchQueriesUiState.Loading,
-        saveSearchResultClicked = {},
-        clearRecentSearches = {},
-    )
+    MyApplicationTheme {
+        StationMapScreen(
+            getStationByCurrentLocation = {},
+            stations = emptyList(),
+            centerMap = LatLng(0.0, 0.0),
+            zoomLevel = 15f,
+            userSelectedFuelType = FuelType.GASOLINE_95,
+            searchResultUiState = SearchResultUiState.EmptyQuery,
+            onSearchQueryChanged = {},
+            searchQuery = "",
+            getStationsByPlace = {},
+            recentSearchQueries = RecentSearchQueriesUiState.Loading,
+            saveSearchResultClicked = {},
+            clearRecentSearches = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun RecentSearchQueryBodyPreview() {
+    MyApplicationTheme {
+        RecentSearchQueriesBody(
+            recentSearchQueries = listOf(
+                RecentSearchQuery("Barcelona", "1"),
+                RecentSearchQuery("Madrid", "2"),
+                RecentSearchQuery("Valencia", "3"),
+            )
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun EmptyRecentSearchQueryBodyPreview() {
+    MyApplicationTheme {
+        EmptyRecentSearchesBody()
+    }
 }

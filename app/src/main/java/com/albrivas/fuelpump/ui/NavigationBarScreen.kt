@@ -1,6 +1,8 @@
 package com.albrivas.fuelpump.ui
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.captionBar
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -26,7 +28,8 @@ internal fun NavigationBarHost(
         modifier = Modifier,
         bottomBar = {
             NavigationBottomBar(navController = navController)
-        }
+        },
+        contentWindowInsets = WindowInsets.captionBar
     ) { innerPadding ->
         Box(
             modifier = Modifier
