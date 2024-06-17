@@ -30,7 +30,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.albrivas.fuelpump.core.model.data.FuelStation
+import com.albrivas.fuelpump.core.model.data.FuelType
 import com.albrivas.fuelpump.core.model.data.previewFuelStationDomain
+import com.albrivas.fuelpump.core.ui.getPrice
 import com.albrivas.fuelpump.core.ui.toBrandStationIcon
 import com.albrivas.fuelpump.core.ui.toColor
 import com.albrivas.fuelpump.core.uikit.theme.GrayExtraLight
@@ -40,6 +42,7 @@ import java.util.Locale
 @Composable
 fun FuelStationItem(
     item: FuelStation,
+    userSelectedFuelType: FuelType,
     modifier: Modifier = Modifier,
     onItemClick: (FuelStation) -> Unit
 ) {
@@ -143,7 +146,7 @@ fun FuelStationItem(
                     .align(Alignment.CenterVertically)
             ) {
                 Text(
-                    text = "${item.priceGasoline95_E5} €/L",
+                    text = "${userSelectedFuelType.getPrice(item)} €/L",
                     color = Color.White,
                     style = typography.labelLarge,
                     overflow = TextOverflow.Ellipsis,
@@ -161,6 +164,10 @@ fun FuelStationItem(
 @Preview(showBackground = true, backgroundColor = 0xFFFFFF)
 fun PreviewFuelItem() {
     MyApplicationTheme {
-        FuelStationItem(item = previewFuelStationDomain()) {}
+        FuelStationItem(
+            item = previewFuelStationDomain(),
+            userSelectedFuelType = FuelType.GASOLINE_95,
+            onItemClick = {}
+        )
     }
 }

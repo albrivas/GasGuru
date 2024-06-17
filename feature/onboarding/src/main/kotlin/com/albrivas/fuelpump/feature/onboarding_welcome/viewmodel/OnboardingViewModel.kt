@@ -29,8 +29,7 @@ class OnboardingViewModel @Inject constructor(
             FuelType.GASOLINE_95,
             FuelType.GASOLINE_98,
             FuelType.DIESEL,
-            FuelType.DIESEL_PLUS,
-            FuelType.ELECTRIC
+            FuelType.DIESEL_PLUS
         ).also { state = OnboardingUiState.ListFuelPreferences(it) }
     }
 

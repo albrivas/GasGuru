@@ -4,13 +4,13 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hilt.gradle)
-    alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.gms)
     alias(libs.plugins.firebase.crashlitycs)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.detekt)
+    alias(libs.plugins.secrets)
 }
 
 android {
@@ -21,8 +21,8 @@ android {
         applicationId = "com.albrivas.fuelpump"
         minSdk = 23
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 9
+        versionName = "1.0.8"
 
         testInstrumentationRunner = "com.albrivas.fuelpump.core.testing.HiltTestRunner"
         vectorDrawables {
@@ -42,6 +42,8 @@ android {
         debug {
             isMinifyEnabled = false
             isDebuggable = true
+            applicationIdSuffix = ".debug"
+            resValue("string", "app_name", "FuelPump Debug")
         }
     }
 
@@ -83,6 +85,8 @@ tasks.register<Detekt>("codeCheck") {
         files(
             "src/main/java",
             "src/test/java",
+            "src/main/kotlin",
+            "src/test/kotlin",
             "src/extended/java",
             "src/external/java"
         )
@@ -111,6 +115,7 @@ dependencies {
     implementation(project(":feature:onboarding"))
     implementation(project(":feature:detail-station"))
     implementation(project(":feature:fuel-list-station"))
+    implementation(project(":feature:station-map"))
     implementation(project(":core:model"))
     androidTestImplementation(project(":core:testing"))
     detektPlugins(libs.detekt.formatting)
@@ -138,4 +143,5 @@ dependencies {
     // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.analytics)
 }

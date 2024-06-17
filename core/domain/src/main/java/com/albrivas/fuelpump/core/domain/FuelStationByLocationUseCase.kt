@@ -8,6 +8,6 @@ import javax.inject.Inject
 class FuelStationByLocationUseCase @Inject constructor(
     private val repository: OfflineFuelStationRepository
 ) {
-    operator fun invoke(userLocation: Location) =
-        repository.getFuelStationByLocation(userLocation)
+    operator fun invoke(userLocation: Location, maxStations: Int = 12) =
+        repository.getFuelStationByLocation(userLocation, maxStations)
 }

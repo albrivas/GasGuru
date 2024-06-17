@@ -7,6 +7,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.albrivas.feature.station_map.navigation.StationMapRoute
 import com.albrivas.fuelpump.feature.fuel_list_station.navigation.FuelStationListRoute
 import com.albrivas.fuelpump.navigation.navigationbar.route.TopLevelRoutes
 
@@ -35,7 +36,7 @@ class NavigationBarState(
 
     private fun NavHostController.navigatePoppingUpToStartDestination(route: TopLevelRoutes) {
         val topLevel = when (route) {
-            is TopLevelRoutes.Map -> FuelStationListRoute
+            is TopLevelRoutes.Map -> StationMapRoute
             is TopLevelRoutes.List -> FuelStationListRoute
             is TopLevelRoutes.Profile -> FuelStationListRoute
         }
