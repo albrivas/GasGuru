@@ -44,8 +44,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -73,6 +75,7 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.MarkerComposable
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.albrivas.fuelpump.core.uikit.R as RUikit
 
 @Composable
 fun StationMapScreenRoute(viewModel: StationMapViewModel = hiltViewModel()) {
@@ -108,6 +111,7 @@ internal fun StationMapScreen(
         if (centerMap.latitude != 0.0 && centerMap.longitude != 0.0) {
             cameraState.centerOnLocation(location = centerMap, zoomLevel = zoomLevel)
         }
+        event(StationMapEvent.ResetMapCenter)
     }
     Box(modifier = Modifier.fillMaxSize()) {
         CompositionLocalProvider(
@@ -183,7 +187,7 @@ internal fun StationMapScreen(
             contentColor = Color.Black,
         ) {
             Icon(
-                imageVector = Icons.Rounded.LocationOn,
+                imageVector = ImageVector.vectorResource(id = RUikit.drawable.ic_my_location),
                 contentDescription = "User location",
             )
         }
