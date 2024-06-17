@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
@@ -16,12 +17,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.albrivas.fuelpump.core.model.data.FuelStation
+import com.albrivas.fuelpump.core.model.data.FuelType
 import com.albrivas.fuelpump.core.model.data.previewFuelStationDomain
 import com.albrivas.fuelpump.core.uikit.components.alert.AlertTemplate
 import com.albrivas.fuelpump.core.uikit.components.alert.AlertTemplateModel
@@ -30,14 +33,17 @@ import com.albrivas.fuelpump.feature.fuel_list_station.R
 
 @Composable
 fun FuelStationListScreenRoute(
-    viewModel: FuelListStationViewModel = hiltViewModel()
+    viewModel: FuelListStationViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    FuelStationListScreen(uiState = state)
+    FuelStationListScreen(uiState = state, checkLocationEnabled = viewModel::checkLocationEnabled)
 }
 
 @Composable
-internal fun FuelStationListScreen(uiState: FuelStationListUiState, modifier: Modifier = Modifier) {
+internal fun FuelStationListScreen(
+    uiState: FuelStationListUiState,
+    checkLocationEnabled: () -> Unit,
+) {
     var showBottomSheet by remember { mutableStateOf(false) }
     var selectedStation by remember { mutableStateOf<FuelStation?>(null) }
 
@@ -45,8 +51,10 @@ internal fun FuelStationListScreen(uiState: FuelStationListUiState, modifier: Mo
         FuelStationListUiState.Error -> Unit
         FuelStationListUiState.Loading -> {
             Box(
-                modifier = modifier
-                    .fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White)
+                    .statusBarsPadding(),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -55,10 +63,11 @@ internal fun FuelStationListScreen(uiState: FuelStationListUiState, modifier: Mo
 
         is FuelStationListUiState.Success -> {
             Column(
-                modifier = modifier
+                modifier = Modifier
                     .fillMaxSize()
                     .background(color = GrayBackground)
-                    .padding(start = 16.dp, end = 16.dp),
+                    .padding(start = 16.dp, end = 16.dp)
+                    .statusBarsPadding(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 LazyColumn(
@@ -66,7 +75,10 @@ internal fun FuelStationListScreen(uiState: FuelStationListUiState, modifier: Mo
                     contentPadding = PaddingValues(top = 24.dp, bottom = 24.dp)
                 ) {
                     items(uiState.fuelStations) { item ->
-                        FuelStationItem(item = item) { station ->
+                        FuelStationItem(
+                            item = item,
+                            userSelectedFuelType = uiState.userSelectedFuelType
+                        ) { station ->
                             showBottomSheet = true
                             selectedStation = station
                         }
@@ -75,12 +87,14 @@ internal fun FuelStationListScreen(uiState: FuelStationListUiState, modifier: Mo
             }
         }
 
-        FuelStationListUiState.DisableLocation -> AlertTemplate(model = AlertTemplateModel(
-            animation = com.albrivas.fuelpump.core.ui.R.raw.enable_location,
-            description = stringResource(id = R.string.location_disable_description),
-            buttonText = stringResource(id = R.string.button_enable_location),
-            onClick = { }
-        ))
+        FuelStationListUiState.DisableLocation -> AlertTemplate(
+            model = AlertTemplateModel(
+                animation = com.albrivas.fuelpump.core.ui.R.raw.enable_location,
+                description = stringResource(id = R.string.location_disable_description),
+                buttonText = stringResource(id = R.string.button_enable_location),
+                onClick = checkLocationEnabled
+            )
+        )
     }
 }
 
@@ -88,6 +102,10 @@ internal fun FuelStationListScreen(uiState: FuelStationListUiState, modifier: Mo
 @Composable
 fun FuelListStationScreenPreview() {
     FuelStationListScreen(
-        uiState = FuelStationListUiState.Success(listOf(previewFuelStationDomain()))
+        uiState = FuelStationListUiState.Success(
+            listOf(previewFuelStationDomain()),
+            userSelectedFuelType = FuelType.GASOLINE_95
+        ),
+        checkLocationEnabled = {},
     )
 }

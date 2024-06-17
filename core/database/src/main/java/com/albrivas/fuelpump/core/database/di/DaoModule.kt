@@ -13,6 +13,7 @@ package com.albrivas.fuelpump.core.database.di
 
 import com.albrivas.fuelpump.core.database.FuelPumpDatabase
 import com.albrivas.fuelpump.core.database.dao.FuelStationDao
+import com.albrivas.fuelpump.core.database.dao.RecentSearchQueryDao
 import com.albrivas.fuelpump.core.database.dao.UserDataDao
 import dagger.Module
 import dagger.Provides
@@ -30,4 +31,8 @@ class DaoModule {
     @Provides
     fun provideUserDataDao(appDatabase: FuelPumpDatabase): UserDataDao =
         appDatabase.userDataDao()
+
+    @Provides
+    fun provideRecentDao(appDatabase: FuelPumpDatabase): RecentSearchQueryDao =
+        appDatabase.recentDao()
 }
