@@ -15,6 +15,7 @@ import com.albrivas.fuelpump.core.domain.GetUserDataUseCase
 import com.albrivas.fuelpump.core.domain.InsertRecentSearchQueryUseCase
 import com.albrivas.fuelpump.core.model.data.RecentSearchQuery
 import com.albrivas.fuelpump.core.model.data.SearchPlace
+import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -98,6 +99,9 @@ class StationMapViewModel @Inject constructor(
     fun insertRecentSearch(searchQuery: SearchPlace) = viewModelScope.launch {
         insertRecentSearchQueryUseCase(placeId = searchQuery.id, name = searchQuery.name)
     }
+
+    fun centerMapStation(latLng: LatLng) =
+        _state.update { it.copy(centerMap = latLng, zoomLevel = 15f) }
 
     fun getStationByPlace(placeId: String) =
         viewModelScope.launch {

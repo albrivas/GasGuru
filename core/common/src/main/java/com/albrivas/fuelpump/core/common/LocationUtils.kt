@@ -28,7 +28,7 @@ fun LatLng?.toLocation() = Location("").apply {
 suspend fun CameraPositionState.centerOnLocation(location: LatLng, zoomLevel: Float) =
     animate(
         update = CameraUpdateFactory.newLatLngZoom(location, zoomLevel),
-        durationMs = 800
+        durationMs = 300
     )
 
 fun Context.hasLocationPermission(): Boolean {

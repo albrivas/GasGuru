@@ -32,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -89,6 +90,7 @@ fun StationMapScreenRoute(viewModel: StationMapViewModel = hiltViewModel()) {
         recentSearchQueries = recentSearchQuery,
         saveSearchResultClicked = viewModel::insertRecentSearch,
         clearRecentSearches = viewModel::clearRecentSearches,
+        centerMapStation = viewModel::centerMapStation,
     )
 }
 
@@ -106,6 +108,7 @@ internal fun StationMapScreen(
     recentSearchQueries: RecentSearchQueriesUiState,
     saveSearchResultClicked: (SearchPlace) -> Unit,
     clearRecentSearches: () -> Unit,
+    centerMapStation: (LatLng) -> Unit,
 ) {
     val cameraState = rememberCameraPositionState()
     LaunchedEffect(key1 = centerMap) {
@@ -127,33 +130,49 @@ internal fun StationMapScreen(
                 clearRecentSearches = clearRecentSearches,
             )
         }
-
+        val markerStates = remember { mutableStateMapOf<Int, MarkerState>() }
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraState,
             uiSettings = MapUiSettings(
-                myLocationButtonEnabled = true,
+                myLocationButtonEnabled = false,
                 zoomControlsEnabled = false,
                 compassEnabled = false,
+                mapToolbarEnabled = false,
             ),
             properties = MapProperties(
-                isMyLocationEnabled = false,
+                isMyLocationEnabled = true,
                 mapType = MapType.NORMAL,
-
-                ),
+            ),
             onMyLocationButtonClick = {
                 true
             },
             onMapLoaded = getStationByCurrentLocation,
         ) {
+            var selectedLocation by remember { mutableStateOf<Int?>(null) }
+
             stations.forEach { station ->
-                val state = MarkerState(position = station.location.toLatLng())
-                MarkerComposable(state = state) {
+                val state =
+                    markerStates.getOrPut(station.idServiceStation) { MarkerState(position = station.location.toLatLng()) }
+                val isSelected = selectedLocation == station.idServiceStation
+
+                MarkerComposable(
+                    keys = arrayOf(isSelected),
+                    state = state,
+                    onClick = {
+                        state.showInfoWindow()
+                        selectedLocation = station.idServiceStation
+                        centerMapStation(station.location.toLatLng())
+                        false
+                    },
+                    contentDescription = "Marker ${station.brandStationName}",
+                ) {
                     StationMarker(
                         model = StationMarkerModel(
                             icon = station.brandStationBrandsType.toBrandStationIcon(),
                             price = "€${userSelectedFuelType.getPrice(station)}",
-                            color = station.priceCategory.toColor()
+                            color = station.priceCategory.toColor(),
+                            isSelected = isSelected,
                         )
                     )
                 }
@@ -286,7 +305,7 @@ fun SearchResultBody(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .padding(16.dp)
     ) {
         Text(
@@ -297,7 +316,7 @@ fun SearchResultBody(
         )
         LazyColumn(
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxWidth(),
         ) {
             items(places) { place ->
                 Column(modifier = Modifier.fillMaxWidth()) {
@@ -341,7 +360,7 @@ fun SearchResultBody(
 fun EmptyResultBody() {
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .padding(16.dp)
     ) {
         Text(
@@ -451,6 +470,7 @@ private fun StationMapScreenPreview() {
             recentSearchQueries = RecentSearchQueriesUiState.Loading,
             saveSearchResultClicked = {},
             clearRecentSearches = {},
+            centerMapStation = {}
         )
     }
 }
@@ -474,5 +494,30 @@ private fun RecentSearchQueryBodyPreview() {
 private fun EmptyRecentSearchQueryBodyPreview() {
     MyApplicationTheme {
         EmptyRecentSearchesBody()
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SearchResultBodyPreview() {
+    MyApplicationTheme {
+        SearchResultBody(
+            places = listOf(
+                SearchPlace("Barcelona", "1"),
+                SearchPlace("Madrid", "2"),
+                SearchPlace("Valencia", "3"),
+            ), onActiveChange = {},
+            onSearchQueryChanged = {},
+            getStationsByPlace = {},
+            onSearchResultClicked = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun EmptySearchResultBodyPreview() {
+    MyApplicationTheme {
+        EmptyResultBody()
     }
 }

@@ -36,11 +36,14 @@ fun FuelStationListScreenRoute(
     viewModel: FuelListStationViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    FuelStationListScreen(uiState = state)
+    FuelStationListScreen(uiState = state, checkLocationEnabled = viewModel::checkLocationEnabled)
 }
 
 @Composable
-internal fun FuelStationListScreen(uiState: FuelStationListUiState, modifier: Modifier = Modifier) {
+internal fun FuelStationListScreen(
+    uiState: FuelStationListUiState,
+    checkLocationEnabled: () -> Unit,
+) {
     var showBottomSheet by remember { mutableStateOf(false) }
     var selectedStation by remember { mutableStateOf<FuelStation?>(null) }
 
@@ -48,7 +51,7 @@ internal fun FuelStationListScreen(uiState: FuelStationListUiState, modifier: Mo
         FuelStationListUiState.Error -> Unit
         FuelStationListUiState.Loading -> {
             Box(
-                modifier = modifier
+                modifier = Modifier
                     .fillMaxSize()
                     .background(Color.White)
                     .statusBarsPadding(),
@@ -60,7 +63,7 @@ internal fun FuelStationListScreen(uiState: FuelStationListUiState, modifier: Mo
 
         is FuelStationListUiState.Success -> {
             Column(
-                modifier = modifier
+                modifier = Modifier
                     .fillMaxSize()
                     .background(color = GrayBackground)
                     .padding(start = 16.dp, end = 16.dp)
@@ -84,12 +87,14 @@ internal fun FuelStationListScreen(uiState: FuelStationListUiState, modifier: Mo
             }
         }
 
-        FuelStationListUiState.DisableLocation -> AlertTemplate(model = AlertTemplateModel(
-            animation = com.albrivas.fuelpump.core.ui.R.raw.enable_location,
-            description = stringResource(id = R.string.location_disable_description),
-            buttonText = stringResource(id = R.string.button_enable_location),
-            onClick = { }
-        ))
+        FuelStationListUiState.DisableLocation -> AlertTemplate(
+            model = AlertTemplateModel(
+                animation = com.albrivas.fuelpump.core.ui.R.raw.enable_location,
+                description = stringResource(id = R.string.location_disable_description),
+                buttonText = stringResource(id = R.string.button_enable_location),
+                onClick = checkLocationEnabled
+            )
+        )
     }
 }
 
@@ -100,6 +105,7 @@ fun FuelListStationScreenPreview() {
         uiState = FuelStationListUiState.Success(
             listOf(previewFuelStationDomain()),
             userSelectedFuelType = FuelType.GASOLINE_95
-        )
+        ),
+        checkLocationEnabled = {},
     )
 }

@@ -24,12 +24,15 @@ import com.albrivas.fuelpump.core.uikit.theme.GrayLight
 
 @Composable
 fun StationMarker(model: StationMarkerModel) {
-
     Row(
         modifier = Modifier
             .clip(CircleArrowShape())
-            .background(color = model.color)
-            .border(width = 1.dp, color = GrayLight, shape = CircleArrowShape())
+            .background(color = if (model.isSelected) Color.White else model.color)
+            .border(
+                width = if (model.isSelected) 2.dp else 1.dp,
+                color = if (model.isSelected) model.color else GrayLight,
+                shape = CircleArrowShape()
+            )
             .padding(top = 4.dp, start = 4.dp, end = 4.dp, bottom = 9.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -50,7 +53,8 @@ private fun StationMarkerPreview() {
         model = StationMarkerModel(
             icon = R.drawable.ic_logo_bp,
             price = "1.23 €",
-            color = Color.Red
+            color = Color.Red,
+            isSelected = false,
         )
     )
 }

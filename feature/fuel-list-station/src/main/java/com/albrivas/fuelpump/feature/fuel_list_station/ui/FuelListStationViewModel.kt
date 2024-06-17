@@ -49,7 +49,7 @@ class FuelListStationViewModel @Inject constructor(
         }
     }
 
-    private fun checkLocationEnabled() {
+    fun checkLocationEnabled() {
         viewModelScope.launch {
             val isLocationEnabled = userLocation.isLocationEnabled()
             if (!isLocationEnabled) {
