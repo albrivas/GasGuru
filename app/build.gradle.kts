@@ -21,8 +21,8 @@ android {
         applicationId = "com.albrivas.fuelpump"
         minSdk = 23
         targetSdk = 34
-        versionCode = 3
-        versionName = "1.0.2"
+        versionCode = 9
+        versionName = "1.0.8"
 
         testInstrumentationRunner = "com.albrivas.fuelpump.core.testing.HiltTestRunner"
         vectorDrawables {
@@ -85,6 +85,8 @@ tasks.register<Detekt>("codeCheck") {
         files(
             "src/main/java",
             "src/test/java",
+            "src/main/kotlin",
+            "src/test/kotlin",
             "src/extended/java",
             "src/external/java"
         )
