@@ -20,7 +20,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
@@ -174,23 +173,27 @@ internal fun StationMapScreen(
                 }
             }
         }
-        FloatingActionButton(
-            onClick = {
-                event(StationMapEvent.CenterMapInCurrentLocation)
-                event(StationMapEvent.GetStationByCurrentLocation)
-            },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp),
-            shape = CircleShape,
-            containerColor = Color.White,
-            contentColor = Color.Black,
-        ) {
-            Icon(
-                imageVector = ImageVector.vectorResource(id = RUikit.drawable.ic_my_location),
-                contentDescription = "User location",
-            )
-        }
+        FABLocation(modifier = Modifier.align(Alignment.BottomEnd), event = event)
+    }
+}
+
+@Composable
+fun FABLocation(modifier: Modifier, event: (StationMapEvent) -> Unit = {}) {
+    FloatingActionButton(
+        onClick = {
+            event(StationMapEvent.CenterMapInCurrentLocation)
+            event(StationMapEvent.GetStationByCurrentLocation)
+        },
+        modifier = modifier
+            .padding(16.dp),
+        shape = CircleShape,
+        containerColor = Color.White,
+        contentColor = Color.Black,
+    ) {
+        Icon(
+            imageVector = ImageVector.vectorResource(id = RUikit.drawable.ic_my_location),
+            contentDescription = "User location",
+        )
     }
 }
 
