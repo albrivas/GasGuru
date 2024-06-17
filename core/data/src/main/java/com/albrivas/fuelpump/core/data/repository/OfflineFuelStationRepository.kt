@@ -29,7 +29,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -51,13 +50,14 @@ class OfflineFuelStationRepository @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getFuelStationByLocation(
-        userLocation: Location
+        userLocation: Location,
+        maxStations: Int
     ): Flow<List<FuelStation>> =
         userDataDao.getUserData().flatMapLatest { user ->
             fuelStationDao.getFuelStations(user.fuelSelection.name).map { items ->
                 val externalModel = items.map { it.asExternalModel() }
                     .sortedBy { it.location.distanceTo(userLocation) }
-                    .take(12)
+                    .take(maxStations)
 
                 val (minPrice, maxPrice) = externalModel.calculateFuelPrices(user.fuelSelection)
 

@@ -22,5 +22,10 @@ enum class FuelStationBrandsType {
     TEXACO,
     TGAS,
     ZOLOIL,
+    Q8,
+    SILVER_FUEL,
+    AZUL_OIL,
+    FARRUCO,
+    REPOSTAR,
     UNKOWN,
 }

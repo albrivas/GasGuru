@@ -55,4 +55,5 @@ dependencies {
     implementation(libs.kotlin.coroutines.play)
     implementation(libs.io.arrow.kt.arrow.core)
     implementation(libs.play.services.location)
+    implementation(libs.places)
 }
