@@ -80,11 +80,25 @@ class StationMapViewModel @Inject constructor(
             initialValue = RecentSearchQueriesUiState.Loading,
         )
 
-    fun onSearchQueryChanged(query: String) {
+    fun handleEvent(event: StationMapEvent) {
+        when (event) {
+            is StationMapEvent.GetStationByCurrentLocation -> getStationByCurrentLocation()
+            is StationMapEvent.ClearRecentSearches -> clearRecentSearches()
+            is StationMapEvent.InsertRecentSearch -> insertRecentSearch(event.searchQuery)
+            is StationMapEvent.CenterMapStation -> centerMapStation(event.latLng)
+            is StationMapEvent.GetStationByPlace -> getStationByPlace(event.placeId)
+            is StationMapEvent.CenterMapInCurrentLocation -> centerMapInCurrentLocation()
+            is StationMapEvent.ResetMapCenter -> resetMapCenter()
+            is StationMapEvent.GetStationByLocation -> getStationByLocation(event.location)
+            is StationMapEvent.UpdateSearchQuery -> onSearchQueryChanged(event.query)
+        }
+    }
+
+    private fun onSearchQueryChanged(query: String) {
         savedStateHandle[SEARCH_QUERY] = query
     }
 
-    fun getStationByCurrentLocation() {
+    private fun getStationByCurrentLocation() {
         viewModelScope.launch {
             userLocation.getCurrentLocation()?.let { location ->
                 getStationByLocation(location)
@@ -92,23 +106,34 @@ class StationMapViewModel @Inject constructor(
         }
     }
 
-    fun clearRecentSearches() = viewModelScope.launch {
+    private fun clearRecentSearches() = viewModelScope.launch {
         clearRecentSearchQueriesUseCase()
     }
 
-    fun insertRecentSearch(searchQuery: SearchPlace) = viewModelScope.launch {
+    private fun insertRecentSearch(searchQuery: SearchPlace) = viewModelScope.launch {
         insertRecentSearchQueryUseCase(placeId = searchQuery.id, name = searchQuery.name)
     }
 
-    fun centerMapStation(latLng: LatLng) =
+    private fun centerMapStation(latLng: LatLng) =
         _state.update { it.copy(centerMap = latLng, zoomLevel = 15f) }
 
-    fun getStationByPlace(placeId: String) =
+    private fun getStationByPlace(placeId: String) =
         viewModelScope.launch {
             getLocationPlaceUseCase(placeId).collect { location ->
                 getStationByLocation(location)
             }
         }
+
+    private fun centerMapInCurrentLocation() {
+        viewModelScope.launch {
+            userLocation.getCurrentLocation()?.let { location ->
+                _state.update { it.copy(centerMap = location.toLatLng(), zoomLevel = 15f) }
+            }
+        }
+    }
+
+    private fun resetMapCenter() =
+        _state.update { it.copy(centerMap = LatLng(0.0, 0.0), zoomLevel = 15f) }
 
 
     private fun getStationByLocation(location: Location) {

@@ -13,13 +13,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -78,41 +81,33 @@ fun StationMapScreenRoute(viewModel: StationMapViewModel = hiltViewModel()) {
     val searchResult by viewModel.searchResultUiState.collectAsStateWithLifecycle()
     val recentSearchQuery by viewModel.recentSearchQueriesUiState.collectAsStateWithLifecycle()
     StationMapScreen(
-        getStationByCurrentLocation = viewModel::getStationByCurrentLocation,
         stations = state.fuelStations,
         centerMap = state.centerMap,
         zoomLevel = state.zoomLevel,
         userSelectedFuelType = state.selectedType,
         searchResultUiState = searchResult,
-        onSearchQueryChanged = viewModel::onSearchQueryChanged,
         searchQuery = searchQuery,
-        getStationsByPlace = viewModel::getStationByPlace,
         recentSearchQueries = recentSearchQuery,
-        saveSearchResultClicked = viewModel::insertRecentSearch,
-        clearRecentSearches = viewModel::clearRecentSearches,
-        centerMapStation = viewModel::centerMapStation,
+        event = viewModel::handleEvent
     )
 }
 
 @Composable
 internal fun StationMapScreen(
-    getStationByCurrentLocation: () -> Unit,
     stations: List<FuelStation>,
     centerMap: LatLng,
     zoomLevel: Float,
+    searchQuery: String,
     userSelectedFuelType: FuelType?,
     searchResultUiState: SearchResultUiState,
-    onSearchQueryChanged: (String) -> Unit,
-    searchQuery: String,
-    getStationsByPlace: (String) -> Unit,
     recentSearchQueries: RecentSearchQueriesUiState,
-    saveSearchResultClicked: (SearchPlace) -> Unit,
-    clearRecentSearches: () -> Unit,
-    centerMapStation: (LatLng) -> Unit,
+    event: (StationMapEvent) -> Unit = {},
 ) {
     val cameraState = rememberCameraPositionState()
     LaunchedEffect(key1 = centerMap) {
-        cameraState.centerOnLocation(location = centerMap, zoomLevel = zoomLevel)
+        if (centerMap.latitude != 0.0 && centerMap.longitude != 0.0) {
+            cameraState.centerOnLocation(location = centerMap, zoomLevel = zoomLevel)
+        }
     }
     Box(modifier = Modifier.fillMaxSize()) {
         CompositionLocalProvider(
@@ -122,12 +117,9 @@ internal fun StationMapScreen(
         ) {
             SearchPlaces(
                 searchQuery = searchQuery,
-                onSearchQueryChanged = onSearchQueryChanged,
                 searchResultUiState = searchResultUiState,
-                getStationsByPlace = getStationsByPlace,
                 recentSearchQueries = recentSearchQueries,
-                saveSearchResultClicked = saveSearchResultClicked,
-                clearRecentSearches = clearRecentSearches,
+                event = event,
             )
         }
         val markerStates = remember { mutableStateMapOf<Int, MarkerState>() }
@@ -147,7 +139,7 @@ internal fun StationMapScreen(
             onMyLocationButtonClick = {
                 true
             },
-            onMapLoaded = getStationByCurrentLocation,
+            onMapLoaded = { event(StationMapEvent.GetStationByCurrentLocation) },
         ) {
             var selectedLocation by remember { mutableStateOf<Int?>(null) }
 
@@ -162,7 +154,7 @@ internal fun StationMapScreen(
                     onClick = {
                         state.showInfoWindow()
                         selectedLocation = station.idServiceStation
-                        centerMapStation(station.location.toLatLng())
+                        event(StationMapEvent.CenterMapStation(station.location.toLatLng()))
                         false
                     },
                     contentDescription = "Marker ${station.brandStationName}",
@@ -178,6 +170,23 @@ internal fun StationMapScreen(
                 }
             }
         }
+        FloatingActionButton(
+            onClick = {
+                event(StationMapEvent.CenterMapInCurrentLocation)
+                event(StationMapEvent.GetStationByCurrentLocation)
+            },
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp),
+            shape = CircleShape,
+            containerColor = Color.White,
+            contentColor = Color.Black,
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.LocationOn,
+                contentDescription = "User location",
+            )
+        }
     }
 }
 
@@ -185,12 +194,9 @@ internal fun StationMapScreen(
 @Composable
 fun SearchPlaces(
     searchQuery: String,
-    onSearchQueryChanged: (String) -> Unit,
     searchResultUiState: SearchResultUiState,
-    getStationsByPlace: (String) -> Unit,
     recentSearchQueries: RecentSearchQueriesUiState,
-    saveSearchResultClicked: (SearchPlace) -> Unit,
-    clearRecentSearches: () -> Unit,
+    event: (StationMapEvent) -> Unit = {},
 ) {
 
     var active by remember { mutableStateOf(false) }
@@ -214,7 +220,7 @@ fun SearchPlaces(
                 end = paddingAnimation
             ),
         query = searchQuery,
-        onQueryChange = onSearchQueryChanged,
+        onQueryChange = { event(StationMapEvent.UpdateSearchQuery(it)) },
         onSearch = {},
         placeholder = {
             Text(
@@ -241,7 +247,7 @@ fun SearchPlaces(
         },
         trailingIcon = {
             if (searchQuery.isNotEmpty()) {
-                IconButton(onClick = { onSearchQueryChanged("") }) {
+                IconButton(onClick = { event(StationMapEvent.UpdateSearchQuery("")) }) {
                     Icon(
                         imageVector = Icons.Default.Close,
                         tint = MaterialTheme.colorScheme.onSurface,
@@ -268,11 +274,11 @@ fun SearchPlaces(
                         RecentSearchQueriesBody(
                             recentSearchQueries = recentSearchQueries.recentQueries,
                             onRecentSearchClicked = {
-                                onSearchQueryChanged(it.name)
-                                getStationsByPlace(it.id)
+                                event(StationMapEvent.UpdateSearchQuery(it.name))
+                                event(StationMapEvent.GetStationByPlace(it.id))
                                 active = false
                             },
-                            onClearRecentSearches = clearRecentSearches,
+                            event = event,
                         )
                     }
                 }
@@ -285,10 +291,8 @@ fun SearchPlaces(
             is SearchResultUiState.Success -> {
                 SearchResultBody(
                     places = searchResultUiState.places,
-                    onSearchQueryChanged = onSearchQueryChanged,
-                    getStationsByPlace = getStationsByPlace,
                     onActiveChange = { active = it },
-                    onSearchResultClicked = saveSearchResultClicked
+                    event = event,
                 )
             }
         }
@@ -299,9 +303,7 @@ fun SearchPlaces(
 fun SearchResultBody(
     places: List<SearchPlace>,
     onActiveChange: (Boolean) -> Unit,
-    onSearchQueryChanged: (String) -> Unit,
-    getStationsByPlace: (String) -> Unit,
-    onSearchResultClicked: (SearchPlace) -> Unit,
+    event: (StationMapEvent) -> Unit = {},
 ) {
     Column(
         modifier = Modifier
@@ -327,9 +329,9 @@ fun SearchResultBody(
                             .clip(RoundedCornerShape(8.dp))
                             .clickable {
                                 onActiveChange(false)
-                                onSearchQueryChanged(place.name)
-                                getStationsByPlace(place.id)
-                                onSearchResultClicked(place)
+                                event(StationMapEvent.InsertRecentSearch(place))
+                                event(StationMapEvent.GetStationByPlace(place.id))
+                                event(StationMapEvent.UpdateSearchQuery(place.name))
                             },
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
@@ -406,7 +408,7 @@ fun EmptyRecentSearchesBody() {
 fun RecentSearchQueriesBody(
     recentSearchQueries: List<RecentSearchQuery>,
     onRecentSearchClicked: (RecentSearchQuery) -> Unit = {},
-    onClearRecentSearches: () -> Unit = {},
+    event: (StationMapEvent) -> Unit = {},
 ) {
     Column(
         modifier = Modifier
@@ -431,7 +433,7 @@ fun RecentSearchQueriesBody(
                     tint = Color.Black,
                     modifier = Modifier
                         .align(Alignment.Top)
-                        .clickable { onClearRecentSearches() }
+                        .clickable { event(StationMapEvent.ClearRecentSearches) }
                 )
             }
         }
@@ -458,19 +460,13 @@ fun RecentSearchQueriesBody(
 private fun StationMapScreenPreview() {
     MyApplicationTheme {
         StationMapScreen(
-            getStationByCurrentLocation = {},
             stations = emptyList(),
             centerMap = LatLng(0.0, 0.0),
             zoomLevel = 15f,
             userSelectedFuelType = FuelType.GASOLINE_95,
             searchResultUiState = SearchResultUiState.EmptyQuery,
-            onSearchQueryChanged = {},
             searchQuery = "",
-            getStationsByPlace = {},
             recentSearchQueries = RecentSearchQueriesUiState.Loading,
-            saveSearchResultClicked = {},
-            clearRecentSearches = {},
-            centerMapStation = {}
         )
     }
 }
@@ -506,10 +502,8 @@ private fun SearchResultBodyPreview() {
                 SearchPlace("Barcelona", "1"),
                 SearchPlace("Madrid", "2"),
                 SearchPlace("Valencia", "3"),
-            ), onActiveChange = {},
-            onSearchQueryChanged = {},
-            getStationsByPlace = {},
-            onSearchResultClicked = {}
+            ),
+            onActiveChange = {},
         )
     }
 }
