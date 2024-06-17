@@ -31,9 +31,11 @@ class NavigationBarState(
     val currentDestination: NavDestination?
         @Composable get() = navController.currentBackStackEntryAsState().value?.destination
 
+
     fun onNavItemClick(route: TopLevelRoutes) =
         navController.navigatePoppingUpToStartDestination(route)
 
+    @Suppress("IMPLICIT_CAST_TO_ANY")
     private fun NavHostController.navigatePoppingUpToStartDestination(route: TopLevelRoutes) {
         val topLevel = when (route) {
             is TopLevelRoutes.Map -> StationMapRoute
