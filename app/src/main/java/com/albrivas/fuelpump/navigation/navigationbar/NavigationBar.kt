@@ -35,7 +35,7 @@ internal fun NavigationBottomBar(navController: NavHostController) {
                     BarItem(
                         icon = destination.icon,
                         label = stringResource(id = R.string.list_nav),
-                        isSelected = destination == state.currentDestination,
+                        isSelected = destination.route == TopLevelRoutes.fromRoute(state.currentDestination?.route),
                         onNavigateToDestination = { state.onNavItemClick(it) },
                         destination = destination
                     )
@@ -44,7 +44,7 @@ internal fun NavigationBottomBar(navController: NavHostController) {
                     BarItem(
                         icon = destination.icon,
                         label = stringResource(id = R.string.map_nav),
-                        isSelected = destination == state.currentDestination,
+                        isSelected = destination.route == TopLevelRoutes.fromRoute(state.currentDestination?.route),
                         onNavigateToDestination = { state.onNavItemClick(it) },
                         destination = destination
                     )
@@ -53,7 +53,7 @@ internal fun NavigationBottomBar(navController: NavHostController) {
                     BarItem(
                         icon = destination.icon,
                         label = stringResource(id = R.string.profile_nav),
-                        isSelected = destination == state.currentDestination,
+                        isSelected = destination.route == TopLevelRoutes.fromRoute(state.currentDestination?.route),
                         onNavigateToDestination = { state.onNavItemClick(it) },
                         destination = destination
                     )
@@ -76,7 +76,6 @@ private fun RowScope.BarItem(
             Text(
                 text = label,
                 style = MaterialTheme.typography.labelMedium,
-                color = Color.Black,
                 fontWeight = FontWeight.Bold
             )
         },
@@ -89,6 +88,7 @@ private fun RowScope.BarItem(
         },
         colors = NavigationBarItemDefaults.colors(
             selectedIconColor = GreenDark,
+            selectedTextColor = GreenDark,
             indicatorColor = Color.White,
             unselectedIconColor = Color.Black
         ),
