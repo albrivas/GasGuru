@@ -1,9 +1,16 @@
 package com.albrivas.fuelpump.navigation.root
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.albrivas.fuelpump.feature.detail_station.navigation.detailStationScreen
+import com.albrivas.fuelpump.feature.detail_station.navigation.navigateToDetailStation
 import com.albrivas.fuelpump.feature.onboarding_welcome.navigation.navigateToOnboardingFuelPreferencesRoute
 import com.albrivas.fuelpump.feature.onboarding_welcome.navigation.navigateToOnboardingWelcomeRoute
 import com.albrivas.fuelpump.feature.onboarding_welcome.navigation.onboardingFuelPreferencesScreen
@@ -18,7 +25,14 @@ fun MainNavigation() {
     val navController = rememberNavController()
     val navigationBarController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = SplashRoute) {
+    NavHost(
+        navController = navController,
+        startDestination = SplashRoute,
+        enterTransition = { slideInHorizontally() },
+        exitTransition = { slideOutHorizontally() },
+        popEnterTransition = { fadeIn(animationSpec = tween(200)) },
+        popExitTransition = { fadeOut(animationSpec = tween(200)) },
+    ) {
         val navOptions =
             NavOptions.Builder().setPopUpTo(SplashRoute, true).build()
         splashScreen(
@@ -31,6 +45,12 @@ fun MainNavigation() {
         onboardingFuelPreferencesScreen(
             navigateToHome = { navController.navigateToNavigationBar(navOptions) }
         )
-        navigationBarHost(navController = navigationBarController)
+        navigationBarHost(
+            navController = navigationBarController,
+            navigateToDetail = { id ->
+                navController.navigateToDetailStation(id)
+            }
+        )
+        detailStationScreen(onBack = navController::popBackStack)
     }
 }

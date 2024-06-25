@@ -14,8 +14,9 @@ fun NavController.navigateToNavigationBar(navOptions: NavOptions? = null) {
 
 internal fun NavGraphBuilder.navigationBarHost(
     navController: NavHostController,
+    navigateToDetail: (Int) -> Unit
 ) {
     composable<NavigationBarRoute> {
-        NavigationBarHostRoute(navController = navController)
+        NavigationBarHostRoute(navController = navController, navigateToDetail = navigateToDetail)
     }
 }
