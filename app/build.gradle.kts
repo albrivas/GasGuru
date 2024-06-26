@@ -21,8 +21,8 @@ android {
         applicationId = "com.albrivas.fuelpump"
         minSdk = 26
         targetSdk = 34
-        versionCode = 9
-        versionName = "1.0.8"
+        versionCode = 10
+        versionName = "1.0.9"
 
         testInstrumentationRunner = "com.albrivas.fuelpump.core.testing.HiltTestRunner"
         vectorDrawables {
