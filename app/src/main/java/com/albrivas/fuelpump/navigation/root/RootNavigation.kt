@@ -1,10 +1,5 @@
 package com.albrivas.fuelpump.navigation.root
 
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
@@ -28,10 +23,6 @@ fun MainNavigation() {
     NavHost(
         navController = navController,
         startDestination = SplashRoute,
-        enterTransition = { slideInHorizontally() },
-        exitTransition = { slideOutHorizontally() },
-        popEnterTransition = { fadeIn(animationSpec = tween(200)) },
-        popExitTransition = { fadeOut(animationSpec = tween(200)) },
     ) {
         val navOptions =
             NavOptions.Builder().setPopUpTo(SplashRoute, true).build()

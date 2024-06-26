@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="go_station">Go to station</string>
+    <string name="fuels">Fuels</string>
+    <string name="open">Open</string>
+    <string name="close">Close</string>
+    <string name="price">Price</string>
 </resources>

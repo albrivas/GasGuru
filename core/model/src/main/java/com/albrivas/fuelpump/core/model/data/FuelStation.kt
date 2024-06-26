@@ -1,6 +1,7 @@
 package com.albrivas.fuelpump.core.model.data
 
 import android.location.Location
+import java.util.Locale
 
 data class FuelStation(
     val bioEthanolPercentage: String,
@@ -31,22 +32,26 @@ data class FuelStation(
     val brandStationBrandsType: FuelStationBrandsType,
     val typeSale: String,
     val priceCategory: PriceCategory = PriceCategory.NORMAL,
-    val distance: Float = 0.0f
+    val distance: Float = 0.0f,
 ) {
     fun formatDistance(): String {
         return when {
             distance >= 1000 -> {
                 val kilometers = distance / 1000
-                String.format("%.2f Km", kilometers)
+                String.format(Locale.ROOT, "%.2f Km", kilometers)
             }
+
             distance == distance.toInt().toFloat() -> {
-                String.format("%.0f m", distance)
+                String.format(Locale.ROOT, "%.0f m", distance)
             }
+
             else -> {
-                String.format("%.2f m", distance)
+                String.format(Locale.ROOT, "%.2f m", distance)
             }
         }
     }
+
+    val scheduleList get() = schedule.split(";")
 }
 
 fun previewFuelStationDomain() = FuelStation(
@@ -54,7 +59,7 @@ fun previewFuelStationDomain() = FuelStation(
     esterMethylPercentage = "",
     postalCode = "",
     direction = " C/Rios Rosas - Madrid",
-    schedule = "",
+    schedule = "L-D: 24H",
     idAutonomousCommunity = "",
     idServiceStation = 1,
     idMunicipality = "",
