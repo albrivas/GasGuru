@@ -51,6 +51,8 @@ data class FuelStation(
         }
     }
 
+    fun formatDirection(): String = direction.lowercase().replaceFirstChar(Char::uppercase)
+
     val scheduleList get() = schedule.split(";")
 }
 
@@ -58,7 +60,7 @@ fun previewFuelStationDomain() = FuelStation(
     bioEthanolPercentage = "",
     esterMethylPercentage = "",
     postalCode = "",
-    direction = " C/Rios Rosas - Madrid",
+    direction = "C/RIOS ROSAS - MADRID",
     schedule = "L-D: 24H",
     idAutonomousCommunity = "",
     idServiceStation = 1,
@@ -67,7 +69,7 @@ fun previewFuelStationDomain() = FuelStation(
     location = Location(""),
     locality = "",
     margin = "",
-    municipality = "",
+    municipality = "Talavera de la Reina",
     priceGasoilA = 0.0,
     priceGasoilB = 0.0,
     priceGasoilPremium = 0.0,

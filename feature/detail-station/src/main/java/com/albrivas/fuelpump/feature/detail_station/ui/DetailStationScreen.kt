@@ -3,10 +3,8 @@ package com.albrivas.fuelpump.feature.detail_station.ui
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,10 +19,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.typography
@@ -39,8 +33,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -56,6 +48,8 @@ import com.albrivas.fuelpump.core.ui.toBrandStationIcon
 import com.albrivas.fuelpump.core.uikit.components.FuelPumpButton
 import com.albrivas.fuelpump.core.uikit.components.table.FuelPriceTable
 import com.albrivas.fuelpump.core.uikit.components.table.FuelPriceTableModel
+import com.albrivas.fuelpump.core.uikit.components.text.InformationText
+import com.albrivas.fuelpump.core.uikit.components.text.InformationTextModel
 import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
 import com.albrivas.fuelpump.feature.detail_station.BuildConfig
 import com.albrivas.fuelpump.feature.detail_station.R
@@ -133,74 +127,46 @@ fun DetailStationContent(station: FuelStation) {
                 text = station.brandStationName,
                 style = typography.titleMedium
             )
-            Row(
-                modifier = Modifier.padding(top = 12.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Home,
-                    contentDescription = "Icon direction"
+            InformationText(
+                modifier = Modifier.padding(top = 8.dp),
+                model = InformationTextModel(
+                    icon = R.drawable.ic_home,
+                    title = station.formatDirection(),
+                    description = "Direction of station icon"
                 )
-                Text(
-                    text = station.direction,
-                    style = typography.labelLarge,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
+            )
+            InformationText(
+                modifier = Modifier.padding(top = 8.dp),
+                model = InformationTextModel(
+                    icon = R.drawable.ic_flag,
+                    title = station.municipality,
+                    description = "Municipality of station icon"
                 )
-            }
-            Row(
-                modifier = Modifier.padding(top = 12.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.LocationOn,
-                    contentDescription = "Icon distance"
+            )
+            InformationText(
+                modifier = Modifier.padding(top = 8.dp),
+                model = InformationTextModel(
+                    icon = R.drawable.ic_car,
+                    title = station.formatDistance(),
+                    description = "Distance station icon"
                 )
-                Text(
-                    text = station.formatDistance(),
-                    style = typography.labelLarge,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
+            )
+            InformationText(
+                modifier = Modifier.padding(top = 8.dp),
+                model = InformationTextModel(
+                    icon = R.drawable.ic_schedule,
+                    title = stringResource(id = if (station.isStationOpen()) R.string.open else R.string.close),
+                    description = "Icon state of station"
                 )
-            }
-            Row(
-                modifier = Modifier.padding(top = 12.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Notifications,
-                    contentDescription = "Icon station open/close"
+            )
+            InformationText(
+                modifier = Modifier.padding(top = 8.dp),
+                model = InformationTextModel(
+                    icon = R.drawable.ic_calendar,
+                    title = station.scheduleList.joinToString(separator = "\n"),
+                    description = "Schedule station icon"
                 )
-                Text(
-                    text = stringResource(id = if (station.isStationOpen()) R.string.open else R.string.close),
-                    style = typography.labelLarge,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-            Row(
-                modifier = Modifier.padding(top = 12.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.DateRange,
-                    contentDescription = "Station schedule"
-                )
-                Column {
-                    station.scheduleList.forEach { part ->
-                        Text(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = part.trim(),
-                            style = typography.labelLarge,
-                            textAlign = TextAlign.Start
-                        )
-                    }
-                }
-            }
+            )
             Spacer(modifier = Modifier.height(40.dp))
             FuelPriceTable(
                 model = FuelPriceTableModel(
@@ -248,7 +214,7 @@ fun HeaderStation(station: FuelStation, onBack: () -> Unit) {
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .statusBarsPadding()
-                .padding(start = 16.dp)
+                .padding(start = 16.dp, top = 16.dp)
                 .clickable { onBack() },
             imageVector = Icons.AutoMirrored.Default.ArrowBack,
             contentDescription = "Back to map",
