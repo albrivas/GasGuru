@@ -10,19 +10,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import com.albrivas.feature.station_map.navigation.StationMapRoute
-import com.albrivas.feature.station_map.navigation.stationMapScreen
+import com.albrivas.feature.station_map.navigation.route.StationMapGraph
+import com.albrivas.feature.station_map.navigation.stationMapGraph
 import com.albrivas.fuelpump.feature.fuel_list_station.navigation.fuelStationListScreen
 import com.albrivas.fuelpump.navigation.navigationbar.NavigationBottomBar
 
 @Composable
-fun NavigationBarHostRoute(navController: NavHostController) {
-    NavigationBarHost(navController = navController)
+fun NavigationBarHostRoute(navController: NavHostController, navigateToDetail: (Int) -> Unit) {
+    NavigationBarHost(navController = navController, navigateToDetail = navigateToDetail)
 }
 
 @Composable
 internal fun NavigationBarHost(
     navController: NavHostController,
+    navigateToDetail: (Int) -> Unit
 ) {
     Scaffold(
         modifier = Modifier,
@@ -36,8 +37,11 @@ internal fun NavigationBarHost(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            NavHost(navController = navController, startDestination = StationMapRoute) {
-                stationMapScreen()
+            NavHost(
+                navController = navController,
+                startDestination = StationMapGraph.StationMapGraphRoute
+            ) {
+                stationMapGraph(navigateToDetail = navigateToDetail)
                 fuelStationListScreen()
             }
         }

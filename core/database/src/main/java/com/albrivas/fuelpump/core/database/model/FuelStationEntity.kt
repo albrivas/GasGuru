@@ -12,6 +12,7 @@
 package com.albrivas.fuelpump.core.database.model
 
 import android.location.Location
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.albrivas.fuelpump.core.model.data.FuelStation
@@ -53,7 +54,9 @@ data class FuelStationEntity(
     val province: String,
     val referral: String,
     val brandStation: String,
-    val typeSale: String
+    val typeSale: String,
+    @ColumnInfo(defaultValue = "0")
+    val lastUpdate: Long
 )
 
 
