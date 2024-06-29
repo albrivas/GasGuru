@@ -1,3 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="go_station">Ir a la estación</string></resources>
+    <string name="go_station">Ir a la estación</string>
+    <string name="fuels">Carburantes</string>
+    <string name="open">Abierto</string>
+    <string name="close">Cerrado</string>
+    <string name="price">Precio</string>
+
+</resources>

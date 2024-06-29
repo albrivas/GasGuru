@@ -46,5 +46,6 @@ fun NetworkPriceFuelStation.asEntity() = FuelStationEntity(
     province = province,
     referral = referral,
     brandStation = brandStation,
-    typeSale = typeSale
+    typeSale = typeSale,
+    lastUpdate = System.currentTimeMillis()
 )
