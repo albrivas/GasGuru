@@ -1,14 +1,3 @@
-/*
- * File: OfflineFuelStationRepository.kt
- * Project: FuelPump
- * Module: FuelPump.core.data.main
- * Last modified: 1/7/23, 1:06 PM
- *
- * Created by albertorivas on 1/7/23, 1:06 PM
- * Copyright © 2023 Alberto Rivas. All rights reserved.
- *
- */
-
 package com.albrivas.fuelpump.core.data.repository
 
 import android.location.Location
@@ -36,7 +25,7 @@ class OfflineFuelStationRepository @Inject constructor(
     private val fuelStationDao: FuelStationDao,
     private val remoteDataSource: RemoteDataSource,
     private val userDataDao: UserDataDao,
-    @IoDispatcher private val dispatcherIo: CoroutineDispatcher
+    @IoDispatcher private val dispatcherIo: CoroutineDispatcher,
 ) : FuelStationRepository {
 
     private val ioScope = CoroutineScope(dispatcherIo + SupervisorJob())
@@ -47,11 +36,10 @@ class OfflineFuelStationRepository @Inject constructor(
         })
     }
 
-
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getFuelStationByLocation(
         userLocation: Location,
-        maxStations: Int
+        maxStations: Int,
     ): Flow<List<FuelStation>> =
         userDataDao.getUserData().flatMapLatest { user ->
             fuelStationDao.getFuelStations(user.fuelSelection.name).map { items ->
@@ -75,6 +63,16 @@ class OfflineFuelStationRepository @Inject constructor(
             }
         }.flowOn(dispatcherIo)
 
+    override fun getFuelStationById(id: Int, userLocation: Location): Flow<FuelStation> =
+        fuelStationDao.getFuelStationById(id)
+            .map { it.asExternalModel() }
+            .map { fuelStation ->
+                fuelStation.copy(
+                    distance = fuelStation.location.distanceTo(userLocation)
+                )
+            }
+            .flowOn(dispatcherIo)
+
     private fun List<FuelStation>.calculateFuelPrices(fuelType: FuelType): Pair<Double, Double> {
         val prices = when (fuelType) {
             FuelType.GASOLINE_95 -> map { it.priceGasoline95_E5 }
@@ -90,7 +88,7 @@ class OfflineFuelStationRepository @Inject constructor(
     private fun FuelStation.getPriceCategory(
         fuelType: FuelType,
         minPrice: Double,
-        maxPrice: Double
+        maxPrice: Double,
     ): PriceCategory {
         val currentPrice = when (fuelType) {
             FuelType.GASOLINE_95 -> priceGasoline95_E5

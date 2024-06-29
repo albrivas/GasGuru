@@ -77,7 +77,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.albrivas.fuelpump.core.uikit.R as RUikit
 
 @Composable
-fun StationMapScreenRoute(viewModel: StationMapViewModel = hiltViewModel()) {
+fun StationMapScreenRoute(navigateToDetail: (Int) -> Unit, viewModel: StationMapViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val searchResult by viewModel.searchResultUiState.collectAsStateWithLifecycle()
@@ -90,7 +90,8 @@ fun StationMapScreenRoute(viewModel: StationMapViewModel = hiltViewModel()) {
         searchResultUiState = searchResult,
         searchQuery = searchQuery,
         recentSearchQueries = recentSearchQuery,
-        event = viewModel::handleEvent
+        event = viewModel::handleEvent,
+        navigateToDetail = navigateToDetail
     )
 }
 
@@ -104,6 +105,7 @@ internal fun StationMapScreen(
     searchResultUiState: SearchResultUiState,
     recentSearchQueries: RecentSearchQueriesUiState,
     event: (StationMapEvent) -> Unit = {},
+    navigateToDetail: (Int) -> Unit
 ) {
     val cameraState = rememberCameraPositionState()
     LaunchedEffect(key1 = centerMap) {
@@ -158,6 +160,7 @@ internal fun StationMapScreen(
                         state.showInfoWindow()
                         selectedLocation = station.idServiceStation
                         event(StationMapEvent.CenterMapStation(station.location.toLatLng()))
+                        navigateToDetail(station.idServiceStation)
                         false
                     },
                     contentDescription = "Marker ${station.brandStationName}",
@@ -474,6 +477,7 @@ private fun StationMapScreenPreview() {
             searchResultUiState = SearchResultUiState.EmptyQuery,
             searchQuery = "",
             recentSearchQueries = RecentSearchQueriesUiState.Loading,
+            navigateToDetail = {}
         )
     }
 }

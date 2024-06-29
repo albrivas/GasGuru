@@ -8,6 +8,8 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -28,4 +30,18 @@ class LocationTrackerRepository @Inject constructor(
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
                 locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
+
+    override val getCurrentLocationFlow: Flow<Location?>
+        @SuppressLint("MissingPermission")
+        get() = flow {
+            try {
+                val location = locationClient.getCurrentLocation(
+                    Priority.PRIORITY_HIGH_ACCURACY,
+                    CancellationTokenSource().token
+                ).await()
+                emit(location)
+            } catch (e: Exception) {
+                emit(null)
+            }
+        }
 }

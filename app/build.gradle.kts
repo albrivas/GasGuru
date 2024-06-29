@@ -19,10 +19,10 @@ android {
 
     defaultConfig {
         applicationId = "com.albrivas.fuelpump"
-        minSdk = 23
+        minSdk = 26
         targetSdk = 34
-        versionCode = 9
-        versionName = "1.0.8"
+        versionCode = 10
+        versionName = "1.0.9"
 
         testInstrumentationRunner = "com.albrivas.fuelpump.core.testing.HiltTestRunner"
         vectorDrawables {
@@ -110,6 +110,7 @@ tasks.register<Detekt>("codeCheck") {
 dependencies {
 
     implementation(project(":core:uikit"))
+    implementation(project(":core:ui"))
     implementation(project(":core:data"))
     implementation(project(":feature:splash"))
     implementation(project(":feature:onboarding"))

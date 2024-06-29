@@ -1,24 +1,14 @@
-/*
- * File: DatabaseModule.kt
- * Project: FuelPump
- * Module: FuelPump.core.database.main
- * Last modified: 1/4/23, 9:21 PM
- *
- * Created by albertorivas on 1/5/23, 12:13 AM
- * Copyright © 2023 Alberto Rivas. All rights reserved.
- *
- */
-
 package com.albrivas.fuelpump.core.database.di
 
 import android.content.Context
 import androidx.room.Room
+import com.albrivas.fuelpump.core.database.FuelPumpDatabase
+import com.albrivas.fuelpump.core.database.migrations.MIGRATION_2_3
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import com.albrivas.fuelpump.core.database.FuelPumpDatabase
 import javax.inject.Singleton
 
 @Module
@@ -32,6 +22,6 @@ class DatabaseModule {
             appContext,
             FuelPumpDatabase::class.java,
             "fuel-pump-database"
-        ).build()
+        ).addMigrations(MIGRATION_2_3).build()
     }
 }

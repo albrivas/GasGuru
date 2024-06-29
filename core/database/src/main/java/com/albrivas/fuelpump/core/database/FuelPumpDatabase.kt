@@ -17,7 +17,8 @@ import com.albrivas.fuelpump.core.database.model.UserDataEntity
         UserDataEntity::class,
         RecentSearchQueryEntity::class
     ],
-    version = 2,
+    version = 3,
+    exportSchema = true
 )
 @TypeConverters(UserDataConverters::class)
 abstract class FuelPumpDatabase : RoomDatabase() {
