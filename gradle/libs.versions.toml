@@ -41,6 +41,7 @@ playServicesMaps = "18.2.0"
 secrets = "2.0.1"
 places = "3.4.0"
 coil = "2.6.0"
+splashScreen = "1.0.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
@@ -97,6 +98,7 @@ maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = 
 play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
 places = { module = "com.google.android.libraries.places:places", version.ref = "places" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+splash-screen = { module = "androidx.core:core-splashscreen", version.ref = "splashScreen" }
 
 [bundles]
 com-squareup-retrofit2 = [
