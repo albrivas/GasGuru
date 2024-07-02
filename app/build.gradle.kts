@@ -112,7 +112,7 @@ dependencies {
     implementation(project(":core:uikit"))
     implementation(project(":core:ui"))
     implementation(project(":core:data"))
-    implementation(project(":feature:splash"))
+    implementation(project(":core:domain"))
     implementation(project(":feature:onboarding"))
     implementation(project(":feature:detail-station"))
     implementation(project(":feature:fuel-list-station"))
