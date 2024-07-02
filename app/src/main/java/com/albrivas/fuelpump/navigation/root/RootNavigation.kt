@@ -6,30 +6,27 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.albrivas.fuelpump.feature.detail_station.navigation.detailStationScreen
 import com.albrivas.fuelpump.feature.detail_station.navigation.navigateToDetailStation
+import com.albrivas.fuelpump.feature.onboarding_welcome.navigation.OnboardingRoutes
 import com.albrivas.fuelpump.feature.onboarding_welcome.navigation.navigateToOnboardingFuelPreferencesRoute
-import com.albrivas.fuelpump.feature.onboarding_welcome.navigation.navigateToOnboardingWelcomeRoute
 import com.albrivas.fuelpump.feature.onboarding_welcome.navigation.onboardingFuelPreferencesScreen
 import com.albrivas.fuelpump.feature.onboarding_welcome.navigation.onboardingWelcomeScreen
-import com.albrivas.fuelpump.feature.splash.navigation.SplashRoute
-import com.albrivas.fuelpump.feature.splash.navigation.splashScreen
 import com.albrivas.fuelpump.navigation.navigationbar.navigateToNavigationBar
 import com.albrivas.fuelpump.navigation.navigationbar.navigationBarHost
 
 @Composable
-fun MainNavigation() {
+fun MainNavigation(startDestination: Any = OnboardingRoutes.OnboardingWelcomeRoute) {
     val navController = rememberNavController()
     val navigationBarController = rememberNavController()
 
     NavHost(
         navController = navController,
-        startDestination = SplashRoute,
+        startDestination = startDestination,
     ) {
         val navOptions =
-            NavOptions.Builder().setPopUpTo(SplashRoute, true).build()
-        splashScreen(
-            navigateToOnboarding = navController::navigateToOnboardingWelcomeRoute,
-            navigateToHome = { navController.navigateToNavigationBar(navOptions) }
-        )
+            NavOptions.Builder().setPopUpTo(
+                route = OnboardingRoutes.OnboardingWelcomeRoute,
+                inclusive = true
+            ).build()
         onboardingWelcomeScreen(
             navigateToSelectFuel = navController::navigateToOnboardingFuelPreferencesRoute
         )
