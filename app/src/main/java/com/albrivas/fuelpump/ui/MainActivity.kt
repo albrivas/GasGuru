@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
                 viewModel.uiState
                     .onEach { result ->
                         uiState = when {
-                            result.isSuccess -> SplashUiState.Success
+                            result.isSuccess -> result.getOrNull() ?: SplashUiState.Loading
                             result.isFailure -> SplashUiState.Error
                             else -> SplashUiState.Loading
                         }
