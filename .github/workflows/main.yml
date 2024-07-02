@@ -13,20 +13,14 @@ jobs:
     steps:
         - run: echo "The job was automatically triggered by a ${{ github.event_name }} event"
         - name: Checkout
-          uses: actions/checkout@v3
+          uses: actions/checkout@v4
 
         - name: Set up JDK 17
-          uses: actions/setup-java@v3
+          uses: actions/setup-java@v4
           with:
             java-version: '17'
             distribution: 'zulu'
             cache: gradle
-
-        # Node.js 20 setup step
-        - name: Set up Node.js 20
-          uses: actions/setup-node@v3
-          with:
-            node-version: '20'
 
         # If gradlew is in the root directory, omit the property working-directory or else write ./
         - name: Grant execute permission for gradlew
