@@ -21,8 +21,8 @@ android {
         applicationId = "com.albrivas.fuelpump"
         minSdk = 26
         targetSdk = 34
-        versionCode = 10
-        versionName = "1.0.9"
+        versionCode = 11
+        versionName = "1.0.10"
 
         testInstrumentationRunner = "com.albrivas.fuelpump.core.testing.HiltTestRunner"
         vectorDrawables {
@@ -112,7 +112,7 @@ dependencies {
     implementation(project(":core:uikit"))
     implementation(project(":core:ui"))
     implementation(project(":core:data"))
-    implementation(project(":feature:splash"))
+    implementation(project(":core:domain"))
     implementation(project(":feature:onboarding"))
     implementation(project(":feature:detail-station"))
     implementation(project(":feature:fuel-list-station"))
@@ -145,4 +145,6 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.analytics)
+
+    implementation(libs.splash.screen)
 }

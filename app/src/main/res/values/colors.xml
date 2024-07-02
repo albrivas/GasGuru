@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  ~ nnnnnnn
-  -->
-
 <resources>
     <color name="color_primary">#00CC99</color>
     <color name="color_secondary">#007E59</color>
