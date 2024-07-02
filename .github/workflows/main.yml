@@ -22,11 +22,12 @@ jobs:
             distribution: 'zulu'
             cache: gradle
 
+        # If gradlew is in the root directory, omit the property working-directory or else write ./
         - name: Grant execute permission for gradlew
           run: chmod +x gradlew
-          working-directory: ./chapterfourteen
+          working-directory: ./
 
         - name: Build with Gradle
           run: ./gradlew assembleDebug
-          working-directory: ./chapterfourteen
+          working-directory: ./
         
