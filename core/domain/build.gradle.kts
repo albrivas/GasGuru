@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.detekt)
 }
 
 android {
@@ -41,24 +42,16 @@ android {
 }
 
 dependencies {
-
     implementation(project(":core:data"))
     implementation(project(":core:model"))
     implementation(project(":core:common"))
-
-    testImplementation(project(":core:testing"))
-
-    //Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
-
-    // Core Android dependencies
     implementation(libs.androidx.core.ktx)
-
-    // Compose
+    detektPlugins(libs.detekt.formatting)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
-    // Tooling
+    testImplementation(project(":core:testing"))
     debugImplementation(libs.androidx.compose.ui.tooling)
 }

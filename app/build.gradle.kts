@@ -72,40 +72,6 @@ android {
         }
     }
 }
-val detektRootPath = "$rootDir/config/detekt"
-val detektFilePath = "$detektRootPath/detekt.yml"
-val detektReportPath = "$detektRootPath/detekt_report.html"
-val detektTaskName = "codeCheck"
-
-tasks.register<Detekt>("codeCheck") {
-    group = "detekt"
-    description = "Runs a custom detekt build"
-
-    setSource(
-        files(
-            "src/main/java",
-            "src/test/java",
-            "src/main/kotlin",
-            "src/test/kotlin",
-            "src/extended/java",
-            "src/external/java"
-        )
-    )
-    config.setFrom(file(detektFilePath))
-    buildUponDefaultConfig = true
-    autoCorrect = true
-    debug = true
-
-    reports {
-        html {
-            required.set(true)
-            outputLocation.set(file(detektReportPath))
-        }
-    }
-
-    doFirst { println(message = "DETEKT ----> Running custom detekt build") }
-    //dependsOn(":sdk:test")
-}
 
 dependencies {
 

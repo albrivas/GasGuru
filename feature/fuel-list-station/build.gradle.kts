@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.detekt)
 }
 
 android {
@@ -65,7 +66,7 @@ dependencies {
     implementation(libs.androidx.compose.permission)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.navigation.compose)
-
+    detektPlugins(libs.detekt.formatting)
     // Tooling
     debugImplementation(libs.androidx.compose.ui.tooling)
     // Instrumented tests

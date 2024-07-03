@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.secrets)
+    alias(libs.plugins.detekt)
 }
 
 android {
@@ -67,7 +68,7 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.kotlin.coroutines.play)
     debugImplementation(libs.androidx.compose.ui.tooling)
-
+    detektPlugins(libs.detekt.formatting)
     implementation(libs.maps.compose)
     implementation(libs.play.services.maps)
     implementation(libs.places)
