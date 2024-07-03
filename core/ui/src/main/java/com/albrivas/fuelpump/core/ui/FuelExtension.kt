@@ -124,9 +124,12 @@ private fun isDayMatched(days: String, currentDay: DayOfWeek): Boolean {
     val dayRange = days.split("-")
     val startDay = dayOfWeekMap[dayRange[0].uppercase(Locale.ROOT)]
         ?: throw IllegalArgumentException("Día de inicio inválido: ${dayRange[0]}")
-    val endDay = if (dayRange.size > 1) dayOfWeekMap[dayRange[1].uppercase(Locale.ROOT)]
-        ?: throw IllegalArgumentException("Día de fin inválido: ${dayRange[1]}")
-    else startDay
+    val endDay = if (dayRange.size > 1) {
+        dayOfWeekMap[dayRange[1].uppercase(Locale.ROOT)]
+            ?: throw IllegalArgumentException("Día de fin inválido: ${dayRange[1]}")
+    } else {
+        startDay
+    }
 
     return currentDay in startDay..endDay
 }
@@ -134,13 +137,14 @@ private fun isDayMatched(days: String, currentDay: DayOfWeek): Boolean {
 private fun isTimeInRange(times: List<String>, currentTime: LocalTime): Boolean {
     val startTime =
         LocalTime.parse(times[0].padEnd(5, '0'), DateTimeFormatter.ofPattern(FORMATO_HORA_24H))
-    val endTime = if (times.size > 1)
+    val endTime = if (times.size > 1) {
         LocalTime.parse(times[1].padEnd(5, '0'), DateTimeFormatter.ofPattern(FORMATO_HORA_24H))
-    else
+    } else {
         LocalTime.parse(HORA_FIN_DIA, DateTimeFormatter.ofPattern(FORMATO_HORA_24H))
+    }
 
     return (currentTime.isAfter(startTime) || currentTime == startTime) &&
-            !currentTime.isAfter(endTime)
+        !currentTime.isAfter(endTime)
 }
 
 private val dayOfWeekMap = mapOf(

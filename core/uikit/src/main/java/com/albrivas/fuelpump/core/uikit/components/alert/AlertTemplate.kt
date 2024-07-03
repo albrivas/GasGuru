@@ -44,7 +44,8 @@ fun AlertTemplate(model: AlertTemplateModel) {
                         iterations = LottieConstants.IterateForever,
                     )
                     Text(
-                        text = description, color = GrayLight,
+                        text = description,
+                        color = GrayLight,
                         textAlign = TextAlign.Start,
                         style = MaterialTheme.typography.displayMedium
                     )

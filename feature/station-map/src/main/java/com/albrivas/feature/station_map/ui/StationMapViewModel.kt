@@ -13,7 +13,6 @@ import com.albrivas.fuelpump.core.domain.GetPlacesUseCase
 import com.albrivas.fuelpump.core.domain.GetRecentSearchQueryUseCase
 import com.albrivas.fuelpump.core.domain.GetUserDataUseCase
 import com.albrivas.fuelpump.core.domain.InsertRecentSearchQueryUseCase
-import com.albrivas.fuelpump.core.model.data.RecentSearchQuery
 import com.albrivas.fuelpump.core.model.data.SearchPlace
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -59,10 +58,11 @@ class StationMapViewModel @Inject constructor(
                 flowOf(SearchResultUiState.EmptyQuery)
             } else {
                 getPlacesUseCase(query).map { predictions ->
-                    if (predictions.isEmpty())
+                    if (predictions.isEmpty()) {
                         SearchResultUiState.EmptySearchResult
-                    else
+                    } else {
                         SearchResultUiState.Success(predictions)
+                    }
                 }
             }
         }.stateIn(
@@ -134,7 +134,6 @@ class StationMapViewModel @Inject constructor(
 
     private fun resetMapCenter() =
         _state.update { it.copy(centerMap = LatLng(0.0, 0.0), zoomLevel = 15f) }
-
 
     private fun getStationByLocation(location: Location) {
         viewModelScope.launch {

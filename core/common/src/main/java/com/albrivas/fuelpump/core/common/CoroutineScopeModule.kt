@@ -33,5 +33,4 @@ class CoroutinesScopesModule {
     fun providesCoroutineScopeIo(
         @MainDispatcher ioScope: CoroutineDispatcher,
     ): CoroutineScope = CoroutineScope(SupervisorJob() + ioScope)
-
 }

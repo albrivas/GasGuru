@@ -16,7 +16,7 @@ fun Location?.toLatLng(): LatLng {
     return if (this != null) {
         LatLng(latitude, longitude)
     } else {
-        LatLng(40.4165, -3.70256) //Madrid coordinates
+        LatLng(40.4165, -3.70256) // Madrid coordinates
     }
 }
 
@@ -46,7 +46,7 @@ fun Context.hasLocationPermission(): Boolean {
 fun Context.isLocationEnabled(): Boolean {
     val locationManager = getSystemService(Context.LOCATION_SERVICE) as? LocationManager
     return locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER) == true ||
-            locationManager?.isProviderEnabled(LocationManager.NETWORK_PROVIDER) == true
+        locationManager?.isProviderEnabled(LocationManager.NETWORK_PROVIDER) == true
 }
 
 fun startRoute(context: Context, location: Location) {
@@ -65,9 +65,9 @@ fun generateStaticMapUrl(
 ): String {
     val center = "${location.latitude},${location.longitude}"
     return "https://maps.googleapis.com/maps/api/staticmap?" +
-            "center=$center" +
-            "&zoom=$zoom" +
-            "&size=${width}x$height" +
-            "&markers=color:red%7Clabel:C%7C$center" +
-            "&key=$apiKey"
+        "center=$center" +
+        "&zoom=$zoom" +
+        "&size=${width}x$height" +
+        "&markers=color:red%7Clabel:C%7C$center" +
+        "&key=$apiKey"
 }

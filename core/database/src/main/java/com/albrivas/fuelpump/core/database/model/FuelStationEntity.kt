@@ -59,7 +59,6 @@ data class FuelStationEntity(
     val lastUpdate: Long
 )
 
-
 fun FuelStationEntity.asExternalModel() = FuelStation(
     bioEthanolPercentage,
     esterMethylPercentage,
@@ -126,4 +125,3 @@ fun FuelStationEntity.getLocation() = Location("").apply {
     latitude = this@getLocation.latitude
     longitude = this@getLocation.longitudeWGS84
 }
-

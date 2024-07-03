@@ -33,13 +33,17 @@ fun NetworkPriceFuelStation.asEntity() = FuelStationEntity(
     priceBioEthanol = priceBioEthanol.takeIf { it.isNotEmpty() }?.replace(",", ".")?.toDouble() ?: 0.0,
     priceGasNaturalCompressed = priceGasNaturalCompressed.takeIf { it.isNotEmpty() }?.replace(",", ".")?.toDouble() ?: 0.0,
     priceLiquefiedNaturalGas = priceLiquefiedNaturalGas.takeIf { it.isNotEmpty() }?.replace(",", ".")?.toDouble() ?: 0.0,
-    priceLiquefiedPetroleumGas = priceLiquefiedPetroleumGas.takeIf { it.isNotEmpty() }?.replace(",", ".")?.toDouble() ?: 0.0,
+    priceLiquefiedPetroleumGas = priceLiquefiedPetroleumGas.takeIf {
+        it.isNotEmpty()
+    }?.replace(",", ".")?.toDouble() ?: 0.0,
     priceGasoilA = priceGasoilA.takeIf { it.isNotEmpty() }?.replace(",", ".")?.toDouble() ?: 0.0,
     priceGasoilB = priceGasoilB.takeIf { it.isNotEmpty() }?.replace(",", ".")?.toDouble() ?: 0.0,
     priceGasoilPremium = priceGasoilPremium.takeIf { it.isNotEmpty() }?.replace(",", ".")?.toDouble() ?: 0.0,
     priceGasoline95_E10 = priceGasoline95_E10.takeIf { it.isNotEmpty() }?.replace(",", ".")?.toDouble() ?: 0.0,
     priceGasoline95_E5 = priceGasoline95_E5.takeIf { it.isNotEmpty() }?.replace(",", ".")?.toDouble() ?: 0.0,
-    priceGasoline95_E5_Premium = priceGasoline95_E5_Premium.takeIf { it.isNotEmpty() }?.replace(",", ".")?.toDouble() ?: 0.0,
+    priceGasoline95_E5_Premium = priceGasoline95_E5_Premium.takeIf {
+        it.isNotEmpty()
+    }?.replace(",", ".")?.toDouble() ?: 0.0,
     priceGasoline98_E10 = priceGasoline98_E10.takeIf { it.isNotEmpty() }?.replace(",", ".")?.toDouble() ?: 0.0,
     priceGasoline98_E5 = priceGasoline98_E5.takeIf { it.isNotEmpty() }?.replace(",", ".")?.toDouble() ?: 0.0,
     priceHydrogen = priceHydrogen.takeIf { it.isNotEmpty() }?.replace(",", ".")?.toDouble() ?: 0.0,

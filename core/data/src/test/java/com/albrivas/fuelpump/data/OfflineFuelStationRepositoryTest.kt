@@ -1,8 +1,5 @@
 package com.albrivas.fuelpump.data
 
-import app.cash.turbine.test
-import arrow.core.right
-import com.albrivas.fuelpump.core.data.mapper.asEntity
 import com.albrivas.fuelpump.core.data.repository.OfflineFuelStationRepository
 import com.albrivas.fuelpump.core.database.dao.FuelStationDao
 import com.albrivas.fuelpump.core.network.datasource.RemoteDataSource
@@ -10,15 +7,9 @@ import com.albrivas.fuelpump.core.network.model.NetworkFuelStation
 import com.albrivas.fuelpump.core.network.model.NetworkPriceFuelStation
 import com.albrivas.fuelpump.core.testing.CoroutinesTestRule
 import io.mockk.MockKAnnotations
-import io.mockk.coEvery
-import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
-import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -29,7 +20,7 @@ import java.util.Date
  * Unit tests for [OfflineFuelStationRepository].
  */
 
-//TODO: Modify all test because something is not correct here
+// TODO: Modify all test because something is not correct here
 @ExperimentalCoroutinesApi
 class OfflineFuelStationRepositoryTest {
 
@@ -40,7 +31,6 @@ class OfflineFuelStationRepositoryTest {
 
     @get: Rule
     val dispatcherRule = CoroutinesTestRule()
-
 
     @Before
     fun setUp() {
@@ -63,7 +53,6 @@ class OfflineFuelStationRepositoryTest {
 //            awaitComplete()
 //        }
     }
-
 
     private val listFuelStation = listOf(
         NetworkPriceFuelStation(
