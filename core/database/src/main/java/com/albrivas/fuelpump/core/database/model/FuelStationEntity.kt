@@ -45,11 +45,11 @@ data class FuelStationEntity(
     val priceGasoilA: Double,
     val priceGasoilB: Double,
     val priceGasoilPremium: Double,
-    val priceGasoline95_E10: Double,
-    val priceGasoline95_E5: Double,
-    val priceGasoline95_E5_Premium: Double,
-    val priceGasoline98_E10: Double,
-    val priceGasoline98_E5: Double,
+    val priceGasoline95E10: Double,
+    val priceGasoline95E5: Double,
+    val priceGasoline95E5Premium: Double,
+    val priceGasoline98E10: Double,
+    val priceGasoline98E5: Double,
     val priceHydrogen: Double,
     val province: String,
     val referral: String,
@@ -76,11 +76,11 @@ fun FuelStationEntity.asExternalModel() = FuelStation(
     priceGasoilA,
     priceGasoilB,
     priceGasoilPremium,
-    priceGasoline95_E10,
-    priceGasoline95_E5,
-    priceGasoline95_E5_Premium,
-    priceGasoline98_E10,
-    priceGasoline98_E5,
+    priceGasoline95E10,
+    priceGasoline95E5,
+    priceGasoline95E5Premium,
+    priceGasoline98E10,
+    priceGasoline98E5,
     priceHydrogen,
     province,
     referral,
@@ -90,35 +90,40 @@ fun FuelStationEntity.asExternalModel() = FuelStation(
 )
 
 fun String.toBrandStation(): FuelStationBrandsType {
-    return when {
-        lowercase().contains("repsol") -> FuelStationBrandsType.REPSOL
-        lowercase().contains("petronor") -> FuelStationBrandsType.PETRONOR
-        lowercase().contains("galp") -> FuelStationBrandsType.GALP
-        lowercase().contains("bp") -> FuelStationBrandsType.BP
-        lowercase().contains("shell") -> FuelStationBrandsType.SHELL
-        lowercase().contains("carrefour") -> FuelStationBrandsType.CARREFOUR
-        lowercase().contains("cepsa") -> FuelStationBrandsType.CEPSA
-        lowercase().contains("eroski") -> FuelStationBrandsType.EROSKI
-        lowercase().contains("bonarea") -> FuelStationBrandsType.BONAREA
-        lowercase().contains("alcampo") -> FuelStationBrandsType.ALCAMPO
-        lowercase().contains("meroil") -> FuelStationBrandsType.MEROIL
-        lowercase().contains("ballenoil") -> FuelStationBrandsType.BALLENOIL
-        lowercase().contains("esso") -> FuelStationBrandsType.ESSO
-        lowercase().contains("makro") -> FuelStationBrandsType.MAKRO
-        lowercase().contains("tgas") -> FuelStationBrandsType.TGAS
-        lowercase().contains("eleclerc") -> FuelStationBrandsType.ELECLERC
-        lowercase().contains("eclerc") -> FuelStationBrandsType.ECLERC
-        lowercase().contains("disa") -> FuelStationBrandsType.DISA
-        lowercase().contains("pc") -> FuelStationBrandsType.PC
-        lowercase().contains("texaco") -> FuelStationBrandsType.TEXACO
-        lowercase().contains("zoloil") -> FuelStationBrandsType.ZOLOIL
-        lowercase().contains("q8") -> FuelStationBrandsType.Q8
-        lowercase().contains("azul-oil") -> FuelStationBrandsType.AZUL_OIL
-        lowercase().contains("silver") -> FuelStationBrandsType.SILVER_FUEL
-        lowercase().contains("farruco") -> FuelStationBrandsType.FARRUCO
-        lowercase().contains("fernandez bermejo") -> FuelStationBrandsType.REPOSTAR
-        else -> FuelStationBrandsType.UNKOWN
+    val brandMap = mapOf(
+        "repsol" to FuelStationBrandsType.REPSOL,
+        "petronor" to FuelStationBrandsType.PETRONOR,
+        "galp" to FuelStationBrandsType.GALP,
+        "bp" to FuelStationBrandsType.BP,
+        "shell" to FuelStationBrandsType.SHELL,
+        "carrefour" to FuelStationBrandsType.CARREFOUR,
+        "cepsa" to FuelStationBrandsType.CEPSA,
+        "eroski" to FuelStationBrandsType.EROSKI,
+        "bonarea" to FuelStationBrandsType.BONAREA,
+        "alcampo" to FuelStationBrandsType.ALCAMPO,
+        "meroil" to FuelStationBrandsType.MEROIL,
+        "ballenoil" to FuelStationBrandsType.BALLENOIL,
+        "esso" to FuelStationBrandsType.ESSO,
+        "makro" to FuelStationBrandsType.MAKRO,
+        "tgas" to FuelStationBrandsType.TGAS,
+        "eleclerc" to FuelStationBrandsType.ELECLERC,
+        "eclerc" to FuelStationBrandsType.ECLERC,
+        "disa" to FuelStationBrandsType.DISA,
+        "pc" to FuelStationBrandsType.PC,
+        "texaco" to FuelStationBrandsType.TEXACO,
+        "zoloil" to FuelStationBrandsType.ZOLOIL,
+        "q8" to FuelStationBrandsType.Q8,
+        "azul-oil" to FuelStationBrandsType.AZUL_OIL,
+        "silver" to FuelStationBrandsType.SILVER_FUEL,
+        "farruco" to FuelStationBrandsType.FARRUCO,
+        "fernandez bermejo" to FuelStationBrandsType.REPOSTAR
+    )
+
+    val brandNameLowercase = this.lowercase()
+    brandMap.forEach { (key, value) ->
+        if (brandNameLowercase.contains(key)) return value
     }
+    return FuelStationBrandsType.UNKOWN // Manejo del caso 'else'
 }
 
 fun FuelStationEntity.getLocation() = Location("").apply {

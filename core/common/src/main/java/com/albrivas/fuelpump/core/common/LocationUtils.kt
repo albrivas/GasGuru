@@ -12,11 +12,14 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
 
+const val MADRID_LATITUDE = 40.4165
+const val MADRID_LONGITUDE = -3.70256
+
 fun Location?.toLatLng(): LatLng {
     return if (this != null) {
         LatLng(latitude, longitude)
     } else {
-        LatLng(40.4165, -3.70256) // Madrid coordinates
+        LatLng(MADRID_LATITUDE, MADRID_LONGITUDE)
     }
 }
 
@@ -50,9 +53,13 @@ fun Context.isLocationEnabled(): Boolean {
 }
 
 fun startRoute(context: Context, location: Location) {
-    val intent = Intent(Intent.ACTION_VIEW)
-    intent.data =
-        Uri.parse("https://www.google.com/maps/dir/?api=1&destination=${location.latitude},${location.longitude}&mode=driving")
+    val intent = Intent(Intent.ACTION_VIEW).apply {
+        data = Uri.parse(
+            "https://www.google.com/maps/dir/?api=1" +
+                "&destination=${location.latitude},${location.longitude}" +
+                "&mode=driving"
+        )
+    }
     ContextCompat.startActivity(context, intent, null)
 }
 

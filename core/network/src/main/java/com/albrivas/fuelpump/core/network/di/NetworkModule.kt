@@ -24,6 +24,10 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
+const val CONNECTION_TIMEOUT: Long = 60
+const val WRITE_TIMEOUT: Long = 60
+const val READ_TIMEOUT: Long = 60
+
 @Module
 @InstallIn(SingletonComponent::class)
 class NetworkModule {
@@ -40,9 +44,9 @@ class NetworkModule {
         OkHttpClient
             .Builder()
             .addInterceptor(httpLoggingInterceptor)
-            .connectTimeout(60, TimeUnit.SECONDS)
-            .writeTimeout(60, TimeUnit.SECONDS)
-            .readTimeout(60, TimeUnit.SECONDS)
+            .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS)
+            .writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
+            .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
             .build()
 
     @Singleton

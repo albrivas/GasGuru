@@ -37,3 +37,7 @@ android {
         }
     }
 }
+
+dependencies {
+    detektPlugins(libs.detekt.formatting)
+}

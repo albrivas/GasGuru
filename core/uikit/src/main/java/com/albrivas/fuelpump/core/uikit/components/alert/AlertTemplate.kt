@@ -71,7 +71,8 @@ private fun AlertMoleculePreview() {
         AlertTemplate(
             model = AlertTemplateModel(
                 animation = 0,
-                description = "Para poder ver las estaciones cercanas a tu ubicación necesitamos que actives la localización en tu movil",
+                description = "Para poder ver las estaciones cercanas a tu ubicación necesitamos " +
+                    "que actives la localización en tu movil",
                 buttonText = "Activar localización",
                 onClick = {}
             )

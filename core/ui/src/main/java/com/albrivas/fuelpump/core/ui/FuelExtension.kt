@@ -70,8 +70,8 @@ fun PriceCategory.toColor() = when (this) {
 }
 
 fun FuelType?.getPrice(fuelStation: FuelStation) = when (this) {
-    FuelType.GASOLINE_95 -> "${fuelStation.priceGasoline95_E5}"
-    FuelType.GASOLINE_98 -> "${fuelStation.priceGasoline98_E5}"
+    FuelType.GASOLINE_95 -> "${fuelStation.priceGasoline95E5}"
+    FuelType.GASOLINE_98 -> "${fuelStation.priceGasoline98E5}"
     FuelType.DIESEL -> "${fuelStation.priceGasoilA}"
     FuelType.DIESEL_PLUS -> "${fuelStation.priceGasoilPremium}"
     FuelType.ELECTRIC -> "0.0"
@@ -83,19 +83,20 @@ fun FuelStation.getFuelPrices(): List<Pair<String, Double>> {
     return mapOf(
         R.string.diesel to priceGasoilA,
         R.string.diesel_plus to priceGasoilPremium,
-        R.string.gasoline_95 to priceGasoline95_E5,
-        R.string.gasoline_98 to priceGasoline98_E5
+        R.string.gasoline_95 to priceGasoline95E5,
+        R.string.gasoline_98 to priceGasoline98E5
     )
         .filterValues { it > 0.0 }
         .map { Pair(stringResource(id = it.key), it.value) }
 }
 
-val FORMATO_HORA_24H = "HH:mm"
-val HORA_FIN_DIA = "23:59"
-val HORARIO_24H = "L-D: 24H"
+const val FORMAT_TIME_24H = "HH:mm"
+const val END_OF_DAY_TIME = "23:59"
+const val SCHEDULE_24H = "L-D: 24H"
 
+@Suppress("ReturnCount")
 fun FuelStation.isStationOpen(): Boolean {
-    if (schedule.trim().uppercase(Locale.ROOT) == HORARIO_24H) {
+    if (schedule.trim().uppercase(Locale.ROOT) == SCHEDULE_24H) {
         return true
     }
 
@@ -134,13 +135,15 @@ private fun isDayMatched(days: String, currentDay: DayOfWeek): Boolean {
     return currentDay in startDay..endDay
 }
 
+const val MIN_TIME_LENGTH = 5
+
 private fun isTimeInRange(times: List<String>, currentTime: LocalTime): Boolean {
     val startTime =
-        LocalTime.parse(times[0].padEnd(5, '0'), DateTimeFormatter.ofPattern(FORMATO_HORA_24H))
+        LocalTime.parse(times[0].padEnd(MIN_TIME_LENGTH, '0'), DateTimeFormatter.ofPattern(FORMAT_TIME_24H))
     val endTime = if (times.size > 1) {
-        LocalTime.parse(times[1].padEnd(5, '0'), DateTimeFormatter.ofPattern(FORMATO_HORA_24H))
+        LocalTime.parse(times[1].padEnd(MIN_TIME_LENGTH, '0'), DateTimeFormatter.ofPattern(FORMAT_TIME_24H))
     } else {
-        LocalTime.parse(HORA_FIN_DIA, DateTimeFormatter.ofPattern(FORMATO_HORA_24H))
+        LocalTime.parse(END_OF_DAY_TIME, DateTimeFormatter.ofPattern(FORMAT_TIME_24H))
     }
 
     return (currentTime.isAfter(startTime) || currentTime == startTime) &&
