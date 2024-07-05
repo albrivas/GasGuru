@@ -37,6 +37,10 @@ jobs:
           run: chmod +x gradlew
           working-directory: ./
 
+        - name: Run detekt
+          run: ./gradlew codeCheck
+          working-directory: ./
+
         - name: Build with Gradle
           run: ./gradlew assembleDebug
           working-directory: ./
