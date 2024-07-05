@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.albrivas.fuelpump.core.domain.GetFuelStationUseCase
 import com.albrivas.fuelpump.core.domain.GetUserDataUseCase
-import com.albrivas.fuelpump.feature.splash.state.SplashUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

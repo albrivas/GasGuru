@@ -50,5 +50,4 @@ class NetworkModuleTest {
             .baseUrl(mockWebServer.url(endPoint))
             .client(okHttpClient)
             .build()
-
 }

@@ -1,4 +1,4 @@
-package com.albrivas.fuelpump.feature.splash.state
+package com.albrivas.fuelpump.ui
 
 sealed interface SplashUiState {
     data object Loading : SplashUiState

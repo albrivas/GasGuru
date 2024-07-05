@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.detekt)
 }
 
 android {
@@ -42,6 +43,8 @@ android {
 dependencies {
 
     implementation(project(":core:data"))
+    detektPlugins(libs.detekt.formatting)
+
     api(libs.junit)
     api(libs.androidx.test.core)
     api(libs.kotlinx.coroutines.test)

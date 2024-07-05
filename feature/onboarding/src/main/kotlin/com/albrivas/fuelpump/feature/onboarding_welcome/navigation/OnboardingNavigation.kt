@@ -36,6 +36,7 @@ fun NavGraphBuilder.onboardingFuelPreferencesScreen(navigateToHome: () -> Unit) 
 sealed class OnboardingRoutes {
     @Serializable
     data object OnboardingWelcomeRoute : OnboardingRoutes()
+
     @Serializable
     data object OnboardingFuelPreferencesRoute : OnboardingRoutes()
 }

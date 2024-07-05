@@ -12,11 +12,14 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
 
+const val MADRID_LATITUDE = 40.4165
+const val MADRID_LONGITUDE = -3.70256
+
 fun Location?.toLatLng(): LatLng {
     return if (this != null) {
         LatLng(latitude, longitude)
     } else {
-        LatLng(40.4165, -3.70256) //Madrid coordinates
+        LatLng(MADRID_LATITUDE, MADRID_LONGITUDE)
     }
 }
 
@@ -46,13 +49,17 @@ fun Context.hasLocationPermission(): Boolean {
 fun Context.isLocationEnabled(): Boolean {
     val locationManager = getSystemService(Context.LOCATION_SERVICE) as? LocationManager
     return locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER) == true ||
-            locationManager?.isProviderEnabled(LocationManager.NETWORK_PROVIDER) == true
+        locationManager?.isProviderEnabled(LocationManager.NETWORK_PROVIDER) == true
 }
 
 fun startRoute(context: Context, location: Location) {
-    val intent = Intent(Intent.ACTION_VIEW)
-    intent.data =
-        Uri.parse("https://www.google.com/maps/dir/?api=1&destination=${location.latitude},${location.longitude}&mode=driving")
+    val intent = Intent(Intent.ACTION_VIEW).apply {
+        data = Uri.parse(
+            "https://www.google.com/maps/dir/?api=1" +
+                "&destination=${location.latitude},${location.longitude}" +
+                "&mode=driving"
+        )
+    }
     ContextCompat.startActivity(context, intent, null)
 }
 
@@ -65,9 +72,9 @@ fun generateStaticMapUrl(
 ): String {
     val center = "${location.latitude},${location.longitude}"
     return "https://maps.googleapis.com/maps/api/staticmap?" +
-            "center=$center" +
-            "&zoom=$zoom" +
-            "&size=${width}x$height" +
-            "&markers=color:red%7Clabel:C%7C$center" +
-            "&key=$apiKey"
+        "center=$center" +
+        "&zoom=$zoom" +
+        "&size=${width}x$height" +
+        "&markers=color:red%7Clabel:C%7C$center" +
+        "&key=$apiKey"
 }

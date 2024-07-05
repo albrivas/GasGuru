@@ -2,6 +2,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.detekt)
 }
 
 android {
@@ -35,4 +36,8 @@ android {
             merges += "META-INF/LICENSE-notice.md"
         }
     }
+}
+
+dependencies {
+    detektPlugins(libs.detekt.formatting)
 }

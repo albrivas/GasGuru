@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.detekt)
 }
 
 android {
@@ -46,4 +47,5 @@ dependencies {
     api(libs.androidx.compose.material3)
     debugApi(libs.androidx.compose.ui.tooling)
     api(libs.androidx.compose.ui.tooling.preview)
+    detektPlugins(libs.detekt.formatting)
 }

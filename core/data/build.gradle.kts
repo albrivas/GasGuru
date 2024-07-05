@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.detekt)
 }
 
 android {
@@ -44,16 +45,13 @@ dependencies {
     implementation(project(":core:network"))
     implementation(project(":core:model"))
     implementation(project(":core:common"))
-
-    testImplementation(project(":core:testing"))
-
-    // Arch Components
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
-
+    detektPlugins(libs.detekt.formatting)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlin.coroutines.play)
     implementation(libs.io.arrow.kt.arrow.core)
     implementation(libs.play.services.location)
     implementation(libs.places)
+    testImplementation(project(":core:testing"))
 }

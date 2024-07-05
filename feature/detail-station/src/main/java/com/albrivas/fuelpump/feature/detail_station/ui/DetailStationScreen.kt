@@ -175,7 +175,6 @@ fun DetailStationContent(station: FuelStation) {
                 )
             )
         }
-
     }
 }
 

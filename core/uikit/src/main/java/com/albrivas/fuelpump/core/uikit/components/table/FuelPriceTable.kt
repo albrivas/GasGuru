@@ -46,7 +46,8 @@ private fun TableHeader(header: Pair<String, String>) {
         )
         VerticalDivider(
             modifier = Modifier
-                .width(1.dp), color = Color.Black
+                .width(1.dp),
+            color = Color.Black
         )
         Text(
             text = header.second,
@@ -76,7 +77,8 @@ private fun TableItem(row: List<Pair<String, Double>>) {
             )
             VerticalDivider(
                 modifier = Modifier
-                    .width(1.dp), color = Color.Black
+                    .width(1.dp),
+                color = Color.Black
             )
             Text(
                 text = "${item.second}€",
@@ -99,7 +101,6 @@ private fun FuelPriceTablePreview() {
                 rows = listOf("Gasoline 95" to 1.765, "Diesel" to 1.876)
             )
         )
-
     }
 }
 

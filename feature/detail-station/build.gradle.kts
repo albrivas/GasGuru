@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.secrets)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.detekt)
 }
 
 android {
@@ -64,4 +65,5 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.coil.compose)
+    detektPlugins(libs.detekt.formatting)
 }

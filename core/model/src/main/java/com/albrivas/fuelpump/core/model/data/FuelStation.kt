@@ -3,6 +3,8 @@ package com.albrivas.fuelpump.core.model.data
 import android.location.Location
 import java.util.Locale
 
+const val DISTANCE_KM_IN_METERS = 1000
+
 data class FuelStation(
     val bioEthanolPercentage: String,
     val esterMethylPercentage: String,
@@ -20,11 +22,11 @@ data class FuelStation(
     val priceGasoilA: Double,
     val priceGasoilB: Double,
     val priceGasoilPremium: Double,
-    val priceGasoline95_E10: Double,
-    val priceGasoline95_E5: Double,
-    val priceGasoline95_E5_Premium: Double,
-    val priceGasoline98_E10: Double,
-    val priceGasoline98_E5: Double,
+    val priceGasoline95E10: Double,
+    val priceGasoline95E5: Double,
+    val priceGasoline95E5Premium: Double,
+    val priceGasoline98E10: Double,
+    val priceGasoline98E5: Double,
     val priceHydrogen: Double,
     val province: String,
     val referral: String,
@@ -36,8 +38,8 @@ data class FuelStation(
 ) {
     fun formatDistance(): String {
         return when {
-            distance >= 1000 -> {
-                val kilometers = distance / 1000
+            distance >= DISTANCE_KM_IN_METERS -> {
+                val kilometers = distance / DISTANCE_KM_IN_METERS
                 String.format(Locale.ROOT, "%.2f Km", kilometers)
             }
 
@@ -73,11 +75,11 @@ fun previewFuelStationDomain() = FuelStation(
     priceGasoilA = 0.0,
     priceGasoilB = 0.0,
     priceGasoilPremium = 0.0,
-    priceGasoline95_E10 = 1.659,
-    priceGasoline95_E5 = 1.659,
-    priceGasoline95_E5_Premium = 1.759,
-    priceGasoline98_E10 = 1.759,
-    priceGasoline98_E5 = 1.659,
+    priceGasoline95E10 = 1.659,
+    priceGasoline95E5 = 1.659,
+    priceGasoline95E5Premium = 1.759,
+    priceGasoline98E10 = 1.759,
+    priceGasoline98E5 = 1.659,
     priceHydrogen = 0.0,
     province = "",
     referral = "",
@@ -87,4 +89,3 @@ fun previewFuelStationDomain() = FuelStation(
     priceCategory = PriceCategory.CHEAP,
     distance = 0.0f
 )
-

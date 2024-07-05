@@ -13,7 +13,6 @@ package com.albrivas.fuelpump.core.network.model
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-
 @JsonClass(generateAdapter = true)
 data class NetworkPriceFuelStation(
     @Json(name = "% BioEtanol")
@@ -61,15 +60,15 @@ data class NetworkPriceFuelStation(
     @Json(name = "Precio Gasoleo Premium")
     val priceGasoilPremium: String,
     @Json(name = "Precio Gasolina 95 E10")
-    val priceGasoline95_E10: String,
+    val priceGasoline95E10: String,
     @Json(name = "Precio Gasolina 95 E5")
-    val priceGasoline95_E5: String,
+    val priceGasoline95E5: String,
     @Json(name = "Precio Gasolina 95 E5 Premium")
-    val priceGasoline95_E5_Premium: String,
+    val priceGasoline95E5Premium: String,
     @Json(name = "Precio Gasolina 98 E10")
-    val priceGasoline98_E10: String,
+    val priceGasoline98E10: String,
     @Json(name = "Precio Gasolina 98 E5")
-    val priceGasoline98_E5: String,
+    val priceGasoline98E5: String,
     @Json(name = "Precio Hidrogeno")
     val priceHydrogen: String,
     @Json(name = "Provincia")

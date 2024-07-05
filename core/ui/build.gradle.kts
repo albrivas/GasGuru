@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.detekt)
 }
 
 android {
@@ -46,6 +47,8 @@ dependencies {
     implementation(project(":core:uikit"))
     // Core Android dependencies
     implementation(libs.androidx.core.ktx)
+
+    detektPlugins(libs.detekt.formatting)
 
     // Compose
     implementation(libs.androidx.compose.ui)
