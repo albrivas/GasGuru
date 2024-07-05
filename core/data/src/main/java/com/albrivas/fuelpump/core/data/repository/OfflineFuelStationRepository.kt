@@ -21,6 +21,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+const val PRICE_RANGE = 3
+
 class OfflineFuelStationRepository @Inject constructor(
     private val fuelStationDao: FuelStationDao,
     private val remoteDataSource: RemoteDataSource,
@@ -75,8 +77,8 @@ class OfflineFuelStationRepository @Inject constructor(
 
     private fun List<FuelStation>.calculateFuelPrices(fuelType: FuelType): Pair<Double, Double> {
         val prices = when (fuelType) {
-            FuelType.GASOLINE_95 -> map { it.priceGasoline95_E5 }
-            FuelType.GASOLINE_98 -> map { it.priceGasoline98_E5 }
+            FuelType.GASOLINE_95 -> map { it.priceGasoline95E5 }
+            FuelType.GASOLINE_98 -> map { it.priceGasoline98E5 }
             FuelType.DIESEL -> map { it.priceGasoilA }
             FuelType.DIESEL_PLUS -> map { it.priceGasoilPremium }
             FuelType.ELECTRIC -> listOf(0.0)
@@ -91,15 +93,15 @@ class OfflineFuelStationRepository @Inject constructor(
         maxPrice: Double,
     ): PriceCategory {
         val currentPrice = when (fuelType) {
-            FuelType.GASOLINE_95 -> priceGasoline95_E5
-            FuelType.GASOLINE_98 -> priceGasoline98_E5
+            FuelType.GASOLINE_95 -> priceGasoline95E5
+            FuelType.GASOLINE_98 -> priceGasoline98E5
             FuelType.DIESEL -> priceGasoilA
             FuelType.DIESEL_PLUS -> priceGasoilPremium
             FuelType.ELECTRIC -> 0.0
         }
 
         val priceRange = maxPrice - minPrice
-        val step = priceRange / 3
+        val step = priceRange / PRICE_RANGE
 
         return when {
             currentPrice < minPrice + step -> PriceCategory.CHEAP

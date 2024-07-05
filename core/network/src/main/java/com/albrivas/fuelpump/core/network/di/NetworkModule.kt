@@ -11,6 +11,7 @@
 
 package com.albrivas.fuelpump.core.network.di
 
+import com.albrivas.fuelpump.core.network.BuildConfig
 import com.albrivas.fuelpump.core.network.retrofit.ApiService
 import dagger.Module
 import dagger.Provides
@@ -22,7 +23,10 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
-import com.albrivas.fuelpump.core.network.BuildConfig
+
+const val CONNECTION_TIMEOUT: Long = 60
+const val WRITE_TIMEOUT: Long = 60
+const val READ_TIMEOUT: Long = 60
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -40,11 +44,10 @@ class NetworkModule {
         OkHttpClient
             .Builder()
             .addInterceptor(httpLoggingInterceptor)
-            .connectTimeout(60, TimeUnit.SECONDS)
-            .writeTimeout(60, TimeUnit.SECONDS)
-            .readTimeout(60, TimeUnit.SECONDS)
+            .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS)
+            .writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
+            .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
             .build()
-
 
     @Singleton
     @Provides
@@ -55,9 +58,7 @@ class NetworkModule {
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
 
-
     @Singleton
     @Provides
     fun provideApiService(retrofit: Retrofit): ApiService = retrofit.create(ApiService::class.java)
-
 }

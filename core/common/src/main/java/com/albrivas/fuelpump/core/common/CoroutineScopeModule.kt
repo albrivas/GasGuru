@@ -11,7 +11,7 @@ import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-class CoroutinesScopesModule {
+class CoroutineScopeModule {
 
     @Singleton
     @ApplicationScope
@@ -33,5 +33,4 @@ class CoroutinesScopesModule {
     fun providesCoroutineScopeIo(
         @MainDispatcher ioScope: CoroutineDispatcher,
     ): CoroutineScope = CoroutineScope(SupervisorJob() + ioScope)
-
 }

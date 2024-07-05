@@ -38,7 +38,6 @@ import com.albrivas.fuelpump.feature.onboarding.R
 import com.albrivas.fuelpump.feature.onboarding_welcome.viewmodel.OnboardingUiState
 import com.albrivas.fuelpump.feature.onboarding_welcome.viewmodel.OnboardingViewModel
 
-
 @Composable
 internal fun OnboardingFuelPreferencesRoute(
     navigateToHome: () -> Unit,
@@ -57,7 +56,6 @@ internal fun OnboardingFuelPreferences(
     saveSelection: (FuelType) -> Unit = {},
     uiState: OnboardingUiState,
 ) {
-
     var selectedFuel by remember { mutableStateOf<Int?>(null) }
 
     Column(
@@ -67,7 +65,6 @@ internal fun OnboardingFuelPreferences(
             .padding(start = 16.dp, top = 24.dp, end = 16.dp, bottom = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-
         Text(
             text = stringResource(id = R.string.welcome_title_fuel_preferences),
             style = MaterialTheme.typography.titleLarge,
@@ -95,7 +92,8 @@ internal fun OnboardingFuelPreferences(
                         )
                         BasicSelectedItem(
                             model = model,
-                            onItemSelected = { selectedFuel = titleTranslation })
+                            onItemSelected = { selectedFuel = titleTranslation }
+                        )
                     }
                 }
             }

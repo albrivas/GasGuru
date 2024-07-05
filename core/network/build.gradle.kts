@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.secrets)
+    alias(libs.plugins.detekt)
 }
 
 android {
@@ -73,23 +74,19 @@ android {
 }
 
 dependencies {
-    testImplementation(project(":core:testing"))
-
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
-
     implementation(libs.bundles.moshi)
     ksp(libs.moshi.codegen)
-
     implementation(libs.bundles.com.squareup.retrofit2)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.io.arrow.kt.arrow.core)
     implementation(libs.kotlin.coroutines.play)
     implementation(libs.places)
-
-    // Local tests: jUnit, coroutines, Android runner
+    detektPlugins(libs.detekt.formatting)
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mock.webserver)
+    testImplementation(project(":core:testing"))
 }

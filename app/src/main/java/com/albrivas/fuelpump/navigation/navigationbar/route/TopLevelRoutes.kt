@@ -27,7 +27,7 @@ sealed class TopLevelRoutes {
 
     companion object {
         fun fromRoute(route: String?): String? {
-            return when  {
+            return when {
                 route?.contains("${StationMapGraph.StationMapRoute::class.simpleName}") == true -> Map().route
                 route?.contains("${FuelStationListRoute::class.simpleName}") == true -> List().route
                 route?.contains("ProfileRoute") == true -> Profile().route

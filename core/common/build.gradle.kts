@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.detekt)
 }
 
 android {
@@ -44,6 +45,7 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.play.services.maps)
     implementation(libs.maps.compose)
+    detektPlugins(libs.detekt.formatting)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)

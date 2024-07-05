@@ -21,7 +21,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
-
 @ExperimentalCoroutinesApi
 class RemoteDataSourceTest {
 
@@ -66,5 +65,4 @@ class RemoteDataSourceTest {
             assert(actual.isLeft() && !actual.isRight())
         }
     }
-
 }
