@@ -1,9 +1,5 @@
 package com.albrivas.fuelpump.core.data.di
 
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
 import com.albrivas.fuelpump.core.data.repository.FuelStationRepository
 import com.albrivas.fuelpump.core.data.repository.LocationTracker
 import com.albrivas.fuelpump.core.data.repository.LocationTrackerRepository
@@ -18,6 +14,10 @@ import com.albrivas.fuelpump.core.network.datasource.PlacesDataSource
 import com.albrivas.fuelpump.core.network.datasource.PlacesDataSourceImp
 import com.albrivas.fuelpump.core.network.datasource.RemoteDataSource
 import com.albrivas.fuelpump.core.network.datasource.RemoteDataSourceImp
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)

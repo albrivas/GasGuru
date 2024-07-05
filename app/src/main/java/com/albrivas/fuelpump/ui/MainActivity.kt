@@ -14,7 +14,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
 import com.albrivas.fuelpump.feature.onboarding_welcome.navigation.OnboardingRoutes
-import com.albrivas.fuelpump.feature.splash.state.SplashUiState
 import com.albrivas.fuelpump.navigation.navigationbar.route.NavigationBarRoute
 import com.albrivas.fuelpump.navigation.root.MainNavigation
 import dagger.hilt.android.AndroidEntryPoint

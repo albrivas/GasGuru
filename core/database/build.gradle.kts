@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.detekt)
 }
 
 android {
@@ -56,7 +57,7 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
-
+    detektPlugins(libs.detekt.formatting)
     implementation(libs.kotlinx.coroutines.android)
 
     androidTestImplementation(project(":core:testing"))

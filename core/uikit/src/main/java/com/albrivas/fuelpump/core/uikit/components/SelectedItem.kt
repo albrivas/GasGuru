@@ -38,7 +38,7 @@ fun BasicSelectedItem(
             modifier = Modifier.weight(1f),
             style = MaterialTheme.typography.displayMedium,
             textAlign = TextAlign.Start,
-            text = stringResource(id = model.title ) ,
+            text = stringResource(id = model.title),
             fontWeight = FontWeight.Bold
         )
 

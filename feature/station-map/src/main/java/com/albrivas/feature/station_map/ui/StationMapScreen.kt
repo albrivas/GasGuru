@@ -52,7 +52,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.albrivas.fuelpump.feature.station_map.R
 import com.albrivas.fuelpump.core.common.centerOnLocation
 import com.albrivas.fuelpump.core.common.toLatLng
 import com.albrivas.fuelpump.core.model.data.FuelStation
@@ -66,6 +65,7 @@ import com.albrivas.fuelpump.core.uikit.components.marker.StationMarker
 import com.albrivas.fuelpump.core.uikit.components.marker.StationMarkerModel
 import com.albrivas.fuelpump.core.uikit.theme.GrayExtraLight
 import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
+import com.albrivas.fuelpump.feature.station_map.R
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
@@ -150,7 +150,9 @@ internal fun StationMapScreen(
 
             stations.forEach { station ->
                 val state =
-                    markerStates.getOrPut(station.idServiceStation) { MarkerState(position = station.location.toLatLng()) }
+                    markerStates.getOrPut(
+                        station.idServiceStation
+                    ) { MarkerState(position = station.location.toLatLng()) }
                 val isSelected = selectedLocation == station.idServiceStation
 
                 MarkerComposable(
@@ -208,17 +210,18 @@ fun SearchPlaces(
     recentSearchQueries: RecentSearchQueriesUiState,
     event: (StationMapEvent) -> Unit = {},
 ) {
-
     var active by remember { mutableStateOf(false) }
 
     val paddingAnimation: Dp by animateDpAsState(
         targetValue = if (active) 0.dp else 16.dp,
-        animationSpec = tween(durationMillis = 300), label = ""
+        animationSpec = tween(durationMillis = 300),
+        label = ""
     )
 
     val statusBarPaddingAnimation: Dp by animateDpAsState(
         targetValue = 0.dp,
-        animationSpec = tween(durationMillis = 300), label = ""
+        animationSpec = tween(durationMillis = 300),
+        label = ""
     )
 
     SearchBar(
@@ -347,7 +350,9 @@ fun SearchResultBody(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Image(
-                            painter = painterResource(id = com.albrivas.fuelpump.core.uikit.R.drawable.ic_default_marker),
+                            painter = painterResource(
+                                id = com.albrivas.fuelpump.core.uikit.R.drawable.ic_default_marker
+                            ),
                             contentDescription = "location image",
                             colorFilter = ColorFilter.tint(Color.Black)
                         )
@@ -387,7 +392,6 @@ fun EmptyResultBody() {
             modifier = Modifier.align(Alignment.Start),
             style = MaterialTheme.typography.displayMedium
         )
-
     }
 }
 
@@ -410,7 +414,6 @@ fun EmptyRecentSearchesBody() {
             modifier = Modifier.align(Alignment.Start),
             style = MaterialTheme.typography.displayMedium
         )
-
     }
 }
 

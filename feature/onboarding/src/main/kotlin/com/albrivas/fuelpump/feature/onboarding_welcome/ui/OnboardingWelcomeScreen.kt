@@ -34,7 +34,6 @@ import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
 import com.albrivas.fuelpump.feature.onboarding.R
 import com.albrivas.fuelpump.core.uikit.R as RUikit
 
-
 @Composable
 fun OnboardingWelcomeScreenRoute(navigateToSelectFuel: () -> Unit) {
     OnboardingWelcomeScreen(navigateToSelectFuel)
@@ -42,7 +41,6 @@ fun OnboardingWelcomeScreenRoute(navigateToSelectFuel: () -> Unit) {
 
 @Composable
 internal fun OnboardingWelcomeScreen(navigateToSelectFuel: () -> Unit = {}) {
-
     var locationPermissionGranted by remember { mutableStateOf(false) }
 
     val requestMultiplePermissionsLauncher =

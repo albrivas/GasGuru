@@ -12,7 +12,7 @@ class OfflineUserDataRepository @Inject constructor(
     private val userDataDao: UserDataDao
 ) : UserDataRepository {
     override val userData: Flow<UserData>
-        get() = userDataDao.getUserData().map { it.asExternalModel()  }
+        get() = userDataDao.getUserData().map { it.asExternalModel() }
 
     override suspend fun updateUserData(userData: UserData) =
         userDataDao.insertUserData(userData.asEntity())

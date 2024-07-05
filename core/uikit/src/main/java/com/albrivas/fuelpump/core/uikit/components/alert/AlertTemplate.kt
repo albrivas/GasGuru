@@ -44,7 +44,8 @@ fun AlertTemplate(model: AlertTemplateModel) {
                         iterations = LottieConstants.IterateForever,
                     )
                     Text(
-                        text = description, color = GrayLight,
+                        text = description,
+                        color = GrayLight,
                         textAlign = TextAlign.Start,
                         style = MaterialTheme.typography.displayMedium
                     )
@@ -70,7 +71,8 @@ private fun AlertMoleculePreview() {
         AlertTemplate(
             model = AlertTemplateModel(
                 animation = 0,
-                description = "Para poder ver las estaciones cercanas a tu ubicación necesitamos que actives la localización en tu movil",
+                description = "Para poder ver las estaciones cercanas a tu ubicación necesitamos " +
+                    "que actives la localización en tu movil",
                 buttonText = "Activar localización",
                 onClick = {}
             )

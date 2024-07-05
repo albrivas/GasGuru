@@ -1,5 +1,7 @@
 package com.albrivas.fuelpump.core.network.datasource
 
+import android.util.Log
+import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.model.AutocompletePrediction
 import com.google.android.libraries.places.api.model.Place
@@ -23,7 +25,8 @@ class PlacesDataSourceImp @Inject constructor(
                     .build()
                 val result = placesClient.findAutocompletePredictions(request).await()
                 emit(result.autocompletePredictions)
-            } catch (e: Exception) {
+            } catch (e: ApiException) {
+                Log.e("PlacesDataSourceImp", "Error getting places", e)
                 emit(emptyList())
             }
         }
@@ -34,7 +37,8 @@ class PlacesDataSourceImp @Inject constructor(
             val request = FetchPlaceRequest.newInstance(placeId, placeFields)
             val response = placesClient.fetchPlace(request).await()
             emit(response.place.latLng)
-        } catch (e: Exception) {
+        } catch (e: ApiException) {
+            Log.e("PlacesDataSourceImp", "Error getting place location", e)
             emit(null)
         }
     }

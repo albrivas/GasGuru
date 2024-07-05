@@ -74,7 +74,6 @@ fun FuelStationItem(
                 .fillMaxWidth()
                 .height(IntrinsicSize.Max)
         ) {
-
             Box(
                 modifier = Modifier
                     .background(item.priceCategory.toColor())
@@ -119,9 +118,13 @@ fun FuelStationItem(
                 }
                 Text(
                     text = item.direction.lowercase(Locale.getDefault()).replaceFirstChar {
-                        if (it.isLowerCase()) it.titlecase(
-                            Locale.getDefault()
-                        ) else it.toString()
+                        if (it.isLowerCase()) {
+                            it.titlecase(
+                                Locale.getDefault()
+                            )
+                        } else {
+                            it.toString()
+                        }
                     },
                     maxLines = 2,
                     style = typography.labelMedium,
@@ -133,7 +136,8 @@ fun FuelStationItem(
             Box(
                 modifier = Modifier
                     .background(
-                        color = item.priceCategory.toColor(), shape = RoundedCornerShape(
+                        color = item.priceCategory.toColor(),
+                        shape = RoundedCornerShape(
                             topStart = CornerSize(4.dp),
                             topEnd = CornerSize(0.dp),
                             bottomStart = CornerSize(0.dp),

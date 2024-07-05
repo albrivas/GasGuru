@@ -5,7 +5,7 @@ import com.albrivas.fuelpump.core.model.data.FuelType
 
 sealed interface FuelStationListUiState {
     data object Loading : FuelStationListUiState
-    data object Error: FuelStationListUiState
-    data class Success(val fuelStations: List<FuelStation>, val userSelectedFuelType: FuelType): FuelStationListUiState
-    data object DisableLocation: FuelStationListUiState
+    data object Error : FuelStationListUiState
+    data class Success(val fuelStations: List<FuelStation>, val userSelectedFuelType: FuelType) : FuelStationListUiState
+    data object DisableLocation : FuelStationListUiState
 }

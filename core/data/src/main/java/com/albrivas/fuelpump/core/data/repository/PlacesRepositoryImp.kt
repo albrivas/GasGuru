@@ -14,7 +14,6 @@ class PlacesRepositoryImp @Inject constructor(
     override fun getPlaces(query: String): Flow<List<SearchPlace>> =
         placesDataSource.getPlaces(query = query, countryCode = "ES").map { it.toDomainModel() }
 
-
     override fun getLocationPlace(placeId: String): Flow<Location> =
         placesDataSource.getLocationPlace(placeId = placeId).map {
             Location("").apply {

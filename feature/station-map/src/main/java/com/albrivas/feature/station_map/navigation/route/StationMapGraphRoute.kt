@@ -5,7 +5,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed class StationMapGraph {
     @Serializable
-    data object StationMapGraphRoute: StationMapGraph()
+    data object StationMapGraphRoute : StationMapGraph()
+
     @Serializable
-    data object StationMapRoute: StationMapGraph()
+    data object StationMapRoute : StationMapGraph()
 }
