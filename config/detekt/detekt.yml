@@ -97,7 +97,7 @@ complexity:
     threshold: 15
   ComplexCondition:
     active: true
-    threshold: 4
+    threshold: 6
   ComplexInterface:
     active: false
     threshold: 10
@@ -131,7 +131,7 @@ complexity:
     threshold: 60
   LongParameterList:
     active: true
-    functionThreshold: 6
+    functionThreshold: 8
     constructorThreshold: 7
     ignoreDefaultParameters: false
     ignoreDataClasses: true
@@ -618,7 +618,7 @@ style:
     active: true
     maxJumpCount: 1
   MagicNumber:
-    active: true
+    active: false
     excludes: [
       '**/test/**',
       '**/androidTest/**',
@@ -810,6 +810,8 @@ style:
 
 formatting:
   active: true
+  android: true
+  autoCorrect: true
   PropertySpacing:
     active: true
     indentSize: 4
