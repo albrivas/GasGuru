@@ -27,6 +27,9 @@ jobs:
           run: |
             echo "googleApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }}" >> local.properties
             echo "staticMapApiKey=${{ secrets.STATIC_MAPS_API_KEY }}" >> local.properties
+            echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> local.properties
+            echo "keyAlias=${{ secrets.KEYSTORE_ALIAS }}" >> local.properties
+            echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> local.properties
 
         - name: Create google-services.json
           env:
