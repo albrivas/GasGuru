@@ -1,4 +1,4 @@
-import io.gitlab.arturbosch.detekt.Detekt
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -13,16 +13,30 @@ plugins {
     alias(libs.plugins.secrets)
 }
 
+val localProperties = gradleLocalProperties(rootDir, providers)
+val alias: String = localProperties.getProperty("keyAlias")
+val storepass: String = localProperties.getProperty("storePassword")
+val keypass: String = localProperties.getProperty("keyPassword")
+
 android {
     namespace = "com.albrivas.fuelpump"
     compileSdk = 34
+
+    signingConfigs {
+        create("release") {
+            storeFile = file("../keystore/fuelpump")
+            storePassword = storepass
+            keyAlias = alias
+            keyPassword = keypass
+        }
+    }
 
     defaultConfig {
         applicationId = "com.albrivas.fuelpump"
         minSdk = 26
         targetSdk = 34
-        versionCode = 11
-        versionName = "1.0.10"
+        versionCode = 12
+        versionName = "1.0.11"
 
         testInstrumentationRunner = "com.albrivas.fuelpump.core.testing.HiltTestRunner"
         vectorDrawables {
@@ -38,6 +52,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
         debug {
             isMinifyEnabled = false
