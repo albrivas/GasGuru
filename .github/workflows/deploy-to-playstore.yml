@@ -1,4 +1,4 @@
-name: Deploy to Playstore
+name: Deploy to Play Store
 
 on:
   push:
@@ -48,7 +48,6 @@ jobs:
           versionName: ${{ env.versionMajor }}.${{ env.versionMinor }}.${{ env.versionPatch }}
 
       - name: Assemble Release Bundle
-        working-directory: ./
         run: ./gradlew bundleRelease
 
       - name: Sign Release
