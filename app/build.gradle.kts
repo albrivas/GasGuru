@@ -28,10 +28,10 @@ val versionsProperties = Properties().apply {
     }
 }
 
-val codeVersion: String = versionsProperties.getProperty("versionCode")
-val versionMajor: String = versionsProperties.getProperty("versionMajor")
-val versionMinor: String = versionsProperties.getProperty("versionMinor")
-val versionPatch: String = versionsProperties.getProperty("versionPatch")
+val codeVersion: String = versionsProperties.getProperty("versionCode", "13")
+val versionMajor: String = versionsProperties.getProperty("versionMajor", "1")
+val versionMinor: String = versionsProperties.getProperty("versionMinor", "0")
+val versionPatch: String = versionsProperties.getProperty("versionPatch", "12")
 val nameVersion: String = "$versionMajor.$versionMinor.$versionPatch"
 
 android {
