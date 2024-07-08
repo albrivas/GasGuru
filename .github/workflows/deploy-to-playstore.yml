@@ -16,17 +16,6 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-
-      - name: Setup Gradle
-        run: |
-          wget -qO- https://services.gradle.org/distributions/gradle-8.4.1-bin.zip > gradle.zip
-          unzip -q gradle.zip
-          export GRADLE_HOME=$PWD/gradle-8.4.1
-          export PATH=$GRADLE_HOME/bin:$PATH
-
-      - name: Verify Gradle version
-        run: gradle --version
-
       - name: Generate local.properties
         run: |
           echo "googleApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }}" >> local.properties
