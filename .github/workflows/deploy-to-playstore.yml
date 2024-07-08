@@ -29,7 +29,7 @@ jobs:
           DATA: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: echo $DATA | base64 -di > app/google-services.json
 
-      - name: Read version properties
+      - name: Read version.properties
         run: |
           while IFS='=' read -r key value || [[ -n "$key" ]]; do
             echo "Processing $key with value $value"
@@ -40,15 +40,15 @@ jobs:
             esac
           done < versions.properties
 
-      - name: Assemble Release Bundle
-        run: ./gradlew bundleRelease
-
       - name: Bump version
         uses: chkfung/android-version-actions@v1.2.3
         with:
           gradlePath: app/build.gradle.kts
           versionCode: ${{ env.versionCode }}
           versionName: ${{ env.versionMajor }}.${{ env.versionMinor }}.${{ env.versionPatch }}
+
+      - name: Assemble Release Bundle
+        run: ./gradlew bundleRelease
 
       - name: Sign Release
         uses: r0adkll/sign-android-release@v1
