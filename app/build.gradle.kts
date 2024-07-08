@@ -1,4 +1,6 @@
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import java.io.FileInputStream
+import java.io.InputStreamReader
 import java.util.Properties
 
 plugins {
@@ -19,16 +21,23 @@ val alias: String = localProperties.getProperty("keyAlias")
 val storepass: String = localProperties.getProperty("storePassword")
 val keypass: String = localProperties.getProperty("keyPassword")
 
-val versionsProperties = Properties().apply {
-    val versionsFile = project.rootProject.file("versions.properties")
-    if (versionsFile.exists()) {
-        println("versions.properties file found")
-        load(versionsFile.inputStream())
-    } else {
-        println("versions.properties file not found, falling back to default values.")
+
+fun Project.gradleFileProperties(rootDir: File, propertiesFileName: String): Properties {
+    val properties = Properties()
+    val localProperties = File(rootDir, propertiesFileName)
+
+    if (localProperties.isFile) {
+        InputStreamReader(
+            FileInputStream(localProperties), Charsets.UTF_8
+        ).use { reader ->
+            properties.load(reader)
+        }
     }
+
+    return properties
 }
 
+val versionsProperties = gradleFileProperties(rootDir, "versions.properties")
 val codeVersion: String = versionsProperties.getProperty("versionCode")
 val versionMajor: String = versionsProperties.getProperty("versionMajor")
 val versionMinor: String = versionsProperties.getProperty("versionMinor")
