@@ -20,7 +20,12 @@ val storepass: String = localProperties.getProperty("storePassword")
 val keypass: String = localProperties.getProperty("keyPassword")
 
 val versionsProperties = Properties().apply {
-    load(project.rootProject.file("versions.properties").inputStream())
+    val versionsFile = project.rootProject.file("versions.properties")
+    if (versionsFile.exists()) {
+        load(versionsFile.inputStream())
+    } else {
+        println("versions.properties file not found, falling back to default values.")
+    }
 }
 
 val codeVersion: String = versionsProperties.getProperty("versionCode")
