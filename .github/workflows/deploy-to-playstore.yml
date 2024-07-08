@@ -2,7 +2,7 @@ name: Deploy to Play Store
 
 on:
   push:
-    branches: [ "main"]
+    branches: [ "main" ]
 
 jobs:
   build:
@@ -16,6 +16,17 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
+
+      - name: Setup Gradle
+        run: |
+          wget -qO- https://services.gradle.org/distributions/gradle-8.4.1-bin.zip > gradle.zip
+          unzip -q gradle.zip
+          export GRADLE_HOME=$PWD/gradle-8.4.1
+          export PATH=$GRADLE_HOME/bin:$PATH
+
+      - name: Verify Gradle version
+        run: gradle --version
+
       - name: Generate local.properties
         run: |
           echo "googleApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }}" >> local.properties
@@ -23,10 +34,6 @@ jobs:
           echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> local.properties
           echo "keyAlias=${{ secrets.KEYSTORE_ALIAS }}" >> local.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> local.properties
-          echo "versionCode=13" >> local.properties
-          echo "versionMajor=1" >> local.properties
-          echo "versionMinor=0" >> local.properties
-          echo "versionPatch=12" >> local.properties
 
       - name: Create google-services.json
         env:
