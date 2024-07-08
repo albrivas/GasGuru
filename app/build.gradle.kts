@@ -23,7 +23,7 @@ val versionsProperties = Properties().apply {
     load(project.rootProject.file("versions.properties").inputStream())
 }
 
-val codeVersion: Int = versionsProperties.getProperty("versionCode").toInt()
+val codeVersion: String = versionsProperties.getProperty("versionCode")
 val versionMajor: String = versionsProperties.getProperty("versionMajor")
 val versionMinor: String = versionsProperties.getProperty("versionMinor")
 val versionPatch: String = versionsProperties.getProperty("versionPatch")
@@ -46,7 +46,7 @@ android {
         applicationId = "com.albrivas.fuelpump"
         minSdk = 26
         targetSdk = 34
-        versionCode = codeVersion
+        versionCode = codeVersion.toInt()
         versionName = nameVersion
 
         testInstrumentationRunner = "com.albrivas.fuelpump.core.testing.HiltTestRunner"
