@@ -52,7 +52,7 @@ jobs:
         with:
           gradlePath: app/build.gradle.kts
           versionCode: ${{ env.versionCode }}
-          versionName: ${{ env.versionMajor }}.${{ env.versionMinor }}.${{ env.versionPatch }}
+          versionName: 1.0.12
 
       - name: Assemble Release Bundle
         working-directory: ./
