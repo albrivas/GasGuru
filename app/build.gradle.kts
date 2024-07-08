@@ -19,6 +19,31 @@ val alias: String = localProperties.getProperty("keyAlias")
 val storepass: String = localProperties.getProperty("storePassword")
 val keypass: String = localProperties.getProperty("keyPassword")
 
+val versionsProperties = Properties().apply {
+    val versionsFile = project.rootProject.file("versions.properties")
+    if (versionsFile.exists()) {
+        load(versionsFile.inputStream())
+    } else {
+        println("versions.properties file not found, falling back to default values.")
+    }
+}
+
+fun getCleanProperty(properties: Properties, key: String, defaultValue: String): String {
+    return properties.getProperty(key)?.trim() ?: defaultValue
+}
+
+val codeVersion: String = getCleanProperty(versionsProperties, "versionCode", "defaultCodeVersion")
+val versionMajor: String = getCleanProperty(versionsProperties, "versionMajor", "0")
+val versionMinor: String = getCleanProperty(versionsProperties, "versionMinor", "0")
+val versionPatch: String = getCleanProperty(versionsProperties, "versionPatch", "0")
+val nameVersion: String = "$versionMajor.$versionMinor.$versionPatch"
+
+println("codeVersion: $codeVersion")
+println("versionMajor: $versionMajor")
+println("versionMinor: $versionMinor")
+println("versionPatch: $versionPatch")
+println("nameVersion: $nameVersion")
+
 
 
 android {
@@ -35,21 +60,6 @@ android {
     }
 
     defaultConfig {
-        val versionsProperties = Properties().apply {
-            val versionsFile = project.rootProject.file("versions.properties")
-            if (versionsFile.exists()) {
-                load(versionsFile.inputStream())
-            } else {
-                println("versions.properties file not found, falling back to default values.")
-            }
-        }
-
-        val codeVersion: String = versionsProperties.getProperty("versionCode") ?: "defaultCodeVersion"
-        val versionMajor: String = versionsProperties.getProperty("versionMajor") ?: "0"
-        val versionMinor: String = versionsProperties.getProperty("versionMinor") ?: "0"
-        val versionPatch: String = versionsProperties.getProperty("versionPatch") ?: "0"
-        val nameVersion= "$versionMajor.$versionMinor.$versionPatch"
-
         applicationId = "com.albrivas.fuelpump"
         minSdk = 26
         targetSdk = 34
