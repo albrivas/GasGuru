@@ -23,6 +23,10 @@ jobs:
           echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> local.properties
           echo "keyAlias=${{ secrets.KEYSTORE_ALIAS }}" >> local.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> local.properties
+          echo "versionCode=13" >> local.properties
+          echo "versionMajor=1" >> local.properties
+          echo "versionMinor=0" >> local.properties
+          echo "versionPatch=12" >> local.properties
 
       - name: Create google-services.json
         env:

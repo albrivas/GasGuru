@@ -38,10 +38,10 @@ fun Project.gradleFileProperties(rootDir: File, propertiesFileName: String): Pro
 }
 
 val versionsProperties = gradleFileProperties(rootDir, "versions.properties")
-val codeVersion: String = versionsProperties.getProperty("versionCode")
-val versionMajor: String = versionsProperties.getProperty("versionMajor")
-val versionMinor: String = versionsProperties.getProperty("versionMinor")
-val versionPatch: String = versionsProperties.getProperty("versionPatch")
+val codeVersion: String = localProperties.getProperty("versionCode")
+val versionMajor: String = localProperties.getProperty("versionMajor")
+val versionMinor: String = localProperties.getProperty("versionMinor")
+val versionPatch: String = localProperties.getProperty("versionPatch")
 val nameVersion: String = "$versionMajor.$versionMinor.$versionPatch"
 
 android {
