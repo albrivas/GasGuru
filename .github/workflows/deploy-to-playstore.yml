@@ -31,9 +31,9 @@ jobs:
 
       - name: Read version properties
         run: |
-          while IFS='=' read -r key value; do
-          echo "Processing $key with value $value"
-          case "$key" in
+          while IFS='=' read -r key value || [[ -n "$key" ]]; do
+            echo "Processing $key with value $value"
+            case "$key" in
             "versionCode"|"versionMajor"|"versionMinor"|"versionPatch")
               echo "$key=$value" >> $GITHUB_ENV
               ;;
