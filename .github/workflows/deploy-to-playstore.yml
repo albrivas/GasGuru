@@ -40,19 +40,12 @@ jobs:
             esac
           done < versions.properties
 
-      - name: Debug version variables
-        run: |
-          echo "VersionCode: ${{ env.versionCode }}"
-          echo "VersionMajor: ${{ env.versionMajor }}"
-          echo "VersionMinor: ${{ env.versionMinor }}"
-          echo "VersionPatch: ${{ env.versionPatch }}"
-
       - name: Bump version
         uses: chkfung/android-version-actions@v1.2.3
         with:
           gradlePath: app/build.gradle.kts
           versionCode: ${{ env.versionCode }}
-          versionName: 1.0.12
+          versionName: ${{ env.versionMajor }}.${{ env.versionMinor }}.${{ env.versionPatch }}
 
       - name: Assemble Release Bundle
         working-directory: ./
