@@ -39,7 +39,9 @@ jobs:
               ;;
             esac
           done < versions.properties
-          echo "Read version properties:"
+
+      - name: Debug version variables
+        run: |
           echo "VersionCode: ${{ env.versionCode }}"
           echo "VersionMajor: ${{ env.versionMajor }}"
           echo "VersionMinor: ${{ env.versionMinor }}"
