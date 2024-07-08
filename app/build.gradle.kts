@@ -19,20 +19,7 @@ val alias: String = localProperties.getProperty("keyAlias")
 val storepass: String = localProperties.getProperty("storePassword")
 val keypass: String = localProperties.getProperty("keyPassword")
 
-val versionsProperties = Properties().apply {
-    val versionsFile = project.rootProject.file("versions.properties")
-    if (versionsFile.exists()) {
-        load(versionsFile.inputStream())
-    } else {
-        println("versions.properties file not found, falling back to default values.")
-    }
-}
 
-val codeVersion: String = versionsProperties.getProperty("versionCode") ?: "defaultCodeVersion"
-val versionMajor: String = versionsProperties.getProperty("versionMajor") ?: "0"
-val versionMinor: String = versionsProperties.getProperty("versionMinor") ?: "0"
-val versionPatch: String = versionsProperties.getProperty("versionPatch") ?: "0"
-val nameVersion: String = "$versionMajor.$versionMinor.$versionPatch"
 
 android {
     namespace = "com.albrivas.fuelpump"
@@ -48,6 +35,21 @@ android {
     }
 
     defaultConfig {
+        val versionsProperties = Properties().apply {
+            val versionsFile = project.rootProject.file("versions.properties")
+            if (versionsFile.exists()) {
+                load(versionsFile.inputStream())
+            } else {
+                println("versions.properties file not found, falling back to default values.")
+            }
+        }
+
+        val codeVersion: String = versionsProperties.getProperty("versionCode") ?: "defaultCodeVersion"
+        val versionMajor: String = versionsProperties.getProperty("versionMajor") ?: "0"
+        val versionMinor: String = versionsProperties.getProperty("versionMinor") ?: "0"
+        val versionPatch: String = versionsProperties.getProperty("versionPatch") ?: "0"
+        val nameVersion= "$versionMajor.$versionMinor.$versionPatch"
+
         applicationId = "com.albrivas.fuelpump"
         minSdk = 26
         targetSdk = 34
