@@ -21,27 +21,14 @@ val alias: String = localProperties.getProperty("keyAlias")
 val storepass: String = localProperties.getProperty("storePassword")
 val keypass: String = localProperties.getProperty("keyPassword")
 
-
-fun Project.gradleFileProperties(rootDir: File, propertiesFileName: String): Properties {
-    val properties = Properties()
-    val localProperties = File(rootDir, propertiesFileName)
-
-    if (localProperties.isFile) {
-        InputStreamReader(
-            FileInputStream(localProperties), Charsets.UTF_8
-        ).use { reader ->
-            properties.load(reader)
-        }
-    }
-
-    return properties
+val versionsProperties = Properties().apply {
+    load(project.rootProject.file("versions.properties").inputStream())
 }
 
-val versionsProperties = gradleFileProperties(rootDir, "versions.properties")
-val codeVersion: String = localProperties.getProperty("versionCode")
-val versionMajor: String = localProperties.getProperty("versionMajor")
-val versionMinor: String = localProperties.getProperty("versionMinor")
-val versionPatch: String = localProperties.getProperty("versionPatch")
+val codeVersion: String = versionsProperties.getProperty("versionCode")
+val versionMajor: String = versionsProperties.getProperty("versionMajor")
+val versionMinor: String = versionsProperties.getProperty("versionMinor")
+val versionPatch: String = versionsProperties.getProperty("versionPatch")
 val nameVersion: String = "$versionMajor.$versionMinor.$versionPatch"
 
 android {
