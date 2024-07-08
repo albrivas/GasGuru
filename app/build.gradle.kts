@@ -1,4 +1,5 @@
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -18,6 +19,16 @@ val alias: String = localProperties.getProperty("keyAlias")
 val storepass: String = localProperties.getProperty("storePassword")
 val keypass: String = localProperties.getProperty("keyPassword")
 
+val versionsProperties = Properties().apply {
+    load(project.rootProject.file("versions.properties").inputStream())
+}
+
+val codeVersion: Int = versionsProperties.getProperty("versionCode").toInt()
+val versionMajor: String = versionsProperties.getProperty("versionMajor")
+val versionMinor: String = versionsProperties.getProperty("versionMinor")
+val versionPatch: String = versionsProperties.getProperty("versionPatch")
+val nameVersion: String = "$versionMajor.$versionMinor.$versionPatch"
+
 android {
     namespace = "com.albrivas.fuelpump"
     compileSdk = 34
@@ -35,8 +46,8 @@ android {
         applicationId = "com.albrivas.fuelpump"
         minSdk = 26
         targetSdk = 34
-        versionCode = 12
-        versionName = "1.0.11"
+        versionCode = codeVersion
+        versionName = nameVersion
 
         testInstrumentationRunner = "com.albrivas.fuelpump.core.testing.HiltTestRunner"
         vectorDrawables {
