@@ -22,29 +22,18 @@ val keypass: String = localProperties.getProperty("keyPassword")
 val versionsProperties = Properties().apply {
     val versionsFile = project.rootProject.file("versions.properties")
     if (versionsFile.exists()) {
+        println("versions.properties file found")
         load(versionsFile.inputStream())
     } else {
         println("versions.properties file not found, falling back to default values.")
     }
 }
 
-fun getCleanProperty(properties: Properties, key: String, defaultValue: String): String {
-    return properties.getProperty(key)?.trim() ?: defaultValue
-}
-
-val codeVersion: String = getCleanProperty(versionsProperties, "versionCode", "defaultCodeVersion")
-val versionMajor: String = getCleanProperty(versionsProperties, "versionMajor", "0")
-val versionMinor: String = getCleanProperty(versionsProperties, "versionMinor", "0")
-val versionPatch: String = getCleanProperty(versionsProperties, "versionPatch", "0")
+val codeVersion: String = versionsProperties.getProperty("versionCode")
+val versionMajor: String = versionsProperties.getProperty("versionMajor")
+val versionMinor: String = versionsProperties.getProperty("versionMinor")
+val versionPatch: String = versionsProperties.getProperty("versionPatch")
 val nameVersion: String = "$versionMajor.$versionMinor.$versionPatch"
-
-println("codeVersion: $codeVersion")
-println("versionMajor: $versionMajor")
-println("versionMinor: $versionMinor")
-println("versionPatch: $versionPatch")
-println("nameVersion: $nameVersion")
-
-
 
 android {
     namespace = "com.albrivas.fuelpump"
