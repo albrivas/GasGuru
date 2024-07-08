@@ -32,10 +32,11 @@ jobs:
       - name: Read version properties
         run: |
           while IFS='=' read -r key value; do
+            echo "Processing $key with value $value"
             if [[ "$key" == "versionCode" || "$key" == "versionMajor" || "$key" == "versionMinor" || "$key" == "versionPatch" ]]; then
               echo "$key=$value" >> $GITHUB_ENV
             fi
-          done < versions.properties
+          done < ./versions.properties
           echo "Read version properties:"
           echo "VersionCode: ${{ env.versionCode }}"
           echo "VersionMajor: ${{ env.versionMajor }}"
