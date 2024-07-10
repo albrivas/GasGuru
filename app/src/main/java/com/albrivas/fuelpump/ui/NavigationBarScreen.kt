@@ -12,7 +12,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.albrivas.feature.station_map.navigation.route.StationMapGraph
 import com.albrivas.feature.station_map.navigation.stationMapGraph
-import com.albrivas.fuelpump.feature.fuel_list_station.navigation.fuelStationListScreen
+import com.albrivas.fuelpump.feature.fuel_list_station.navigation.stationListGraph
 import com.albrivas.fuelpump.navigation.navigationbar.NavigationBottomBar
 
 @Composable
@@ -42,7 +42,7 @@ internal fun NavigationBarHost(
                 startDestination = StationMapGraph.StationMapGraphRoute
             ) {
                 stationMapGraph(navigateToDetail = navigateToDetail)
-                fuelStationListScreen()
+                stationListGraph(navigateToDetail = navigateToDetail)
             }
         }
     }

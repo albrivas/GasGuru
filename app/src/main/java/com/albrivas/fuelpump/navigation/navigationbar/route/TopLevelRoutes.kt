@@ -2,7 +2,7 @@ package com.albrivas.fuelpump.navigation.navigationbar.route
 
 import com.albrivas.feature.station_map.navigation.route.StationMapGraph
 import com.albrivas.fuelpump.core.uikit.R
-import com.albrivas.fuelpump.feature.fuel_list_station.navigation.FuelStationListRoute
+import com.albrivas.fuelpump.feature.fuel_list_station.navigation.route.StationListGraph
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -29,7 +29,7 @@ sealed class TopLevelRoutes {
         fun fromRoute(route: String?): String? {
             return when {
                 route?.contains("${StationMapGraph.StationMapRoute::class.simpleName}") == true -> Map().route
-                route?.contains("${FuelStationListRoute::class.simpleName}") == true -> List().route
+                route?.contains("${StationListGraph.StationListRoute::class.simpleName}") == true -> List().route
                 route?.contains("ProfileRoute") == true -> Profile().route
                 else -> null
             }
