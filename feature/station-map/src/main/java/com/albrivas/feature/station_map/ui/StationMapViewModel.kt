@@ -51,6 +51,10 @@ class StationMapViewModel @Inject constructor(
     private val _state = MutableStateFlow(StationMapUiState())
     val state: StateFlow<StationMapUiState> = _state
 
+    init {
+        getLastLocation()
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     val searchResultUiState: StateFlow<SearchResultUiState> =
         searchQuery.flatMapLatest { query ->
@@ -127,13 +131,13 @@ class StationMapViewModel @Inject constructor(
     private fun centerMapInCurrentLocation() {
         viewModelScope.launch {
             userLocation.getCurrentLocation()?.let { location ->
-                _state.update { it.copy(centerMap = location.toLatLng(), zoomLevel = 15f) }
+                _state.update { it.copy(centerMap = location.toLatLng(), zoomLevel = 14f) }
             }
         }
     }
 
     private fun resetMapCenter() =
-        _state.update { it.copy(centerMap = LatLng(0.0, 0.0), zoomLevel = 15f) }
+        _state.update { it.copy(centerMap = LatLng(0.0, 0.0), zoomLevel = 14f) }
 
     private fun getStationByLocation(location: Location) {
         viewModelScope.launch {
@@ -156,4 +160,11 @@ class StationMapViewModel @Inject constructor(
             }
         }
     }
+
+    private fun getLastLocation() =
+        viewModelScope.launch {
+            userLocation.getLastKnownLocation.collect { location ->
+                _state.update { it.copy(centerMap = location.toLatLng(), zoomLevel = 14f) }
+            }
+        }
 }
