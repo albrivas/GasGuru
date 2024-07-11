@@ -12,14 +12,11 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
 
-const val MADRID_LATITUDE = 40.4165
-const val MADRID_LONGITUDE = -3.70256
-
 fun Location?.toLatLng(): LatLng {
     return if (this != null) {
         LatLng(latitude, longitude)
     } else {
-        LatLng(MADRID_LATITUDE, MADRID_LONGITUDE)
+        LatLng(0.0, 0.0)
     }
 }
 

@@ -33,18 +33,23 @@ import com.albrivas.fuelpump.feature.fuel_list_station.R
 
 @Composable
 fun FuelStationListScreenRoute(
+    navigateToDetail: (Int) -> Unit,
     viewModel: FuelListStationViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    FuelStationListScreen(uiState = state, checkLocationEnabled = viewModel::checkLocationEnabled)
+    FuelStationListScreen(
+        uiState = state,
+        navigateToDetail = navigateToDetail,
+        checkLocationEnabled = viewModel::checkLocationEnabled
+    )
 }
 
 @Composable
 internal fun FuelStationListScreen(
     uiState: FuelStationListUiState,
+    navigateToDetail: (Int) -> Unit,
     checkLocationEnabled: () -> Unit,
 ) {
-    var showBottomSheet by remember { mutableStateOf(false) }
     var selectedStation by remember { mutableStateOf<FuelStation?>(null) }
 
     when (uiState) {
@@ -79,8 +84,8 @@ internal fun FuelStationListScreen(
                             item = item,
                             userSelectedFuelType = uiState.userSelectedFuelType
                         ) { station ->
-                            showBottomSheet = true
                             selectedStation = station
+                            navigateToDetail(station.idServiceStation)
                         }
                     }
                 }
@@ -106,6 +111,7 @@ fun FuelListStationScreenPreview() {
             listOf(previewFuelStationDomain()),
             userSelectedFuelType = FuelType.GASOLINE_95
         ),
+        navigateToDetail = {},
         checkLocationEnabled = {},
     )
 }
