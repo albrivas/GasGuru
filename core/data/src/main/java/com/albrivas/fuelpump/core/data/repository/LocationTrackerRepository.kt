@@ -50,4 +50,18 @@ class LocationTrackerRepository @Inject constructor(
                 emit(null)
             }
         }
+    override val getLastKnownLocation: Flow<Location?>
+        @SuppressLint("MissingPermission")
+        get() = flow {
+            try {
+                val location = locationClient.lastLocation.await()
+                emit(location)
+            } catch (e: SecurityException) {
+                Log.e("LocationTracker", "Security exception in getLasKnownLocation", e)
+                emit(null)
+            } catch (e: ApiException) {
+                Log.e("LocationTracker", "API exception in getLasKnownLocation", e)
+                emit(null)
+            }
+        }
 }
