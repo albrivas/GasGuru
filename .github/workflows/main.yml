@@ -42,7 +42,7 @@ jobs:
         working-directory: ./
 
       - name: Run connected test
-        uses: ReactiveCircus/android-emulator-runner@v2
+        uses: ReactiveCircus/android-emulator-runner@v2.32.0
         with:
           working-directory: ./
           api-level: 34
