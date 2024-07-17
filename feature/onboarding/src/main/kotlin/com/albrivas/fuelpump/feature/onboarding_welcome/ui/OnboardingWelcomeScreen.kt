@@ -37,7 +37,6 @@ import com.albrivas.fuelpump.core.uikit.R as RUikit
 
 @Composable
 fun OnboardingWelcomeScreenRoute(navigateToSelectFuel: () -> Unit) {
-
     var locationPermissionGranted by remember { mutableStateOf(false) }
 
     val requestMultiplePermissionsLauncher =
