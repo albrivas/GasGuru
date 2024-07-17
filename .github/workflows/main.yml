@@ -42,12 +42,12 @@ jobs:
         working-directory: ./
 
       - name: Run connected test
-        uses: ReactiveCircus/android-emulator-runner@v2
+        uses: ReactiveCircus/android-emulator-runner@v2.32.0
         with:
           working-directory: ./
-          api-level: 34
+          api-level: 33
           target: google_apis
-          arch: x84_64
+          arch: x86_64
           disable-animations: true
           script: ./gradlew connectedCheck
 
