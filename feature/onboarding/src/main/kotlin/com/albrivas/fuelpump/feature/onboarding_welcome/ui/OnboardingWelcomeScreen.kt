@@ -23,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -36,11 +37,7 @@ import com.albrivas.fuelpump.core.uikit.R as RUikit
 
 @Composable
 fun OnboardingWelcomeScreenRoute(navigateToSelectFuel: () -> Unit) {
-    OnboardingWelcomeScreen(navigateToSelectFuel)
-}
 
-@Composable
-internal fun OnboardingWelcomeScreen(navigateToSelectFuel: () -> Unit = {}) {
     var locationPermissionGranted by remember { mutableStateOf(false) }
 
     val requestMultiplePermissionsLauncher =
@@ -58,6 +55,14 @@ internal fun OnboardingWelcomeScreen(navigateToSelectFuel: () -> Unit = {}) {
         )
     }
 
+    OnboardingWelcomeScreen(navigateToSelectFuel, locationPermissionGranted)
+}
+
+@Composable
+internal fun OnboardingWelcomeScreen(
+    navigateToSelectFuel: () -> Unit = {},
+    isPermissionGranted: Boolean,
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -73,12 +78,14 @@ internal fun OnboardingWelcomeScreen(navigateToSelectFuel: () -> Unit = {}) {
 
         Spacer(modifier = Modifier.height(66.dp))
         Text(
+            modifier = Modifier.testTag("welcome_title"),
             text = stringResource(id = R.string.welcome),
             style = MaterialTheme.typography.titleLarge
         )
 
         Spacer(modifier = Modifier.height(28.dp))
         Text(
+            modifier = Modifier.testTag("description"),
             text = stringResource(id = R.string.welcome_text),
             color = GrayLight,
             textAlign = TextAlign.Center,
@@ -87,6 +94,7 @@ internal fun OnboardingWelcomeScreen(navigateToSelectFuel: () -> Unit = {}) {
 
         Spacer(modifier = Modifier.height(24.dp))
         Text(
+            modifier = Modifier.testTag("description_permission"),
             text = stringResource(id = R.string.welcome_permission),
             color = GrayLight,
             textAlign = TextAlign.Center,
@@ -96,11 +104,12 @@ internal fun OnboardingWelcomeScreen(navigateToSelectFuel: () -> Unit = {}) {
         Spacer(modifier = Modifier.weight(1f))
         FuelPumpButton(
             onClick = navigateToSelectFuel,
-            enabled = locationPermissionGranted,
+            enabled = isPermissionGranted,
             text = stringResource(id = R.string.welcome_button),
             modifier = Modifier
                 .padding(bottom = 17.dp)
                 .systemBarsPadding()
+                .testTag("button_next")
         )
     }
 }
@@ -109,6 +118,6 @@ internal fun OnboardingWelcomeScreen(navigateToSelectFuel: () -> Unit = {}) {
 @Preview
 private fun OnboardingWelcomeScreenPreview() {
     MyApplicationTheme {
-        OnboardingWelcomeScreen()
+        OnboardingWelcomeScreen(isPermissionGranted = false)
     }
 }
