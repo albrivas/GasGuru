@@ -21,11 +21,12 @@ import com.albrivas.fuelpump.core.uikit.theme.GreenDark
 
 @Composable
 fun BasicSelectedItem(
+    modifier: Modifier = Modifier,
     model: BasicSelectedItemModel,
     onItemSelected: (BasicSelectedItemModel) -> Unit
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(56.dp)
             .selectable(
