@@ -71,7 +71,7 @@ dependencies {
     androidTestImplementation(libs.junit5.compose)
     androidTestImplementation(libs.junit5.api)
     androidTestImplementation(libs.junit5.extensions)
-    androidTestImplementation(libs.junit5.runner)
+    androidTestRuntimeOnly(libs.junit5.runner)
 
     // Hilt Dependency Injection
     implementation(libs.hilt.android)
