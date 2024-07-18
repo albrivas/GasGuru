@@ -77,14 +77,12 @@ internal fun OnboardingWelcomeScreen(
 
         Spacer(modifier = Modifier.height(66.dp))
         Text(
-            modifier = Modifier.testTag("welcome_title"),
             text = stringResource(id = R.string.welcome),
             style = MaterialTheme.typography.titleLarge
         )
 
         Spacer(modifier = Modifier.height(28.dp))
         Text(
-            modifier = Modifier.testTag("description"),
             text = stringResource(id = R.string.welcome_text),
             color = GrayLight,
             textAlign = TextAlign.Center,
@@ -93,7 +91,6 @@ internal fun OnboardingWelcomeScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
         Text(
-            modifier = Modifier.testTag("description_permission"),
             text = stringResource(id = R.string.welcome_permission),
             color = GrayLight,
             textAlign = TextAlign.Center,
