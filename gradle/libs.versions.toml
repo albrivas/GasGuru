@@ -4,7 +4,7 @@ androidx-room = "2.6.1"
 androidxActivity = "1.9.0"
 androidxComposeCompiler = "1.5.14"
 androidxComposeMaterial3 = "1.2.1"
-androidxComposeUi = "1.6.7"
+androidxComposeUi = "1.6.8"
 androidxCore = "1.13.1"
 androidxEspresso = "3.5.1"
 androidxHilt = "1.2.0"
@@ -42,6 +42,11 @@ secrets = "2.0.1"
 places = "3.4.0"
 coil = "2.6.0"
 splashScreen = "1.0.0"
+junit5Api = "5.10.0"
+junit5Extensions = "1.4.0"
+junit5Compose = "1.4.0"
+junit5Plugin = "1.10.0.0"
+junit5Runner = "1.4.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
@@ -99,6 +104,10 @@ play-services-maps = { module = "com.google.android.gms:play-services-maps", ver
 places = { module = "com.google.android.libraries.places:places", version.ref = "places" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 splash-screen = { module = "androidx.core:core-splashscreen", version.ref = "splashScreen" }
+junit5-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit5Api" }
+junit5-extensions = { module = "de.mannodermaus.junit5:android-test-extensions", version.ref = "junit5Extensions" }
+junit5-compose = { module = "de.mannodermaus.junit5:android-test-compose", version.ref = "junit5Compose" }
+junit5-runner = { module = "de.mannodermaus.junit5:android-test-runner", version.ref = "junit5Runner" }
 
 [bundles]
 com-squareup-retrofit2 = [
@@ -129,5 +138,6 @@ gms = { id = "com.google.gms.google-services", version.ref = "googleGmsGoogleSer
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets" }
+junit5 = { id = "de.mannodermaus.android-junit5", version.ref = "junit5Plugin" }
 
 

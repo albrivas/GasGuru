@@ -64,13 +64,6 @@ android {
             )
         }
     }
-    sourceSets {
-        getByName("main") {
-            resources {
-                srcDirs("src/main/resources", "src/test/resources")
-            }
-        }
-    }
 }
 
 dependencies {

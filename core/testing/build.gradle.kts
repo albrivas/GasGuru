@@ -57,4 +57,12 @@ dependencies {
     api(libs.bundles.testing)
 
     debugApi(libs.androidx.compose.ui.test.manifest)
+
+    debugApi(libs.androidx.compose.ui.test.manifest)
+    debugApi(libs.androidx.compose.ui.tooling)
+
+    debugApi(libs.junit5.compose)
+    debugApi(libs.junit5.api)
+    debugApi(libs.junit5.extensions)
+    debugApi(libs.junit5.runner)
 }
