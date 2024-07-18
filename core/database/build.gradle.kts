@@ -60,5 +60,5 @@ dependencies {
     detektPlugins(libs.detekt.formatting)
     implementation(libs.kotlinx.coroutines.android)
 
-    androidTestImplementation(project(":core:testing"))
+    testImplementation(project(":core:testing"))
 }
