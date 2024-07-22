@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -64,7 +65,7 @@ internal fun DetailStationScreenRoute(
 }
 
 @Composable
-private fun DetailStationScreen(uiState: DetailStationUiState, onBack: () -> Unit = {}) {
+internal fun DetailStationScreen(uiState: DetailStationUiState, onBack: () -> Unit = {}) {
     val context = LocalContext.current
     when (uiState) {
         is DetailStationUiState.Error -> Unit
@@ -76,7 +77,11 @@ private fun DetailStationScreen(uiState: DetailStationUiState, onBack: () -> Uni
                     .statusBarsPadding(),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .testTag("loading")
+                )
             }
         }
 
@@ -92,6 +97,7 @@ private fun DetailStationScreen(uiState: DetailStationUiState, onBack: () -> Uni
                         modifier = Modifier
                             .systemBarsPadding()
                             .padding(16.dp)
+                            .testTag("button_go_station")
                     )
                 }
             ) { padding ->
@@ -128,7 +134,9 @@ fun DetailStationContent(station: FuelStation) {
                 style = typography.titleMedium
             )
             InformationText(
-                modifier = Modifier.padding(top = 8.dp),
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .testTag("address"),
                 model = InformationTextModel(
                     icon = R.drawable.ic_home,
                     title = station.formatDirection(),
@@ -136,7 +144,9 @@ fun DetailStationContent(station: FuelStation) {
                 )
             )
             InformationText(
-                modifier = Modifier.padding(top = 8.dp),
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .testTag("country"),
                 model = InformationTextModel(
                     icon = R.drawable.ic_flag,
                     title = station.municipality,
@@ -144,7 +154,9 @@ fun DetailStationContent(station: FuelStation) {
                 )
             )
             InformationText(
-                modifier = Modifier.padding(top = 8.dp),
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .testTag("distance"),
                 model = InformationTextModel(
                     icon = R.drawable.ic_car,
                     title = station.formatDistance(),
@@ -152,7 +164,9 @@ fun DetailStationContent(station: FuelStation) {
                 )
             )
             InformationText(
-                modifier = Modifier.padding(top = 8.dp),
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .testTag("schedule"),
                 model = InformationTextModel(
                     icon = R.drawable.ic_schedule,
                     title = stringResource(id = if (station.isStationOpen()) R.string.open else R.string.close),
@@ -160,7 +174,9 @@ fun DetailStationContent(station: FuelStation) {
                 )
             )
             InformationText(
-                modifier = Modifier.padding(top = 8.dp),
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .testTag("calendar"),
                 model = InformationTextModel(
                     icon = R.drawable.ic_calendar,
                     title = station.scheduleList.joinToString(separator = "\n"),
