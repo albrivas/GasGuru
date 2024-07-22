@@ -16,6 +16,7 @@ android {
         minSdk = 26
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments["runnerBuilder"] = "de.mannodermaus.junit5.AndroidJUnit5Builder"
     }
     buildFeatures {
         compose = true
@@ -66,4 +67,12 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.coil.compose)
     detektPlugins(libs.detekt.formatting)
+
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+
+    androidTestImplementation(libs.junit5.compose)
+    androidTestImplementation(libs.junit5.api)
+    androidTestImplementation(libs.junit5.extensions)
+    androidTestRuntimeOnly(libs.junit5.runner)
 }
