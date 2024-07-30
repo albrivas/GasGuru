@@ -64,7 +64,6 @@ internal fun ProfileScreen(uiState: ProfileUiState) {
             // Error state
         }
     }
-
 }
 
 @Preview

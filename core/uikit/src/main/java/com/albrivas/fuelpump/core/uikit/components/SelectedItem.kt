@@ -36,10 +36,9 @@ fun BasicSelectedItem(
                 selected = true,
                 onClick = { onItemSelected(model) }
             )
-
             .border(
                 width = 0.5.dp,
-                color = if(isSelected) GreenDark else Color.Black,
+                color = if (isSelected) GreenDark else Color.Black,
                 shape = RoundedCornerShape(16.dp)
             )
             .padding(start = 8.dp),
