@@ -1,9 +1,11 @@
 package com.albrivas.fuelpump.core.uikit.components
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
@@ -11,40 +13,47 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.albrivas.fuelpump.core.uikit.R
 import com.albrivas.fuelpump.core.uikit.theme.GreenDark
+import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
 
 @Composable
 fun BasicSelectedItem(
     modifier: Modifier = Modifier,
     model: BasicSelectedItemModel,
-    onItemSelected: (BasicSelectedItemModel) -> Unit
-) {
+) = with(model) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp)
+            .clip(RoundedCornerShape(16.dp))
             .selectable(
                 selected = true,
                 onClick = { onItemSelected(model) }
-            ),
-        verticalAlignment = Alignment.CenterVertically
+            )
+
+            .border(
+                width = 0.5.dp,
+                color = if(isSelected) GreenDark else Color.Black,
+                shape = RoundedCornerShape(16.dp)
+            )
+            .padding(start = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             modifier = Modifier.weight(1f),
-            style = MaterialTheme.typography.displayMedium,
+            style = MaterialTheme.typography.labelLarge,
             textAlign = TextAlign.Start,
-            text = stringResource(id = model.title),
-            fontWeight = FontWeight.Bold
+            text = stringResource(id = title),
         )
 
         RadioButton(
-            selected = model.isSelected,
+            selected = isSelected,
             onClick = { onItemSelected(model) },
             colors = RadioButtonDefaults.colors(GreenDark),
         )
@@ -52,8 +61,27 @@ fun BasicSelectedItem(
 }
 
 @Composable
-@Preview(name = "List - Selected fuel preview")
-private fun PreviewBasicSelectedItem() {
-    val previewModel = BasicSelectedItemModel(R.string.preview_fuel_type, true)
-    BasicSelectedItem(model = previewModel) { }
+@Preview(name = "Item selected", backgroundColor = 0xFFFFFFFF, showBackground = true)
+private fun BasicSelectedItemPreview() {
+    MyApplicationTheme {
+        BasicSelectedItem(
+            model = BasicSelectedItemModel(
+                title = R.string.preview_fuel_type,
+                isSelected = true
+            )
+        )
+    }
+}
+
+@Composable
+@Preview(name = "Item not selected", backgroundColor = 0xFFFFFFFF, showBackground = true)
+private fun BasicItemPreview() {
+    MyApplicationTheme {
+        BasicSelectedItem(
+            model = BasicSelectedItemModel(
+                title = R.string.preview_fuel_type,
+                isSelected = false
+            )
+        )
+    }
 }
