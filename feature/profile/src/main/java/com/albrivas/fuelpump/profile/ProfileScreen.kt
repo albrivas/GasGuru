@@ -30,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -66,7 +67,8 @@ internal fun ProfileScreen(uiState: ProfileUiState, saveFuelType: (FuelType) -> 
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color.White)
-                    .statusBarsPadding(),
+                    .statusBarsPadding()
+                    .testTag("loading"),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -85,7 +87,8 @@ internal fun ProfileScreen(uiState: ProfileUiState, saveFuelType: (FuelType) -> 
                         title = stringResource(id = R.string.fuel_selection),
                         selection = stringResource(id = uiState.userData.fuelSelection.translation()),
                         onClick = { showDialog = true },
-                    )
+                    ),
+                    modifier = Modifier.testTag("fuel_setting_item")
                 )
             }
         }
@@ -118,7 +121,8 @@ fun SelectionDialog(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(375.dp)
-                .padding(16.dp),
+                .padding(16.dp)
+                .testTag("fuel_dialog"),
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White)
         ) {
@@ -185,7 +189,7 @@ fun SelectionDialog(
                                             itemSelected = fuel
                                         },
                                         isRoundedItem = false
-                                    )
+                                    ),
                                 )
                             }
                         }

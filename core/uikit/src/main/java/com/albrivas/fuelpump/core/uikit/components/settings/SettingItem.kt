@@ -37,7 +37,7 @@ fun SettingItem(model: SettingItemModel, modifier: Modifier = Modifier) = with(m
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun SettingItemPreview() {
     MyApplicationTheme {
