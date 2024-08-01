@@ -1,4 +1,4 @@
-package com.albrivas.fuelpump.core.uikit.components
+package com.albrivas.fuelpump.core.uikit.components.selectedItem
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
@@ -31,15 +31,17 @@ fun BasicSelectedItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
+            .then(if (model.isRoundedItem) Modifier.clip(RoundedCornerShape(16.dp)) else Modifier)
             .selectable(
                 selected = true,
                 onClick = { onItemSelected(model) }
             )
-            .border(
-                width = 0.5.dp,
-                color = if (isSelected) GreenDark else Color.Black,
-                shape = RoundedCornerShape(16.dp)
+            .then(
+                if (model.isRoundedItem) Modifier.border(
+                    width = 0.5.dp,
+                    color = if (isSelected) GreenDark else Color.Black,
+                    shape = RoundedCornerShape(16.dp)
+                ) else Modifier
             )
             .padding(start = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -66,7 +68,8 @@ private fun BasicSelectedItemPreview() {
         BasicSelectedItem(
             model = BasicSelectedItemModel(
                 title = R.string.preview_fuel_type,
-                isSelected = true
+                isSelected = true,
+                isRoundedItem = true,
             )
         )
     }
@@ -79,7 +82,8 @@ private fun BasicItemPreview() {
         BasicSelectedItem(
             model = BasicSelectedItemModel(
                 title = R.string.preview_fuel_type,
-                isSelected = false
+                isSelected = false,
+                isRoundedItem = true,
             )
         )
     }

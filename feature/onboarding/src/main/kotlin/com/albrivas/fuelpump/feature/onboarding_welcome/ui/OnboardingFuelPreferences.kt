@@ -31,8 +31,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.albrivas.fuelpump.core.model.data.FuelType
 import com.albrivas.fuelpump.core.ui.toFuelType
 import com.albrivas.fuelpump.core.ui.translation
-import com.albrivas.fuelpump.core.uikit.components.BasicSelectedItem
-import com.albrivas.fuelpump.core.uikit.components.BasicSelectedItemModel
+import com.albrivas.fuelpump.core.uikit.components.selectedItem.BasicSelectedItem
+import com.albrivas.fuelpump.core.uikit.components.selectedItem.BasicSelectedItemModel
 import com.albrivas.fuelpump.core.uikit.components.FuelPumpButton
 import com.albrivas.fuelpump.core.uikit.theme.GrayLight
 import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
