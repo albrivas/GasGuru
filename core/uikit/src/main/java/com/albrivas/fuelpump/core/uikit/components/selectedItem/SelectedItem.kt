@@ -37,11 +37,15 @@ fun BasicSelectedItem(
                 onClick = { onItemSelected(model) }
             )
             .then(
-                if (model.isRoundedItem) Modifier.border(
-                    width = 0.5.dp,
-                    color = if (isSelected) GreenDark else Color.Black,
-                    shape = RoundedCornerShape(16.dp)
-                ) else Modifier
+                if (model.isRoundedItem) {
+                    Modifier.border(
+                        width = 0.5.dp,
+                        color = if (isSelected) GreenDark else Color.Black,
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                } else {
+                    Modifier
+                }
             )
             .padding(start = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
