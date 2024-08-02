@@ -99,6 +99,7 @@ dependencies {
     implementation(project(":feature:detail-station"))
     implementation(project(":feature:fuel-list-station"))
     implementation(project(":feature:station-map"))
+    implementation(project(":feature:profile"))
     implementation(project(":core:model"))
     androidTestImplementation(project(":core:testing"))
     detektPlugins(libs.detekt.formatting)
