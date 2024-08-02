@@ -10,6 +10,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.albrivas.feature.station_map.navigation.route.StationMapGraph
 import com.albrivas.fuelpump.feature.fuel_list_station.navigation.route.StationListGraph
 import com.albrivas.fuelpump.navigation.navigationbar.route.TopLevelRoutes
+import com.albrivas.fuelpump.profile.ProfileRoute
 
 @Composable
 fun rememberNavigationBarState(
@@ -39,7 +40,7 @@ class NavigationBarState(
         val topLevel = when (route) {
             is TopLevelRoutes.Map -> StationMapGraph.StationMapRoute
             is TopLevelRoutes.List -> StationListGraph.StationListRoute
-            is TopLevelRoutes.Profile -> StationListGraph.StationListRoute
+            is TopLevelRoutes.Profile -> ProfileRoute
         }
         navigate(topLevel) {
             popUpTo(graph.findStartDestination().id) {
