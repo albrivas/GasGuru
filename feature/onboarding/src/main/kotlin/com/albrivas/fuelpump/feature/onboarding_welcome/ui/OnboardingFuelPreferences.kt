@@ -1,6 +1,7 @@
 package com.albrivas.fuelpump.feature.onboarding_welcome.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,9 +31,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.albrivas.fuelpump.core.model.data.FuelType
 import com.albrivas.fuelpump.core.ui.toFuelType
 import com.albrivas.fuelpump.core.ui.translation
-import com.albrivas.fuelpump.core.uikit.components.BasicSelectedItem
-import com.albrivas.fuelpump.core.uikit.components.BasicSelectedItemModel
 import com.albrivas.fuelpump.core.uikit.components.FuelPumpButton
+import com.albrivas.fuelpump.core.uikit.components.selectedItem.BasicSelectedItem
+import com.albrivas.fuelpump.core.uikit.components.selectedItem.BasicSelectedItemModel
 import com.albrivas.fuelpump.core.uikit.theme.GrayLight
 import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
 import com.albrivas.fuelpump.feature.onboarding.R
@@ -82,19 +83,21 @@ internal fun OnboardingFuelPreferences(
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(34.dp))
-        LazyColumn(modifier = Modifier.weight(1f)) {
+        LazyColumn(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             when (uiState) {
                 is OnboardingUiState.ListFuelPreferences -> {
                     itemsIndexed(uiState.list.sorted()) { index, fuelName ->
                         val titleTranslation = fuelName.translation()
-                        val model = BasicSelectedItemModel(
-                            title = fuelName.translation(),
-                            isSelected = titleTranslation == selectedFuel
-                        )
                         BasicSelectedItem(
                             modifier = Modifier.testTag("list_item_$index"),
-                            model = model,
-                            onItemSelected = { selectedFuel = titleTranslation }
+                            model = BasicSelectedItemModel(
+                                title = titleTranslation,
+                                isSelected = titleTranslation == selectedFuel,
+                                onItemSelected = { selectedFuel = titleTranslation }
+                            ),
                         )
                     }
                 }
@@ -122,14 +125,7 @@ private fun PreviewOnboardingFuelPreferences() {
         OnboardingFuelPreferences(
             navigateToHome = {},
             saveSelection = {},
-            uiState = OnboardingUiState.ListFuelPreferences(
-                listOf(
-                    FuelType.DIESEL_PLUS,
-                    FuelType.DIESEL,
-                    FuelType.GASOLINE_98,
-                    FuelType.GASOLINE_95
-                )
-            )
+            uiState = OnboardingUiState.ListFuelPreferences(FuelType.entries)
         )
     }
 }
