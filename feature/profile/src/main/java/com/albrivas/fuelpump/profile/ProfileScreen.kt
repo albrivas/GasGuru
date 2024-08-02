@@ -86,6 +86,7 @@ internal fun ProfileScreen(uiState: ProfileUiState, saveFuelType: (FuelType) -> 
                     model = SettingItemModel(
                         title = stringResource(id = R.string.fuel_selection),
                         selection = stringResource(id = uiState.userData.fuelSelection.translation()),
+                        icon = R.drawable.ic_fuel_station,
                         onClick = { showDialog = true },
                     ),
                     modifier = Modifier.testTag("fuel_setting_item")
