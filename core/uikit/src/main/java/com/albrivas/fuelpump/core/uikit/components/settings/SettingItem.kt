@@ -28,7 +28,7 @@ import com.albrivas.fuelpump.core.uikit.theme.primaryContainerLight
 @Composable
 fun SettingItem(model: SettingItemModel, modifier: Modifier = Modifier) = with(model) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp)
             .clickable { onClick() },
@@ -46,7 +46,7 @@ fun SettingItem(model: SettingItemModel, modifier: Modifier = Modifier) = with(m
         }
 
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .weight(80f)
                 .padding(start = 16.dp, end = 16.dp),
             Arrangement.spacedBy(6.dp)
