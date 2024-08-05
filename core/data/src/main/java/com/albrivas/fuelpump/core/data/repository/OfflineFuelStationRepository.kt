@@ -75,6 +75,17 @@ class OfflineFuelStationRepository @Inject constructor(
             }
             .flowOn(dispatcherIo)
 
+    override suspend fun updateFavoriteStatus(id: Int, isFavorite: Boolean) {
+        withContext(dispatcherIo) {
+            fuelStationDao.updateFavoriteStatus(id, isFavorite)
+        }
+    }
+
+    override fun getFavoriteFuelStations(): Flow<List<FuelStation>> =
+        fuelStationDao.getFavoriteFuelStations()
+            .map { items -> items.map { it.asExternalModel() } }
+            .flowOn(dispatcherIo)
+
     private fun List<FuelStation>.calculateFuelPrices(fuelType: FuelType): Pair<Double, Double> {
         val prices = when (fuelType) {
             FuelType.GASOLINE_95 -> map { it.priceGasoline95E5 }

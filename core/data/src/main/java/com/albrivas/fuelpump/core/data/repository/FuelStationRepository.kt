@@ -8,4 +8,6 @@ interface FuelStationRepository {
     suspend fun addAllStations()
     fun getFuelStationByLocation(userLocation: Location, maxStations: Int): Flow<List<FuelStation>>
     fun getFuelStationById(id: Int, userLocation: Location): Flow<FuelStation>
+    suspend fun updateFavoriteStatus(id: Int, isFavorite: Boolean)
+    fun getFavoriteFuelStations(): Flow<List<FuelStation>>
 }

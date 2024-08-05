@@ -24,4 +24,10 @@ interface FuelStationDao {
 
     @Query("SELECT * FROM `fuel-station` WHERE idServiceStation = :id")
     fun getFuelStationById(id: Int): Flow<FuelStationEntity>
+
+    @Query("UPDATE `fuel-station` SET isFavorite = :isFavorite WHERE idServiceStation = :id")
+    suspend fun updateFavoriteStatus(id: Int, isFavorite: Boolean)
+
+    @Query("SELECT * FROM `fuel-station` WHERE isFavorite = 1")
+    fun getFavoriteFuelStations(): Flow<List<FuelStationEntity>>
 }
