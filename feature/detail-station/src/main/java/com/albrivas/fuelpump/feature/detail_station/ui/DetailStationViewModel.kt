@@ -4,7 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.albrivas.fuelpump.core.data.repository.LocationTracker
+import com.albrivas.fuelpump.core.domain.GetFavoriteStationsUseCase
 import com.albrivas.fuelpump.core.domain.GetFuelStationByIdUseCase
+import com.albrivas.fuelpump.core.domain.SaveFavoriteStationUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
@@ -13,6 +15,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,6 +23,7 @@ class DetailStationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     getFuelStationByIdUseCase: GetFuelStationByIdUseCase,
     userLocation: LocationTracker,
+    private val saveFavoriteStationUseCase: SaveFavoriteStationUseCase,
 ) : ViewModel() {
 
     private val id: Int = checkNotNull(savedStateHandle["idServiceStation"])
@@ -38,4 +42,8 @@ class DetailStationViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = DetailStationUiState.Loading,
         )
+
+    fun onFavoriteClick(isFavorite: Boolean) = viewModelScope.launch {
+        saveFavoriteStationUseCase(idStation = id, isFavorite = isFavorite)
+    }
 }

@@ -19,8 +19,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -61,11 +63,19 @@ internal fun DetailStationScreenRoute(
     viewModel: DetailStationViewModel = hiltViewModel(),
 ) {
     val state by viewModel.fuelStation.collectAsStateWithLifecycle()
-    DetailStationScreen(uiState = state, onBack = onBack)
+    DetailStationScreen(
+        uiState = state,
+        onBack = onBack,
+        onFavoriteClick = viewModel::onFavoriteClick
+    )
 }
 
 @Composable
-internal fun DetailStationScreen(uiState: DetailStationUiState, onBack: () -> Unit = {}) {
+internal fun DetailStationScreen(
+    uiState: DetailStationUiState,
+    onBack: () -> Unit = {},
+    onFavoriteClick: (Boolean) -> Unit = {},
+) {
     val context = LocalContext.current
     when (uiState) {
         is DetailStationUiState.Error -> Unit
@@ -88,7 +98,11 @@ internal fun DetailStationScreen(uiState: DetailStationUiState, onBack: () -> Un
         is DetailStationUiState.Success -> {
             Scaffold(
                 topBar = {
-                    HeaderStation(station = uiState.station, onBack = onBack)
+                    HeaderStation(
+                        station = uiState.station,
+                        onBack = onBack,
+                        onFavoriteClick = onFavoriteClick
+                    )
                 },
                 bottomBar = {
                     FuelPumpButton(
@@ -195,7 +209,7 @@ fun DetailStationContent(station: FuelStation) {
 }
 
 @Composable
-fun HeaderStation(station: FuelStation, onBack: () -> Unit) {
+fun HeaderStation(station: FuelStation, onBack: () -> Unit, onFavoriteClick: (Boolean) -> Unit) {
     val staticMapUrl = generateStaticMapUrl(
         location = station.location,
         zoom = 17,
@@ -225,6 +239,23 @@ fun HeaderStation(station: FuelStation, onBack: () -> Unit) {
             contentDescription = "Detail station map",
             contentScale = androidx.compose.ui.layout.ContentScale.None
         )
+        IconButton(
+            modifier = Modifier
+                .padding(end = 16.dp)
+                .align(Alignment.BottomEnd)
+                .offset(y = 30.dp, x = 0.dp)
+                .size(48.dp)
+                .shadow(elevation = 8.dp, shape = CircleShape)
+                .background(Color.White, shape = CircleShape),
+            onClick = { onFavoriteClick(!station.isFavorite) }
+        ) {
+            Icon(
+                imageVector = Icons.Default.Star,
+                contentDescription = "Mark as favorite",
+                tint = if(station.isFavorite) Color.Yellow else Color.LightGray,
+                modifier = Modifier.size(24.dp) // Adjust size as needed
+            )
+        }
         Icon(
             modifier = Modifier
                 .align(Alignment.TopStart)

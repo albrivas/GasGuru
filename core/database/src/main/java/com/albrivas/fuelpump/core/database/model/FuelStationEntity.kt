@@ -59,7 +59,6 @@ data class FuelStationEntity(
     val lastUpdate: Long,
     @ColumnInfo(defaultValue = "0")
     val isFavorite: Boolean,
-
     )
 
 fun FuelStationEntity.asExternalModel() = FuelStation(

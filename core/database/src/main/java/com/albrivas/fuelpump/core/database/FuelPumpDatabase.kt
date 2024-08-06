@@ -17,7 +17,7 @@ import com.albrivas.fuelpump.core.database.model.UserDataEntity
         UserDataEntity::class,
         RecentSearchQueryEntity::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = true
 )
 @TypeConverters(UserDataConverters::class)
