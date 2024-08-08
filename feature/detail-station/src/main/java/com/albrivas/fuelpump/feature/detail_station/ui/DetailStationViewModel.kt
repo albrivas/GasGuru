@@ -4,8 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.albrivas.fuelpump.core.data.repository.LocationTracker
-import com.albrivas.fuelpump.core.domain.GetFavoriteStationsUseCase
 import com.albrivas.fuelpump.core.domain.GetFuelStationByIdUseCase
+import com.albrivas.fuelpump.core.domain.RemoveFavoriteStationUseCase
 import com.albrivas.fuelpump.core.domain.SaveFavoriteStationUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,6 +24,7 @@ class DetailStationViewModel @Inject constructor(
     getFuelStationByIdUseCase: GetFuelStationByIdUseCase,
     userLocation: LocationTracker,
     private val saveFavoriteStationUseCase: SaveFavoriteStationUseCase,
+    private val removeFavoriteStationUseCase: RemoveFavoriteStationUseCase,
 ) : ViewModel() {
 
     private val id: Int = checkNotNull(savedStateHandle["idServiceStation"])
@@ -44,6 +45,10 @@ class DetailStationViewModel @Inject constructor(
         )
 
     fun onFavoriteClick(isFavorite: Boolean) = viewModelScope.launch {
-        saveFavoriteStationUseCase(idStation = id, isFavorite = isFavorite)
+        if (isFavorite) {
+            saveFavoriteStationUseCase(stationId = id)
+        } else {
+            removeFavoriteStationUseCase(stationId = id)
+        }
     }
 }

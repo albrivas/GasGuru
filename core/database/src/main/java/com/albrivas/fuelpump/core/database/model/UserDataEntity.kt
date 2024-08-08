@@ -11,9 +11,9 @@ import com.albrivas.fuelpump.core.model.data.UserData
 data class UserDataEntity(
     @PrimaryKey(autoGenerate = false)
     val id: Long = 0,
-    val fuelSelection: FuelType
+    val fuelSelection: FuelType,
 )
 
 fun UserDataEntity.asExternalModel() = UserData(
-    fuelSelection = fuelSelection
+    fuelSelection = fuelSelection,
 )

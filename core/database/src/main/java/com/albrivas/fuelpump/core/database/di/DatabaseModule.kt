@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.albrivas.fuelpump.core.database.FuelPumpDatabase
 import com.albrivas.fuelpump.core.database.migrations.MIGRATION_2_3
 import com.albrivas.fuelpump.core.database.migrations.MIGRATION_3_4
+import com.albrivas.fuelpump.core.database.migrations.MIGRATION_4_5
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,6 +24,6 @@ class DatabaseModule {
             appContext,
             FuelPumpDatabase::class.java,
             "fuel-pump-database"
-        ).addMigrations(MIGRATION_2_3, MIGRATION_3_4).build()
+        ).addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5).build()
     }
 }

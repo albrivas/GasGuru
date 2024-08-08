@@ -30,4 +30,9 @@ interface FuelStationDao {
 
     @Query("SELECT * FROM `fuel-station` WHERE isFavorite = 1")
     fun getFavoriteFuelStations(): Flow<List<FuelStationEntity>>
+
+    @Query(
+        "SELECT EXISTS (SELECT 1 FROM favorite_station_cross_ref WHERE idServiceStation = :stationId AND id = :userId)"
+    )
+    fun isFavoriteStation(stationId: Int, userId: Long): Flow<Boolean>
 }

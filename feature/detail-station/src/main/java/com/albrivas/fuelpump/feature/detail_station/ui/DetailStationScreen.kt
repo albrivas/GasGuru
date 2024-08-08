@@ -78,7 +78,7 @@ internal fun DetailStationScreen(
 ) {
     val context = LocalContext.current
     when (uiState) {
-        is DetailStationUiState.Error -> Unit
+        DetailStationUiState.Error -> Unit
         DetailStationUiState.Loading -> {
             Box(
                 modifier = Modifier
@@ -252,7 +252,7 @@ fun HeaderStation(station: FuelStation, onBack: () -> Unit, onFavoriteClick: (Bo
             Icon(
                 imageVector = Icons.Default.Star,
                 contentDescription = "Mark as favorite",
-                tint = if(station.isFavorite) Color.Yellow else Color.LightGray,
+                tint = if (station.isFavorite) Color.Yellow else Color.LightGray,
                 modifier = Modifier.size(24.dp) // Adjust size as needed
             )
         }

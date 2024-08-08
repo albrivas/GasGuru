@@ -50,8 +50,7 @@ android {
 
 dependencies {
     implementation(project(":core:model"))
-    
-    // Arch Components
+
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
@@ -59,6 +58,6 @@ dependencies {
     ksp(libs.hilt.compiler)
     detektPlugins(libs.detekt.formatting)
     implementation(libs.kotlinx.coroutines.android)
-
+    implementation(libs.moshi.kotlin)
     testImplementation(project(":core:testing"))
 }
