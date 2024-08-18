@@ -12,6 +12,7 @@ import com.albrivas.fuelpump.core.model.data.PriceCategory
 import com.albrivas.fuelpump.core.network.datasource.RemoteDataSource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
@@ -28,6 +29,7 @@ class OfflineFuelStationRepository @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
     private val userDataDao: UserDataDao,
     @IoDispatcher private val dispatcherIo: CoroutineDispatcher,
+    private val offlineUserDataRepository: OfflineUserDataRepository,
 ) : FuelStationRepository {
 
     private val ioScope = CoroutineScope(dispatcherIo + SupervisorJob())
@@ -65,14 +67,28 @@ class OfflineFuelStationRepository @Inject constructor(
             }
         }.flowOn(dispatcherIo)
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun getFuelStationById(id: Int, userLocation: Location): Flow<FuelStation> =
         fuelStationDao.getFuelStationById(id)
-            .map { it.asExternalModel() }
-            .map { fuelStation ->
-                fuelStation.copy(
-                    distance = fuelStation.location.distanceTo(userLocation)
-                )
+            .flatMapLatest { station ->
+                offlineUserDataRepository.getUserWithFavoriteStations()
+                    .map { userWithFavorites ->
+                        val isFavorite =
+                            userWithFavorites.favoriteStations.any { it.idServiceStation == station.idServiceStation }
+                        station.asExternalModel().copy(isFavorite = isFavorite)
+                    }
             }
+            .flowOn(Dispatchers.IO)
+
+    override suspend fun updateFavoriteStatus(id: Int, isFavorite: Boolean) {
+        withContext(dispatcherIo) {
+            fuelStationDao.updateFavoriteStatus(id, isFavorite)
+        }
+    }
+
+    override fun getFavoriteFuelStations(): Flow<List<FuelStation>> =
+        fuelStationDao.getFavoriteFuelStations()
+            .map { items -> items.map { it.asExternalModel() } }
             .flowOn(dispatcherIo)
 
     private fun List<FuelStation>.calculateFuelPrices(fuelType: FuelType): Pair<Double, Double> {
