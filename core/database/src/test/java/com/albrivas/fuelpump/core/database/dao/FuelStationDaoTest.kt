@@ -78,7 +78,8 @@ class FuelStationDaoTest {
             referral = "possim",
             brandStation = "eos",
             typeSale = "pulvinar",
-            lastUpdate = 1719310537523
+            lastUpdate = 1719310537523,
+            isFavorite = false,
         ),
         FuelStationEntity(
             bioEthanolPercentage = "potenti",
@@ -113,7 +114,8 @@ class FuelStationDaoTest {
             referral = "graece",
             brandStation = "aliquam",
             typeSale = "impetus",
-            lastUpdate = 1719310537523
+            lastUpdate = 1719310537523,
+            isFavorite = false
         )
     )
 }
