@@ -35,6 +35,7 @@ data class FuelStation(
     val typeSale: String,
     val priceCategory: PriceCategory = PriceCategory.NORMAL,
     val distance: Float = 0.0f,
+    val isFavorite: Boolean = false
 ) {
     fun formatDistance(): String {
         return when {
@@ -87,5 +88,6 @@ fun previewFuelStationDomain() = FuelStation(
     brandStationBrandsType = FuelStationBrandsType.REPSOL,
     typeSale = "",
     priceCategory = PriceCategory.CHEAP,
-    distance = 0.0f
+    distance = 0.0f,
+    isFavorite = false
 )

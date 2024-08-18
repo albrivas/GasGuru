@@ -36,7 +36,8 @@ fun NetworkPriceFuelStation.asEntity() = FuelStationEntity(
     referral = referral,
     brandStation = brandStation,
     typeSale = typeSale,
-    lastUpdate = System.currentTimeMillis()
+    lastUpdate = System.currentTimeMillis(),
+    isFavorite = false,
 )
 
 fun String.toSafeDouble(): Double =
