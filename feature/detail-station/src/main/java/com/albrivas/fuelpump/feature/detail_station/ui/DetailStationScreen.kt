@@ -55,8 +55,8 @@ import com.albrivas.fuelpump.core.uikit.components.table.FuelPriceTable
 import com.albrivas.fuelpump.core.uikit.components.table.FuelPriceTableModel
 import com.albrivas.fuelpump.core.uikit.components.text.InformationText
 import com.albrivas.fuelpump.core.uikit.components.text.InformationTextModel
-import com.albrivas.fuelpump.core.uikit.theme.YellowFavorite
 import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
+import com.albrivas.fuelpump.core.uikit.theme.YellowFavorite
 import com.albrivas.fuelpump.feature.detail_station.BuildConfig
 import com.albrivas.fuelpump.feature.detail_station.R
 
@@ -213,7 +213,6 @@ fun DetailStationContent(station: FuelStation) {
 
 @Composable
 fun HeaderStation(station: FuelStation, onBack: () -> Unit, onFavoriteClick: (Boolean) -> Unit) {
-
     val staticMapUrl = generateStaticMapUrl(
         location = station.location,
         zoom = 17,
