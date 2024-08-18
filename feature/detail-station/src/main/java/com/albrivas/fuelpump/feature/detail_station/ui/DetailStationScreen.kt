@@ -36,6 +36,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -46,6 +47,7 @@ import com.albrivas.fuelpump.core.common.startRoute
 import com.albrivas.fuelpump.core.model.data.FuelStation
 import com.albrivas.fuelpump.core.model.data.previewFuelStationDomain
 import com.albrivas.fuelpump.core.ui.getFuelPrices
+import com.albrivas.fuelpump.core.ui.iconTint
 import com.albrivas.fuelpump.core.ui.isStationOpen
 import com.albrivas.fuelpump.core.ui.toBrandStationIcon
 import com.albrivas.fuelpump.core.uikit.components.FuelPumpButton
@@ -53,6 +55,7 @@ import com.albrivas.fuelpump.core.uikit.components.table.FuelPriceTable
 import com.albrivas.fuelpump.core.uikit.components.table.FuelPriceTableModel
 import com.albrivas.fuelpump.core.uikit.components.text.InformationText
 import com.albrivas.fuelpump.core.uikit.components.text.InformationTextModel
+import com.albrivas.fuelpump.core.uikit.theme.YellowFavorite
 import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
 import com.albrivas.fuelpump.feature.detail_station.BuildConfig
 import com.albrivas.fuelpump.feature.detail_station.R
@@ -210,6 +213,7 @@ fun DetailStationContent(station: FuelStation) {
 
 @Composable
 fun HeaderStation(station: FuelStation, onBack: () -> Unit, onFavoriteClick: (Boolean) -> Unit) {
+
     val staticMapUrl = generateStaticMapUrl(
         location = station.location,
         zoom = 17,
@@ -246,14 +250,20 @@ fun HeaderStation(station: FuelStation, onBack: () -> Unit, onFavoriteClick: (Bo
                 .offset(y = 30.dp, x = 0.dp)
                 .size(48.dp)
                 .shadow(elevation = 8.dp, shape = CircleShape)
-                .background(Color.White, shape = CircleShape),
+                .background(Color.White, shape = CircleShape)
+                .testTag("button_favorite"),
             onClick = { onFavoriteClick(!station.isFavorite) }
         ) {
             Icon(
                 imageVector = Icons.Default.Star,
                 contentDescription = "Mark as favorite",
-                tint = if (station.isFavorite) Color.Yellow else Color.LightGray,
-                modifier = Modifier.size(24.dp) // Adjust size as needed
+                tint = if (station.isFavorite) YellowFavorite else Color.LightGray,
+                modifier = Modifier
+                    .size(24.dp)
+                    .testTag("icon_favorite")
+                    .semantics {
+                        iconTint = if (station.isFavorite) YellowFavorite else Color.LightGray
+                    }
             )
         }
         Icon(
@@ -273,6 +283,12 @@ fun HeaderStation(station: FuelStation, onBack: () -> Unit, onFavoriteClick: (Bo
 @Composable
 private fun DetailStationPreview() {
     MyApplicationTheme {
-        DetailStationScreen(uiState = DetailStationUiState.Success(previewFuelStationDomain()))
+        DetailStationScreen(
+            uiState = DetailStationUiState.Success(
+                previewFuelStationDomain().copy(
+                    isFavorite = true
+                )
+            )
+        )
     }
 }
