@@ -1,5 +1,6 @@
 package com.albrivas.fuelpump.core.data.repository
 
+import android.location.Location
 import com.albrivas.fuelpump.core.data.mapper.asEntity
 import com.albrivas.fuelpump.core.database.dao.UserDataDao
 import com.albrivas.fuelpump.core.database.model.FavoriteStationCrossRef
@@ -34,11 +35,19 @@ class OfflineUserDataRepository @Inject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getUserWithFavoriteStations(): Flow<UserWithFavoriteStations> =
-        userDataDao.getUserData()
-            .flatMapLatest { userEntity ->
-                userDataDao.getUserWithFavoriteStations(userEntity.id)
-            }.map { it.asExternalModel() }
+    override fun getUserWithFavoriteStations(userLocation: Location): Flow<UserWithFavoriteStations> =
+        userDataDao.getUserData().flatMapLatest { userEntity ->
+            userDataDao.getUserWithFavoriteStations(userEntity.id)
+                .map { userWithFavorites ->
+                    val updatedStations = userWithFavorites.asExternalModel().favoriteStations.map { station ->
+                        station.copy(distance = station.location.distanceTo(userLocation))
+                    }
+                    UserWithFavoriteStations(
+                        user = userWithFavorites.asExternalModel().user,
+                        favoriteStations = updatedStations
+                    )
+                }
+        }
 
     private suspend fun getUserId(): Long = userDataDao.getUserId()
 }
