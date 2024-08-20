@@ -9,10 +9,7 @@ import com.albrivas.fuelpump.core.model.data.PriceCategory
 import com.albrivas.fuelpump.core.uikit.icon.FuelStationIcons
 import com.albrivas.fuelpump.core.uikit.theme.PriceCheap
 import com.albrivas.fuelpump.core.uikit.theme.PriceExpensive
-import com.albrivas.fuelpump.core.uikit.theme.PriceNone
 import com.albrivas.fuelpump.core.uikit.theme.PriceNormal
-import com.albrivas.fuelpump.core.uikit.theme.primaryContainerLight
-import com.albrivas.fuelpump.core.uikit.theme.secondaryContainerLight
 import com.albrivas.fuelpump.core.uikit.theme.secondaryLight
 import java.time.DayOfWeek
 import java.time.LocalTime
