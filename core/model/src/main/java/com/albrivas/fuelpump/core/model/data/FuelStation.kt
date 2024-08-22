@@ -33,7 +33,7 @@ data class FuelStation(
     val brandStationName: String,
     val brandStationBrandsType: FuelStationBrandsType,
     val typeSale: String,
-    val priceCategory: PriceCategory = PriceCategory.NORMAL,
+    val priceCategory: PriceCategory = PriceCategory.NONE,
     val distance: Float = 0.0f,
     val isFavorite: Boolean = false
 ) {

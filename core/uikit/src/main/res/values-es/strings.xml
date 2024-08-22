@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="preview_fuel_type">Gasoline 95</string>
-    <string name="filter_content_desc">Filter</string>
+    <string name="filter_content_desc">Filtro</string>
 </resources>

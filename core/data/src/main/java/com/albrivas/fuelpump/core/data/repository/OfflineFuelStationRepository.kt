@@ -6,6 +6,7 @@ import com.albrivas.fuelpump.core.data.mapper.asEntity
 import com.albrivas.fuelpump.core.database.dao.FuelStationDao
 import com.albrivas.fuelpump.core.database.dao.UserDataDao
 import com.albrivas.fuelpump.core.database.model.asExternalModel
+import com.albrivas.fuelpump.core.database.model.getLocation
 import com.albrivas.fuelpump.core.model.data.FuelStation
 import com.albrivas.fuelpump.core.model.data.FuelType
 import com.albrivas.fuelpump.core.model.data.PriceCategory
@@ -71,11 +72,14 @@ class OfflineFuelStationRepository @Inject constructor(
     override fun getFuelStationById(id: Int, userLocation: Location): Flow<FuelStation> =
         fuelStationDao.getFuelStationById(id)
             .flatMapLatest { station ->
-                offlineUserDataRepository.getUserWithFavoriteStations()
+                offlineUserDataRepository.getUserWithFavoriteStations(userLocation = userLocation)
                     .map { userWithFavorites ->
                         val isFavorite =
                             userWithFavorites.favoriteStations.any { it.idServiceStation == station.idServiceStation }
-                        station.asExternalModel().copy(isFavorite = isFavorite)
+                        station.asExternalModel().copy(
+                            isFavorite = isFavorite,
+                            distance = station.getLocation().distanceTo(userLocation)
+                        )
                     }
             }
             .flowOn(Dispatchers.IO)
@@ -86,9 +90,13 @@ class OfflineFuelStationRepository @Inject constructor(
         }
     }
 
-    override fun getFavoriteFuelStations(): Flow<List<FuelStation>> =
+    override fun getFavoriteFuelStations(userLocation: Location): Flow<List<FuelStation>> =
         fuelStationDao.getFavoriteFuelStations()
-            .map { items -> items.map { it.asExternalModel() } }
+            .map { items ->
+                items.map {
+                    it.asExternalModel().copy(distance = it.getLocation().distanceTo(userLocation))
+                }
+            }
             .flowOn(dispatcherIo)
 
     private fun List<FuelStation>.calculateFuelPrices(fuelType: FuelType): Pair<Double, Double> {

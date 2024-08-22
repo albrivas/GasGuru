@@ -10,6 +10,7 @@ import com.albrivas.fuelpump.core.uikit.icon.FuelStationIcons
 import com.albrivas.fuelpump.core.uikit.theme.PriceCheap
 import com.albrivas.fuelpump.core.uikit.theme.PriceExpensive
 import com.albrivas.fuelpump.core.uikit.theme.PriceNormal
+import com.albrivas.fuelpump.core.uikit.theme.secondaryLight
 import java.time.DayOfWeek
 import java.time.LocalTime
 import java.time.ZonedDateTime
@@ -64,6 +65,7 @@ fun FuelStationBrandsType.toBrandStationIcon() = when (this) {
 }
 
 fun PriceCategory.toColor() = when (this) {
+    PriceCategory.NONE -> secondaryLight
     PriceCategory.CHEAP -> PriceCheap
     PriceCategory.NORMAL -> PriceNormal
     PriceCategory.EXPENSIVE -> PriceExpensive
