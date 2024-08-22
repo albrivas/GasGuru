@@ -26,26 +26,33 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.albrivas.fuelpump.core.model.data.FuelStation
 import com.albrivas.fuelpump.core.model.data.FuelType
 import com.albrivas.fuelpump.core.model.data.previewFuelStationDomain
+import com.albrivas.fuelpump.core.ui.backgroundColor
 import com.albrivas.fuelpump.core.ui.getPrice
 import com.albrivas.fuelpump.core.ui.toBrandStationIcon
 import com.albrivas.fuelpump.core.ui.toColor
 import com.albrivas.fuelpump.core.uikit.theme.GrayExtraLight
 import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
+import com.albrivas.fuelpump.feature.fuel_list_station.R
 import java.util.Locale
 
 @Composable
 fun FuelStationItem(
     item: FuelStation,
     userSelectedFuelType: FuelType,
+    index: Int = 0,
     modifier: Modifier = Modifier,
-    onItemClick: (FuelStation) -> Unit
+    onItemClick: (FuelStation) -> Unit,
 ) {
+    val contentDescription = stringResource(id = R.string.content_description_fuel_item, index)
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
@@ -58,7 +65,8 @@ fun FuelStationItem(
                     bottomEnd = CornerSize(0.dp)
                 )
             )
-            .clickable { onItemClick(item) },
+            .clickable { onItemClick(item) }
+            .semantics { this.contentDescription = contentDescription },
         elevation = CardDefaults.cardElevation(defaultElevation = 16.dp),
         shape = RoundedCornerShape(
             topStart = CornerSize(8.dp),
@@ -132,7 +140,8 @@ fun FuelStationItem(
                     overflow = TextOverflow.Ellipsis
                 )
             }
-
+            val boxContentDesc =
+                stringResource(id = R.string.content_description_fuel_item_price_box)
             Box(
                 modifier = Modifier
                     .background(
@@ -148,6 +157,10 @@ fun FuelStationItem(
                     .width(74.dp)
                     .fillMaxHeight()
                     .align(Alignment.CenterVertically)
+                    .semantics {
+                        this.contentDescription = boxContentDesc
+                        backgroundColor = item.priceCategory.toColor()
+                    }
             ) {
                 Text(
                     text = "${userSelectedFuelType.getPrice(item)} €/L",
