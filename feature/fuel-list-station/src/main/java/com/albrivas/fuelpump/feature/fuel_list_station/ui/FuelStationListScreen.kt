@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -120,6 +120,7 @@ internal fun FuelStationListScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
+                        modifier = Modifier,
                         text = stringResource(id = R.string.empty_favorites),
                         style = MaterialTheme.typography.titleMedium
                     )
@@ -142,9 +143,10 @@ fun ColumnScope.ListFuelStations(
             .background(color = GrayBackground),
         contentPadding = PaddingValues(top = 16.dp, bottom = 24.dp)
     ) {
-        items(stations) { item ->
+        itemsIndexed(stations) { index, item ->
             FuelStationItem(
                 item = item,
+                index = index,
                 userSelectedFuelType = selectedFuel
             ) { station ->
                 navigateToDetail(station.idServiceStation)
