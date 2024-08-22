@@ -20,8 +20,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.albrivas.fuelpump.core.uikit.R
 import com.albrivas.fuelpump.core.uikit.theme.primaryContainerLight
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -36,8 +40,10 @@ fun FilterChip(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
     ) {
+        val contentDesc = stringResource(id = R.string.filter_content_desc)
         options.forEachIndexed { index, label ->
             FilterChip(
+                modifier = Modifier.semantics { contentDescription = "$contentDesc $index" },
                 selected = selectedIndex == index,
                 enabled = enabled,
                 label = { Text(text = label) },

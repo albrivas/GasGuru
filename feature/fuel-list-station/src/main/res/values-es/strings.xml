@@ -6,4 +6,7 @@
     <string name="choice_all">Todas</string>
     <string name="choice_favorite">Favoritas</string>
     <string name="empty_favorites">No hay gasolineras favoritas</string>
+    <string name="content_description_fuel_item" translatable="false">Gasolinera %1$s</string>
+    <string name="content_description_fuel_item_price_box">Color del precio de la gasolinera"</string>
+
 </resources>
