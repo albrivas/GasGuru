@@ -1,4 +1,4 @@
-package com.albrivas.fuelpump.profile
+package com.albrivas.fuelpump.feature.profile
 
 import com.albrivas.fuelpump.core.model.data.UserData
 

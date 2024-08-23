@@ -1,4 +1,4 @@
-package com.albrivas.fuelpump.profile
+package com.albrivas.fuelpump.feature.profile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -48,7 +48,6 @@ import com.albrivas.fuelpump.core.uikit.components.selectedItem.BasicSelectedIte
 import com.albrivas.fuelpump.core.uikit.components.settings.SettingItem
 import com.albrivas.fuelpump.core.uikit.components.settings.SettingItemModel
 import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
-import com.albrivas.fuelpump.feature.profile.R
 
 @Composable
 internal fun ProfileScreenRoute(viewModel: ProfileViewModel = hiltViewModel()) {
