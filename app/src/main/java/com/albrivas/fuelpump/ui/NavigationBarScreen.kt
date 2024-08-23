@@ -18,8 +18,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import com.albrivas.feature.station_map.navigation.route.StationMapGraph
-import com.albrivas.feature.station_map.navigation.stationMapGraph
+import com.albrivas.fuelpump.feature.station_map.navigation.route.StationMapGraph
+import com.albrivas.fuelpump.feature.station_map.navigation.stationMapGraph
 import com.albrivas.fuelpump.feature.fuel_list_station.navigation.stationListGraph
 import com.albrivas.fuelpump.feature.profile.R
 import com.albrivas.fuelpump.navigation.navigationbar.NavigationBottomBar

@@ -1,4 +1,4 @@
-package com.albrivas.feature.station_map.ui
+package com.albrivas.fuelpump.feature.station_map.ui
 
 import android.location.Location
 import androidx.lifecycle.SavedStateHandle
