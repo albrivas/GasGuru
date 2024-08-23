@@ -15,6 +15,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,12 +40,12 @@ fun FuelStationListScreenRoute(
     viewModel: FuelListStationViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val selectedFilter by viewModel.selectedFilterIndex.collectAsStateWithLifecycle()
+    val selectedFilter by viewModel.selectedTab.collectAsStateWithLifecycle()
     FuelStationListScreen(
         uiState = state,
         navigateToDetail = navigateToDetail,
         checkLocationEnabled = viewModel::checkLocationEnabled,
-        selectedFilter = selectedFilter,
+        selectedFilter = selectedFilter.toInt(),
         updateFilter = viewModel::updateSelectedFilterIndex
     )
 }
@@ -57,6 +58,11 @@ internal fun FuelStationListScreen(
     checkLocationEnabled: () -> Unit,
     updateFilter: (Int) -> Unit,
 ) {
+    LaunchedEffect(key1 = selectedFilter) {
+        if (selectedFilter == 0) {
+            checkLocationEnabled()
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
