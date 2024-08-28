@@ -51,7 +51,7 @@ class FuelListStationViewModel @Inject constructor(
             fetchJob = launch {
                 userLocation.getCurrentLocation()?.let { location ->
                     combine(
-                        fuelStationByLocation(userLocation = location, maxStations = 30),
+                        fuelStationByLocation(userLocation = location, maxStations = 15),
                         getUserDataUseCase()
                     ) { fuelStations, userData ->
                         Pair(fuelStations, userData)
