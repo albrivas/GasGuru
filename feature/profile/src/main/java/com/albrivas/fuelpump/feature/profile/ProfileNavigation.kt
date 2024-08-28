@@ -1,4 +1,4 @@
-package com.albrivas.fuelpump.profile
+package com.albrivas.fuelpump.feature.profile
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable

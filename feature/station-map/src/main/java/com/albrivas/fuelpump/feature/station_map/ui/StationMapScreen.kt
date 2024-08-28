@@ -1,4 +1,4 @@
-package com.albrivas.feature.station_map.ui
+package com.albrivas.fuelpump.feature.station_map.ui
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -78,7 +78,10 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.albrivas.fuelpump.core.uikit.R as RUikit
 
 @Composable
-fun StationMapScreenRoute(navigateToDetail: (Int) -> Unit, viewModel: StationMapViewModel = hiltViewModel()) {
+fun StationMapScreenRoute(
+    navigateToDetail: (Int) -> Unit,
+    viewModel: StationMapViewModel = hiltViewModel(),
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val searchResult by viewModel.searchResultUiState.collectAsStateWithLifecycle()
@@ -99,22 +102,24 @@ fun StationMapScreenRoute(navigateToDetail: (Int) -> Unit, viewModel: StationMap
 @Composable
 internal fun StationMapScreen(
     stations: List<FuelStation>,
-    centerMap: LatLng,
+    centerMap: LatLng?,
     zoomLevel: Float,
     searchQuery: String,
     userSelectedFuelType: FuelType?,
     searchResultUiState: SearchResultUiState,
     recentSearchQueries: RecentSearchQueriesUiState,
     event: (StationMapEvent) -> Unit = {},
-    navigateToDetail: (Int) -> Unit
+    navigateToDetail: (Int) -> Unit = {},
 ) {
     val cameraState = rememberCameraPositionState()
+
     LaunchedEffect(key1 = centerMap) {
-        if (centerMap.latitude != 0.0 && centerMap.longitude != 0.0) {
+        centerMap?.let {
             cameraState.centerOnLocation(location = centerMap, zoomLevel = zoomLevel)
         }
         event(StationMapEvent.ResetMapCenter)
     }
+
     Box(modifier = Modifier.fillMaxSize()) {
         CompositionLocalProvider(
             value = LocalTextStyle provides MaterialTheme.typography.displayMedium.copy(
@@ -145,7 +150,7 @@ internal fun StationMapScreen(
             onMyLocationButtonClick = {
                 true
             },
-            onMapLoaded = { event(StationMapEvent.GetStationByCurrentLocation) },
+            onMapLoaded = { },
         ) {
             var selectedLocation by remember { mutableStateOf<Int?>(null) }
 
@@ -232,7 +237,8 @@ fun SearchPlaces(
                 top = statusBarPaddingAnimation,
                 start = paddingAnimation,
                 end = paddingAnimation
-            ).statusBarsPadding(),
+            )
+            .statusBarsPadding(),
         query = searchQuery,
         onQueryChange = { event(StationMapEvent.UpdateSearchQuery(it)) },
         onSearch = {},

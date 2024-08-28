@@ -9,6 +9,8 @@ import com.albrivas.fuelpump.core.model.data.FuelType
 import com.albrivas.fuelpump.core.model.data.UserData
 import com.albrivas.fuelpump.core.testing.BaseTest
 import com.albrivas.fuelpump.core.ui.translation
+import com.albrivas.fuelpump.feature.profile.ProfileScreen
+import com.albrivas.fuelpump.feature.profile.ProfileUiState
 import org.junit.jupiter.api.DisplayName
 
 import org.junit.jupiter.api.Test
