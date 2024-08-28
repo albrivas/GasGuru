@@ -162,7 +162,7 @@ internal fun StationMapScreen(
                 val isSelected = selectedLocation == station.idServiceStation
 
                 MarkerComposable(
-                    keys = arrayOf(isSelected),
+                    keys = arrayOf(station.idServiceStation),
                     state = state,
                     onClick = {
                         state.showInfoWindow()
