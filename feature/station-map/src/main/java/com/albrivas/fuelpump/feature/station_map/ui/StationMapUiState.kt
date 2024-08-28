@@ -6,8 +6,8 @@ import com.google.android.gms.maps.model.LatLng
 
 data class StationMapUiState(
     val fuelStations: List<FuelStation> = emptyList(),
-    val centerMap: LatLng = LatLng(0.0, 0.0),
-    val zoomLevel: Float = 12f,
+    val centerMap: LatLng? = null,
+    val zoomLevel: Float = 14f,
     val error: Throwable? = null,
     val selectedType: FuelType? = null,
 )

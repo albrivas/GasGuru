@@ -1,6 +1,5 @@
 package com.albrivas.fuelpump.feature.station_map.ui
 
-import android.location.Location
 import com.albrivas.fuelpump.core.model.data.SearchPlace
 import com.google.android.gms.maps.model.LatLng
 
@@ -12,6 +11,5 @@ sealed class StationMapEvent {
     data class GetStationByPlace(val placeId: String) : StationMapEvent()
     data object CenterMapInCurrentLocation : StationMapEvent()
     data object ResetMapCenter : StationMapEvent()
-    data class GetStationByLocation(val location: Location) : StationMapEvent()
     data class UpdateSearchQuery(val query: String) : StationMapEvent()
 }

@@ -52,7 +52,7 @@ class StationMapViewModel @Inject constructor(
     val state: StateFlow<StationMapUiState> = _state
 
     init {
-        getLastLocation()
+        getStationByCurrentLocation()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -93,7 +93,6 @@ class StationMapViewModel @Inject constructor(
             is StationMapEvent.GetStationByPlace -> getStationByPlace(event.placeId)
             is StationMapEvent.CenterMapInCurrentLocation -> centerMapInCurrentLocation()
             is StationMapEvent.ResetMapCenter -> resetMapCenter()
-            is StationMapEvent.GetStationByLocation -> getStationByLocation(event.location)
             is StationMapEvent.UpdateSearchQuery -> onSearchQueryChanged(event.query)
         }
     }
@@ -105,6 +104,7 @@ class StationMapViewModel @Inject constructor(
     private fun getStationByCurrentLocation() {
         viewModelScope.launch {
             userLocation.getCurrentLocation()?.let { location ->
+                _state.update { it.copy(centerMap = location.toLatLng()) }
                 getStationByLocation(location)
             }
         }
@@ -137,12 +137,12 @@ class StationMapViewModel @Inject constructor(
     }
 
     private fun resetMapCenter() =
-        _state.update { it.copy(centerMap = LatLng(0.0, 0.0), zoomLevel = 14f) }
+        _state.update { it.copy(centerMap = null, zoomLevel = 14f) }
 
     private fun getStationByLocation(location: Location) {
         viewModelScope.launch {
             combine(
-                fuelStationByLocation(userLocation = location, maxStations = 30),
+                fuelStationByLocation(userLocation = location, maxStations = 15),
                 getUserDataUseCase()
             ) { fuelStations, userData ->
                 Pair(fuelStations, userData)
@@ -152,19 +152,10 @@ class StationMapViewModel @Inject constructor(
                 _state.update {
                     it.copy(
                         fuelStations = fuelStations,
-                        centerMap = location.toLatLng(),
-                        zoomLevel = 14f,
                         selectedType = userData.fuelSelection
                     )
                 }
             }
         }
     }
-
-    private fun getLastLocation() =
-        viewModelScope.launch {
-            userLocation.getLastKnownLocation.collect { location ->
-                _state.update { it.copy(centerMap = location.toLatLng(), zoomLevel = 14f) }
-            }
-        }
 }
