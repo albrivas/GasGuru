@@ -1,4 +1,4 @@
-package com.albrivas.feature.station_map.ui
+package com.albrivas.fuelpump.feature.station_map.ui
 
 import com.albrivas.fuelpump.core.model.data.SearchPlace
 

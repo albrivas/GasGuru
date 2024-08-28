@@ -67,7 +67,7 @@ class FuelStationListScreenTest : BaseTest() {
         setContent {
             FuelStationListScreen(
                 uiState = FuelStationListUiState.Loading,
-                selectedFilter = 0,
+                selectedFilter = 1,
                 navigateToDetail = {},
                 checkLocationEnabled = {},
                 updateFilter = {}
