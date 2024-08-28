@@ -1,8 +1,8 @@
 package com.albrivas.fuelpump.navigation.navigationbar.route
 
-import com.albrivas.feature.station_map.navigation.route.StationMapGraph
 import com.albrivas.fuelpump.core.uikit.R
 import com.albrivas.fuelpump.feature.fuel_list_station.navigation.route.StationListGraph
+import com.albrivas.fuelpump.feature.station_map.navigation.route.StationMapGraph
 import kotlinx.serialization.Serializable
 
 @Serializable

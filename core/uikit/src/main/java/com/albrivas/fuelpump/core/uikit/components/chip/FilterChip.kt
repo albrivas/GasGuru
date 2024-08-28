@@ -14,8 +14,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,8 +32,6 @@ fun FilterChip(
     modifier: Modifier = Modifier,
     model: FilterChipModel,
 ) = with(model) {
-    var selectedIndex by remember { mutableStateOf(selectedChip) }
-
     FlowRow(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
@@ -44,13 +40,13 @@ fun FilterChip(
         options.forEachIndexed { index, label ->
             FilterChip(
                 modifier = Modifier.semantics { contentDescription = "$contentDesc $index" },
-                selected = selectedIndex == index,
+                selected = selectedChip == index,
                 enabled = enabled,
                 label = { Text(text = label) },
                 shape = CircleShape,
                 border = FilterChipDefaults.filterChipBorder(
                     enabled = false,
-                    selected = selectedIndex == index,
+                    selected = selectedChip == index,
                     disabledBorderColor = Color.Transparent
                 ),
                 colors = FilterChipDefaults.filterChipColors(
@@ -59,9 +55,8 @@ fun FilterChip(
                 ),
                 onClick = {
                     onFilterSelected(index)
-                    selectedIndex = index
                 },
-                leadingIcon = if (selectedIndex == index) {
+                leadingIcon = if (selectedChip == index) {
                     {
                         Icon(
                             imageVector = Icons.Filled.Done,

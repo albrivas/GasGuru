@@ -1,4 +1,4 @@
-package com.albrivas.feature.station_map.navigation.route
+package com.albrivas.fuelpump.feature.station_map.navigation.route
 
 import kotlinx.serialization.Serializable
 
