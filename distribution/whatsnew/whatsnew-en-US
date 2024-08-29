@@ -1,4 +1,5 @@
-- Change the preferred fuel
+- Save state in map screen
+- Refresh markers in map screen
 - Improved application stability.
 - Bug fixes.
 - Optimisation of the user interface.
