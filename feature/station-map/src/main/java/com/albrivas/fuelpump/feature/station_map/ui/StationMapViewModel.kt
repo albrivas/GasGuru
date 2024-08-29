@@ -146,7 +146,8 @@ class StationMapViewModel @Inject constructor(
                 getUserDataUseCase()
             ) { fuelStations, userData ->
                 Pair(fuelStations, userData)
-            }.catch { error -> _state.update { it.copy(error = error) }
+            }.catch { error ->
+                _state.update { it.copy(error = error) }
             }.collect { (fuelStations, userData) ->
                 _state.update {
                     it.copy(
