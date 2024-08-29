@@ -237,8 +237,7 @@ fun SearchPlaces(
                 top = statusBarPaddingAnimation,
                 start = paddingAnimation,
                 end = paddingAnimation
-            )
-            .statusBarsPadding(),
+            ),
         query = searchQuery,
         onQueryChange = { event(StationMapEvent.UpdateSearchQuery(it)) },
         onSearch = {},
