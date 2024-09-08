@@ -139,10 +139,9 @@ class StationMapViewModel @Inject constructor(
         _state.update { it.copy(centerMap = null, zoomLevel = 14f) }
 
     private fun getStationByLocation(location: Location) {
-        _state.update { it.copy(centerMap = location.toLatLng()) }
         viewModelScope.launch {
             combine(
-                fuelStationByLocation(userLocation = location, maxStations = 15),
+                fuelStationByLocation(userLocation = location, maxStations = 10),
                 getUserDataUseCase()
             ) { fuelStations, userData ->
                 Pair(fuelStations, userData)
@@ -152,7 +151,9 @@ class StationMapViewModel @Inject constructor(
                 _state.update {
                     it.copy(
                         fuelStations = fuelStations,
-                        selectedType = userData.fuelSelection
+                        selectedType = userData.fuelSelection,
+                        centerMap = location.toLatLng(),
+                        zoomLevel = 14f
                     )
                 }
             }
