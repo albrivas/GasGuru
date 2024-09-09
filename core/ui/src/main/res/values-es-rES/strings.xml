@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="gasoline_95">Gasoline 95</string>
+    <string name="gasoline_95">Gasolina 95</string>
     <string name="gasoline_98">Gasolina 98</string>
     <string name="diesel">Diesel</string>
     <string name="electric">Eléctrico</string>
