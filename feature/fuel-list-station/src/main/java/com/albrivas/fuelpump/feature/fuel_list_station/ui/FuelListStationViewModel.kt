@@ -47,11 +47,11 @@ class FuelListStationViewModel @Inject constructor(
 
     private fun getStationsByLocation() {
         viewModelScope.launch {
-            fetchJob?.cancelAndJoin()
+            fetchJob?.cancel()
             fetchJob = launch {
                 userLocation.getCurrentLocation()?.let { location ->
                     combine(
-                        fuelStationByLocation(userLocation = location, maxStations = 15),
+                        fuelStationByLocation(userLocation = location, maxStations = 10),
                         getUserDataUseCase()
                     ) { fuelStations, userData ->
                         Pair(fuelStations, userData)
@@ -83,7 +83,7 @@ class FuelListStationViewModel @Inject constructor(
 
     private fun getFavoriteStations() {
         viewModelScope.launch {
-            fetchJob?.cancelAndJoin()
+            fetchJob?.cancel()
             fetchJob = launch {
                 userLocation.getCurrentLocation()?.let { location ->
                     combine(
