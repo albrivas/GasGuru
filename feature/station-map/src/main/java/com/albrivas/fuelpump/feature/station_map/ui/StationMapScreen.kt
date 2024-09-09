@@ -66,6 +66,8 @@ import com.albrivas.fuelpump.core.uikit.components.marker.StationMarkerModel
 import com.albrivas.fuelpump.core.uikit.theme.GrayExtraLight
 import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
 import com.albrivas.fuelpump.feature.station_map.R
+import com.google.android.gms.maps.GoogleMapOptions
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
@@ -110,7 +112,9 @@ internal fun StationMapScreen(
     event: (StationMapEvent) -> Unit = {},
     navigateToDetail: (Int) -> Unit = {},
 ) {
-    val cameraState = rememberCameraPositionState()
+    val cameraState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(LatLng(40.0, -4.0), 5.5f)
+    }
 
     LaunchedEffect(key1 = centerMap) {
         centerMap?.let {
@@ -136,6 +140,7 @@ internal fun StationMapScreen(
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraState,
+            googleMapOptionsFactory = { GoogleMapOptions().mapId("da696d048f7d52b8") },
             uiSettings = MapUiSettings(
                 myLocationButtonEnabled = false,
                 zoomControlsEnabled = false,
