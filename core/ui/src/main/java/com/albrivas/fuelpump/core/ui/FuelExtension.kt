@@ -6,6 +6,7 @@ import com.albrivas.fuelpump.core.model.data.FuelStation
 import com.albrivas.fuelpump.core.model.data.FuelStationBrandsType
 import com.albrivas.fuelpump.core.model.data.FuelType
 import com.albrivas.fuelpump.core.model.data.PriceCategory
+import com.albrivas.fuelpump.core.uikit.components.price.PriceItemModel
 import com.albrivas.fuelpump.core.uikit.icon.FuelStationIcons
 import com.albrivas.fuelpump.core.uikit.theme.PriceCheap
 import com.albrivas.fuelpump.core.uikit.theme.PriceExpensive
@@ -16,6 +17,7 @@ import java.time.LocalTime
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import com.albrivas.fuelpump.core.uikit.R as RUikit
 
 fun FuelType.translation() = when (this) {
     FuelType.GASOLINE_95 -> R.string.gasoline_95
@@ -81,15 +83,29 @@ fun FuelType?.getPrice(fuelStation: FuelStation) = when (this) {
 }
 
 @Composable
-fun FuelStation.getFuelPrices(): List<Pair<String, Double>> {
-    return mapOf(
-        R.string.diesel to priceGasoilA,
-        R.string.diesel_plus to priceGasoilPremium,
-        R.string.gasoline_95 to priceGasoline95E5,
-        R.string.gasoline_98 to priceGasoline98E5
-    )
-        .filterValues { it > 0.0 }
-        .map { Pair(stringResource(id = it.key), it.value) }
+fun FuelStation.getFuelPriceItems(): List<PriceItemModel> {
+    return listOf(
+        PriceItemModel(
+            icon = RUikit.drawable.ic_diesel,
+            fuelName = stringResource(id = R.string.diesel),
+            price = "$priceGasoilA €/L"
+        ),
+        PriceItemModel(
+            icon = RUikit.drawable.ic_diesel_plus,
+            fuelName = stringResource(id = R.string.diesel_plus),
+            price = "$priceGasoilPremium €/L"
+        ),
+        PriceItemModel(
+            icon = RUikit.drawable.ic_gasoline_95,
+            fuelName = stringResource(id = R.string.gasoline_95),
+            price = "$priceGasoline95E5 €/L"
+        ),
+        PriceItemModel(
+            icon = RUikit.drawable.ic_gasoline_98,
+            fuelName = stringResource(id = R.string.gasoline_98),
+            price = "$priceGasoline98E5 €/L"
+        )
+    ).filter { it.price > "0.0 €/L" }
 }
 
 const val FORMAT_TIME_24H = "HH:mm"
