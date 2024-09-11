@@ -109,71 +109,62 @@ fun FuelStation.getFuelPriceItems(): List<PriceItemModel> {
 }
 
 const val FORMAT_TIME_24H = "HH:mm"
-const val END_OF_DAY_TIME = "23:59"
 const val SCHEDULE_24H = "L-D: 24H"
 
 @Suppress("ReturnCount")
 fun FuelStation.isStationOpen(): Boolean {
+    val now = ZonedDateTime.now()
+    val currentDay = now.dayOfWeek
+    val currentTime = now.toLocalTime()
+
     if (schedule.trim().uppercase(Locale.ROOT) == SCHEDULE_24H) {
         return true
     }
 
-    val now = ZonedDateTime.now()
-    val dayOfWeek = now.dayOfWeek
-    val currentTime = now.toLocalTime()
-
     val scheduleParts = schedule.split(";")
     for (part in scheduleParts) {
-        val dayAndTime = part.trim().split(":")
-        if (dayAndTime.size != 2) {
-            continue
-        }
-        val days = dayAndTime[0].trim()
-        val times = dayAndTime[1].trim().split("-")
+        val regex = Regex("""([LMXJVSD-]+):\s*([0-9]{2}:[0-9]{2})-([0-9]{2}:[0-9]{2})""")
+        val matchResult = regex.find(part.trim())
 
-        if (isDayMatched(days, dayOfWeek) && isTimeInRange(times, currentTime)) {
-            return true
+        if (matchResult != null) {
+            val days = matchResult.groupValues[1]
+            val startTime = matchResult.groupValues[2]
+            val endTime = matchResult.groupValues[3]
+
+            if (isDayMatched(days, currentDay) && isTimeInRange(startTime, endTime, currentTime)) {
+                return true
+            }
         }
     }
 
     return false
 }
 
-private fun isDayMatched(days: String, currentDay: DayOfWeek): Boolean {
-    val dayRange = days.split("-")
-    val startDay = dayOfWeekMap[dayRange[0].uppercase(Locale.ROOT)]
-        ?: throw IllegalArgumentException("Día de inicio inválido: ${dayRange[0]}")
-    val endDay = if (dayRange.size > 1) {
-        dayOfWeekMap[dayRange[1].uppercase(Locale.ROOT)]
-            ?: throw IllegalArgumentException("Día de fin inválido: ${dayRange[1]}")
-    } else {
-        startDay
+fun isTimeInRange(startTimeStr: String, endTimeStr: String, currentTime: LocalTime): Boolean {
+    val formatter = DateTimeFormatter.ofPattern(FORMAT_TIME_24H)
+
+    val startTime = LocalTime.parse(startTimeStr, formatter)
+    val endTime = LocalTime.parse(endTimeStr, formatter)
+
+    if (endTime.isAfter(startTime) || endTime == startTime) {
+        return currentTime.isAfter(startTime) && currentTime.isBefore(endTime)
     }
 
-    return currentDay in startDay..endDay
+    return currentTime.isAfter(startTime) || currentTime.isBefore(endTime)
 }
 
-const val MIN_TIME_LENGTH = 5
-
-private fun isTimeInRange(times: List<String>, currentTime: LocalTime): Boolean {
-    val startTime =
-        LocalTime.parse(times[0].padEnd(MIN_TIME_LENGTH, '0'), DateTimeFormatter.ofPattern(FORMAT_TIME_24H))
-    val endTime = if (times.size > 1) {
-        LocalTime.parse(times[1].padEnd(MIN_TIME_LENGTH, '0'), DateTimeFormatter.ofPattern(FORMAT_TIME_24H))
-    } else {
-        LocalTime.parse(END_OF_DAY_TIME, DateTimeFormatter.ofPattern(FORMAT_TIME_24H))
+fun isDayMatched(days: String, currentDay: DayOfWeek): Boolean {
+    return when (days) {
+        "L-D" -> true
+        "L-V" -> currentDay.value in 1..5
+        "L-S" -> currentDay.value in 1..6
+        "L" -> currentDay == DayOfWeek.MONDAY
+        "M" -> currentDay == DayOfWeek.TUESDAY
+        "X" -> currentDay == DayOfWeek.WEDNESDAY
+        "J" -> currentDay == DayOfWeek.THURSDAY
+        "V" -> currentDay == DayOfWeek.FRIDAY
+        "S" -> currentDay == DayOfWeek.SATURDAY
+        "D" -> currentDay == DayOfWeek.SUNDAY
+        else -> false
     }
-
-    return (currentTime.isAfter(startTime) || currentTime == startTime) &&
-        !currentTime.isAfter(endTime)
 }
-
-private val dayOfWeekMap = mapOf(
-    "L" to DayOfWeek.MONDAY,
-    "M" to DayOfWeek.TUESDAY,
-    "X" to DayOfWeek.WEDNESDAY,
-    "J" to DayOfWeek.THURSDAY,
-    "V" to DayOfWeek.FRIDAY,
-    "S" to DayOfWeek.SATURDAY,
-    "D" to DayOfWeek.SUNDAY
-)
