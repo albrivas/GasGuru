@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.typography
@@ -145,20 +146,26 @@ fun DetailStationContent(station: FuelStation) {
                 .padding(16.dp)
                 .fillMaxSize()
         ) {
-            val isOpen = stringResource(id = if (station.isStationOpen()) R.string.open else R.string.close)
+            val isOpen =
+                stringResource(id = if (station.isStationOpen()) R.string.open else R.string.close)
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = "${station.brandStationName} - ${station.formatDistance()} - $isOpen",
-                style = typography.titleMedium
+                style = typography.titleSmall
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            HorizontalDivider(
+                color = Color.LightGray,
+                thickness = 0.5.dp
             )
             InformationText(
                 modifier = Modifier
-                    .padding(top = 8.dp)
+                    .padding(top = 16.dp)
                     .testTag("address"),
                 model = InformationTextModel(
                     icon = R.drawable.ic_home,
-                    title = station.formatDirection(),
-                    description = "Direction of station icon"
+                    title = stringResource(id = R.string.direction),
+                    description = station.formatDirection()
                 )
             )
             InformationText(
@@ -167,17 +174,20 @@ fun DetailStationContent(station: FuelStation) {
                     .testTag("calendar"),
                 model = InformationTextModel(
                     icon = R.drawable.ic_calendar,
-                    title = station.scheduleList.joinToString(separator = "\n"),
-                    description = "Schedule station icon"
+                    title = stringResource(id = R.string.schedule),
+                    description = station.scheduleList.joinToString(separator = "\n")
                 )
             )
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(32.dp))
+            HorizontalDivider(
+                color = Color.LightGray,
+                thickness = 0.5.dp
+            )
             val fuelItems = station.getFuelPriceItems()
             LazyVerticalGrid(
-                columns = GridCells.Fixed(2), // 2 items por fila
+                columns = GridCells.Fixed(2),
                 modifier = Modifier
-                    .fillMaxWidth(),
-                contentPadding = PaddingValues(8.dp),
+                    .fillMaxWidth().padding(top = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
@@ -256,14 +266,15 @@ fun HeaderStation(station: FuelStation, onBack: () -> Unit, onFavoriteClick: (Bo
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, apiLevel = 33)
 @Composable
 private fun DetailStationPreview() {
     MyApplicationTheme {
         DetailStationScreen(
             uiState = DetailStationUiState.Success(
                 previewFuelStationDomain().copy(
-                    isFavorite = true
+                    isFavorite = true,
+                    schedule = "L-V: 06:00-22:00; S: 07:00-22:00; D: 08:00-22:00"
                 )
             )
         )
