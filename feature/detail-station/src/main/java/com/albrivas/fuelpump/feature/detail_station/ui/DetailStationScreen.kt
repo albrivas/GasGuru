@@ -159,16 +159,17 @@ fun DetailStationContent(station: FuelStation) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    modifier = Modifier.wrapContentWidth(),
+                    modifier = Modifier.wrapContentWidth().testTag("name-station"),
                     text = station.brandStationName,
                     style = typography.titleSmall
                 )
                 Text(
-                    modifier = Modifier.wrapContentWidth(),
+                    modifier = Modifier.wrapContentWidth().testTag("distance"),
                     text = station.formatDistance(),
                     style = typography.displaySmall
                 )
                 StatusChip(
+                    modifier = Modifier.testTag("status-station"),
                     model = StatusChipModel(
                         text = isOpen,
                         color = if (station.isStationOpen()) PriceCheap else PriceExpensive

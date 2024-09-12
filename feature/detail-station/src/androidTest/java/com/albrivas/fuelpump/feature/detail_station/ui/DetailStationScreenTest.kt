@@ -38,10 +38,10 @@ class DetailStationScreenTest : BaseTest() {
         }
 
         onNodeWithTag("address").assertIsDisplayed()
-        onNodeWithTag("country").assertIsDisplayed()
-        onNodeWithTag("distance").assertIsDisplayed()
-        onNodeWithTag("schedule").assertIsDisplayed()
         onNodeWithTag("calendar").assertIsDisplayed()
+        onNodeWithTag("status-station").assertIsDisplayed()
+        onNodeWithTag("name-station").assertIsDisplayed()
+        onNodeWithTag("distance").assertIsDisplayed()
     }
 
     @Test
