@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -53,10 +55,14 @@ import com.albrivas.fuelpump.core.ui.iconTint
 import com.albrivas.fuelpump.core.ui.isStationOpen
 import com.albrivas.fuelpump.core.ui.toBrandStationIcon
 import com.albrivas.fuelpump.core.uikit.components.FuelPumpButton
+import com.albrivas.fuelpump.core.uikit.components.chip.StatusChip
+import com.albrivas.fuelpump.core.uikit.components.chip.StatusChipModel
 import com.albrivas.fuelpump.core.uikit.components.price.PriceItem
 import com.albrivas.fuelpump.core.uikit.components.text.InformationText
 import com.albrivas.fuelpump.core.uikit.components.text.InformationTextModel
 import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
+import com.albrivas.fuelpump.core.uikit.theme.PriceCheap
+import com.albrivas.fuelpump.core.uikit.theme.PriceExpensive
 import com.albrivas.fuelpump.core.uikit.theme.YellowFavorite
 import com.albrivas.fuelpump.feature.detail_station.BuildConfig
 import com.albrivas.fuelpump.feature.detail_station.R
@@ -147,11 +153,28 @@ fun DetailStationContent(station: FuelStation) {
         ) {
             val isOpen =
                 stringResource(id = if (station.isStationOpen()) R.string.open else R.string.close)
-            Text(
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                text = "${station.brandStationName} - ${station.formatDistance()} - $isOpen",
-                style = typography.titleSmall
-            )
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    modifier = Modifier.wrapContentWidth(),
+                    text = station.brandStationName,
+                    style = typography.titleSmall
+                )
+                Text(
+                    modifier = Modifier.wrapContentWidth(),
+                    text = station.formatDistance(),
+                    style = typography.displaySmall
+                )
+                StatusChip(
+                    model = StatusChipModel(
+                        text = isOpen,
+                        color = if (station.isStationOpen()) PriceCheap else PriceExpensive
+                    )
+                )
+            }
             Spacer(modifier = Modifier.height(16.dp))
             HorizontalDivider(
                 color = Color.LightGray,
@@ -186,7 +209,8 @@ fun DetailStationContent(station: FuelStation) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 modifier = Modifier
-                    .fillMaxWidth().padding(top = 16.dp),
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
