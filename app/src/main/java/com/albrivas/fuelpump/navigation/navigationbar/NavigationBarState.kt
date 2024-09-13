@@ -26,7 +26,7 @@ class NavigationBarState(
 
     val topLevelRoutes = listOf(
         TopLevelRoutes.Map(),
-        TopLevelRoutes.List(),
+        TopLevelRoutes.Favorite(),
         TopLevelRoutes.Profile()
     )
     val currentDestination: NavDestination?
@@ -39,7 +39,7 @@ class NavigationBarState(
     private fun NavHostController.navigatePoppingUpToStartDestination(route: TopLevelRoutes) {
         val topLevel = when (route) {
             is TopLevelRoutes.Map -> StationMapGraph.StationMapRoute
-            is TopLevelRoutes.List -> StationListGraph.StationListRoute
+            is TopLevelRoutes.Favorite -> StationListGraph.StationListRoute
             is TopLevelRoutes.Profile -> ProfileRoute
         }
         navigate(topLevel) {
