@@ -6,6 +6,7 @@ import com.albrivas.fuelpump.core.model.data.FuelStation
 import com.albrivas.fuelpump.core.model.data.FuelStationBrandsType
 import com.albrivas.fuelpump.core.model.data.FuelType
 import com.albrivas.fuelpump.core.model.data.PriceCategory
+import com.albrivas.fuelpump.core.uikit.components.price.PriceItemModel
 import com.albrivas.fuelpump.core.uikit.icon.FuelStationIcons
 import com.albrivas.fuelpump.core.uikit.theme.PriceCheap
 import com.albrivas.fuelpump.core.uikit.theme.PriceExpensive
@@ -16,6 +17,7 @@ import java.time.LocalTime
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import com.albrivas.fuelpump.core.uikit.R as RUikit
 
 fun FuelType.translation() = when (this) {
     FuelType.GASOLINE_95 -> R.string.gasoline_95
@@ -81,83 +83,88 @@ fun FuelType?.getPrice(fuelStation: FuelStation) = when (this) {
 }
 
 @Composable
-fun FuelStation.getFuelPrices(): List<Pair<String, Double>> {
-    return mapOf(
-        R.string.diesel to priceGasoilA,
-        R.string.diesel_plus to priceGasoilPremium,
-        R.string.gasoline_95 to priceGasoline95E5,
-        R.string.gasoline_98 to priceGasoline98E5
-    )
-        .filterValues { it > 0.0 }
-        .map { Pair(stringResource(id = it.key), it.value) }
+fun FuelStation.getFuelPriceItems(): List<PriceItemModel> {
+    return listOf(
+        PriceItemModel(
+            icon = RUikit.drawable.ic_diesel,
+            fuelName = stringResource(id = R.string.diesel),
+            price = "$priceGasoilA €/L"
+        ),
+        PriceItemModel(
+            icon = RUikit.drawable.ic_diesel_plus,
+            fuelName = stringResource(id = R.string.diesel_plus),
+            price = "$priceGasoilPremium €/L"
+        ),
+        PriceItemModel(
+            icon = RUikit.drawable.ic_gasoline_95,
+            fuelName = stringResource(id = R.string.gasoline_95),
+            price = "$priceGasoline95E5 €/L"
+        ),
+        PriceItemModel(
+            icon = RUikit.drawable.ic_gasoline_98,
+            fuelName = stringResource(id = R.string.gasoline_98),
+            price = "$priceGasoline98E5 €/L"
+        )
+    ).filter { it.price > "0.0 €/L" }
 }
 
 const val FORMAT_TIME_24H = "HH:mm"
-const val END_OF_DAY_TIME = "23:59"
 const val SCHEDULE_24H = "L-D: 24H"
 
 @Suppress("ReturnCount")
 fun FuelStation.isStationOpen(): Boolean {
+    val now = ZonedDateTime.now()
+    val currentDay = now.dayOfWeek
+    val currentTime = now.toLocalTime()
+
     if (schedule.trim().uppercase(Locale.ROOT) == SCHEDULE_24H) {
         return true
     }
 
-    val now = ZonedDateTime.now()
-    val dayOfWeek = now.dayOfWeek
-    val currentTime = now.toLocalTime()
-
     val scheduleParts = schedule.split(";")
     for (part in scheduleParts) {
-        val dayAndTime = part.trim().split(":")
-        if (dayAndTime.size != 2) {
-            continue
-        }
-        val days = dayAndTime[0].trim()
-        val times = dayAndTime[1].trim().split("-")
+        val regex = Regex("""([LMXJVSD-]+):\s*([0-9]{2}:[0-9]{2})-([0-9]{2}:[0-9]{2})""")
+        val matchResult = regex.find(part.trim())
 
-        if (isDayMatched(days, dayOfWeek) && isTimeInRange(times, currentTime)) {
-            return true
+        if (matchResult != null) {
+            val days = matchResult.groupValues[1]
+            val startTime = matchResult.groupValues[2]
+            val endTime = matchResult.groupValues[3]
+
+            if (isDayMatched(days, currentDay) && isTimeInRange(startTime, endTime, currentTime)) {
+                return true
+            }
         }
     }
 
     return false
 }
 
-private fun isDayMatched(days: String, currentDay: DayOfWeek): Boolean {
-    val dayRange = days.split("-")
-    val startDay = dayOfWeekMap[dayRange[0].uppercase(Locale.ROOT)]
-        ?: throw IllegalArgumentException("Día de inicio inválido: ${dayRange[0]}")
-    val endDay = if (dayRange.size > 1) {
-        dayOfWeekMap[dayRange[1].uppercase(Locale.ROOT)]
-            ?: throw IllegalArgumentException("Día de fin inválido: ${dayRange[1]}")
-    } else {
-        startDay
+fun isTimeInRange(startTimeStr: String, endTimeStr: String, currentTime: LocalTime): Boolean {
+    val formatter = DateTimeFormatter.ofPattern(FORMAT_TIME_24H)
+
+    val startTime = LocalTime.parse(startTimeStr, formatter)
+    val endTime = LocalTime.parse(endTimeStr, formatter)
+
+    if (endTime.isAfter(startTime) || endTime == startTime) {
+        return currentTime.isAfter(startTime) && currentTime.isBefore(endTime)
     }
 
-    return currentDay in startDay..endDay
+    return currentTime.isAfter(startTime) || currentTime.isBefore(endTime)
 }
 
-const val MIN_TIME_LENGTH = 5
-
-private fun isTimeInRange(times: List<String>, currentTime: LocalTime): Boolean {
-    val startTime =
-        LocalTime.parse(times[0].padEnd(MIN_TIME_LENGTH, '0'), DateTimeFormatter.ofPattern(FORMAT_TIME_24H))
-    val endTime = if (times.size > 1) {
-        LocalTime.parse(times[1].padEnd(MIN_TIME_LENGTH, '0'), DateTimeFormatter.ofPattern(FORMAT_TIME_24H))
-    } else {
-        LocalTime.parse(END_OF_DAY_TIME, DateTimeFormatter.ofPattern(FORMAT_TIME_24H))
+fun isDayMatched(days: String, currentDay: DayOfWeek): Boolean {
+    return when (days) {
+        "L-D" -> true
+        "L-V" -> currentDay.value in 1..5
+        "L-S" -> currentDay.value in 1..6
+        "L" -> currentDay == DayOfWeek.MONDAY
+        "M" -> currentDay == DayOfWeek.TUESDAY
+        "X" -> currentDay == DayOfWeek.WEDNESDAY
+        "J" -> currentDay == DayOfWeek.THURSDAY
+        "V" -> currentDay == DayOfWeek.FRIDAY
+        "S" -> currentDay == DayOfWeek.SATURDAY
+        "D" -> currentDay == DayOfWeek.SUNDAY
+        else -> false
     }
-
-    return (currentTime.isAfter(startTime) || currentTime == startTime) &&
-        !currentTime.isAfter(endTime)
 }
-
-private val dayOfWeekMap = mapOf(
-    "L" to DayOfWeek.MONDAY,
-    "M" to DayOfWeek.TUESDAY,
-    "X" to DayOfWeek.WEDNESDAY,
-    "J" to DayOfWeek.THURSDAY,
-    "V" to DayOfWeek.FRIDAY,
-    "S" to DayOfWeek.SATURDAY,
-    "D" to DayOfWeek.SUNDAY
-)

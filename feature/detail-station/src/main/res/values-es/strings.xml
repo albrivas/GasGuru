@@ -5,5 +5,6 @@
     <string name="open">Abierto</string>
     <string name="close">Cerrado</string>
     <string name="price">Precio</string>
-
+    <string name="direction">Direccion</string>
+    <string name="schedule">Horario</string>
 </resources>
