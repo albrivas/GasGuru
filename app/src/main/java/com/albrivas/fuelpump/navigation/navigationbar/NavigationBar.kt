@@ -31,9 +31,10 @@ internal fun NavigationBottomBar(navController: NavHostController) {
     ) {
         state.topLevelRoutes.forEach { destination ->
             when (destination) {
-                is TopLevelRoutes.List ->
+                is TopLevelRoutes.Favorite ->
                     BarItem(
                         icon = destination.icon,
+                        selectedIcon = destination.selectedIcon,
                         label = stringResource(id = R.string.list_nav),
                         isSelected = destination.route == TopLevelRoutes.fromRoute(state.currentDestination?.route),
                         onNavigateToDestination = { state.onNavItemClick(it) },
@@ -43,6 +44,7 @@ internal fun NavigationBottomBar(navController: NavHostController) {
                 is TopLevelRoutes.Map ->
                     BarItem(
                         icon = destination.icon,
+                        selectedIcon = destination.selectedIcon,
                         label = stringResource(id = R.string.map_nav),
                         isSelected = destination.route == TopLevelRoutes.fromRoute(state.currentDestination?.route),
                         onNavigateToDestination = { state.onNavItemClick(it) },
@@ -52,6 +54,7 @@ internal fun NavigationBottomBar(navController: NavHostController) {
                 is TopLevelRoutes.Profile ->
                     BarItem(
                         icon = destination.icon,
+                        selectedIcon = destination.selectedIcon,
                         label = stringResource(id = R.string.profile_nav),
                         isSelected = destination.route == TopLevelRoutes.fromRoute(state.currentDestination?.route),
                         onNavigateToDestination = { state.onNavItemClick(it) },
@@ -65,10 +68,11 @@ internal fun NavigationBottomBar(navController: NavHostController) {
 @Composable
 private fun RowScope.BarItem(
     icon: Int,
+    selectedIcon: Int,
     label: String,
     isSelected: Boolean,
     onNavigateToDestination: (TopLevelRoutes) -> Unit,
-    destination: TopLevelRoutes
+    destination: TopLevelRoutes,
 ) {
     NavigationBarItem(
         selected = isSelected,
@@ -82,7 +86,7 @@ private fun RowScope.BarItem(
         icon = {
             Icon(
                 modifier = Modifier.size(24.dp),
-                imageVector = ImageVector.vectorResource(id = icon),
+                imageVector = ImageVector.vectorResource(id = if (isSelected) selectedIcon else icon),
                 contentDescription = null
             )
         },
