@@ -3,8 +3,10 @@ package com.albrivas.fuelpump.feature.detail_station.ui
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,13 +16,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.typography
@@ -46,16 +50,19 @@ import com.albrivas.fuelpump.core.common.generateStaticMapUrl
 import com.albrivas.fuelpump.core.common.startRoute
 import com.albrivas.fuelpump.core.model.data.FuelStation
 import com.albrivas.fuelpump.core.model.data.previewFuelStationDomain
-import com.albrivas.fuelpump.core.ui.getFuelPrices
+import com.albrivas.fuelpump.core.ui.getFuelPriceItems
 import com.albrivas.fuelpump.core.ui.iconTint
 import com.albrivas.fuelpump.core.ui.isStationOpen
 import com.albrivas.fuelpump.core.ui.toBrandStationIcon
 import com.albrivas.fuelpump.core.uikit.components.FuelPumpButton
-import com.albrivas.fuelpump.core.uikit.components.table.FuelPriceTable
-import com.albrivas.fuelpump.core.uikit.components.table.FuelPriceTableModel
+import com.albrivas.fuelpump.core.uikit.components.chip.StatusChip
+import com.albrivas.fuelpump.core.uikit.components.chip.StatusChipModel
+import com.albrivas.fuelpump.core.uikit.components.price.PriceItem
 import com.albrivas.fuelpump.core.uikit.components.text.InformationText
 import com.albrivas.fuelpump.core.uikit.components.text.InformationTextModel
 import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
+import com.albrivas.fuelpump.core.uikit.theme.PriceCheap
+import com.albrivas.fuelpump.core.uikit.theme.PriceExpensive
 import com.albrivas.fuelpump.core.uikit.theme.YellowFavorite
 import com.albrivas.fuelpump.feature.detail_station.BuildConfig
 import com.albrivas.fuelpump.feature.detail_station.R
@@ -137,7 +144,6 @@ fun DetailStationContent(station: FuelStation) {
         modifier = Modifier
             .fillMaxSize()
             .background(color = Color.White)
-            .verticalScroll(rememberScrollState())
     ) {
         Spacer(modifier = Modifier.height(40.dp))
         Column(
@@ -145,49 +151,44 @@ fun DetailStationContent(station: FuelStation) {
                 .padding(16.dp)
                 .fillMaxSize()
         ) {
-            Text(
+            val isOpen =
+                stringResource(id = if (station.isStationOpen()) R.string.open else R.string.close)
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                text = station.brandStationName,
-                style = typography.titleMedium
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    modifier = Modifier.wrapContentWidth().testTag("name-station"),
+                    text = station.brandStationName,
+                    style = typography.titleSmall
+                )
+                Text(
+                    modifier = Modifier.wrapContentWidth().testTag("distance"),
+                    text = station.formatDistance(),
+                    style = typography.displaySmall
+                )
+                StatusChip(
+                    modifier = Modifier.testTag("status-station"),
+                    model = StatusChipModel(
+                        text = isOpen,
+                        color = if (station.isStationOpen()) PriceCheap else PriceExpensive
+                    )
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            HorizontalDivider(
+                color = Color.LightGray,
+                thickness = 0.5.dp
             )
             InformationText(
                 modifier = Modifier
-                    .padding(top = 8.dp)
+                    .padding(top = 16.dp)
                     .testTag("address"),
                 model = InformationTextModel(
                     icon = R.drawable.ic_home,
-                    title = station.formatDirection(),
-                    description = "Direction of station icon"
-                )
-            )
-            InformationText(
-                modifier = Modifier
-                    .padding(top = 8.dp)
-                    .testTag("country"),
-                model = InformationTextModel(
-                    icon = R.drawable.ic_flag,
-                    title = station.municipality,
-                    description = "Municipality of station icon"
-                )
-            )
-            InformationText(
-                modifier = Modifier
-                    .padding(top = 8.dp)
-                    .testTag("distance"),
-                model = InformationTextModel(
-                    icon = R.drawable.ic_car,
-                    title = station.formatDistance(),
-                    description = "Distance station icon"
-                )
-            )
-            InformationText(
-                modifier = Modifier
-                    .padding(top = 8.dp)
-                    .testTag("schedule"),
-                model = InformationTextModel(
-                    icon = R.drawable.ic_schedule,
-                    title = stringResource(id = if (station.isStationOpen()) R.string.open else R.string.close),
-                    description = "Icon state of station"
+                    title = stringResource(id = R.string.direction),
+                    description = station.formatDirection()
                 )
             )
             InformationText(
@@ -196,17 +197,28 @@ fun DetailStationContent(station: FuelStation) {
                     .testTag("calendar"),
                 model = InformationTextModel(
                     icon = R.drawable.ic_calendar,
-                    title = station.scheduleList.joinToString(separator = "\n"),
-                    description = "Schedule station icon"
+                    title = stringResource(id = R.string.schedule),
+                    description = station.scheduleList.joinToString(separator = "\n")
                 )
             )
-            Spacer(modifier = Modifier.height(40.dp))
-            FuelPriceTable(
-                model = FuelPriceTableModel(
-                    headers = stringResource(id = R.string.fuels) to stringResource(id = R.string.price),
-                    rows = station.getFuelPrices()
-                )
+            Spacer(modifier = Modifier.height(32.dp))
+            HorizontalDivider(
+                color = Color.LightGray,
+                thickness = 0.5.dp
             )
+            val fuelItems = station.getFuelPriceItems()
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(fuelItems) { item ->
+                    PriceItem(model = item)
+                }
+            }
         }
     }
 }
@@ -254,7 +266,7 @@ fun HeaderStation(station: FuelStation, onBack: () -> Unit, onFavoriteClick: (Bo
             onClick = { onFavoriteClick(!station.isFavorite) }
         ) {
             Icon(
-                imageVector = Icons.Default.Star,
+                painter = painterResource(id = com.albrivas.fuelpump.core.uikit.R.drawable.ic_bookmark),
                 contentDescription = "Mark as favorite",
                 tint = if (station.isFavorite) YellowFavorite else Color.LightGray,
                 modifier = Modifier
@@ -278,14 +290,15 @@ fun HeaderStation(station: FuelStation, onBack: () -> Unit, onFavoriteClick: (Bo
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, apiLevel = 33)
 @Composable
 private fun DetailStationPreview() {
     MyApplicationTheme {
         DetailStationScreen(
             uiState = DetailStationUiState.Success(
                 previewFuelStationDomain().copy(
-                    isFavorite = true
+                    isFavorite = true,
+                    schedule = "L-V: 06:00-22:00; S: 07:00-22:00; D: 08:00-22:00"
                 )
             )
         )
