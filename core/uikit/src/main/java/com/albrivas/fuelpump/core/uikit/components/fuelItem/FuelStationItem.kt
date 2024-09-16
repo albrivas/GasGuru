@@ -1,4 +1,4 @@
-package com.albrivas.fuelpump.feature.fuel_list_station.ui
+package com.albrivas.fuelpump.core.uikit.components.fuelItem
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -32,26 +32,18 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.albrivas.fuelpump.core.model.data.FuelStation
-import com.albrivas.fuelpump.core.model.data.FuelType
-import com.albrivas.fuelpump.core.model.data.previewFuelStationDomain
-import com.albrivas.fuelpump.core.ui.backgroundColor
-import com.albrivas.fuelpump.core.ui.getPrice
-import com.albrivas.fuelpump.core.ui.toBrandStationIcon
-import com.albrivas.fuelpump.core.ui.toColor
+import com.albrivas.fuelpump.core.uikit.R
 import com.albrivas.fuelpump.core.uikit.theme.GrayExtraLight
 import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
-import com.albrivas.fuelpump.feature.fuel_list_station.R
+import com.albrivas.fuelpump.core.uikit.theme.PriceExpensive
+import com.albrivas.fuelpump.core.uikit.utils.backgroundColor
 import java.util.Locale
 
 @Composable
 fun FuelStationItem(
-    item: FuelStation,
-    userSelectedFuelType: FuelType,
-    index: Int = 0,
     modifier: Modifier = Modifier,
-    onItemClick: (FuelStation) -> Unit,
-) {
+    model: FuelStationItemModel
+) = with(model) {
     val contentDescription = stringResource(id = R.string.content_description_fuel_item, index)
     ElevatedCard(
         modifier = modifier
@@ -65,7 +57,7 @@ fun FuelStationItem(
                     bottomEnd = CornerSize(0.dp)
                 )
             )
-            .clickable { onItemClick(item) }
+            .clickable { onItemClick(idServiceStation) }
             .semantics { this.contentDescription = contentDescription },
         elevation = CardDefaults.cardElevation(defaultElevation = 16.dp),
         shape = RoundedCornerShape(
@@ -84,7 +76,7 @@ fun FuelStationItem(
         ) {
             Box(
                 modifier = Modifier
-                    .background(item.priceCategory.toColor())
+                    .background(categoryColor)
                     .width(8.dp)
                     .fillMaxHeight()
             )
@@ -95,7 +87,7 @@ fun FuelStationItem(
             ) {
                 Image(
                     modifier = Modifier.size(40.dp),
-                    painter = painterResource(id = item.brandStationBrandsType.toBrandStationIcon()),
+                    painter = painterResource(id = icon),
                     contentDescription = "Fuel station brand"
                 )
             }
@@ -111,21 +103,21 @@ fun FuelStationItem(
                 ) {
                     Text(
                         modifier = Modifier.weight(0.6f),
-                        text = item.brandStationName,
+                        text = name,
                         style = typography.labelMedium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                     Text(
                         modifier = Modifier.weight(0.4f),
-                        text = item.formatDistance(),
+                        text = distance,
                         style = typography.labelSmall,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                 }
                 Text(
-                    text = item.direction.lowercase(Locale.getDefault()).replaceFirstChar {
+                    text = direction.lowercase(Locale.getDefault()).replaceFirstChar {
                         if (it.isLowerCase()) {
                             it.titlecase(
                                 Locale.getDefault()
@@ -145,7 +137,7 @@ fun FuelStationItem(
             Box(
                 modifier = Modifier
                     .background(
-                        color = item.priceCategory.toColor(),
+                        color = categoryColor,
                         shape = RoundedCornerShape(
                             topStart = CornerSize(4.dp),
                             topEnd = CornerSize(0.dp),
@@ -159,11 +151,11 @@ fun FuelStationItem(
                     .align(Alignment.CenterVertically)
                     .semantics {
                         this.contentDescription = boxContentDesc
-                        backgroundColor = item.priceCategory.toColor()
+                        backgroundColor = categoryColor
                     }
             ) {
                 Text(
-                    text = "${userSelectedFuelType.getPrice(item)} €/L",
+                    text = "$price €/L",
                     color = Color.White,
                     style = typography.labelLarge,
                     overflow = TextOverflow.Ellipsis,
@@ -182,9 +174,17 @@ fun FuelStationItem(
 fun PreviewFuelItem() {
     MyApplicationTheme {
         FuelStationItem(
-            item = previewFuelStationDomain(),
-            userSelectedFuelType = FuelType.GASOLINE_95,
-            onItemClick = {}
+            model = FuelStationItemModel(
+                idServiceStation = 1937,
+                icon = R.drawable.ic_logo_q8,
+                name = "Q8",
+                direction = "Calle de santiago ",
+                distance = "567 m",
+                price = "1.67",
+                index = 3686,
+                categoryColor = PriceExpensive,
+                onItemClick = {}
+            )
         )
     }
 }

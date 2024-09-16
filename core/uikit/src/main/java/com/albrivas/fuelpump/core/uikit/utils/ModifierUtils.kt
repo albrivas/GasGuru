@@ -10,7 +10,7 @@ fun Modifier.borderWithoutTopBorder(strokeWidth: Float = 3f, color: Color = Colo
         val bottomY = size.height - strokeWidth / 2
         val rightX = size.width - strokeWidth / 2
 
-        // Dibuja la línea inferior
+        // Draw the bottom line
         drawLine(
             color = color,
             start = Offset(0f, bottomY),
@@ -18,7 +18,7 @@ fun Modifier.borderWithoutTopBorder(strokeWidth: Float = 3f, color: Color = Colo
             strokeWidth = strokeWidth
         )
 
-        // Dibuja la línea izquierda
+        // Draw the left line
         drawLine(
             color = color,
             start = Offset(strokeWidth / 2, 0f),
@@ -26,7 +26,7 @@ fun Modifier.borderWithoutTopBorder(strokeWidth: Float = 3f, color: Color = Colo
             strokeWidth = strokeWidth
         )
 
-        // Dibuja la línea derecha
+        // Draw the right line
         drawLine(
             color = color,
             start = Offset(rightX, 0f),

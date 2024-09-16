@@ -2,4 +2,6 @@
 <resources>
     <string name="preview_fuel_type">Gasoline 95</string>
     <string name="filter_content_desc">Filter</string>
+    <string name="content_description_fuel_item">Fuel station %1$s</string>
+    <string name="content_description_fuel_item_price_box">Fuel station price color"</string>
 </resources>

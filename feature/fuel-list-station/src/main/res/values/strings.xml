@@ -6,6 +6,4 @@
     <string name="choice_all">All</string>
     <string name="choice_favorite">Favorite</string>
     <string name="empty_favorites">There aren´t favorite fuel stations</string>
-    <string name="content_description_fuel_item">Fuel station %1$s</string>
-    <string name="content_description_fuel_item_price_box">Fuel station price color"</string>
 </resources>
