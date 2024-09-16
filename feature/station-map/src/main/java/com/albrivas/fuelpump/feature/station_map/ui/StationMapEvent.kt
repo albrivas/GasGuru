@@ -12,4 +12,5 @@ sealed class StationMapEvent {
     data object CenterMapInCurrentLocation : StationMapEvent()
     data object ResetMapCenter : StationMapEvent()
     data class UpdateSearchQuery(val query: String) : StationMapEvent()
+    data class ShowListStations(val show: Boolean) : StationMapEvent()
 }

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.albrivas.fuelpump.core.uikit.R
 import com.albrivas.fuelpump.core.uikit.shape.CircleArrowShape
 import com.albrivas.fuelpump.core.uikit.theme.GrayLight
+import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
 
 @Composable
 fun StationMarker(model: StationMarkerModel) {
@@ -33,28 +35,37 @@ fun StationMarker(model: StationMarkerModel) {
                 color = if (model.isSelected) model.color else GrayLight,
                 shape = CircleArrowShape()
             )
-            .padding(top = 4.dp, start = 4.dp, end = 4.dp, bottom = 9.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(top = 6.dp, start = 6.dp, end = 6.dp, bottom = 13.dp),
+        verticalAlignment = Alignment.Top
     ) {
         Image(
-            modifier = Modifier.size(16.dp),
+            modifier = Modifier
+                .size(16.dp)
+                .clip(CircleShape),
             painter = painterResource(id = model.icon),
             contentDescription = "Station icon",
         )
         Spacer(modifier = Modifier.width(2.dp))
-        Text(text = model.price, style = MaterialTheme.typography.labelSmall)
+        Text(
+            text = model.price,
+            style = MaterialTheme.typography.labelSmall,
+            color = Color.White,
+            modifier = Modifier.align(Alignment.CenterVertically)
+        )
     }
 }
 
 @Preview(backgroundColor = 0xFFFFFFFF, showBackground = true)
 @Composable
 private fun StationMarkerPreview() {
-    StationMarker(
-        model = StationMarkerModel(
-            icon = R.drawable.ic_logo_bp,
-            price = "1.23 €",
-            color = Color.Red,
-            isSelected = false,
+    MyApplicationTheme {
+        StationMarker(
+            model = StationMarkerModel(
+                icon = R.drawable.ic_logo_q8,
+                price = "€1.235",
+                color = Color.Red,
+                isSelected = false,
+            )
         )
-    )
+    }
 }
