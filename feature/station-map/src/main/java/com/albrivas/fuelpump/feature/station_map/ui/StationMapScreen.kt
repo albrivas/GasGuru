@@ -1,18 +1,23 @@
 package com.albrivas.fuelpump.feature.station_map.ui
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -61,14 +66,18 @@ import com.albrivas.fuelpump.core.model.data.SearchPlace
 import com.albrivas.fuelpump.core.ui.getPrice
 import com.albrivas.fuelpump.core.ui.toBrandStationIcon
 import com.albrivas.fuelpump.core.ui.toColor
+import com.albrivas.fuelpump.core.uikit.components.fuelItem.FuelStationItem
+import com.albrivas.fuelpump.core.uikit.components.fuelItem.FuelStationItemModel
 import com.albrivas.fuelpump.core.uikit.components.marker.StationMarker
 import com.albrivas.fuelpump.core.uikit.components.marker.StationMarkerModel
+import com.albrivas.fuelpump.core.uikit.theme.GrayBackground
 import com.albrivas.fuelpump.core.uikit.theme.GrayExtraLight
 import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
 import com.albrivas.fuelpump.feature.station_map.R
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
@@ -94,6 +103,7 @@ fun StationMapScreenRoute(
         userSelectedFuelType = state.selectedType,
         searchResultUiState = searchResult,
         searchQuery = searchQuery,
+        showListStations = state.showListStations,
         recentSearchQueries = recentSearchQuery,
         event = viewModel::handleEvent,
         navigateToDetail = navigateToDetail
@@ -109,6 +119,7 @@ internal fun StationMapScreen(
     userSelectedFuelType: FuelType?,
     searchResultUiState: SearchResultUiState,
     recentSearchQueries: RecentSearchQueriesUiState,
+    showListStations: Boolean,
     event: (StationMapEvent) -> Unit = {},
     navigateToDetail: (Int) -> Unit = {},
 ) {
@@ -123,6 +134,80 @@ internal fun StationMapScreen(
         event(StationMapEvent.ResetMapCenter)
     }
 
+    Box(modifier = Modifier.fillMaxSize()) {
+        AnimatedContent(
+            targetState = showListStations,
+            label = "animation map and list",
+        ) { isListVisible ->
+            if (isListVisible) {
+                ListFuelStations(
+                    stations = stations,
+                    selectedFuel = userSelectedFuelType,
+                    navigateToDetail = navigateToDetail
+                )
+            } else {
+                MapView(
+                    stations = stations,
+                    cameraState = cameraState,
+                    searchQuery = searchQuery,
+                    userSelectedFuelType = userSelectedFuelType,
+                    searchResultUiState = searchResultUiState,
+                    recentSearchQueries = recentSearchQueries,
+                    navigateToDetail = navigateToDetail
+                )
+            }
+        }
+        FABLocation(
+            modifier = Modifier.align(Alignment.BottomEnd),
+            event = event,
+            showListStations = showListStations
+        )
+    }
+}
+
+@Composable
+fun ListFuelStations(
+    modifier: Modifier = Modifier,
+    stations: List<FuelStation>,
+    selectedFuel: FuelType?,
+    navigateToDetail: (Int) -> Unit = {},
+) {
+    LazyColumn(
+        modifier = modifier
+            .fillMaxSize()
+            .background(color = GrayBackground)
+            .statusBarsPadding(),
+        contentPadding = PaddingValues(top = 16.dp, bottom = 140.dp)
+    ) {
+        itemsIndexed(stations) { index, item ->
+            FuelStationItem(
+                model = FuelStationItemModel(
+                    idServiceStation = item.idServiceStation,
+                    icon = item.brandStationBrandsType.toBrandStationIcon(),
+                    name = item.brandStationName,
+                    direction = item.direction,
+                    distance = item.formatDistance(),
+                    price = selectedFuel.getPrice(item),
+                    index = index,
+                    categoryColor = item.priceCategory.toColor(),
+                    onItemClick = navigateToDetail
+                )
+            )
+        }
+    }
+}
+
+@Composable
+fun MapView(
+    stations: List<FuelStation>,
+    cameraState: CameraPositionState,
+    searchQuery: String,
+    userSelectedFuelType: FuelType?,
+    searchResultUiState: SearchResultUiState,
+    recentSearchQueries: RecentSearchQueriesUiState,
+    event: (StationMapEvent) -> Unit = {},
+    navigateToDetail: (Int) -> Unit = {},
+) {
     Box(modifier = Modifier.fillMaxSize()) {
         CompositionLocalProvider(
             value = LocalTextStyle provides MaterialTheme.typography.displayMedium.copy(
@@ -188,27 +273,48 @@ internal fun StationMapScreen(
                 }
             }
         }
-        FABLocation(modifier = Modifier.align(Alignment.BottomEnd), event = event)
     }
 }
 
 @Composable
-fun FABLocation(modifier: Modifier, event: (StationMapEvent) -> Unit = {}) {
-    FloatingActionButton(
-        onClick = {
-            event(StationMapEvent.CenterMapInCurrentLocation)
-            event(StationMapEvent.GetStationByCurrentLocation)
-        },
-        modifier = modifier
-            .padding(16.dp),
-        shape = CircleShape,
-        containerColor = Color.White,
-        contentColor = Color.Black,
-    ) {
-        Icon(
-            imageVector = ImageVector.vectorResource(id = RUikit.drawable.ic_my_location),
-            contentDescription = "User location",
-        )
+fun FABLocation(
+    modifier: Modifier,
+    showListStations: Boolean,
+    event: (StationMapEvent) -> Unit = {},
+) {
+    Column(modifier = modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        FloatingActionButton(
+            onClick = {
+                event(StationMapEvent.CenterMapInCurrentLocation)
+                event(StationMapEvent.GetStationByCurrentLocation)
+            },
+            modifier = modifier,
+            shape = CircleShape,
+            containerColor = Color.White,
+            contentColor = Color.Black,
+        ) {
+            Icon(
+                imageVector = ImageVector.vectorResource(id = RUikit.drawable.ic_my_location),
+                contentDescription = "User location",
+            )
+        }
+
+        FloatingActionButton(
+            onClick = {
+                event(StationMapEvent.ShowListStations(show = !showListStations))
+            },
+            modifier = modifier,
+            shape = CircleShape,
+            containerColor = Color.White,
+            contentColor = Color.Black,
+        ) {
+            Icon(
+                imageVector = ImageVector.vectorResource(
+                    id = if (showListStations) RUikit.drawable.ic_map else RUikit.drawable.ic_list
+                ),
+                contentDescription = "User location",
+            )
+        }
     }
 }
 
@@ -490,6 +596,7 @@ private fun StationMapScreenPreview() {
             searchResultUiState = SearchResultUiState.EmptyQuery,
             searchQuery = "",
             recentSearchQueries = RecentSearchQueriesUiState.Loading,
+            showListStations = false,
             navigateToDetail = {}
         )
     }

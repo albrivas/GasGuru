@@ -94,6 +94,7 @@ class StationMapViewModel @Inject constructor(
             is StationMapEvent.CenterMapInCurrentLocation -> centerMapInCurrentLocation()
             is StationMapEvent.ResetMapCenter -> resetMapCenter()
             is StationMapEvent.UpdateSearchQuery -> onSearchQueryChanged(event.query)
+            is StationMapEvent.ShowListStations -> showListStation(event.show)
         }
     }
 
@@ -159,4 +160,6 @@ class StationMapViewModel @Inject constructor(
             }
         }
     }
+
+    private fun showListStation(show: Boolean) = _state.update { it.copy(showListStations = show) }
 }

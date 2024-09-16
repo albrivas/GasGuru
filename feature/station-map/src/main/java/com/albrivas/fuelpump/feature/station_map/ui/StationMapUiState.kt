@@ -10,4 +10,5 @@ data class StationMapUiState(
     val zoomLevel: Float = 14f,
     val error: Throwable? = null,
     val selectedType: FuelType? = null,
+    val showListStations: Boolean = false,
 )
