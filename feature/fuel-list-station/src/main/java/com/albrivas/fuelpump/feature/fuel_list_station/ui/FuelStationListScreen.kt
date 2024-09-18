@@ -8,14 +8,12 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,14 +25,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.albrivas.fuelpump.core.model.data.FuelStation
 import com.albrivas.fuelpump.core.model.data.FuelType
-import com.albrivas.fuelpump.core.model.data.previewFuelStationDomain
 import com.albrivas.fuelpump.core.ui.getPrice
 import com.albrivas.fuelpump.core.ui.toBrandStationIcon
 import com.albrivas.fuelpump.core.ui.toColor
 import com.albrivas.fuelpump.core.uikit.components.alert.AlertTemplate
 import com.albrivas.fuelpump.core.uikit.components.alert.AlertTemplateModel
-import com.albrivas.fuelpump.core.uikit.components.chip.FilterChip
-import com.albrivas.fuelpump.core.uikit.components.chip.FilterChipModel
 import com.albrivas.fuelpump.core.uikit.components.fuelItem.FuelStationItem
 import com.albrivas.fuelpump.core.uikit.components.fuelItem.FuelStationItemModel
 import com.albrivas.fuelpump.core.uikit.theme.GrayBackground
@@ -46,29 +41,19 @@ fun FuelStationListScreenRoute(
     viewModel: FuelListStationViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val selectedFilter by viewModel.selectedTab.collectAsStateWithLifecycle()
     FuelStationListScreen(
         uiState = state,
         navigateToDetail = navigateToDetail,
         checkLocationEnabled = viewModel::checkLocationEnabled,
-        selectedFilter = selectedFilter.toInt(),
-        updateFilter = viewModel::updateSelectedFilterIndex
     )
 }
 
 @Composable
 internal fun FuelStationListScreen(
     uiState: FuelStationListUiState,
-    selectedFilter: Int,
     navigateToDetail: (Int) -> Unit,
     checkLocationEnabled: () -> Unit,
-    updateFilter: (Int) -> Unit,
 ) {
-    LaunchedEffect(key1 = selectedFilter) {
-        if (selectedFilter == 0) {
-            checkLocationEnabled()
-        }
-    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -77,17 +62,6 @@ internal fun FuelStationListScreen(
             .statusBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        FilterChip(
-            modifier = Modifier
-                .padding(top = 16.dp)
-                .wrapContentWidth(),
-            model = FilterChipModel(
-                options = filterOptions,
-                selectedChip = selectedFilter,
-                onFilterSelected = updateFilter
-            )
-        )
-
         when (uiState) {
             FuelStationListUiState.Error -> Unit
             FuelStationListUiState.Loading -> {
@@ -101,12 +75,6 @@ internal fun FuelStationListScreen(
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
             }
-
-            is FuelStationListUiState.Success -> ListFuelStations(
-                stations = uiState.fuelStations,
-                selectedFuel = uiState.userSelectedFuelType,
-                navigateToDetail = navigateToDetail
-            )
 
             is FuelStationListUiState.Favorites -> ListFuelStations(
                 stations = uiState.favoriteStations,
@@ -174,27 +142,6 @@ fun ColumnScope.ListFuelStations(
     }
 }
 
-private val filterOptions
-    @Composable get() = listOf(
-        stringResource(id = R.string.choice_all),
-        stringResource(id = R.string.choice_favorite)
-    )
-
-@Preview
-@Composable
-fun FuelListStationScreenPreview() {
-    FuelStationListScreen(
-        uiState = FuelStationListUiState.Success(
-            fuelStations = listOf(previewFuelStationDomain()),
-            userSelectedFuelType = FuelType.GASOLINE_95
-        ),
-        navigateToDetail = {},
-        checkLocationEnabled = {},
-        selectedFilter = 0,
-        updateFilter = {}
-    )
-}
-
 @Preview
 @Composable
 fun EmptyFavoritesPreview() {
@@ -202,7 +149,5 @@ fun EmptyFavoritesPreview() {
         uiState = FuelStationListUiState.EmptyFavorites,
         navigateToDetail = {},
         checkLocationEnabled = {},
-        selectedFilter = 0,
-        updateFilter = {}
     )
 }
