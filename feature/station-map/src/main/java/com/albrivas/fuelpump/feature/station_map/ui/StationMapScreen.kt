@@ -153,7 +153,8 @@ internal fun StationMapScreen(
                     userSelectedFuelType = userSelectedFuelType,
                     searchResultUiState = searchResultUiState,
                     recentSearchQueries = recentSearchQueries,
-                    navigateToDetail = navigateToDetail
+                    navigateToDetail = navigateToDetail,
+                    event = event
                 )
             }
         }
