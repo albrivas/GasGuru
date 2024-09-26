@@ -47,6 +47,7 @@ junit5Extensions = "1.4.0"
 junit5Compose = "1.4.0"
 junit5Plugin = "1.10.0.0"
 junit5Runner = "1.4.0"
+androidxCarApp = "1.4.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
@@ -108,6 +109,8 @@ junit5-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "ju
 junit5-extensions = { module = "de.mannodermaus.junit5:android-test-extensions", version.ref = "junit5Extensions" }
 junit5-compose = { module = "de.mannodermaus.junit5:android-test-compose", version.ref = "junit5Compose" }
 junit5-runner = { module = "de.mannodermaus.junit5:android-test-runner", version.ref = "junit5Runner" }
+androidx-car-app = { module = "androidx.car.app:app", version.ref = "androidxCarApp" }
+androidx-auto = { module = "androidx.car.app:app-projected", version.ref = "androidxCarApp" }
 
 [bundles]
 com-squareup-retrofit2 = [

@@ -1,5 +1,4 @@
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
-import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -117,6 +116,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
+
+    implementation(libs.androidx.auto)
+    implementation(libs.androidx.car.app)
 
     // Compose
     implementation(libs.androidx.compose.ui)
