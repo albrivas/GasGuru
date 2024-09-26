@@ -10,7 +10,6 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-
     <application
         android:name=".FuelPumpApplication"
         android:allowBackup="true"
@@ -25,25 +24,12 @@
         tools:targetApi="31">
 
         <meta-data
-            android:name="com.google.android.gms.car.application"
-            android:resource="@xml/automotive_app_desc" />
-
-        <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${googleApiKey}" />
 
-        <service
-            android:name=".auto.FuelPumpAutomotiveService"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="androidx.car.app.CarAppService" />
-                <category android:name="androidx.car.app.category.POI" />
-            </intent-filter>
-        </service>
-
         <meta-data
-            android:name="androidx.car.app.minCarApiLevel"
-            android:value="1" />
+            android:name="com.google.android.gms.car.application"
+            android:resource="@xml/automotive_app_desc" />
 
         <activity
             android:name=".ui.MainActivity"
@@ -56,6 +42,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

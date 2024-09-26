@@ -100,6 +100,7 @@ dependencies {
     implementation(project(":feature:station-map"))
     implementation(project(":feature:profile"))
     implementation(project(":core:model"))
+    implementation(project(":auto:common"))
     androidTestImplementation(project(":core:testing"))
     detektPlugins(libs.detekt.formatting)
 
@@ -116,9 +117,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
-
-    implementation(libs.androidx.auto)
-    implementation(libs.androidx.car.app)
 
     // Compose
     implementation(libs.androidx.compose.ui)

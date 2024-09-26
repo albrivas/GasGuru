@@ -1,4 +1,4 @@
-package com.albrivas.fuelpump.auto
+package com.albrivas.fuelpump.auto.common
 
 import android.content.Intent
 import androidx.car.app.CarAppService

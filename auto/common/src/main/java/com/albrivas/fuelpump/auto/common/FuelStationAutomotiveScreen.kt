@@ -1,4 +1,4 @@
-package com.albrivas.fuelpump.auto
+package com.albrivas.fuelpump.auto.common
 
 import androidx.car.app.CarContext
 import androidx.car.app.Screen
