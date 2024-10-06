@@ -49,7 +49,7 @@ fun BasicSelectedItem(
             .then(
                 if (model.isRoundedItem) {
                     Modifier.border(
-                        width = if(isSelected) 2.dp else 0.5.dp,
+                        width = if (isSelected) 2.dp else 0.5.dp,
                         color = if (isSelected) Primary600 else Neutral300,
                         shape = RoundedCornerShape(8.dp)
                     )
