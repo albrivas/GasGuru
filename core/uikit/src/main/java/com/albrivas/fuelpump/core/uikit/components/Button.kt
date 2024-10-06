@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.albrivas.fuelpump.core.uikit.theme.FuelPumpTheme
-import com.albrivas.fuelpump.core.uikit.theme.GreenDark
+import com.albrivas.fuelpump.core.uikit.theme.Primary500
 
 @Composable
 fun FuelPumpButton(
@@ -31,7 +31,7 @@ fun FuelPumpButton(
         enabled = enabled,
         contentPadding = contentPadding,
         colors = ButtonDefaults.buttonColors(
-            containerColor = GreenDark
+            containerColor = Primary500
         )
     ) {
         Text(
