@@ -41,6 +41,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.albrivas.fuelpump.core.model.data.FuelType
 import com.albrivas.fuelpump.core.model.data.UserData
+import com.albrivas.fuelpump.core.ui.getIcon
 import com.albrivas.fuelpump.core.ui.translation
 import com.albrivas.fuelpump.core.uikit.components.FuelPumpButton
 import com.albrivas.fuelpump.core.uikit.components.selectedItem.BasicSelectedItem
@@ -188,6 +189,7 @@ fun SelectionDialog(
                                         onItemSelected = {
                                             itemSelected = fuel
                                         },
+                                        image = fuel.getIcon(),
                                         isRoundedItem = false
                                     ),
                                 )

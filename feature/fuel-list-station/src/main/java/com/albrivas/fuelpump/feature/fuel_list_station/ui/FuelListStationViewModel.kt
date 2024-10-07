@@ -15,14 +15,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 @HiltViewModel
 class FuelListStationViewModel @Inject constructor(
     private val userLocation: LocationTracker,
     private val getUserDataUseCase: GetUserDataUseCase,
     private val getFavoriteStationsUseCase: GetFavoriteStationsUseCase,
 ) : ViewModel() {
-
 
     private val _state = MutableStateFlow<FuelStationListUiState>(FuelStationListUiState.Loading)
     val state: StateFlow<FuelStationListUiState> = _state
