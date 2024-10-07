@@ -43,6 +43,7 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        manifestPlaceholders["crashlyticsEnabled"] = false
     }
 
     buildTypes {
@@ -54,12 +55,14 @@ android {
                 "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName("release")
+            manifestPlaceholders["crashlyticsEnabled"] = true
         }
         debug {
             isMinifyEnabled = false
             isDebuggable = true
             applicationIdSuffix = ".debug"
             resValue("string", "app_name", "FuelPump Debug")
+            manifestPlaceholders["crashlyticsEnabled"] = false
         }
     }
 

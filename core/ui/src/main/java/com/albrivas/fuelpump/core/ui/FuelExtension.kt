@@ -82,6 +82,14 @@ fun FuelType?.getPrice(fuelStation: FuelStation) = when (this) {
     null -> "0.0"
 }
 
+fun FuelType.getIcon() = when (this) {
+    FuelType.GASOLINE_95 -> RUikit.drawable.ic_gasoline_95
+    FuelType.GASOLINE_98 -> RUikit.drawable.ic_gasoline_98
+    FuelType.DIESEL -> RUikit.drawable.ic_diesel
+    FuelType.DIESEL_PLUS -> RUikit.drawable.ic_diesel_plus
+    FuelType.ELECTRIC -> RUikit.drawable.ic_gasoline_95
+}
+
 @Composable
 fun FuelStation.getFuelPriceItems(): List<PriceItemModel> {
     return listOf(

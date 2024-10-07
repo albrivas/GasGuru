@@ -36,7 +36,6 @@ class OnboardingFuelPreferencesTest : BaseTest() {
                         FuelType.GASOLINE_98,
                         FuelType.DIESEL,
                         FuelType.DIESEL_PLUS,
-                        FuelType.ELECTRIC,
                     )
                 )
             )

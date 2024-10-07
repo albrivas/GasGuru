@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.albrivas.fuelpump.core.uikit.components.FuelPumpButton
+import com.albrivas.fuelpump.core.uikit.theme.FuelPumpTheme
 import com.albrivas.fuelpump.core.uikit.theme.GrayLight
 import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
 import com.albrivas.fuelpump.feature.onboarding.R
@@ -78,7 +78,7 @@ internal fun OnboardingWelcomeScreen(
         Spacer(modifier = Modifier.height(66.dp))
         Text(
             text = stringResource(id = R.string.welcome),
-            style = MaterialTheme.typography.titleLarge
+            style = FuelPumpTheme.typography.h2
         )
 
         Spacer(modifier = Modifier.height(28.dp))
@@ -86,7 +86,7 @@ internal fun OnboardingWelcomeScreen(
             text = stringResource(id = R.string.welcome_text),
             color = GrayLight,
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.displayMedium
+            style = FuelPumpTheme.typography.baseRegular
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -94,7 +94,7 @@ internal fun OnboardingWelcomeScreen(
             text = stringResource(id = R.string.welcome_permission),
             color = GrayLight,
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.displayMedium
+            style = FuelPumpTheme.typography.baseRegular
         )
 
         Spacer(modifier = Modifier.weight(1f))
