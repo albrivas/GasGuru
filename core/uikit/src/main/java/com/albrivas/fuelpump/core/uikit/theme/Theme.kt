@@ -58,7 +58,8 @@ fun MyApplicationTheme(
     CompositionLocalProvider(LocalFuelPumpTypography provides typography) {
         MaterialTheme(
             colorScheme = colorScheme,
-            content = content
+            content = content,
+            typography = Typography
         )
     }
 }
