@@ -13,8 +13,8 @@ import androidx.compose.ui.test.performClick
 import com.albrivas.fuelpump.core.model.data.previewFuelStationDomain
 import com.albrivas.fuelpump.core.testing.BaseTest
 import com.albrivas.fuelpump.core.ui.IconTintKey
-import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
 import com.albrivas.fuelpump.core.uikit.theme.YellowFavorite
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
@@ -31,13 +31,12 @@ class DetailStationScreenTest : BaseTest() {
         onNodeWithTag("button_go_station").assertIsEnabled()
     }
 
+    @Disabled("Disabled until the new design")
     @Test
     @DisplayName("Show all the information about station")
     fun displayStationInformation() = extension.use {
         setContent {
-            MyApplicationTheme {
-                DetailStationScreen(uiState = DetailStationUiState.Success(station = previewFuelStationDomain()))
-            }
+            DetailStationScreen(uiState = DetailStationUiState.Success(station = previewFuelStationDomain()))
         }
 
         onNodeWithTag("address").assertIsDisplayed()

@@ -1,12 +1,14 @@
 package com.albrivas.fuelpump.core.uikit.components.selectedItem
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
@@ -15,14 +17,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.albrivas.fuelpump.core.uikit.R
+import com.albrivas.fuelpump.core.uikit.theme.FuelPumpTheme
 import com.albrivas.fuelpump.core.uikit.theme.GreenDark
 import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
+import com.albrivas.fuelpump.core.uikit.theme.Neutral300
+import com.albrivas.fuelpump.core.uikit.theme.Neutral500
+import com.albrivas.fuelpump.core.uikit.theme.Primary600
 
 @Composable
 fun BasicSelectedItem(
@@ -32,7 +40,8 @@ fun BasicSelectedItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .then(if (model.isRoundedItem) Modifier.clip(RoundedCornerShape(16.dp)) else Modifier)
+            .background(color = Color.White)
+            .then(if (model.isRoundedItem) Modifier.clip(RoundedCornerShape(8.dp)) else Modifier)
             .selectable(
                 selected = true,
                 onClick = { onItemSelected(model) }
@@ -40,20 +49,29 @@ fun BasicSelectedItem(
             .then(
                 if (model.isRoundedItem) {
                     Modifier.border(
-                        width = 0.5.dp,
-                        color = if (isSelected) GreenDark else Color.Black,
-                        shape = RoundedCornerShape(16.dp)
+                        width = if (isSelected) 2.dp else 0.5.dp,
+                        color = if (isSelected) Primary600 else Neutral300,
+                        shape = RoundedCornerShape(8.dp)
                     )
                 } else {
                     Modifier
                 }
             )
-            .padding(start = 8.dp),
+            .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        Image(
+            modifier = Modifier
+                .size(48.dp)
+                .clip(RoundedCornerShape(8.dp)),
+            painter = painterResource(id = image),
+            contentScale = ContentScale.Crop,
+            contentDescription = "Icon fuel"
+        )
         Text(
-            modifier = Modifier.weight(1f),
-            style = MaterialTheme.typography.labelLarge,
+            modifier = Modifier.weight(1f).padding(start = 8.dp),
+            style = if (isSelected) FuelPumpTheme.typography.baseBold else FuelPumpTheme.typography.baseRegular,
+            color = Color.Black,
             textAlign = TextAlign.Start,
             text = stringResource(id = title),
         )
@@ -61,7 +79,7 @@ fun BasicSelectedItem(
         RadioButton(
             selected = isSelected,
             onClick = { onItemSelected(model) },
-            colors = RadioButtonDefaults.colors(GreenDark),
+            colors = RadioButtonDefaults.colors(selectedColor = GreenDark, unselectedColor = Neutral500),
             modifier = Modifier.testTag("radio_button_$title")
         )
     }
@@ -76,6 +94,7 @@ private fun BasicSelectedItemPreview() {
                 title = R.string.preview_fuel_type,
                 isSelected = true,
                 isRoundedItem = true,
+                image = R.drawable.ic_gasoline_95
             )
         )
     }
@@ -90,6 +109,7 @@ private fun BasicItemPreview() {
                 title = R.string.preview_fuel_type,
                 isSelected = false,
                 isRoundedItem = true,
+                image = R.drawable.ic_gasoline_95
             )
         )
     }

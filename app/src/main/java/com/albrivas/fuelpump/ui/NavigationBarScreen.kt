@@ -1,5 +1,6 @@
 package com.albrivas.fuelpump.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.captionBar
@@ -18,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import com.albrivas.fuelpump.core.uikit.theme.Neutral100
 import com.albrivas.fuelpump.feature.fuel_list_station.navigation.stationListGraph
 import com.albrivas.fuelpump.feature.profile.R
 import com.albrivas.fuelpump.feature.profile.profileScreen
@@ -63,6 +65,7 @@ internal fun NavigationBarHost(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .background(color = Neutral100)
         ) {
             NavHost(
                 navController = navController,
