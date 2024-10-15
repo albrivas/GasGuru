@@ -4,6 +4,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,9 +16,10 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
@@ -73,6 +75,7 @@ import com.albrivas.fuelpump.core.uikit.components.marker.StationMarkerModel
 import com.albrivas.fuelpump.core.uikit.theme.FuelPumpTheme
 import com.albrivas.fuelpump.core.uikit.theme.GrayExtraLight
 import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
+import com.albrivas.fuelpump.core.uikit.theme.Neutral300
 import com.albrivas.fuelpump.core.uikit.theme.Primary600
 import com.albrivas.fuelpump.core.uikit.theme.TextSubtle
 import com.albrivas.fuelpump.feature.station_map.R
@@ -150,14 +153,20 @@ internal fun StationMapScreen(
         },
         sheetContent = {
             Column(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                val sheetState = scaffoldState.bottomSheetState.currentValue
+                val offset = animateDpAsState(
+                    targetValue = if (sheetState == SheetValue.Expanded) 0.dp else (-16).dp,
+                    animationSpec = tween(durationMillis = 200), label = ""
+                )
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .offset(y = (-16).dp),
+                        .offset(y = offset.value),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -195,7 +204,9 @@ internal fun StationMapScreen(
                     event = event
                 )
                 FABLocation(
-                    modifier = Modifier.align(Alignment.BottomEnd).padding(bottom = 30.dp),
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(bottom = 30.dp),
                     event = event,
                 )
             }
@@ -210,12 +221,15 @@ fun ListFuelStations(
     selectedFuel: FuelType?,
     navigateToDetail: (Int) -> Unit = {},
 ) {
-    LazyColumn(
+    Column(
         modifier = modifier
-            .fillMaxSize()
-            .background(color = Color.White),
+            .fillMaxWidth()
+            .background(color = Color.White)
+            .verticalScroll(rememberScrollState())
+            .border(1.dp, Neutral300, RoundedCornerShape(8.dp))
+            .padding(start = 12.dp, end = 12.dp)
     ) {
-        itemsIndexed(stations) { index, item ->
+        stations.forEachIndexed { index, item ->
             FuelStationItem(
                 model = FuelStationItemModel(
                     idServiceStation = item.idServiceStation,
