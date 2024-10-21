@@ -5,4 +5,6 @@
     <string name="label_suggestion">Suggestions</string>
     <string name="label_recent">Recent</string>
     <string name="hint_search_bar">Search by locations</string>
+    <string name="sheet_title">Nearby stations</string>
+    <string name="sheet_button">Show list</string>
 </resources>

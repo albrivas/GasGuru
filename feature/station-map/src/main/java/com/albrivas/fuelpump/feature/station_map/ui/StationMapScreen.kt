@@ -43,6 +43,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -90,6 +91,7 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.MarkerComposable
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlinx.coroutines.launch
 import com.albrivas.fuelpump.core.uikit.R as RUikit
 
 @Composable
@@ -139,6 +141,7 @@ internal fun StationMapScreen(
     }
 
     val scaffoldState = rememberBottomSheetScaffoldState()
+    val coroutine = rememberCoroutineScope()
 
     BottomSheetScaffold(
         sheetContainerColor = Color.White,
@@ -161,7 +164,7 @@ internal fun StationMapScreen(
                 val sheetState = scaffoldState.bottomSheetState.currentValue
                 val offset = animateDpAsState(
                     targetValue = if (sheetState == SheetValue.Expanded) 0.dp else (-16).dp,
-                    animationSpec = tween(durationMillis = 200), label = ""
+                    animationSpec = tween(durationMillis = 100), label = ""
                 )
                 Row(
                     modifier = Modifier
@@ -171,15 +174,22 @@ internal fun StationMapScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Nearby stations",
+                        text = stringResource(id = R.string.sheet_title),
                         style = FuelPumpTheme.typography.baseBold,
                         color = TextSubtle
                     )
-                    Text(
-                        text = "Show list",
-                        style = FuelPumpTheme.typography.baseRegular,
-                        color = Primary600
-                    )
+                    if (sheetState == SheetValue.PartiallyExpanded) {
+                        Text(
+                            modifier = Modifier.clickable {
+                                coroutine.launch {
+                                    scaffoldState.bottomSheetState.expand()
+                                }
+                            },
+                            text = stringResource(id = R.string.sheet_button),
+                            style = FuelPumpTheme.typography.baseRegular,
+                            color = Primary600
+                        )
+                    }
                 }
                 ListFuelStations(
                     stations = stations,
@@ -189,7 +199,9 @@ internal fun StationMapScreen(
             }
         },
         content = { innerPadding ->
-            Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)) {
                 SearchPlaces(
                     searchQuery = searchQuery,
                     searchResultUiState = searchResultUiState,
