@@ -6,7 +6,6 @@ data class FuelStationItemModel(
     val idServiceStation: Int,
     val icon: Int,
     val name: String,
-    val direction: String,
     val distance: String,
     val price: String,
     val index: Int,

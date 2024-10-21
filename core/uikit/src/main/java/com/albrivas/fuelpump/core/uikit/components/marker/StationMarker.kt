@@ -3,25 +3,27 @@ package com.albrivas.fuelpump.core.uikit.components.marker
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.albrivas.fuelpump.core.uikit.R
 import com.albrivas.fuelpump.core.uikit.shape.CircleArrowShape
-import com.albrivas.fuelpump.core.uikit.theme.GrayLight
+import com.albrivas.fuelpump.core.uikit.theme.FuelPumpTheme
 import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
 
 @Composable
@@ -29,28 +31,33 @@ fun StationMarker(model: StationMarkerModel) {
     Row(
         modifier = Modifier
             .clip(CircleArrowShape())
-            .background(color = if (model.isSelected) Color.White else model.color)
-            .border(
-                width = if (model.isSelected) 2.dp else 1.dp,
-                color = if (model.isSelected) model.color else GrayLight,
-                shape = CircleArrowShape()
-            )
-            .padding(top = 6.dp, start = 6.dp, end = 6.dp, bottom = 13.dp),
-        verticalAlignment = Alignment.Top
+            .background(color = model.color)
+            .padding(bottom = 3.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
     ) {
-        Image(
+        Box(
             modifier = Modifier
-                .size(16.dp)
-                .clip(CircleShape),
-            painter = painterResource(id = model.icon),
-            contentDescription = "Station icon",
-        )
-        Spacer(modifier = Modifier.width(2.dp))
+                .padding(start = 4.dp, top = 4.dp, bottom = 4.dp)
+                .clip(CircleShape)
+                .border(width = 1.dp, color = model.color.copy(0.50f), shape = CircleShape)
+                .size(24.dp)
+        ) {
+            Image(
+                modifier = Modifier.size(24.dp),
+                painter = painterResource(id = model.icon),
+                contentScale = ContentScale.Inside,
+                contentDescription = "Station icon",
+            )
+        }
+        Spacer(modifier = Modifier.width(8.dp))
         Text(
-            text = model.price,
-            style = MaterialTheme.typography.labelSmall,
+            text = "${model.price} €/l",
+            style = FuelPumpTheme.typography.smallBold,
             color = Color.White,
-            modifier = Modifier.align(Alignment.CenterVertically)
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .padding(top = 6.dp, end = 8.dp, bottom = 6.dp)
         )
     }
 }
@@ -62,7 +69,7 @@ private fun StationMarkerPreview() {
         StationMarker(
             model = StationMarkerModel(
                 icon = R.drawable.ic_logo_q8,
-                price = "€1.235",
+                price = "1.235",
                 color = Color.Red,
                 isSelected = false,
             )
