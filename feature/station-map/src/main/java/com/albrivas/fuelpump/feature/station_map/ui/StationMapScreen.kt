@@ -169,7 +169,7 @@ internal fun StationMapScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .offset(y = offset.value),
+                        .offset(y = offset.value, x = 0.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -216,9 +216,7 @@ internal fun StationMapScreen(
                     event = event
                 )
                 FABLocation(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(bottom = 30.dp),
+                    modifier = Modifier.align(Alignment.BottomEnd),
                     event = event,
                 )
             }
