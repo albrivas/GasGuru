@@ -25,7 +25,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.albrivas.fuelpump.core.uikit.R
@@ -89,7 +91,16 @@ fun FuelStationItem(
         ) {
             Text(
                 modifier = Modifier,
-                text = name,
+                text = name.toLowerCase(Locale.current)
+                    .replaceFirstChar {
+                        if (it.isLowerCase()) {
+                            it.titlecase(
+                                java.util.Locale.getDefault()
+                            )
+                        } else {
+                            it.toString()
+                        }
+                    },
                 style = FuelPumpTheme.typography.baseRegular,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -112,7 +123,7 @@ fun FuelStationItem(
             StatusChip(
                 modifier = Modifier.testTag("status-station"),
                 model = StatusChipModel(
-                    text = "$price €/L",
+                    text = "$price €/l",
                     color = categoryColor,
                 )
             )
@@ -138,7 +149,7 @@ fun PreviewFuelItem() {
             model = FuelStationItemModel(
                 idServiceStation = 1,
                 icon = R.drawable.ic_logo_repsol,
-                name = "Q8",
+                name = "EDAN REPSOL",
                 distance = "567 m",
                 price = "1.67",
                 index = 3686,

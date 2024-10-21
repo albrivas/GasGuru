@@ -154,7 +154,7 @@ internal fun StationMapScreen(
         sheetContent = {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxSize()
                     .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
@@ -188,8 +188,8 @@ internal fun StationMapScreen(
                 )
             }
         },
-        content = {
-            Box(modifier = Modifier.fillMaxSize()) {
+        content = { innerPadding ->
+            Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
                 SearchPlaces(
                     searchQuery = searchQuery,
                     searchResultUiState = searchResultUiState,
@@ -299,7 +299,7 @@ fun MapView(
                     StationMarker(
                         model = StationMarkerModel(
                             icon = station.brandStationBrandsType.toBrandStationIcon(),
-                            price = "€${userSelectedFuelType.getPrice(station)}",
+                            price = userSelectedFuelType.getPrice(station),
                             color = station.priceCategory.toColor(),
                             isSelected = isSelected,
                         )
