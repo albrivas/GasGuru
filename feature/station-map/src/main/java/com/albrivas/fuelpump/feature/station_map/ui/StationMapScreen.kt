@@ -164,7 +164,8 @@ internal fun StationMapScreen(
                 val sheetState = scaffoldState.bottomSheetState.currentValue
                 val offset = animateDpAsState(
                     targetValue = if (sheetState == SheetValue.Expanded) 0.dp else (-16).dp,
-                    animationSpec = tween(durationMillis = 100), label = ""
+                    animationSpec = tween(durationMillis = 100),
+                    label = ""
                 )
                 Row(
                     modifier = Modifier
@@ -199,9 +200,11 @@ internal fun StationMapScreen(
             }
         },
         content = { innerPadding ->
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            ) {
                 SearchPlaces(
                     searchQuery = searchQuery,
                     searchResultUiState = searchResultUiState,
