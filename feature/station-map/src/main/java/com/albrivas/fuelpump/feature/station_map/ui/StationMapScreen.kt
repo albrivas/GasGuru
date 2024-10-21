@@ -1,53 +1,56 @@
 package com.albrivas.fuelpump.feature.station_map.ui
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -70,9 +73,12 @@ import com.albrivas.fuelpump.core.uikit.components.fuelItem.FuelStationItem
 import com.albrivas.fuelpump.core.uikit.components.fuelItem.FuelStationItemModel
 import com.albrivas.fuelpump.core.uikit.components.marker.StationMarker
 import com.albrivas.fuelpump.core.uikit.components.marker.StationMarkerModel
-import com.albrivas.fuelpump.core.uikit.theme.GrayBackground
+import com.albrivas.fuelpump.core.uikit.theme.FuelPumpTheme
 import com.albrivas.fuelpump.core.uikit.theme.GrayExtraLight
 import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
+import com.albrivas.fuelpump.core.uikit.theme.Neutral300
+import com.albrivas.fuelpump.core.uikit.theme.Primary600
+import com.albrivas.fuelpump.core.uikit.theme.TextSubtle
 import com.albrivas.fuelpump.feature.station_map.R
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
@@ -85,6 +91,7 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.MarkerComposable
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlinx.coroutines.launch
 import com.albrivas.fuelpump.core.uikit.R as RUikit
 
 @Composable
@@ -103,13 +110,13 @@ fun StationMapScreenRoute(
         userSelectedFuelType = state.selectedType,
         searchResultUiState = searchResult,
         searchQuery = searchQuery,
-        showListStations = state.showListStations,
         recentSearchQueries = recentSearchQuery,
         event = viewModel::handleEvent,
         navigateToDetail = navigateToDetail
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun StationMapScreen(
     stations: List<FuelStation>,
@@ -119,7 +126,6 @@ internal fun StationMapScreen(
     userSelectedFuelType: FuelType?,
     searchResultUiState: SearchResultUiState,
     recentSearchQueries: RecentSearchQueriesUiState,
-    showListStations: Boolean,
     event: (StationMapEvent) -> Unit = {},
     navigateToDetail: (Int) -> Unit = {},
 ) {
@@ -134,36 +140,91 @@ internal fun StationMapScreen(
         event(StationMapEvent.ResetMapCenter)
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        AnimatedContent(
-            targetState = showListStations,
-            label = "animation map and list",
-        ) { isListVisible ->
-            if (isListVisible) {
+    val scaffoldState = rememberBottomSheetScaffoldState()
+    val coroutine = rememberCoroutineScope()
+
+    BottomSheetScaffold(
+        sheetContainerColor = Color.White,
+        sheetContentColor = Color.White,
+        scaffoldState = scaffoldState,
+        sheetShadowElevation = 32.dp,
+        sheetPeekHeight = 60.dp,
+        sheetShape = if (scaffoldState.bottomSheetState.currentValue == SheetValue.Expanded) {
+            RectangleShape
+        } else {
+            MaterialTheme.shapes.large
+        },
+        sheetContent = {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                val sheetState = scaffoldState.bottomSheetState.currentValue
+                val offset = animateDpAsState(
+                    targetValue = if (sheetState == SheetValue.Expanded) 0.dp else (-16).dp,
+                    animationSpec = tween(durationMillis = 100),
+                    label = ""
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .offset(y = offset.value, x = 0.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.sheet_title),
+                        style = FuelPumpTheme.typography.baseBold,
+                        color = TextSubtle
+                    )
+                    if (sheetState == SheetValue.PartiallyExpanded) {
+                        Text(
+                            modifier = Modifier.clickable {
+                                coroutine.launch {
+                                    scaffoldState.bottomSheetState.expand()
+                                }
+                            },
+                            text = stringResource(id = R.string.sheet_button),
+                            style = FuelPumpTheme.typography.baseRegular,
+                            color = Primary600
+                        )
+                    }
+                }
                 ListFuelStations(
                     stations = stations,
                     selectedFuel = userSelectedFuelType,
                     navigateToDetail = navigateToDetail
                 )
-            } else {
+            }
+        },
+        content = { innerPadding ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            ) {
+                SearchPlaces(
+                    searchQuery = searchQuery,
+                    searchResultUiState = searchResultUiState,
+                    recentSearchQueries = recentSearchQueries,
+                    event = event,
+                )
                 MapView(
                     stations = stations,
                     cameraState = cameraState,
-                    searchQuery = searchQuery,
                     userSelectedFuelType = userSelectedFuelType,
-                    searchResultUiState = searchResultUiState,
-                    recentSearchQueries = recentSearchQueries,
                     navigateToDetail = navigateToDetail,
                     event = event
                 )
+                FABLocation(
+                    modifier = Modifier.align(Alignment.BottomEnd),
+                    event = event,
+                )
             }
         }
-        FABLocation(
-            modifier = Modifier.align(Alignment.BottomEnd),
-            event = event,
-            showListStations = showListStations
-        )
-    }
+    )
 }
 
 @Composable
@@ -173,20 +234,20 @@ fun ListFuelStations(
     selectedFuel: FuelType?,
     navigateToDetail: (Int) -> Unit = {},
 ) {
-    LazyColumn(
+    Column(
         modifier = modifier
-            .fillMaxSize()
-            .background(color = GrayBackground)
-            .statusBarsPadding(),
-        contentPadding = PaddingValues(top = 16.dp, bottom = 140.dp)
+            .fillMaxWidth()
+            .background(color = Color.White)
+            .verticalScroll(rememberScrollState())
+            .border(1.dp, Neutral300, RoundedCornerShape(8.dp))
+            .padding(start = 12.dp, end = 12.dp)
     ) {
-        itemsIndexed(stations) { index, item ->
+        stations.forEachIndexed { index, item ->
             FuelStationItem(
                 model = FuelStationItemModel(
                     idServiceStation = item.idServiceStation,
                     icon = item.brandStationBrandsType.toBrandStationIcon(),
                     name = item.brandStationName,
-                    direction = item.direction,
                     distance = item.formatDistance(),
                     price = selectedFuel.getPrice(item),
                     index = index,
@@ -202,26 +263,11 @@ fun ListFuelStations(
 fun MapView(
     stations: List<FuelStation>,
     cameraState: CameraPositionState,
-    searchQuery: String,
     userSelectedFuelType: FuelType?,
-    searchResultUiState: SearchResultUiState,
-    recentSearchQueries: RecentSearchQueriesUiState,
     event: (StationMapEvent) -> Unit = {},
     navigateToDetail: (Int) -> Unit = {},
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        CompositionLocalProvider(
-            value = LocalTextStyle provides MaterialTheme.typography.displayMedium.copy(
-                color = Color.Black
-            )
-        ) {
-            SearchPlaces(
-                searchQuery = searchQuery,
-                searchResultUiState = searchResultUiState,
-                recentSearchQueries = recentSearchQueries,
-                event = event,
-            )
-        }
         val markerStates = remember { mutableStateMapOf<Int, MarkerState>() }
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
@@ -266,7 +312,7 @@ fun MapView(
                     StationMarker(
                         model = StationMarkerModel(
                             icon = station.brandStationBrandsType.toBrandStationIcon(),
-                            price = "€${userSelectedFuelType.getPrice(station)}",
+                            price = userSelectedFuelType.getPrice(station),
                             color = station.priceCategory.toColor(),
                             isSelected = isSelected,
                         )
@@ -280,7 +326,6 @@ fun MapView(
 @Composable
 fun FABLocation(
     modifier: Modifier,
-    showListStations: Boolean,
     event: (StationMapEvent) -> Unit = {},
 ) {
     Column(modifier = modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -296,23 +341,7 @@ fun FABLocation(
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(id = RUikit.drawable.ic_my_location),
-                contentDescription = "User location",
-            )
-        }
-
-        FloatingActionButton(
-            onClick = {
-                event(StationMapEvent.ShowListStations(show = !showListStations))
-            },
-            modifier = modifier,
-            shape = CircleShape,
-            containerColor = Color.White,
-            contentColor = Color.Black,
-        ) {
-            Icon(
-                imageVector = ImageVector.vectorResource(
-                    id = if (showListStations) RUikit.drawable.ic_map else RUikit.drawable.ic_list
-                ),
+                tint = TextSubtle,
                 contentDescription = "User location",
             )
         }
@@ -355,7 +384,8 @@ fun SearchPlaces(
         placeholder = {
             Text(
                 text = stringResource(id = R.string.hint_search_bar),
-                style = MaterialTheme.typography.displayMedium,
+                style = FuelPumpTheme.typography.baseRegular,
+                color = TextSubtle
             )
         },
         leadingIcon = {
@@ -597,7 +627,6 @@ private fun StationMapScreenPreview() {
             searchResultUiState = SearchResultUiState.EmptyQuery,
             searchQuery = "",
             recentSearchQueries = RecentSearchQueriesUiState.Loading,
-            showListStations = false,
             navigateToDetail = {}
         )
     }

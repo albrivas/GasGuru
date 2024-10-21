@@ -125,12 +125,11 @@ fun ColumnScope.ListFuelStations(
     ) {
         itemsIndexed(stations) { index, item ->
             FuelStationItem(
-                modifier = Modifier.testTag("item $index"),
+                modifier = Modifier.testTag("item $index").padding(16.dp),
                 model = FuelStationItemModel(
                     idServiceStation = item.idServiceStation,
                     icon = item.brandStationBrandsType.toBrandStationIcon(),
                     name = item.brandStationName,
-                    direction = item.direction,
                     distance = item.formatDistance(),
                     price = selectedFuel.getPrice(item),
                     index = index,
