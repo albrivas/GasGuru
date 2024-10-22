@@ -2,8 +2,11 @@ package com.albrivas.fuelpump.navigation.navigationbar
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -13,14 +16,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.albrivas.fuelpump.R
-import com.albrivas.fuelpump.core.uikit.theme.GreenDark
+import com.albrivas.fuelpump.core.uikit.theme.FuelPumpTheme
+import com.albrivas.fuelpump.core.uikit.theme.Primary600
 import com.albrivas.fuelpump.navigation.navigationbar.route.TopLevelRoutes
 
 @Composable
@@ -33,8 +35,7 @@ internal fun NavigationBottomBar(navController: NavHostController) {
             when (destination) {
                 is TopLevelRoutes.Favorite ->
                     BarItem(
-                        icon = destination.icon,
-                        selectedIcon = destination.selectedIcon,
+                        icon = Icons.Outlined.FavoriteBorder,
                         label = stringResource(id = R.string.list_nav),
                         isSelected = destination.route == TopLevelRoutes.fromRoute(state.currentDestination?.route),
                         onNavigateToDestination = { state.onNavItemClick(it) },
@@ -43,8 +44,7 @@ internal fun NavigationBottomBar(navController: NavHostController) {
 
                 is TopLevelRoutes.Map ->
                     BarItem(
-                        icon = destination.icon,
-                        selectedIcon = destination.selectedIcon,
+                        icon = Icons.Outlined.LocationOn,
                         label = stringResource(id = R.string.map_nav),
                         isSelected = destination.route == TopLevelRoutes.fromRoute(state.currentDestination?.route),
                         onNavigateToDestination = { state.onNavItemClick(it) },
@@ -53,8 +53,7 @@ internal fun NavigationBottomBar(navController: NavHostController) {
 
                 is TopLevelRoutes.Profile ->
                     BarItem(
-                        icon = destination.icon,
-                        selectedIcon = destination.selectedIcon,
+                        icon = Icons.Outlined.AccountCircle,
                         label = stringResource(id = R.string.profile_nav),
                         isSelected = destination.route == TopLevelRoutes.fromRoute(state.currentDestination?.route),
                         onNavigateToDestination = { state.onNavItemClick(it) },
@@ -67,8 +66,7 @@ internal fun NavigationBottomBar(navController: NavHostController) {
 
 @Composable
 private fun RowScope.BarItem(
-    icon: Int,
-    selectedIcon: Int,
+    icon: ImageVector,
     label: String,
     isSelected: Boolean,
     onNavigateToDestination: (TopLevelRoutes) -> Unit,
@@ -79,22 +77,26 @@ private fun RowScope.BarItem(
         label = {
             Text(
                 text = label,
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.Bold
+                style = if (isSelected) {
+                    FuelPumpTheme.typography.captionBold
+                } else {
+                    FuelPumpTheme.typography.captionRegular
+                },
             )
         },
         icon = {
             Icon(
                 modifier = Modifier.size(24.dp),
-                imageVector = ImageVector.vectorResource(id = if (isSelected) selectedIcon else icon),
-                contentDescription = null
+                imageVector = icon,
+                contentDescription = null,
             )
         },
         colors = NavigationBarItemDefaults.colors(
-            selectedIconColor = GreenDark,
-            selectedTextColor = GreenDark,
-            indicatorColor = Color.White,
-            unselectedIconColor = Color.Black
+            selectedIconColor = Primary600,
+            selectedTextColor = Primary600,
+            indicatorColor = Primary600.copy(alpha = 0.16f),
+            unselectedIconColor = Color.Gray,
+            unselectedTextColor = Color.Gray
         ),
         onClick = {
             onNavigateToDestination(destination)
