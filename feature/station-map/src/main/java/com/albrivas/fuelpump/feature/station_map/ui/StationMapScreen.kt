@@ -1,7 +1,10 @@
 package com.albrivas.fuelpump.feature.station_map.ui
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -14,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -35,6 +39,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SheetValue
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
@@ -149,6 +154,20 @@ internal fun StationMapScreen(
         scaffoldState = scaffoldState,
         sheetShadowElevation = 32.dp,
         sheetPeekHeight = 60.dp,
+        sheetDragHandle = {
+            Surface(
+                modifier = Modifier.padding(vertical = 8.dp),
+                color = Color.LightGray,
+                shape = MaterialTheme.shapes.extraLarge
+            ) {
+                Box(
+                    modifier = Modifier.size(
+                        width = 32.dp,
+                        height = 4.0.dp
+                    )
+                )
+            }
+        },
         sheetShape = if (scaffoldState.bottomSheetState.currentValue == SheetValue.Expanded) {
             RectangleShape
         } else {
@@ -163,13 +182,14 @@ internal fun StationMapScreen(
             ) {
                 val sheetState = scaffoldState.bottomSheetState.currentValue
                 val offset = animateDpAsState(
-                    targetValue = if (sheetState == SheetValue.Expanded) 0.dp else (-16).dp,
+                    targetValue = if (sheetState == SheetValue.Expanded) 16.dp else (2).dp,
                     animationSpec = tween(durationMillis = 100),
                     label = ""
                 )
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(bottom = 17.dp)
                         .offset(y = offset.value, x = 0.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
@@ -179,7 +199,12 @@ internal fun StationMapScreen(
                         style = FuelPumpTheme.typography.baseBold,
                         color = TextSubtle
                     )
-                    if (sheetState == SheetValue.PartiallyExpanded) {
+                    AnimatedVisibility(
+                        visible = sheetState == SheetValue.PartiallyExpanded,
+                        enter = fadeIn(),
+                        exit = fadeOut(),
+                        label = "Show list animation"
+                    ) {
                         Text(
                             modifier = Modifier.clickable {
                                 coroutine.launch {

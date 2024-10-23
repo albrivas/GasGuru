@@ -42,9 +42,11 @@ fun StationMarker(model: StationMarkerModel) {
                 .clip(CircleShape)
                 .border(width = 1.dp, color = model.color.copy(0.50f), shape = CircleShape)
                 .size(24.dp)
+                .background(color = Color.White)
+
         ) {
             Image(
-                modifier = Modifier.size(24.dp),
+                modifier = Modifier.size(24.dp).padding(2.dp),
                 painter = painterResource(id = model.icon),
                 contentScale = ContentScale.Inside,
                 contentDescription = "Station icon",
@@ -68,7 +70,7 @@ private fun StationMarkerPreview() {
     MyApplicationTheme {
         StationMarker(
             model = StationMarkerModel(
-                icon = R.drawable.ic_logo_q8,
+                icon = R.drawable.ic_logo_cepsa,
                 price = "1.235",
                 color = Color.Red,
                 isSelected = false,

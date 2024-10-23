@@ -8,9 +8,9 @@ import com.albrivas.fuelpump.core.model.data.FuelType
 import com.albrivas.fuelpump.core.model.data.PriceCategory
 import com.albrivas.fuelpump.core.uikit.components.price.PriceItemModel
 import com.albrivas.fuelpump.core.uikit.icon.FuelStationIcons
-import com.albrivas.fuelpump.core.uikit.theme.PriceCheap
-import com.albrivas.fuelpump.core.uikit.theme.PriceExpensive
-import com.albrivas.fuelpump.core.uikit.theme.PriceNormal
+import com.albrivas.fuelpump.core.uikit.theme.AccentGreen
+import com.albrivas.fuelpump.core.uikit.theme.AccentOrange
+import com.albrivas.fuelpump.core.uikit.theme.AccentRed
 import com.albrivas.fuelpump.core.uikit.theme.secondaryLight
 import java.time.DayOfWeek
 import java.time.LocalTime
@@ -68,9 +68,9 @@ fun FuelStationBrandsType.toBrandStationIcon() = when (this) {
 
 fun PriceCategory.toColor() = when (this) {
     PriceCategory.NONE -> secondaryLight
-    PriceCategory.CHEAP -> PriceCheap
-    PriceCategory.NORMAL -> PriceNormal
-    PriceCategory.EXPENSIVE -> PriceExpensive
+    PriceCategory.CHEAP -> AccentGreen
+    PriceCategory.NORMAL -> AccentOrange
+    PriceCategory.EXPENSIVE -> AccentRed
 }
 
 fun FuelType?.getPrice(fuelStation: FuelStation) = when (this) {

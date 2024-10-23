@@ -60,9 +60,9 @@ import com.albrivas.fuelpump.core.uikit.components.chip.StatusChipModel
 import com.albrivas.fuelpump.core.uikit.components.price.PriceItem
 import com.albrivas.fuelpump.core.uikit.components.text.InformationText
 import com.albrivas.fuelpump.core.uikit.components.text.InformationTextModel
+import com.albrivas.fuelpump.core.uikit.theme.AccentGreen
+import com.albrivas.fuelpump.core.uikit.theme.AccentRed
 import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
-import com.albrivas.fuelpump.core.uikit.theme.PriceCheap
-import com.albrivas.fuelpump.core.uikit.theme.PriceExpensive
 import com.albrivas.fuelpump.core.uikit.theme.YellowFavorite
 import com.albrivas.fuelpump.feature.detail_station.BuildConfig
 import com.albrivas.fuelpump.feature.detail_station.R
@@ -172,7 +172,7 @@ fun DetailStationContent(station: FuelStation) {
                     modifier = Modifier.testTag("status-station"),
                     model = StatusChipModel(
                         text = isOpen,
-                        color = if (station.isStationOpen()) PriceCheap else PriceExpensive
+                        color = if (station.isStationOpen()) AccentGreen else AccentRed
                     )
                 )
             }
