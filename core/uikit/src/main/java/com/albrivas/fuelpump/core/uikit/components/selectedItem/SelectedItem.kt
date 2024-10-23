@@ -26,7 +26,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.albrivas.fuelpump.core.uikit.R
 import com.albrivas.fuelpump.core.uikit.theme.FuelPumpTheme
-import com.albrivas.fuelpump.core.uikit.theme.GreenDark
 import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
 import com.albrivas.fuelpump.core.uikit.theme.Neutral300
 import com.albrivas.fuelpump.core.uikit.theme.Neutral500
@@ -79,7 +78,7 @@ fun BasicSelectedItem(
         RadioButton(
             selected = isSelected,
             onClick = { onItemSelected(model) },
-            colors = RadioButtonDefaults.colors(selectedColor = GreenDark, unselectedColor = Neutral500),
+            colors = RadioButtonDefaults.colors(selectedColor = Primary600, unselectedColor = Neutral500),
             modifier = Modifier.testTag("radio_button_$title")
         )
     }

@@ -33,11 +33,11 @@ import androidx.compose.ui.unit.dp
 import com.albrivas.fuelpump.core.uikit.R
 import com.albrivas.fuelpump.core.uikit.components.chip.StatusChip
 import com.albrivas.fuelpump.core.uikit.components.chip.StatusChipModel
+import com.albrivas.fuelpump.core.uikit.theme.AccentRed
 import com.albrivas.fuelpump.core.uikit.theme.FuelPumpTheme
 import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
 import com.albrivas.fuelpump.core.uikit.theme.Neutral300
 import com.albrivas.fuelpump.core.uikit.theme.Neutral500
-import com.albrivas.fuelpump.core.uikit.theme.PriceExpensive
 import com.albrivas.fuelpump.core.uikit.theme.TextMain
 import com.albrivas.fuelpump.core.uikit.theme.TextSubtle
 
@@ -153,7 +153,7 @@ fun PreviewFuelItem() {
                 distance = "567 m",
                 price = "1.67",
                 index = 3686,
-                categoryColor = PriceExpensive,
+                categoryColor = AccentRed,
                 onItemClick = {}
             )
         )

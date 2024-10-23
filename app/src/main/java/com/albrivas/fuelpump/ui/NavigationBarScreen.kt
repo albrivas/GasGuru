@@ -2,12 +2,14 @@ package com.albrivas.fuelpump.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.captionBar
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -20,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.albrivas.fuelpump.core.uikit.theme.Neutral100
+import com.albrivas.fuelpump.core.uikit.theme.Neutral400
 import com.albrivas.fuelpump.feature.fuel_list_station.navigation.stationListGraph
 import com.albrivas.fuelpump.feature.profile.R
 import com.albrivas.fuelpump.feature.profile.profileScreen
@@ -43,7 +46,10 @@ internal fun NavigationBarHost(
     Scaffold(
         modifier = Modifier,
         bottomBar = {
-            NavigationBottomBar(navController = navController)
+            Column {
+                HorizontalDivider(thickness = 1.dp, color = Neutral400)
+                NavigationBottomBar(navController = navController)
+            }
         },
         topBar = {
             if (TopLevelRoutes.fromRoute(appState.currentDestination?.route) == TopLevelRoutes.Profile().route) {
