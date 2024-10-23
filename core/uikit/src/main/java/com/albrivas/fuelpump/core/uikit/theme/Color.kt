@@ -44,4 +44,3 @@ val Neutral900 = Color(0xFF051108)
 val NeutralBlack = Color(0xFF000000)
 val primaryContainerLight = Color(0xFFA6F2D1)
 val secondaryLight = Color(0xFF4C6358)
-
