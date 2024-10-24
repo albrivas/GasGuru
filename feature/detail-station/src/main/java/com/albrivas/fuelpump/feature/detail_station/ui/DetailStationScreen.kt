@@ -3,7 +3,6 @@ package com.albrivas.fuelpump.feature.detail_station.ui
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,8 +21,12 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,6 +51,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.albrivas.fuelpump.core.common.generateStaticMapUrl
+import com.albrivas.fuelpump.core.common.startRoute
 import com.albrivas.fuelpump.core.model.data.FuelStation
 import com.albrivas.fuelpump.core.model.data.previewFuelStationDomain
 import com.albrivas.fuelpump.core.ui.getFuelPriceItems
@@ -55,6 +59,8 @@ import com.albrivas.fuelpump.core.ui.isStationOpen
 import com.albrivas.fuelpump.core.ui.toBrandStationIcon
 import com.albrivas.fuelpump.core.uikit.components.expandable.InformationCardExpandable
 import com.albrivas.fuelpump.core.uikit.components.expandable.InformationCardExpandableModel
+import com.albrivas.fuelpump.core.uikit.components.information_card.InformationCard
+import com.albrivas.fuelpump.core.uikit.components.information_card.InformationCardModel
 import com.albrivas.fuelpump.core.uikit.components.price.PriceItem
 import com.albrivas.fuelpump.core.uikit.theme.AccentRed
 import com.albrivas.fuelpump.core.uikit.theme.FuelPumpTheme
@@ -85,7 +91,6 @@ internal fun DetailStationScreen(
     onBack: () -> Unit = {},
     onFavoriteClick: (Boolean) -> Unit = {},
 ) {
-    val context = LocalContext.current
     when (uiState) {
         DetailStationUiState.Error -> Unit
         DetailStationUiState.Loading -> {
@@ -133,6 +138,7 @@ fun DetailStationContent(station: FuelStation) {
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        val context = LocalContext.current
         val isOpen = if (station.isStationOpen()) "Open" else "Closed"
         ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
             val (textGroup, image) = createRefs()
@@ -218,7 +224,10 @@ fun DetailStationContent(station: FuelStation) {
         Spacer(modifier = Modifier.height(24.dp))
         FuelTypes(station = station)
         Spacer(modifier = Modifier.height(24.dp))
-        InformationStation(station = station)
+        InformationStation(
+            station = station,
+            navigateToGoogleMaps = { startRoute(context = context, location = station.location) }
+        )
     }
 }
 
@@ -246,7 +255,7 @@ fun FuelTypes(station: FuelStation) {
 }
 
 @Composable
-fun InformationStation(station: FuelStation) {
+fun InformationStation(station: FuelStation, navigateToGoogleMaps: () -> Unit) {
     Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text(
             text = stringResource(id = R.string.station_detail),
@@ -259,6 +268,14 @@ fun InformationStation(station: FuelStation) {
                 title = stringResource(id = R.string.schedule),
                 subtitle = if (station.isStationOpen()) "Open" else "Close",
                 description = station.scheduleList.joinToString(separator = "\n")
+            )
+        )
+        InformationCard(
+            model = InformationCardModel(
+                title = stringResource(id = R.string.direction),
+                description = station.formatDirection(),
+                icon = com.albrivas.fuelpump.core.uikit.R.drawable.ic_direction,
+                onClick = navigateToGoogleMaps
             )
         )
     }
@@ -283,16 +300,36 @@ fun HeaderStation(station: FuelStation, onBack: () -> Unit, onFavoriteClick: (Bo
             contentDescription = "Detail station map",
             contentScale = ContentScale.Crop
         )
-        Icon(
+        IconButton(
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .statusBarsPadding()
-                .padding(start = 16.dp, top = 16.dp)
-                .clickable { onBack() },
-            imageVector = Icons.AutoMirrored.Default.ArrowBack,
-            contentDescription = "Back to map",
-            tint = Color.Black,
-        )
+                .padding(start = 16.dp)
+                .clip(CircleShape),
+            onClick = onBack,
+            colors = IconButtonDefaults.iconButtonColors(containerColor = Color.White)
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                contentDescription = "Back to map",
+                tint = Color.Black,
+            )
+        }
+        IconButton(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .statusBarsPadding()
+                .padding(end = 16.dp)
+                .clip(CircleShape),
+            onClick = { onFavoriteClick(!station.isFavorite) },
+            colors = IconButtonDefaults.iconButtonColors(containerColor = Color.White)
+        ) {
+            Icon(
+                imageVector = if (station.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                contentDescription = "Back to map",
+                tint = if (station.isFavorite) AccentRed else Color.Black,
+            )
+        }
     }
 }
 
