@@ -40,6 +40,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.toLowerCase
@@ -55,6 +56,7 @@ import com.albrivas.fuelpump.core.common.startRoute
 import com.albrivas.fuelpump.core.model.data.FuelStation
 import com.albrivas.fuelpump.core.model.data.previewFuelStationDomain
 import com.albrivas.fuelpump.core.ui.getFuelPriceItems
+import com.albrivas.fuelpump.core.ui.iconTint
 import com.albrivas.fuelpump.core.ui.isStationOpen
 import com.albrivas.fuelpump.core.ui.toBrandStationIcon
 import com.albrivas.fuelpump.core.uikit.components.expandable.InformationCardExpandable
@@ -320,13 +322,17 @@ fun HeaderStation(station: FuelStation, onBack: () -> Unit, onFavoriteClick: (Bo
                 .align(Alignment.TopEnd)
                 .statusBarsPadding()
                 .padding(end = 16.dp)
-                .clip(CircleShape),
+                .clip(CircleShape)
+                .testTag("button_favorite"),
             onClick = { onFavoriteClick(!station.isFavorite) },
             colors = IconButtonDefaults.iconButtonColors(containerColor = Color.White)
         ) {
             Icon(
+                modifier = Modifier.testTag("icon_favorite").semantics {
+                    iconTint = if (station.isFavorite) AccentRed else Color.Black
+                },
                 imageVector = if (station.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                contentDescription = "Back to map",
+                contentDescription = "Favorite icon",
                 tint = if (station.isFavorite) AccentRed else Color.Black,
             )
         }
