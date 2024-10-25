@@ -31,6 +31,6 @@ include(":core:common")
 
 include(":feature:onboarding")
 include(":feature:detail-station")
-include(":feature:fuel-list-station")
+include(":feature:favorite-list-station")
 include(":feature:station-map")
 include(":feature:profile")

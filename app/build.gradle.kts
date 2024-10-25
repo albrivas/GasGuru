@@ -99,7 +99,7 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(project(":feature:onboarding"))
     implementation(project(":feature:detail-station"))
-    implementation(project(":feature:fuel-list-station"))
+    implementation(project(":feature:favorite-list-station"))
     implementation(project(":feature:station-map"))
     implementation(project(":feature:profile"))
     implementation(project(":core:model"))
