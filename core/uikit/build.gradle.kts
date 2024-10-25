@@ -48,4 +48,6 @@ dependencies {
     debugApi(libs.androidx.compose.ui.tooling)
     api(libs.androidx.compose.ui.tooling.preview)
     detektPlugins(libs.detekt.formatting)
+    implementation(libs.constraint.layout)
+    implementation(libs.material.icons.extended)
 }

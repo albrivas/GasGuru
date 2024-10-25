@@ -6,5 +6,7 @@
     <string name="close">Close</string>
     <string name="price">Price</string>
     <string name="direction">Direction</string>
-    <string name="schedule">Schedule</string>
+    <string name="schedule">Opening hours</string>
+    <string name="fuel_types">Fuel types</string>
+    <string name="station_detail">Details</string>
 </resources>
