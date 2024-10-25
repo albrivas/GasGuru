@@ -81,6 +81,7 @@ import com.albrivas.fuelpump.core.uikit.components.marker.StationMarkerModel
 import com.albrivas.fuelpump.core.uikit.theme.FuelPumpTheme
 import com.albrivas.fuelpump.core.uikit.theme.GrayExtraLight
 import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
+import com.albrivas.fuelpump.core.uikit.theme.Neutral100
 import com.albrivas.fuelpump.core.uikit.theme.Neutral300
 import com.albrivas.fuelpump.core.uikit.theme.Primary600
 import com.albrivas.fuelpump.core.uikit.theme.TextSubtle
@@ -149,8 +150,8 @@ internal fun StationMapScreen(
     val coroutine = rememberCoroutineScope()
 
     BottomSheetScaffold(
-        sheetContainerColor = Color.White,
-        sheetContentColor = Color.White,
+        sheetContainerColor = Neutral100,
+        sheetContentColor = Neutral100,
         scaffoldState = scaffoldState,
         sheetShadowElevation = 32.dp,
         sheetPeekHeight = 60.dp,
@@ -265,7 +266,6 @@ fun ListFuelStations(
             .background(color = Color.White)
             .verticalScroll(rememberScrollState())
             .border(1.dp, Neutral300, RoundedCornerShape(8.dp))
-            .padding(start = 12.dp, end = 12.dp)
     ) {
         stations.forEachIndexed { index, item ->
             FuelStationItem(

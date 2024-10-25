@@ -1,6 +1,7 @@
 package com.albrivas.fuelpump.core.uikit.components.fuelItem
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -20,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -51,6 +53,7 @@ fun FuelStationItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .background(color = Color.White)
             .clickable { onItemClick(idServiceStation) }
             .semantics { this.contentDescription = contentDescription }
             .drawBehind {
@@ -61,7 +64,7 @@ fun FuelStationItem(
                     end = Offset(size.width, lineY),
                     strokeWidth = 1.dp.toPx()
                 )
-            },
+            }.padding(start = 12.dp, end = 12.dp),
     ) {
         Column(
             modifier = Modifier
