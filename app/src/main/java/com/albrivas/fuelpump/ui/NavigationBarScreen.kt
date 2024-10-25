@@ -23,7 +23,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.albrivas.fuelpump.core.uikit.theme.Neutral100
 import com.albrivas.fuelpump.core.uikit.theme.Neutral400
-import com.albrivas.fuelpump.feature.fuel_list_station.navigation.stationListGraph
+import com.albrivas.fuelpump.feature.favorite_list_station.navigation.stationListGraph
 import com.albrivas.fuelpump.feature.profile.R
 import com.albrivas.fuelpump.feature.profile.profileScreen
 import com.albrivas.fuelpump.feature.station_map.navigation.route.StationMapGraph
