@@ -67,6 +67,7 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.coil.compose)
     detektPlugins(libs.detekt.formatting)
+    implementation(libs.constraint.layout)
 
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)

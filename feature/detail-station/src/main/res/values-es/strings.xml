@@ -7,4 +7,6 @@
     <string name="price">Precio</string>
     <string name="direction">Direccion</string>
     <string name="schedule">Horario</string>
+    <string name="fuel_types">Tipos de combustible</string>
+    <string name="station_detail">Detalles</string>
 </resources>
