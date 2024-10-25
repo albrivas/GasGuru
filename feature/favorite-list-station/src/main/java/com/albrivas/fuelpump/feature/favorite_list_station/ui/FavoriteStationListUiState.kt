@@ -1,4 +1,4 @@
-package com.albrivas.fuelpump.feature.fuel_list_station.ui
+package com.albrivas.fuelpump.feature.favorite_list_station.ui
 
 import com.albrivas.fuelpump.core.model.data.FuelStation
 import com.albrivas.fuelpump.core.model.data.FuelType

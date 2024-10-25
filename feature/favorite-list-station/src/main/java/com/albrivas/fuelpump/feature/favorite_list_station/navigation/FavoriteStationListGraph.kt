@@ -1,8 +1,8 @@
-package com.albrivas.fuelpump.feature.fuel_list_station.navigation
+package com.albrivas.fuelpump.feature.favorite_list_station.navigation
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
-import com.albrivas.fuelpump.feature.fuel_list_station.navigation.route.StationListGraph
+import com.albrivas.fuelpump.feature.favorite_list_station.navigation.route.StationListGraph
 
 fun NavGraphBuilder.stationListGraph(
     navigateToDetail: (Int) -> Unit

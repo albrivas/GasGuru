@@ -8,6 +8,8 @@ import com.albrivas.fuelpump.core.model.data.FuelType
 import com.albrivas.fuelpump.core.model.data.previewFuelStationDomain
 import com.albrivas.fuelpump.core.testing.BaseTest
 import com.albrivas.fuelpump.feature.favorite_list_station.R
+import com.albrivas.fuelpump.feature.favorite_list_station.ui.FavoriteListStationScreen
+import com.albrivas.fuelpump.feature.favorite_list_station.ui.FavoriteStationListUiState
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 

@@ -1,4 +1,4 @@
-package com.albrivas.fuelpump.feature.fuel_list_station.ui
+package com.albrivas.fuelpump.feature.favorite_list_station.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
