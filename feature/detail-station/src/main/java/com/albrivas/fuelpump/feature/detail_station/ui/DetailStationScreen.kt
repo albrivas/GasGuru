@@ -59,8 +59,6 @@ import com.albrivas.fuelpump.core.ui.getFuelPriceItems
 import com.albrivas.fuelpump.core.ui.iconTint
 import com.albrivas.fuelpump.core.ui.isStationOpen
 import com.albrivas.fuelpump.core.ui.toBrandStationIcon
-import com.albrivas.fuelpump.core.uikit.components.expandable.InformationCardExpandable
-import com.albrivas.fuelpump.core.uikit.components.expandable.InformationCardExpandableModel
 import com.albrivas.fuelpump.core.uikit.components.information_card.InformationCard
 import com.albrivas.fuelpump.core.uikit.components.information_card.InformationCardModel
 import com.albrivas.fuelpump.core.uikit.components.price.PriceItem
@@ -216,7 +214,7 @@ fun DetailStationContent(station: FuelStation) {
                 Image(
                     painter = painterResource(id = station.brandStationBrandsType.toBrandStationIcon()),
                     contentDescription = "Fuel station brand",
-                    contentScale = ContentScale.Crop,
+                    contentScale = ContentScale.Inside,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(4.dp)
@@ -265,19 +263,21 @@ fun InformationStation(station: FuelStation, navigateToGoogleMaps: () -> Unit) {
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-        InformationCardExpandable(
-            model = InformationCardExpandableModel(
+        InformationCard(
+            model = InformationCardModel(
                 title = stringResource(id = R.string.schedule),
                 subtitle = if (station.isStationOpen()) "Open" else "Close",
-                description = station.scheduleList.joinToString(separator = "\n")
+                description = station.scheduleList.joinToString(separator = "\n"),
+                type = InformationCardModel.InformationCardType.EXPANDABLE,
             )
         )
         InformationCard(
             model = InformationCardModel(
                 title = stringResource(id = R.string.direction),
-                description = station.formatDirection(),
+                subtitle = station.formatDirection(),
                 icon = com.albrivas.fuelpump.core.uikit.R.drawable.ic_direction,
-                onClick = navigateToGoogleMaps
+                onClick = navigateToGoogleMaps,
+                type = InformationCardModel.InformationCardType.NONE
             )
         )
     }
@@ -328,9 +328,11 @@ fun HeaderStation(station: FuelStation, onBack: () -> Unit, onFavoriteClick: (Bo
             colors = IconButtonDefaults.iconButtonColors(containerColor = Color.White)
         ) {
             Icon(
-                modifier = Modifier.testTag("icon_favorite").semantics {
-                    iconTint = if (station.isFavorite) AccentRed else Color.Black
-                },
+                modifier = Modifier
+                    .testTag("icon_favorite")
+                    .semantics {
+                        iconTint = if (station.isFavorite) AccentRed else Color.Black
+                    },
                 imageVector = if (station.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                 contentDescription = "Favorite icon",
                 tint = if (station.isFavorite) AccentRed else Color.Black,
