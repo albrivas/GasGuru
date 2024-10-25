@@ -1,7 +1,6 @@
 package com.albrivas.fuelpump.profile
 
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
@@ -9,8 +8,8 @@ import com.albrivas.fuelpump.core.model.data.FuelType
 import com.albrivas.fuelpump.core.model.data.UserData
 import com.albrivas.fuelpump.core.testing.BaseTest
 import com.albrivas.fuelpump.core.ui.translation
-import com.albrivas.fuelpump.feature.profile.ProfileScreen
-import com.albrivas.fuelpump.feature.profile.ProfileUiState
+import com.albrivas.fuelpump.feature.profile.ui.ProfileScreen
+import com.albrivas.fuelpump.feature.profile.ui.ProfileUiState
 import org.junit.jupiter.api.DisplayName
 
 import org.junit.jupiter.api.Test

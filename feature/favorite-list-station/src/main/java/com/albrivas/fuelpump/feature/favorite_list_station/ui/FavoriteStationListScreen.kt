@@ -42,7 +42,6 @@ import com.albrivas.fuelpump.core.uikit.components.alert.AlertTemplateModel
 import com.albrivas.fuelpump.core.uikit.components.fuelItem.FuelStationItem
 import com.albrivas.fuelpump.core.uikit.components.fuelItem.FuelStationItemModel
 import com.albrivas.fuelpump.core.uikit.theme.FuelPumpTheme
-import com.albrivas.fuelpump.core.uikit.theme.GrayBackground
 import com.albrivas.fuelpump.core.uikit.theme.Neutral100
 import com.albrivas.fuelpump.core.uikit.theme.Neutral300
 import com.albrivas.fuelpump.feature.favorite_list_station.R
@@ -70,7 +69,7 @@ internal fun FavoriteListStationScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(color = Neutral100)
-            .padding(start = 16.dp, end = 16.dp)
+            .padding(horizontal = 16.dp)
             .statusBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -80,7 +79,6 @@ internal fun FavoriteListStationScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(color = GrayBackground)
                         .statusBarsPadding(),
                     contentAlignment = Alignment.Center
                 ) {

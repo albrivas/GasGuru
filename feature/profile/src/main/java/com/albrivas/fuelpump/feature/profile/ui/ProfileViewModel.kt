@@ -1,4 +1,4 @@
-package com.albrivas.fuelpump.feature.profile
+package com.albrivas.fuelpump.feature.profile.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
