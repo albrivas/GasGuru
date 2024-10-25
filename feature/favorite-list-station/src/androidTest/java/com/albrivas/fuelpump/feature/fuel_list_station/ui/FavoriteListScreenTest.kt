@@ -7,18 +7,18 @@ import androidx.compose.ui.test.onNodeWithText
 import com.albrivas.fuelpump.core.model.data.FuelType
 import com.albrivas.fuelpump.core.model.data.previewFuelStationDomain
 import com.albrivas.fuelpump.core.testing.BaseTest
-import com.albrivas.fuelpump.feature.fuel_list_station.R
+import com.albrivas.fuelpump.feature.favorite_list_station.R
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
-class FuelStationListScreenTest : BaseTest() {
+class FavoriteListScreenTest : BaseTest() {
 
     @Test
     @DisplayName("Empty favorites stations")
     fun emptyFavoriteStations() = extension.use {
         setContent {
-            FuelStationListScreen(
-                uiState = FuelStationListUiState.EmptyFavorites,
+            FavoriteListStationScreen(
+                uiState = FavoriteStationListUiState.EmptyFavorites,
                 navigateToDetail = {},
                 checkLocationEnabled = {},
             )
@@ -31,8 +31,8 @@ class FuelStationListScreenTest : BaseTest() {
     @DisplayName("Show favorite stations")
     fun favoriteStations() = extension.use {
         setContent {
-            FuelStationListScreen(
-                uiState = FuelStationListUiState.Favorites(
+            FavoriteListStationScreen(
+                uiState = FavoriteStationListUiState.Favorites(
                     favoriteStations = listOf(
                         previewFuelStationDomain()
                     ), userSelectedFuelType = FuelType.GASOLINE_95

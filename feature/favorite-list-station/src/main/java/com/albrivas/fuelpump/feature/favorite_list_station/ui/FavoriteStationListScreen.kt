@@ -45,15 +45,15 @@ import com.albrivas.fuelpump.core.uikit.theme.FuelPumpTheme
 import com.albrivas.fuelpump.core.uikit.theme.GrayBackground
 import com.albrivas.fuelpump.core.uikit.theme.Neutral100
 import com.albrivas.fuelpump.core.uikit.theme.Neutral300
-import com.albrivas.fuelpump.feature.fuel_list_station.R
+import com.albrivas.fuelpump.feature.favorite_list_station.R
 
 @Composable
-fun FuelStationListScreenRoute(
+fun FavoriteListStationScreenRoute(
     navigateToDetail: (Int) -> Unit,
-    viewModel: FuelListStationViewModel = hiltViewModel(),
+    viewModel: FavoriteListStationViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    FuelStationListScreen(
+    FavoriteListStationScreen(
         uiState = state,
         navigateToDetail = navigateToDetail,
         checkLocationEnabled = viewModel::checkLocationEnabled,
@@ -61,8 +61,8 @@ fun FuelStationListScreenRoute(
 }
 
 @Composable
-internal fun FuelStationListScreen(
-    uiState: FuelStationListUiState,
+internal fun FavoriteListStationScreen(
+    uiState: FavoriteStationListUiState,
     navigateToDetail: (Int) -> Unit,
     checkLocationEnabled: () -> Unit,
 ) {
@@ -75,8 +75,8 @@ internal fun FuelStationListScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         when (uiState) {
-            FuelStationListUiState.Error -> Unit
-            FuelStationListUiState.Loading -> {
+            FavoriteStationListUiState.Error -> Unit
+            FavoriteStationListUiState.Loading -> {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -88,13 +88,13 @@ internal fun FuelStationListScreen(
                 }
             }
 
-            is FuelStationListUiState.Favorites -> ListFuelStations(
+            is FavoriteStationListUiState.Favorites -> ListFuelStations(
                 stations = uiState.favoriteStations,
                 selectedFuel = uiState.userSelectedFuelType,
                 navigateToDetail = navigateToDetail
             )
 
-            FuelStationListUiState.DisableLocation -> AlertTemplate(
+            FavoriteStationListUiState.DisableLocation -> AlertTemplate(
                 model = AlertTemplateModel(
                     animation = com.albrivas.fuelpump.core.ui.R.raw.enable_location,
                     description = stringResource(id = R.string.location_disable_description),
@@ -103,7 +103,7 @@ internal fun FuelStationListScreen(
                 )
             )
 
-            is FuelStationListUiState.EmptyFavorites -> {
+            is FavoriteStationListUiState.EmptyFavorites -> {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -176,8 +176,8 @@ fun ListFuelStations(
 @Preview
 @Composable
 fun EmptyFavoritesPreview() {
-    FuelStationListScreen(
-        uiState = FuelStationListUiState.EmptyFavorites,
+    FavoriteListStationScreen(
+        uiState = FavoriteStationListUiState.EmptyFavorites,
         navigateToDetail = {},
         checkLocationEnabled = {},
     )

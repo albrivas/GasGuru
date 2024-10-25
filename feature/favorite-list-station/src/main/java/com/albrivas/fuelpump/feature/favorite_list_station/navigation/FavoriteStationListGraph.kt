@@ -10,6 +10,6 @@ fun NavGraphBuilder.stationListGraph(
     navigation<StationListGraph.StationListGraphRoute>(
         startDestination = StationListGraph.StationListRoute,
     ) {
-        fuelStationListScreen(navigateToDetail = navigateToDetail)
+        favoriteListStationScreen(navigateToDetail = navigateToDetail)
     }
 }

@@ -16,14 +16,14 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class FuelListStationViewModel @Inject constructor(
+class FavoriteListStationViewModel @Inject constructor(
     private val userLocation: LocationTracker,
     private val getUserDataUseCase: GetUserDataUseCase,
     private val getFavoriteStationsUseCase: GetFavoriteStationsUseCase,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow<FuelStationListUiState>(FuelStationListUiState.Loading)
-    val state: StateFlow<FuelStationListUiState> = _state
+    private val _state = MutableStateFlow<FavoriteStationListUiState>(FavoriteStationListUiState.Loading)
+    val state: StateFlow<FavoriteStationListUiState> = _state
 
     init {
         checkLocationEnabled()
@@ -33,7 +33,7 @@ class FuelListStationViewModel @Inject constructor(
         viewModelScope.launch {
             val isLocationEnabled = userLocation.isLocationEnabled()
             if (!isLocationEnabled) {
-                _state.update { FuelStationListUiState.DisableLocation }
+                _state.update { FavoriteStationListUiState.DisableLocation }
             } else {
                 getFavoriteStations()
             }
@@ -48,14 +48,14 @@ class FuelListStationViewModel @Inject constructor(
                     getUserDataUseCase()
                 ) { stations, userData ->
                     Pair(stations, userData)
-                }.onStart { _state.update { FuelStationListUiState.Loading } }
-                    .catch { _state.update { FuelStationListUiState.Error } }
+                }.onStart { _state.update { FavoriteStationListUiState.Loading } }
+                    .catch { _state.update { FavoriteStationListUiState.Error } }
                     .collect { (stations, userData) ->
                         _state.update {
                             if (stations.favoriteStations.isEmpty()) {
-                                FuelStationListUiState.EmptyFavorites
+                                FavoriteStationListUiState.EmptyFavorites
                             } else {
-                                FuelStationListUiState.Favorites(
+                                FavoriteStationListUiState.Favorites(
                                     favoriteStations = stations.favoriteStations,
                                     userSelectedFuelType = userData.fuelSelection
                                 )
