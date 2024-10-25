@@ -1,5 +1,6 @@
 package com.albrivas.fuelpump.core.uikit.components.information_card
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -7,9 +8,20 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -23,28 +35,41 @@ import com.albrivas.fuelpump.core.uikit.R
 import com.albrivas.fuelpump.core.uikit.theme.FuelPumpTheme
 import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
 import com.albrivas.fuelpump.core.uikit.theme.Neutral300
+import com.albrivas.fuelpump.core.uikit.theme.Neutral500
+import com.albrivas.fuelpump.core.uikit.theme.Primary500
 import com.albrivas.fuelpump.core.uikit.theme.TextMain
 import com.albrivas.fuelpump.core.uikit.theme.TextSubtle
 
 @Composable
 fun InformationCard(model: InformationCardModel) = with(model) {
+    var open by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .clip(RoundedCornerShape(8.dp))
             .background(color = Color.White)
             .border(1.dp, Neutral300, RoundedCornerShape(8.dp))
-            .clickable { onClick() }
-            .padding(12.dp)
+            .clickable {
+                if (type == InformationCardModel.InformationCardType.EXPANDABLE) {
+                    open = !open
+                } else {
+                    onClick()
+                }
+            }
+            .padding(12.dp),
     ) {
-        ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
+        ConstraintLayout(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+        ) {
             val (textGroup, image) = createRefs()
 
             Column(
                 modifier = Modifier.constrainAs(textGroup) {
-                    top.linkTo(image.top)
+                    top.linkTo(parent.top)
                     start.linkTo(parent.start)
                     end.linkTo(image.start)
-                    bottom.linkTo(image.bottom)
                     width = Dimension.fillToConstraints
                 }
             ) {
@@ -53,42 +78,94 @@ fun InformationCard(model: InformationCardModel) = with(model) {
                     style = FuelPumpTheme.typography.smallRegular,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
-                    modifier = Modifier,
                     color = TextSubtle
                 )
+                Text(
+                    text = subtitle,
+                    style = FuelPumpTheme.typography.smallRegular,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    color = if (type == InformationCardModel.InformationCardType.EXPANDABLE) Primary500 else TextMain
+                )
+            }
+
+            when (type) {
+                InformationCardModel.InformationCardType.NONE -> {
+                    icon?.let {
+                        Image(
+                            modifier = Modifier
+                                .constrainAs(image) {
+                                    top.linkTo(parent.top)
+                                    end.linkTo(parent.end)
+                                    bottom.linkTo(parent.bottom)
+                                }
+                                .clip(CircleShape)
+                                .clickable { onClick() },
+                            painter = painterResource(id = icon),
+                            contentDescription = "Icon direction"
+                        )
+                    }
+                }
+
+                InformationCardModel.InformationCardType.EXPANDABLE -> {
+                    Icon(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clip(CircleShape)
+                            .clickable { open = !open }
+                            .constrainAs(image) {
+                                top.linkTo(parent.top)
+                                end.linkTo(parent.end)
+                                bottom.linkTo(textGroup.bottom)
+                            },
+                        imageVector = if (open) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+                        contentDescription = null,
+                        tint = Neutral500
+                    )
+                }
+            }
+        }
+
+        description?.let {
+            AnimatedVisibility(visible = open) {
                 Text(
                     text = description,
                     style = FuelPumpTheme.typography.smallRegular,
                     overflow = TextOverflow.Ellipsis,
-                    maxLines = 1,
-                    modifier = Modifier,
+                    modifier = Modifier.padding(top = 4.dp),
                     color = TextMain
                 )
             }
-
-            Image(
-                modifier = Modifier.constrainAs(image) {
-                    top.linkTo(parent.top)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(parent.bottom)
-                }.clickable { onClick() },
-                painter = painterResource(id = icon),
-                contentDescription = "Icon direction"
-            )
         }
     }
 }
 
 @Preview
 @Composable
-private fun InformationCardPreview() {
+private fun InformationCardDefaultPreview() {
     MyApplicationTheme {
         InformationCard(
             model = InformationCardModel(
                 title = "Direccion",
-                description = "Avenida de la constitucion 1, 10D",
+                subtitle = "Avenida de la constitucion 1, 10D",
                 icon = R.drawable.ic_direction,
-                onClick = {}
+                onClick = {},
+                type = InformationCardModel.InformationCardType.NONE
+            )
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun InformationCardExpandablePreview() {
+    MyApplicationTheme {
+        InformationCard(
+            model = InformationCardModel(
+                title = "Opening hours",
+                subtitle = "open 24 hours",
+                description = "L-D 24 hours",
+                type = InformationCardModel.InformationCardType.EXPANDABLE
             )
         )
     }
