@@ -4,15 +4,26 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,24 +36,34 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.albrivas.fuelpump.core.model.data.FuelType
 import com.albrivas.fuelpump.core.model.data.UserData
+import com.albrivas.fuelpump.core.ui.getIcon
+import com.albrivas.fuelpump.core.ui.toFuelType
 import com.albrivas.fuelpump.core.ui.translation
 import com.albrivas.fuelpump.core.uikit.components.settings.SettingItem
 import com.albrivas.fuelpump.core.uikit.components.settings.SettingItemModel
+import com.albrivas.fuelpump.core.uikit.fuel_list.FuelListSelection
+import com.albrivas.fuelpump.core.uikit.fuel_list.FuelListSelectionModel
 import com.albrivas.fuelpump.core.uikit.theme.FuelPumpTheme
 import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
 import com.albrivas.fuelpump.core.uikit.theme.Neutral100
+import com.albrivas.fuelpump.core.uikit.theme.TextMain
 import com.albrivas.fuelpump.feature.profile.R
+import kotlinx.coroutines.launch
+import com.albrivas.fuelpump.core.ui.R as RUi
 
 @Composable
 internal fun ProfileScreenRoute(viewModel: ProfileViewModel = hiltViewModel()) {
     val state by viewModel.userData.collectAsStateWithLifecycle()
-    return ProfileScreen(uiState = state, saveFuelType = viewModel::saveSelectionFuel)
+    return ProfileScreen(uiState = state, event = viewModel::handleEvents)
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun ProfileScreen(uiState: ProfileUiState, saveFuelType: (FuelType) -> Unit = {}) {
-    var showDialog by remember { mutableStateOf(false) }
-    var fuelSelected by remember { mutableStateOf(FuelType.GASOLINE_95) }
+internal fun ProfileScreen(uiState: ProfileUiState, event: (ProfileEvents) -> Unit) {
+    var showSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
+    var selectedFuel by remember { mutableStateOf<Int?>(null) }
 
     when (uiState) {
         is ProfileUiState.Loading -> {
@@ -59,35 +80,101 @@ internal fun ProfileScreen(uiState: ProfileUiState, saveFuelType: (FuelType) -> 
         }
 
         is ProfileUiState.Success -> {
-            Column(
-                modifier = Modifier
-                    .background(color = Neutral100)
-                    .fillMaxSize()
-                    .statusBarsPadding()
-                    .padding(start = 16.dp, end = 16.dp, top = 32.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                fuelSelected = uiState.userData.fuelSelection
-                Text(
-                    modifier = Modifier,
-                    text = stringResource(id = R.string.profile),
-                    style = FuelPumpTheme.typography.h5
-                )
-                SettingItem(
-                    model = SettingItemModel(
-                        title = stringResource(id = R.string.fuel_selection),
-                        selection = stringResource(id = uiState.userData.fuelSelection.translation()),
-                        icon = R.drawable.ic_fuel_station,
-                        onClick = { showDialog = true },
-                    ),
-                    modifier = Modifier.testTag("fuel_setting_item")
-                )
-            }
+            selectedFuel = uiState.userData.fuelSelection.translation()
+            SuccessContent(
+                userData = uiState.userData,
+                showSheet = {
+                    showSheet = true
+                }
+            )
         }
 
         is ProfileUiState.LoadFailed -> {
             // Error state
         }
+    }
+
+    if (showSheet) {
+        ModalBottomSheet(
+            modifier = Modifier.navigationBarsPadding(),
+            onDismissRequest = {
+                showSheet = false
+            },
+            dragHandle = {
+                Surface(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    color = Color.LightGray,
+                    shape = MaterialTheme.shapes.extraLarge
+                ) {
+                    Box(
+                        modifier = Modifier.size(
+                            width = 32.dp,
+                            height = 4.0.dp
+                        )
+                    )
+                }
+            },
+            sheetState = sheetState,
+            containerColor = Neutral100,
+            contentColor = Neutral100,
+            windowInsets = WindowInsets.navigationBars
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Text(
+                    text = stringResource(id = RUi.string.select_fuel_preference),
+                    style = FuelPumpTheme.typography.baseBold,
+                    color = TextMain
+                )
+                val list = FuelType.entries.map { Pair(it.getIcon(), it.translation()) }
+                FuelListSelection(
+                    model = FuelListSelectionModel(
+                        list = list,
+                        selected = selectedFuel,
+                        onItemSelected = { fuel ->
+                            selectedFuel = fuel
+                            event(ProfileEvents.Fuel(fuel.toFuelType()))
+                            scope.launch { sheetState.hide() }.invokeOnCompletion {
+                                if (!sheetState.isVisible) {
+                                    showSheet = false
+                                }
+                            }
+                        }
+                    )
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun SuccessContent(userData: UserData, showSheet: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .background(color = Neutral100)
+            .fillMaxSize()
+            .statusBarsPadding()
+            .padding(start = 16.dp, end = 16.dp, top = 32.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Text(
+            modifier = Modifier,
+            text = stringResource(id = R.string.profile),
+            style = FuelPumpTheme.typography.h5
+        )
+        SettingItem(
+            model = SettingItemModel(
+                title = stringResource(id = R.string.fuel_selection),
+                selection = stringResource(id = userData.fuelSelection.translation()),
+                icon = R.drawable.ic_fuel_station,
+                onClick = { showSheet() },
+            ),
+            modifier = Modifier.testTag("fuel_setting_item")
+        )
     }
 }
 
@@ -95,7 +182,14 @@ internal fun ProfileScreen(uiState: ProfileUiState, saveFuelType: (FuelType) -> 
 @Composable
 private fun ProfileScreenPreview() {
     MyApplicationTheme {
-        ProfileScreen(uiState = ProfileUiState.Success(userData = UserData(fuelSelection = FuelType.GASOLINE_95)))
+        ProfileScreen(
+            uiState = ProfileUiState.Success(
+                userData = UserData(
+                    fuelSelection = FuelType.GASOLINE_95
+                )
+            ),
+            event = { }
+        )
     }
 }
 
@@ -103,6 +197,6 @@ private fun ProfileScreenPreview() {
 @Composable
 private fun ProfileScreenLoadingPreview() {
     MyApplicationTheme {
-        ProfileScreen(uiState = ProfileUiState.Loading)
+        ProfileScreen(uiState = ProfileUiState.Loading, event = {})
     }
 }

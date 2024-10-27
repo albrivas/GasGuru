@@ -28,7 +28,13 @@ class ProfileViewModel @Inject constructor(
         initialValue = ProfileUiState.Loading
     )
 
-    fun saveSelectionFuel(fuelType: FuelType) = viewModelScope.launch {
+    fun handleEvents(event: ProfileEvents) {
+        when (event) {
+            is ProfileEvents.Fuel -> saveSelectionFuel(event.fuel)
+        }
+    }
+
+    private fun saveSelectionFuel(fuelType: FuelType) = viewModelScope.launch {
         saveUserDataUseCase(UserData(fuelSelection = fuelType))
     }
 }
