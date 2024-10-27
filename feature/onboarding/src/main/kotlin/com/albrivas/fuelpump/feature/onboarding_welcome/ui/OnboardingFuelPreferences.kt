@@ -1,14 +1,11 @@
 package com.albrivas.fuelpump.feature.onboarding_welcome.ui
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,15 +19,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.albrivas.fuelpump.core.model.data.FuelType
 import com.albrivas.fuelpump.core.ui.getIcon
 import com.albrivas.fuelpump.core.ui.toFuelType
 import com.albrivas.fuelpump.core.ui.translation
 import com.albrivas.fuelpump.core.uikit.components.FuelPumpButton
-import com.albrivas.fuelpump.core.uikit.components.selectedItem.BasicSelectedItem
-import com.albrivas.fuelpump.core.uikit.components.selectedItem.BasicSelectedItemModel
+import com.albrivas.fuelpump.core.uikit.fuel_list.FuelListSelection
+import com.albrivas.fuelpump.core.uikit.fuel_list.FuelListSelectionModel
 import com.albrivas.fuelpump.core.uikit.theme.FuelPumpTheme
 import com.albrivas.fuelpump.core.uikit.theme.MyApplicationTheme
 import com.albrivas.fuelpump.feature.onboarding.R
@@ -57,58 +53,51 @@ internal fun OnboardingFuelPreferences(
 ) {
     var selectedFuel by remember { mutableStateOf<Int?>(null) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(start = 16.dp, top = 24.dp, end = 16.dp, bottom = 24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(
-            text = stringResource(id = R.string.welcome_title_fuel_preferences),
-            style = FuelPumpTheme.typography.h2,
-            lineHeight = 1.3.em,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(0.dp, 30.dp, 0.dp, 0.dp)
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        LazyColumn(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            when (uiState) {
-                is OnboardingUiState.ListFuelPreferences -> {
-                    itemsIndexed(uiState.list.sorted()) { index, fuel ->
-                        val titleTranslation = fuel.translation()
-                        BasicSelectedItem(
-                            modifier = Modifier.testTag("list_item_$index"),
-                            model = BasicSelectedItemModel(
-                                title = titleTranslation,
-                                isSelected = titleTranslation == selectedFuel,
-                                image = fuel.getIcon(),
-                                onItemSelected = { selectedFuel = titleTranslation }
-                            ),
-                        )
-                    }
-                }
+    when (uiState) {
+        is OnboardingUiState.ListFuelPreferences -> {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = 16.dp, top = 24.dp, end = 16.dp, bottom = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(
+                    text = stringResource(id = R.string.welcome_title_fuel_preferences),
+                    style = FuelPumpTheme.typography.h2,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(0.dp, 30.dp, 0.dp, 0.dp)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                val list = uiState.list.map { Pair(it.getIcon(), it.translation()) }
+                FuelListSelection(
+                    modifier = Modifier.weight(1f),
+                    model = FuelListSelectionModel(
+                        list = list,
+                        selected = null,
+                        onItemSelected = { fuel ->
+                            selectedFuel = fuel
+                        }
+                    )
+                )
+                FuelPumpButton(
+                    onClick = {
+                        selectedFuel?.let { saveSelection(it.toFuelType()) }
+                        navigateToHome()
+                    },
+                    enabled = selectedFuel != null,
+                    text = stringResource(id = R.string.welcome_button),
+                    modifier = Modifier
+                        .padding(bottom = 17.dp, top = 36.dp)
+                        .systemBarsPadding()
+                        .testTag("button_next_onboarding")
+                )
             }
         }
-        FuelPumpButton(
-            onClick = {
-                selectedFuel?.let { saveSelection(it.toFuelType()) }
-                navigateToHome()
-            },
-            enabled = selectedFuel != null,
-            text = stringResource(id = R.string.welcome_button),
-            modifier = Modifier
-                .padding(bottom = 17.dp, top = 36.dp)
-                .systemBarsPadding()
-                .testTag("button_next_onboarding")
-        )
     }
 }
 
 @Composable
-@Preview(name = "Onboarding - Fuel preferences preview")
+@Preview(name = "Onboarding - Fuel preferences preview", showBackground = true)
 private fun PreviewOnboardingFuelPreferences() {
     MyApplicationTheme {
         OnboardingFuelPreferences(
