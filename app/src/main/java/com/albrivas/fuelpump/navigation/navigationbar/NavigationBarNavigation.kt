@@ -6,7 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.albrivas.fuelpump.navigation.navigationbar.route.NavigationBarRoute
-import com.albrivas.fuelpump.ui.NavigationBarHostRoute
+import com.albrivas.fuelpump.ui.NavigationBarScreenRoute
 
 fun NavController.navigateToNavigationBar(navOptions: NavOptions? = null) {
     navigate(NavigationBarRoute, navOptions)
@@ -17,6 +17,6 @@ internal fun NavGraphBuilder.navigationBarHost(
     navigateToDetail: (Int) -> Unit
 ) {
     composable<NavigationBarRoute> {
-        NavigationBarHostRoute(navController = navController, navigateToDetail = navigateToDetail)
+        NavigationBarScreenRoute(navController = navController, navigateToDetail = navigateToDetail)
     }
 }

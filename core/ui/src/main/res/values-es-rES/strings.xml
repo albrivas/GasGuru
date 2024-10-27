@@ -5,4 +5,5 @@
     <string name="diesel">Diesel</string>
     <string name="electric">Eléctrico</string>
     <string name="diesel_plus">Diesel +</string>
+    <string name="select_fuel_preference">Elige tu tipo de combustible</string>
 </resources>

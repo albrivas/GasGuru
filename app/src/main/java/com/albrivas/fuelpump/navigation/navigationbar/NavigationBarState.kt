@@ -8,7 +8,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.albrivas.fuelpump.feature.favorite_list_station.navigation.route.StationListGraph
-import com.albrivas.fuelpump.feature.profile.ProfileRoute
+import com.albrivas.fuelpump.feature.profile.navigation.ProfileRoute
 import com.albrivas.fuelpump.feature.station_map.navigation.route.StationMapGraph
 import com.albrivas.fuelpump.navigation.navigationbar.route.TopLevelRoutes
 
