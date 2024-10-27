@@ -36,6 +36,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SheetValue
@@ -395,90 +396,92 @@ fun SearchPlaces(
         label = ""
     )
 
-    SearchBar(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                top = statusBarPaddingAnimation,
-                start = paddingAnimation,
-                end = paddingAnimation
-            ),
-        query = searchQuery,
-        onQueryChange = { event(StationMapEvent.UpdateSearchQuery(it)) },
-        onSearch = {},
-        placeholder = {
-            Text(
-                text = stringResource(id = R.string.hint_search_bar),
-                style = FuelPumpTheme.typography.baseRegular,
-                color = TextSubtle
-            )
-        },
-        leadingIcon = {
-            if (active) {
-                IconButton(onClick = { active = false }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        tint = MaterialTheme.colorScheme.onSurface,
-                        contentDescription = "Icon back to map"
-                    )
-                }
-            } else {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    contentDescription = "Icon search"
+    ProvideTextStyle(value = FuelPumpTheme.typography.baseRegular) {
+        SearchBar(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    top = statusBarPaddingAnimation,
+                    start = paddingAnimation,
+                    end = paddingAnimation
+                ),
+            query = searchQuery,
+            onQueryChange = { event(StationMapEvent.UpdateSearchQuery(it)) },
+            onSearch = {},
+            placeholder = {
+                Text(
+                    text = stringResource(id = R.string.hint_search_bar),
+                    style = FuelPumpTheme.typography.baseRegular,
+                    color = TextSubtle
                 )
-            }
-        },
-        trailingIcon = {
-            if (searchQuery.isNotEmpty()) {
-                IconButton(onClick = { event(StationMapEvent.UpdateSearchQuery("")) }) {
+            },
+            leadingIcon = {
+                if (active) {
+                    IconButton(onClick = { active = false }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            contentDescription = "Icon back to map"
+                        )
+                    }
+                } else {
                     Icon(
-                        imageVector = Icons.Default.Close,
+                        imageVector = Icons.Default.Search,
                         tint = MaterialTheme.colorScheme.onSurface,
-                        contentDescription = "Icon search",
+                        contentDescription = "Icon search"
                     )
                 }
-            }
-        },
-        active = active,
-        onActiveChange = { active = it },
-        shadowElevation = 8.dp,
-        colors = SearchBarDefaults.colors(containerColor = Color.White)
-    ) {
-        when (searchResultUiState) {
-            SearchResultUiState.Loading,
-            SearchResultUiState.LoadFailed,
-            -> Unit
-
-            SearchResultUiState.EmptyQuery -> {
-                if (recentSearchQueries is RecentSearchQueriesUiState.Success) {
-                    if (recentSearchQueries.recentQueries.isEmpty()) {
-                        EmptyRecentSearchesBody()
-                    } else {
-                        RecentSearchQueriesBody(
-                            recentSearchQueries = recentSearchQueries.recentQueries,
-                            onRecentSearchClicked = {
-                                event(StationMapEvent.UpdateSearchQuery(it.name))
-                                event(StationMapEvent.GetStationByPlace(it.id))
-                                active = false
-                            },
-                            event = event,
+            },
+            trailingIcon = {
+                if (searchQuery.isNotEmpty()) {
+                    IconButton(onClick = { event(StationMapEvent.UpdateSearchQuery("")) }) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            contentDescription = "Icon search",
                         )
                     }
                 }
-            }
+            },
+            active = active,
+            onActiveChange = { active = it },
+            shadowElevation = 8.dp,
+            colors = SearchBarDefaults.colors(containerColor = Color.White)
+        ) {
+            when (searchResultUiState) {
+                SearchResultUiState.Loading,
+                SearchResultUiState.LoadFailed,
+                -> Unit
 
-            SearchResultUiState.EmptySearchResult -> {
-                EmptyResultBody()
-            }
+                SearchResultUiState.EmptyQuery -> {
+                    if (recentSearchQueries is RecentSearchQueriesUiState.Success) {
+                        if (recentSearchQueries.recentQueries.isEmpty()) {
+                            EmptyRecentSearchesBody()
+                        } else {
+                            RecentSearchQueriesBody(
+                                recentSearchQueries = recentSearchQueries.recentQueries,
+                                onRecentSearchClicked = {
+                                    event(StationMapEvent.UpdateSearchQuery(it.name))
+                                    event(StationMapEvent.GetStationByPlace(it.id))
+                                    active = false
+                                },
+                                event = event,
+                            )
+                        }
+                    }
+                }
 
-            is SearchResultUiState.Success -> {
-                SearchResultBody(
-                    places = searchResultUiState.places,
-                    onActiveChange = { active = it },
-                    event = event,
-                )
+                SearchResultUiState.EmptySearchResult -> {
+                    EmptyResultBody()
+                }
+
+                is SearchResultUiState.Success -> {
+                    SearchResultBody(
+                        places = searchResultUiState.places,
+                        onActiveChange = { active = it },
+                        event = event,
+                    )
+                }
             }
         }
     }
@@ -499,7 +502,7 @@ fun SearchResultBody(
             text = stringResource(id = R.string.label_suggestion),
             modifier = Modifier
                 .align(Alignment.Start),
-            style = MaterialTheme.typography.titleMedium
+            style = FuelPumpTheme.typography.baseBold
         )
         LazyColumn(
             modifier = Modifier
@@ -531,7 +534,7 @@ fun SearchResultBody(
                         Text(
                             modifier = Modifier,
                             text = place.name,
-                            style = MaterialTheme.typography.displayMedium
+                            style = FuelPumpTheme.typography.baseRegular
                         )
                     }
                 }
@@ -557,12 +560,12 @@ fun EmptyResultBody() {
             modifier = Modifier
                 .align(Alignment.Start)
                 .padding(bottom = 8.dp),
-            style = MaterialTheme.typography.titleMedium
+            style = FuelPumpTheme.typography.h6
         )
         Text(
             text = stringResource(id = R.string.label_empty_suggestions),
             modifier = Modifier.align(Alignment.Start),
-            style = MaterialTheme.typography.displayMedium
+            style = FuelPumpTheme.typography.baseRegular
         )
     }
 }
@@ -579,12 +582,12 @@ fun EmptyRecentSearchesBody() {
             modifier = Modifier
                 .align(Alignment.Start)
                 .padding(bottom = 8.dp),
-            style = MaterialTheme.typography.titleMedium
+            style = FuelPumpTheme.typography.h6
         )
         Text(
             text = stringResource(id = R.string.label_empty_recents),
             modifier = Modifier.align(Alignment.Start),
-            style = MaterialTheme.typography.displayMedium
+            style = FuelPumpTheme.typography.baseRegular
         )
     }
 }
@@ -609,7 +612,7 @@ fun RecentSearchQueriesBody(
         ) {
             Text(
                 text = stringResource(id = R.string.label_recent),
-                style = MaterialTheme.typography.titleMedium
+                style = FuelPumpTheme.typography.h6
             )
             if (recentSearchQueries.isNotEmpty()) {
                 Icon(
@@ -630,7 +633,7 @@ fun RecentSearchQueriesBody(
             items(recentSearchQueries) { recentSearchQuery ->
                 Text(
                     text = recentSearchQuery.name,
-                    style = MaterialTheme.typography.displayMedium,
+                    style = FuelPumpTheme.typography.baseRegular,
                     modifier = Modifier
                         .clickable { onRecentSearchClicked(recentSearchQuery) }
                         .fillMaxWidth(),

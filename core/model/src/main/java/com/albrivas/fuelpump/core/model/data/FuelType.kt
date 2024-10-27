@@ -5,5 +5,4 @@ enum class FuelType {
     GASOLINE_98,
     DIESEL,
     DIESEL_PLUS,
-    ELECTRIC,
 }

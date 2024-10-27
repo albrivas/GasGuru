@@ -214,7 +214,6 @@ fun DetailStationContent(station: FuelStation) {
                 Image(
                     painter = painterResource(id = station.brandStationBrandsType.toBrandStationIcon()),
                     contentDescription = "Fuel station brand",
-                    contentScale = ContentScale.Inside,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(4.dp)

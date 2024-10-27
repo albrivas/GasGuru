@@ -100,7 +100,8 @@ fun InformationCard(model: InformationCardModel) = with(model) {
                                     bottom.linkTo(parent.bottom)
                                 }
                                 .clip(CircleShape)
-                                .clickable { onClick() },
+                                .clickable { onClick() }
+                                .padding(start = 12.dp),
                             painter = painterResource(id = icon),
                             contentDescription = "Icon direction"
                         )

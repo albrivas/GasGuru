@@ -30,7 +30,7 @@ class DetailStationViewModel @Inject constructor(
     private val id: Int = checkNotNull(savedStateHandle["idServiceStation"])
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val fuelStation: StateFlow<DetailStationUiState> = userLocation.getCurrentLocationFlow
+    val fuelStation: StateFlow<DetailStationUiState> = userLocation.getLastKnownLocation
         .flatMapLatest { location ->
             location?.let {
                 getFuelStationByIdUseCase(id = id, userLocation = location).map { station ->

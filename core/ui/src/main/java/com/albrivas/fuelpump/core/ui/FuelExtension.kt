@@ -24,7 +24,6 @@ fun FuelType.translation() = when (this) {
     FuelType.GASOLINE_98 -> R.string.gasoline_98
     FuelType.DIESEL -> R.string.diesel
     FuelType.DIESEL_PLUS -> R.string.diesel_plus
-    FuelType.ELECTRIC -> R.string.electric
 }
 
 fun Int.toFuelType() = when (this) {
@@ -32,7 +31,6 @@ fun Int.toFuelType() = when (this) {
     R.string.gasoline_98 -> FuelType.GASOLINE_98
     R.string.diesel -> FuelType.DIESEL
     R.string.diesel_plus -> FuelType.DIESEL_PLUS
-    R.string.electric -> FuelType.ELECTRIC
     else -> FuelType.GASOLINE_95
 }
 
@@ -78,7 +76,6 @@ fun FuelType?.getPrice(fuelStation: FuelStation) = when (this) {
     FuelType.GASOLINE_98 -> "${fuelStation.priceGasoline98E5}"
     FuelType.DIESEL -> "${fuelStation.priceGasoilA}"
     FuelType.DIESEL_PLUS -> "${fuelStation.priceGasoilPremium}"
-    FuelType.ELECTRIC -> "0.0"
     null -> "0.0"
 }
 
@@ -87,7 +84,6 @@ fun FuelType.getIcon() = when (this) {
     FuelType.GASOLINE_98 -> RUikit.drawable.ic_gasoline_98
     FuelType.DIESEL -> RUikit.drawable.ic_diesel
     FuelType.DIESEL_PLUS -> RUikit.drawable.ic_diesel_plus
-    FuelType.ELECTRIC -> RUikit.drawable.ic_gasoline_95
 }
 
 @Composable
