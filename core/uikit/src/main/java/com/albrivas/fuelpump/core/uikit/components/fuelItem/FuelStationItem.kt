@@ -56,6 +56,7 @@ fun FuelStationItem(
             .background(color = Color.White)
             .clickable { onItemClick(idServiceStation) }
             .semantics { this.contentDescription = contentDescription }
+            .padding(horizontal = 12.dp)
             .drawBehind {
                 val lineY = size.height - 1.dp.toPx()
                 drawLine(
@@ -64,7 +65,7 @@ fun FuelStationItem(
                     end = Offset(size.width, lineY),
                     strokeWidth = 1.dp.toPx()
                 )
-            }.padding(start = 12.dp, end = 12.dp),
+            },
     ) {
         Column(
             modifier = Modifier
@@ -145,7 +146,7 @@ fun FuelStationItem(
 }
 
 @Composable
-@Preview(showBackground = true, backgroundColor = 0xFFFFFF)
+@Preview(showBackground = true)
 fun PreviewFuelItem() {
     MyApplicationTheme {
         FuelStationItem(

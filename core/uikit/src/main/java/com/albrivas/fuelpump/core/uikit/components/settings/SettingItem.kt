@@ -36,10 +36,10 @@ fun SettingItem(model: SettingItemModel, modifier: Modifier = Modifier) = with(m
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
+            .background(color = Color.White)
             .clickable { onClick() }
             .border(1.dp, Neutral300, RoundedCornerShape(8.dp))
-            .padding(12.dp)
-            .background(color = Color.White),
+            .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
