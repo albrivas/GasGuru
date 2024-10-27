@@ -69,4 +69,3 @@ class FavoriteListStationViewModel @Inject constructor(
         }
     }
 }
-
