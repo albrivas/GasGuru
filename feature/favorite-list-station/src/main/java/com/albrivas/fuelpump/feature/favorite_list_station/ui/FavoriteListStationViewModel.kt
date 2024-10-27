@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -22,7 +23,8 @@ class FavoriteListStationViewModel @Inject constructor(
     private val getFavoriteStationsUseCase: GetFavoriteStationsUseCase,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow<FavoriteStationListUiState>(FavoriteStationListUiState.Loading)
+    private val _state =
+        MutableStateFlow<FavoriteStationListUiState>(FavoriteStationListUiState.Loading)
     val state: StateFlow<FavoriteStationListUiState> = _state
 
     init {
@@ -42,9 +44,10 @@ class FavoriteListStationViewModel @Inject constructor(
 
     private fun getFavoriteStations() {
         viewModelScope.launch {
-            userLocation.getCurrentLocation()?.let { location ->
+            val lastLocation = userLocation.getLastKnownLocation.firstOrNull()
+            lastLocation?.let {
                 combine(
-                    getFavoriteStationsUseCase(userLocation = location),
+                    getFavoriteStationsUseCase(userLocation = lastLocation),
                     getUserDataUseCase()
                 ) { stations, userData ->
                     Pair(stations, userData)
@@ -66,3 +69,4 @@ class FavoriteListStationViewModel @Inject constructor(
         }
     }
 }
+
