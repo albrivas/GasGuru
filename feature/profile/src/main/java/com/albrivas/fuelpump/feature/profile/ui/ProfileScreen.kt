@@ -96,7 +96,7 @@ internal fun ProfileScreen(uiState: ProfileUiState, event: (ProfileEvents) -> Un
 
     if (showSheet) {
         ModalBottomSheet(
-            modifier = Modifier.navigationBarsPadding(),
+            modifier = Modifier.navigationBarsPadding().testTag("bottom_sheet_fuel"),
             onDismissRequest = {
                 showSheet = false
             },
