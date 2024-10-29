@@ -28,5 +28,5 @@ object FuelStationIcons {
     val AzulOil = R.drawable.ic_logo_azul_oil
     val Farruco = R.drawable.ic_logo_farruco
     val Repostar = R.drawable.ic_logo_repostar
-    val Uknown = R.drawable.ic_fuel_pump
+    val Uknown = R.drawable.ic_logo_green
 }

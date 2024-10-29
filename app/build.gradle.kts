@@ -60,7 +60,7 @@ android {
             isMinifyEnabled = false
             isDebuggable = true
             applicationIdSuffix = ".debug"
-            resValue("string", "app_name", "FuelPump Debug")
+            resValue("string", "app_name", "GasGuru Debug")
             manifestPlaceholders["crashlyticsEnabled"] = false
         }
     }
