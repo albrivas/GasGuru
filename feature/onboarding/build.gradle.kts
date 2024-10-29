@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "com.albrivas.fuelpump.feature.onboarding"
+    namespace = "com.gasguru.feature.onboarding"
     compileSdk = 34
 
     defaultConfig {
