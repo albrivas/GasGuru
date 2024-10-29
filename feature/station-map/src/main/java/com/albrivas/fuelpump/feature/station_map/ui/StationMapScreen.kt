@@ -63,6 +63,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -192,7 +193,7 @@ internal fun StationMapScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 17.dp)
-                        .offset(y = offset.value, x = 0.dp),
+                        .offset { IntOffset(x = 0, y = offset.value.roundToPx()) },
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -243,7 +244,6 @@ internal fun StationMapScreen(
                     cameraState = cameraState,
                     userSelectedFuelType = userSelectedFuelType,
                     navigateToDetail = navigateToDetail,
-                    event = event
                 )
                 FABLocation(
                     modifier = Modifier.align(Alignment.BottomEnd),
@@ -290,7 +290,6 @@ fun MapView(
     stations: List<FuelStation>,
     cameraState: CameraPositionState,
     userSelectedFuelType: FuelType?,
-    event: (StationMapEvent) -> Unit = {},
     navigateToDetail: (Int) -> Unit = {},
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -327,9 +326,7 @@ fun MapView(
                     keys = arrayOf(station.idServiceStation),
                     state = state,
                     onClick = {
-                        state.showInfoWindow()
                         selectedLocation = station.idServiceStation
-                        event(StationMapEvent.CenterMapStation(station.location.toLatLng()))
                         navigateToDetail(station.idServiceStation)
                         false
                     },
@@ -451,7 +448,7 @@ fun SearchPlaces(
             when (searchResultUiState) {
                 SearchResultUiState.Loading,
                 SearchResultUiState.LoadFailed,
-                -> Unit
+                    -> Unit
 
                 SearchResultUiState.EmptyQuery -> {
                     if (recentSearchQueries is RecentSearchQueriesUiState.Success) {

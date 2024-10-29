@@ -46,9 +46,9 @@ fun StationMarker(model: StationMarkerModel) {
 
         ) {
             Image(
-                modifier = Modifier.size(24.dp).padding(2.dp),
+                modifier = Modifier.size(24.dp).padding(3.dp),
                 painter = painterResource(id = model.icon),
-                contentScale = ContentScale.Inside,
+                contentScale = ContentScale.Fit,
                 contentDescription = "Station icon",
             )
         }
@@ -70,7 +70,7 @@ private fun StationMarkerPreview() {
     MyApplicationTheme {
         StationMarker(
             model = StationMarkerModel(
-                icon = R.drawable.ic_logo_cepsa,
+                icon = R.drawable.ic_logo_repsol,
                 price = "1.235",
                 color = Color.Red,
                 isSelected = false,
