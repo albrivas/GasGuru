@@ -19,7 +19,7 @@ val storepass: String = localProperties.getProperty("storePassword")
 val keypass: String = localProperties.getProperty("keyPassword")
 
 android {
-    namespace = "com.albrivas.fuelpump"
+    namespace = "com.gasguru"
     compileSdk = 34
 
     signingConfigs {
@@ -32,7 +32,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.albrivas.fuelpump"
+        applicationId = "com.gasguru"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
@@ -60,7 +60,7 @@ android {
             isMinifyEnabled = false
             isDebuggable = true
             applicationIdSuffix = ".debug"
-            resValue("string", "app_name", "FuelPump Debug")
+            resValue("string", "app_name", "GasGuru Debug")
             manifestPlaceholders["crashlyticsEnabled"] = false
         }
     }

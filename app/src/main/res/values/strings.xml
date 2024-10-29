@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">FuelPump</string>
     <string name="map_nav">Map</string>
     <string name="list_nav">Favorite</string>
     <string name="profile_nav">Profile</string>

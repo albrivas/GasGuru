@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "com.albrivas.fuelpump.feature.detail_station"
+    namespace = "com.gasguru.feature.detail_station"
     compileSdk = 34
 
     defaultConfig {

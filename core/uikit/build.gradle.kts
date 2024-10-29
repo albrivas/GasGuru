@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.albrivas.fuelpump.core.uikit"
+    namespace = "com.gasguru.core.uikit"
     compileSdk = 34
 
     defaultConfig {

@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.albrivas.fuelpump.core.testing"
+    namespace = "com.gasguru.core.testing"
     compileSdk = 34
 
     defaultConfig {

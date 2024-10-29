@@ -629,7 +629,7 @@ style:
       '**/jsTest/**',
       '**/iosTest/**',
       '**/*.kts',
-      '**/com/albrivas/fuelpump/core/uikit/theme/Color.kt'
+      '**/com/gasguru/core/uikit/theme/Color.kt'
     ]
     ignoreNumbers:
       - '-1'
