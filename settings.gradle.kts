@@ -15,7 +15,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "FuelPump"
+rootProject.name = "GasGuru"
 
 include(":app")
 

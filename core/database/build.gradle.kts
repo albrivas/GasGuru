@@ -6,13 +6,13 @@ plugins {
 }
 
 android {
-    namespace = "com.albrivas.fuelpump.core.database"
+    namespace = "com.gasguru.core.database"
     compileSdk = 34
 
     defaultConfig {
         minSdk = 26
 
-        testInstrumentationRunner = "com.albrivas.fuelpump.core.testing.HiltTestRunner"
+        testInstrumentationRunner = "com.gasguru.core.testing.HiltTestRunner"
         consumerProguardFiles("consumer-rules.pro")
 
         // The schemas directory contains a schema file for each version of the Room database.

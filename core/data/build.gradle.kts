@@ -6,13 +6,13 @@ plugins {
 }
 
 android {
-    namespace = "com.albrivas.fuelpump.core.data"
+    namespace = "com.gasguru.core.data"
     compileSdk = 34
 
     defaultConfig {
         minSdk = 26
 
-        testInstrumentationRunner = "com.albrivas.fuelpump.core.testing.HiltTestRunner"
+        testInstrumentationRunner = "com.gasguru.core.testing.HiltTestRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
 
