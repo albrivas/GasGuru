@@ -4,6 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -40,13 +42,14 @@ import com.gasguru.core.ui.getIcon
 import com.gasguru.core.ui.toFuelType
 import com.gasguru.core.ui.translation
 import com.gasguru.core.uikit.components.settings.SettingItem
-import com.gasguru.core.uikit.components.settings.SettingItemModel
 import com.gasguru.core.uikit.fuel_list.FuelListSelection
 import com.gasguru.core.uikit.fuel_list.FuelListSelectionModel
 import com.gasguru.core.uikit.theme.FuelPumpTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.Neutral100
 import com.gasguru.core.uikit.theme.TextMain
+import com.gasguru.core.uikit.theme.TextSubtle
+import com.gasguru.feature.profile.BuildConfig
 import com.gasguru.feature.profile.R
 import kotlinx.coroutines.launch
 import com.gasguru.core.ui.R as RUi
@@ -96,7 +99,9 @@ internal fun ProfileScreen(uiState: ProfileUiState, event: (ProfileEvents) -> Un
 
     if (showSheet) {
         ModalBottomSheet(
-            modifier = Modifier.navigationBarsPadding().testTag("bottom_sheet_fuel"),
+            modifier = Modifier
+                .navigationBarsPadding()
+                .testTag("bottom_sheet_fuel"),
             onDismissRequest = {
                 showSheet = false
             },
@@ -175,8 +180,29 @@ fun SuccessContent(userData: UserData, showSheet: () -> Unit) {
             ),
             modifier = Modifier.testTag("fuel_setting_item")
         )
+        Spacer(modifier = Modifier.weight(1f))
+        VersionAppInfo(modifier = Modifier.padding(bottom = 12.dp))
     }
 }
+
+@Composable
+fun VersionAppInfo(modifier: Modifier = Modifier) {
+    Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+        Text(
+            modifier = Modifier,
+            text = stringResource(id = R.string.version, getVersionInfo()),
+            style = FuelPumpTheme.typography.captionRegular,
+            color = TextSubtle
+        )
+    }
+}
+
+private fun getVersionInfo(): String {
+    val versionName =
+        "${BuildConfig.versionMajor}.${BuildConfig.versionMinor}.${BuildConfig.versionPatch}"
+    return "$versionName (${BuildConfig.versionCode})"
+}
+
 
 @Preview
 @Composable
