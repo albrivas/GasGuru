@@ -65,8 +65,8 @@ jobs:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_STORE }}
           packageName: com.gasguru
           releaseFiles: app/build/outputs/bundle/release/app-release.aab
-          track: draft
-          status: completed
+          track: internal
+          status: draft
           whatsNewDirectory: distribution/whatsnew
 
       - name: Create GitHub Release
