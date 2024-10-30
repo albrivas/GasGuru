@@ -66,5 +66,14 @@ jobs:
           packageName: com.gasguru
           releaseFiles: app/build/outputs/bundle/release/app-release.aab
           track: internal
-          status: completed
+          status: draft
           whatsNewDirectory: distribution/whatsnew
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ env.versionMajor }}.${{ env.versionMinor }}.${{ env.versionPatch }}
+          name: Release v${{ env.versionMajor }}.${{ env.versionMinor }}.${{ env.versionPatch }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
