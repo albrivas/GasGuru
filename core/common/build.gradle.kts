@@ -1,9 +1,17 @@
+import com.google.android.libraries.mapsplatform.secrets_gradle_plugin.loadPropertiesFile
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.detekt)
 }
+
+val versionProperties = loadPropertiesFile("../../versions.properties")
+val versionMajor: String = versionProperties.getProperty("versionMajor")
+val versionMinor: String = versionProperties.getProperty("versionMinor")
+val versionPatch: String = versionProperties.getProperty("versionPatch")
+val codeVersion: String = versionProperties.getProperty("versionCode")
 
 android {
     namespace = "com.gasguru.core.common"
@@ -13,6 +21,10 @@ android {
         minSdk = 26
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("Integer", "versionMajor", versionMajor)
+        buildConfigField("Integer", "versionMinor", versionMinor)
+        buildConfigField("Integer", "versionPatch", versionPatch)
+        buildConfigField("Integer", "versionCode", codeVersion)
     }
 
     buildTypes {
@@ -33,6 +45,13 @@ android {
             merges += "META-INF/LICENSE.md"
             merges += "META-INF/LICENSE-notice.md"
         }
+    }
+
+    buildFeatures {
+        aidl = false
+        buildConfig = true
+        renderScript = false
+        shaders = false
     }
 }
 
