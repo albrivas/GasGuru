@@ -10,7 +10,7 @@ plugins {
 
 android {
     namespace = "com.gasguru.feature.profile"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 26

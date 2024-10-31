@@ -3,5 +3,5 @@
     <string name="fuel_selection">Combustible seleccionado</string>
     <string name="profile">Perfil</string>
     <string name="fuel">Combustible</string>
-
+    <string name="version">Versión %1$s</string>
 </resources>

@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace = "com.gasguru.feature.favorite_list_station"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 26

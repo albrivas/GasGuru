@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.gasguru.core.model"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 26

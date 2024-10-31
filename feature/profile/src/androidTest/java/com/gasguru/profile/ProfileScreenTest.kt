@@ -1,11 +1,14 @@
 package com.gasguru.profile
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.UserData
 import com.gasguru.core.testing.BaseTest
+import com.gasguru.feature.profile.R
 import com.gasguru.feature.profile.ui.ProfileScreen
 import com.gasguru.feature.profile.ui.ProfileUiState
 import org.junit.jupiter.api.DisplayName
@@ -34,5 +37,17 @@ class ProfileScreenTest : BaseTest() {
 
         onNodeWithTag("fuel_setting_item").performClick()
         onNodeWithTag("bottom_sheet_fuel").assertIsDisplayed()
+    }
+
+    @Test
+    @DisplayName("Show the info app version")
+    fun showAppVersionInfo(): Unit = extension.use {
+        setContent {
+            ProfileScreen(
+                uiState = ProfileUiState.Success(UserData(FuelType.GASOLINE_95)),
+                event = {})
+        }
+
+        onNodeWithText(getStringResource(id = R.string.version, "1.0.0 (12)")).isDisplayed()
     }
 }
