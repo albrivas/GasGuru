@@ -124,7 +124,7 @@ internal fun ProfileScreen(uiState: ProfileUiState, event: (ProfileEvents) -> Un
             sheetState = sheetState,
             containerColor = Neutral100,
             contentColor = Neutral100,
-            contentWindowInsets = { WindowInsets.navigationBars }
+            windowInsets =  WindowInsets.navigationBars
         ) {
             Column(
                 modifier = Modifier
@@ -189,7 +189,6 @@ fun SuccessContent(userData: UserData, showSheet: () -> Unit) {
 
 @Composable
 fun VersionAppInfo(modifier: Modifier = Modifier) {
-
     Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
         Text(
             modifier = Modifier,
@@ -203,17 +202,17 @@ fun VersionAppInfo(modifier: Modifier = Modifier) {
     }
 }
 
-
 @Suppress("DEPRECATION")
 private fun getVersionInfo(context: Context): String {
     val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
     val versionCode =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             packageInfo.longVersionCode
-        else packageInfo.versionCode
+        } else {
+            packageInfo.versionCode
+        }
     return "${packageInfo.versionName} ($versionCode)"
 }
-
 
 @Preview
 @Composable
