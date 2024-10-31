@@ -27,7 +27,7 @@ val codeVersion: String = versionProperties.getProperty("versionCode")
 
 android {
     namespace = "com.gasguru"
-    compileSdk = 34
+    compileSdk = 35
 
     signingConfigs {
         create("release") {
@@ -41,7 +41,7 @@ android {
     defaultConfig {
         applicationId = "com.gasguru"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 35
         versionCode = codeVersion.toInt()
         versionName = "$versionMajor.$versionMinor.$versionPatch"
 
