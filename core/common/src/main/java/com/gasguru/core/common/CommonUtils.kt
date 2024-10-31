@@ -4,7 +4,7 @@ object CommonUtils {
 
     fun getAppVersion(): String {
         val versionName =
-            "${BuildConfig.versionMajor}.${BuildConfig.versionMajor}.${BuildConfig.versionMajor}"
+            "${BuildConfig.versionMajor}.${BuildConfig.versionMinor}.${BuildConfig.versionPatch}"
         return "$versionName (${BuildConfig.versionCode})"
     }
 }
