@@ -1,7 +1,5 @@
 package com.gasguru.feature.profile.ui
 
-import android.content.Context
-import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,13 +30,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.gasguru.core.common.CommonUtils.getAppVersion
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.UserData
 import com.gasguru.core.ui.getIcon
@@ -124,7 +122,7 @@ internal fun ProfileScreen(uiState: ProfileUiState, event: (ProfileEvents) -> Un
             sheetState = sheetState,
             containerColor = Neutral100,
             contentColor = Neutral100,
-            windowInsets =  WindowInsets.navigationBars
+            windowInsets = WindowInsets.navigationBars
         ) {
             Column(
                 modifier = Modifier
@@ -194,24 +192,12 @@ fun VersionAppInfo(modifier: Modifier = Modifier) {
             modifier = Modifier,
             text = stringResource(
                 id = R.string.version,
-                getVersionInfo(context = LocalContext.current)
+                getAppVersion()
             ),
             style = FuelPumpTheme.typography.captionRegular,
             color = TextSubtle
         )
     }
-}
-
-@Suppress("DEPRECATION")
-private fun getVersionInfo(context: Context): String {
-    val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-    val versionCode =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            packageInfo.longVersionCode
-        } else {
-            packageInfo.versionCode
-        }
-    return "${packageInfo.versionName} ($versionCode)"
 }
 
 @Preview
