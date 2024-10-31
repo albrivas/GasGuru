@@ -1,4 +1,5 @@
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import com.google.android.libraries.mapsplatform.secrets_gradle_plugin.loadPropertiesFile
 
 plugins {
     alias(libs.plugins.android.application)
@@ -18,9 +19,15 @@ val alias: String = localProperties.getProperty("keyAlias")
 val storepass: String = localProperties.getProperty("storePassword")
 val keypass: String = localProperties.getProperty("keyPassword")
 
+val versionProperties = loadPropertiesFile("../versions.properties")
+val versionMajor: String = versionProperties.getProperty("versionMajor")
+val versionMinor: String = versionProperties.getProperty("versionMinor")
+val versionPatch: String = versionProperties.getProperty("versionPatch")
+val codeVersion: String = versionProperties.getProperty("versionCode")
+
 android {
     namespace = "com.gasguru"
-    compileSdk = 34
+    compileSdk = 35
 
     signingConfigs {
         create("release") {
@@ -34,9 +41,9 @@ android {
     defaultConfig {
         applicationId = "com.gasguru"
         minSdk = 26
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0.0"
+        targetSdk = 35
+        versionCode = codeVersion.toInt()
+        versionName = "$versionMajor.$versionMinor.$versionPatch"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

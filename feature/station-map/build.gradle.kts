@@ -10,7 +10,7 @@ plugins {
 
 android {
     namespace = "com.gasguru.feature.station_map"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 26
