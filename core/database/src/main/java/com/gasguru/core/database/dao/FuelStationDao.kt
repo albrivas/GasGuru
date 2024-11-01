@@ -12,10 +12,14 @@ import kotlinx.coroutines.flow.Flow
 interface FuelStationDao {
     @Query(
         "SELECT * FROM `fuel-station` WHERE " +
-            "(:fuelType = 'GASOLINE_95' AND (priceGasoline95E5 > 0 OR priceGasoline95E10 > 0)) OR " +
-            "(:fuelType = 'GASOLINE_98' AND (priceGasoline98E5 > 0 OR priceGasoline98E10 > 0)) OR " +
-            "(:fuelType = 'DIESEL' AND (priceGasoilA > 0 OR priceGasoilB > 0)) OR " +
-            "(:fuelType = 'DIESEL_PLUS' AND priceGasoilPremium > 0)"
+                "(:fuelType = 'GASOLINE_95' AND priceGasoline95E5 > 0) OR " +
+                "(:fuelType = 'GASOLINE_95_PREMIUM' AND priceGasoline95E5Premium > 0) OR " +
+                "(:fuelType = 'GASOLINE_95_E10' AND priceGasoline95E10 > 0) OR " +
+                "(:fuelType = 'GASOLINE_98' AND priceGasoline98E5 > 0 ) OR " +
+                "(:fuelType = 'GASOLINE_98_PREMIUM' AND priceGasoline98E10 > 0) OR " +
+                "(:fuelType = 'DIESEL' AND priceGasoilA > 0 ) OR " +
+                "(:fuelType = 'DIESEL_PLUS' AND priceGasoilPremium > 0) OR " +
+                "(:fuelType = 'DIESEL_AGRICULTURAL' AND priceGasoilB > 0)"
     )
     fun getFuelStations(fuelType: String): Flow<List<FuelStationEntity>>
 

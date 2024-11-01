@@ -105,6 +105,10 @@ class OfflineFuelStationRepository @Inject constructor(
             FuelType.GASOLINE_98 -> map { it.priceGasoline98E5 }
             FuelType.DIESEL -> map { it.priceGasoilA }
             FuelType.DIESEL_PLUS -> map { it.priceGasoilPremium }
+            FuelType.GASOLINE_95_PREMIUM -> map { it.priceGasoline95E5Premium }
+            FuelType.GASOLINE_95_E10 -> map { it.priceGasoline95E10 }
+            FuelType.GASOLINE_98_PREMIUM -> map { it.priceGasoline98E10 }
+            FuelType.DIESEL_AGRICULTURAL -> map { it.priceGasoilB }
         }
 
         return Pair(prices.minOrNull() ?: 0.0, prices.maxOrNull() ?: 0.0)
@@ -116,10 +120,14 @@ class OfflineFuelStationRepository @Inject constructor(
         maxPrice: Double,
     ): PriceCategory {
         val currentPrice = when (fuelType) {
-            com.gasguru.core.model.data.FuelType.GASOLINE_95 -> priceGasoline95E5
-            com.gasguru.core.model.data.FuelType.GASOLINE_98 -> priceGasoline98E5
-            com.gasguru.core.model.data.FuelType.DIESEL -> priceGasoilA
-            com.gasguru.core.model.data.FuelType.DIESEL_PLUS -> priceGasoilPremium
+            FuelType.GASOLINE_95 -> priceGasoline95E5
+            FuelType.GASOLINE_98 -> priceGasoline98E5
+            FuelType.DIESEL -> priceGasoilA
+            FuelType.DIESEL_PLUS -> priceGasoilPremium
+            FuelType.GASOLINE_95_PREMIUM -> priceGasoline95E5Premium
+            FuelType.GASOLINE_95_E10 -> priceGasoline95E10
+            FuelType.GASOLINE_98_PREMIUM -> priceGasoline98E10
+            FuelType.DIESEL_AGRICULTURAL -> priceGasoilB
         }
 
         val priceRange = maxPrice - minPrice
