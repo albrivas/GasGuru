@@ -94,7 +94,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
-import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.MarkerComposable
 import com.google.maps.android.compose.MarkerState
@@ -292,29 +291,34 @@ fun MapView(
     userSelectedFuelType: FuelType?,
     navigateToDetail: (Int) -> Unit = {},
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        val markerStates = remember { mutableStateMapOf<Int, MarkerState>() }
-        GoogleMap(
-            modifier = Modifier.fillMaxSize(),
-            cameraPositionState = cameraState,
-            googleMapOptionsFactory = { GoogleMapOptions().mapId("da696d048f7d52b8") },
-            uiSettings = MapUiSettings(
+    val markerStates = remember { mutableStateMapOf<Int, MarkerState>() }
+    var selectedLocation by remember { mutableStateOf<Int?>(null) }
+    val uiSettings by remember {
+        mutableStateOf(
+            MapUiSettings(
                 myLocationButtonEnabled = false,
                 zoomControlsEnabled = false,
                 compassEnabled = false,
                 mapToolbarEnabled = false,
-            ),
-            properties = MapProperties(
+            )
+        )
+    }
+    val mapProperties by remember {
+        mutableStateOf(
+            MapProperties(
                 isMyLocationEnabled = true,
-                mapType = MapType.NORMAL,
-            ),
-            onMyLocationButtonClick = {
-                true
-            },
-            onMapLoaded = { },
-        ) {
-            var selectedLocation by remember { mutableStateOf<Int?>(null) }
+            )
+        )
+    }
 
+    Box(modifier = Modifier.fillMaxSize()) {
+        GoogleMap(
+            modifier = Modifier.fillMaxSize(),
+            cameraPositionState = cameraState,
+            googleMapOptionsFactory = { GoogleMapOptions().mapId("da696d048f7d52b8") },
+            uiSettings = uiSettings,
+            properties = mapProperties,
+        ) {
             stations.forEach { station ->
                 val state =
                     markerStates.getOrPut(
