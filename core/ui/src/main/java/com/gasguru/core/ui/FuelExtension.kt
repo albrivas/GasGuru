@@ -27,7 +27,7 @@ fun FuelType.translation() = when (this) {
     FuelType.GASOLINE_95_PREMIUM -> R.string.gasoline_95_premium
     FuelType.GASOLINE_95_E10 -> R.string.gasoline_95_e10
     FuelType.GASOLINE_98_PREMIUM -> R.string.gasoline_98_premium
-    FuelType.DIESEL_AGRICULTURAL -> R.string.diesel_agricultural
+    FuelType.GASOIL_B -> R.string.gasoil_b
 }
 
 fun Int.toFuelType() = when (this) {
@@ -38,7 +38,7 @@ fun Int.toFuelType() = when (this) {
     R.string.gasoline_95_premium -> FuelType.GASOLINE_95_PREMIUM
     R.string.gasoline_95_e10 -> FuelType.GASOLINE_95_E10
     R.string.gasoline_98_premium -> FuelType.GASOLINE_98_PREMIUM
-    R.string.diesel_agricultural -> FuelType.DIESEL_AGRICULTURAL
+    R.string.gasoil_b -> FuelType.GASOIL_B
     else -> FuelType.GASOLINE_95
 }
 
@@ -87,9 +87,8 @@ fun FuelType?.getPrice(fuelStation: FuelStation) = when (this) {
     FuelType.GASOLINE_95_PREMIUM -> "${fuelStation.priceGasoline95E5Premium}"
     FuelType.GASOLINE_95_E10 -> "${fuelStation.priceGasoline95E10}"
     FuelType.GASOLINE_98_PREMIUM -> "${fuelStation.priceGasoline98E10}"
-    FuelType.DIESEL_AGRICULTURAL -> "${fuelStation.priceGasoilB}"
+    FuelType.GASOIL_B -> "${fuelStation.priceGasoilB}"
     null -> "0.0"
-
 }
 
 fun FuelType.getIcon() = when (this) {
@@ -98,9 +97,9 @@ fun FuelType.getIcon() = when (this) {
     FuelType.DIESEL -> RUikit.drawable.ic_diesel
     FuelType.DIESEL_PLUS -> RUikit.drawable.ic_diesel_plus
     FuelType.GASOLINE_95_PREMIUM -> RUikit.drawable.ic_gasoline_95_premium
-    FuelType.GASOLINE_95_E10 -> RUikit.drawable.ic_gasoline_95
-    FuelType.GASOLINE_98_PREMIUM -> RUikit.drawable.ic_gasoline_95
-    FuelType.DIESEL_AGRICULTURAL -> RUikit.drawable.ic_gasoleo_b
+    FuelType.GASOLINE_95_E10 -> RUikit.drawable.ic_gasoline_95_e10
+    FuelType.GASOLINE_98_PREMIUM -> RUikit.drawable.ic_gasoline_98_premium
+    FuelType.GASOIL_B -> RUikit.drawable.ic_gasoleo_b
 }
 
 @Composable
@@ -127,12 +126,12 @@ fun FuelStation.getFuelPriceItems(): List<PriceItemModel> {
             price = "$priceGasoline98E5 €/L"
         ),
         PriceItemModel(
-            icon = RUikit.drawable.ic_gasoline_95,
+            icon = RUikit.drawable.ic_gasoline_95_e10,
             fuelName = stringResource(id = R.string.gasoline_95_e10),
             price = "$priceGasoline95E10 €/L"
         ),
         PriceItemModel(
-            icon = RUikit.drawable.ic_gasoline_95,
+            icon = RUikit.drawable.ic_gasoline_98_premium,
             fuelName = stringResource(id = R.string.gasoline_98_premium),
             price = "$priceGasoline98E10 €/L"
         ),
@@ -143,7 +142,7 @@ fun FuelStation.getFuelPriceItems(): List<PriceItemModel> {
         ),
         PriceItemModel(
             icon = RUikit.drawable.ic_gasoleo_b,
-            fuelName = stringResource(id = R.string.diesel_agricultural),
+            fuelName = stringResource(id = R.string.gasoil_b),
             price = "$priceGasoilB €/L"
         )
 

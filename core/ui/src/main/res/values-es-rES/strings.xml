@@ -8,6 +8,6 @@
     <string name="gasoline_95_premium">SP 95 Premium</string>
     <string name="gasoline_95_e10">SP 95 E10</string>
     <string name="gasoline_98_premium">SP 98 E10</string>
-    <string name="diesel_agricultural">Gasóleo B</string>
+    <string name="gasoil_b">Gasóleo B</string>
     <string name="select_fuel_preference">Elige tu tipo de combustible</string>
 </resources>

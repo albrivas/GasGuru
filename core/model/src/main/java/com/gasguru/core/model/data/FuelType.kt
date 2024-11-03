@@ -8,5 +8,5 @@ enum class FuelType {
     GASOLINE_98_PREMIUM,
     DIESEL,
     DIESEL_PLUS,
-    DIESEL_AGRICULTURAL,
+    GASOIL_B,
 }
