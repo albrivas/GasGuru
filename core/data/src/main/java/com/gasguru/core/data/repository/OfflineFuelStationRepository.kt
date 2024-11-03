@@ -108,7 +108,7 @@ class OfflineFuelStationRepository @Inject constructor(
             FuelType.GASOLINE_95_PREMIUM -> map { it.priceGasoline95E5Premium }
             FuelType.GASOLINE_95_E10 -> map { it.priceGasoline95E10 }
             FuelType.GASOLINE_98_PREMIUM -> map { it.priceGasoline98E10 }
-            FuelType.DIESEL_AGRICULTURAL -> map { it.priceGasoilB }
+            FuelType.GASOIL_B -> map { it.priceGasoilB }
         }
 
         return Pair(prices.minOrNull() ?: 0.0, prices.maxOrNull() ?: 0.0)
@@ -127,7 +127,7 @@ class OfflineFuelStationRepository @Inject constructor(
             FuelType.GASOLINE_95_PREMIUM -> priceGasoline95E5Premium
             FuelType.GASOLINE_95_E10 -> priceGasoline95E10
             FuelType.GASOLINE_98_PREMIUM -> priceGasoline98E10
-            FuelType.DIESEL_AGRICULTURAL -> priceGasoilB
+            FuelType.GASOIL_B -> priceGasoilB
         }
 
         val priceRange = maxPrice - minPrice
