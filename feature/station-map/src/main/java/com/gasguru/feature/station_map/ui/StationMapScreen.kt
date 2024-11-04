@@ -30,11 +30,13 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.SearchBar
@@ -65,6 +67,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.common.centerOnLocation
@@ -111,12 +114,9 @@ fun StationMapScreenRoute(
     val searchResult by viewModel.searchResultUiState.collectAsStateWithLifecycle()
     val recentSearchQuery by viewModel.recentSearchQueriesUiState.collectAsStateWithLifecycle()
     StationMapScreen(
-        stations = state.fuelStations,
-        centerMap = state.centerMap,
-        zoomLevel = state.zoomLevel,
-        userSelectedFuelType = state.selectedType,
-        searchResultUiState = searchResult,
+        uiState = state,
         searchQuery = searchQuery,
+        searchResultUiState = searchResult,
         recentSearchQueries = recentSearchQuery,
         event = viewModel::handleEvent,
         navigateToDetail = navigateToDetail
@@ -126,16 +126,13 @@ fun StationMapScreenRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun StationMapScreen(
-    stations: List<FuelStation>,
-    centerMap: LatLng?,
-    zoomLevel: Float,
+    uiState: StationMapUiState,
     searchQuery: String,
-    userSelectedFuelType: FuelType?,
     searchResultUiState: SearchResultUiState,
     recentSearchQueries: RecentSearchQueriesUiState,
     event: (StationMapEvent) -> Unit = {},
     navigateToDetail: (Int) -> Unit = {},
-) {
+) = with(uiState) {
     val cameraState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(LatLng(40.0, -4.0), 5.5f)
     }
@@ -220,8 +217,8 @@ internal fun StationMapScreen(
                     }
                 }
                 ListFuelStations(
-                    stations = stations,
-                    selectedFuel = userSelectedFuelType,
+                    stations = fuelStations,
+                    selectedFuel = selectedType,
                     navigateToDetail = navigateToDetail
                 )
             }
@@ -239,9 +236,10 @@ internal fun StationMapScreen(
                     event = event,
                 )
                 MapView(
-                    stations = stations,
+                    stations = fuelStations,
                     cameraState = cameraState,
-                    userSelectedFuelType = userSelectedFuelType,
+                    userSelectedFuelType = selectedType,
+                    loading = loading,
                     navigateToDetail = navigateToDetail,
                 )
                 FABLocation(
@@ -289,6 +287,7 @@ fun MapView(
     stations: List<FuelStation>,
     cameraState: CameraPositionState,
     userSelectedFuelType: FuelType?,
+    loading: Boolean,
     navigateToDetail: (Int) -> Unit = {},
 ) {
     val markerStates = remember { mutableStateMapOf<Int, MarkerState>() }
@@ -311,7 +310,23 @@ fun MapView(
         )
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        if (loading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.5f))
+                    .zIndex(1f)
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+        }
+
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraState,
@@ -355,7 +370,10 @@ fun FABLocation(
     modifier: Modifier,
     event: (StationMapEvent) -> Unit = {},
 ) {
-    Column(modifier = modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(
+        modifier = modifier.padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         FloatingActionButton(
             onClick = {
                 event(StationMapEvent.CenterMapInCurrentLocation)
@@ -450,7 +468,16 @@ fun SearchPlaces(
             colors = SearchBarDefaults.colors(containerColor = Color.White)
         ) {
             when (searchResultUiState) {
-                SearchResultUiState.Loading,
+                SearchResultUiState.Loading -> {
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        LinearProgressIndicator(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.TopCenter)
+                        )
+                    }
+                }
+
                 SearchResultUiState.LoadFailed,
                 -> Unit
 
@@ -649,10 +676,7 @@ fun RecentSearchQueriesBody(
 private fun StationMapScreenPreview() {
     MyApplicationTheme {
         StationMapScreen(
-            stations = emptyList(),
-            centerMap = LatLng(0.0, 0.0),
-            zoomLevel = 15f,
-            userSelectedFuelType = FuelType.GASOLINE_95,
+            uiState = StationMapUiState(),
             searchResultUiState = SearchResultUiState.EmptyQuery,
             searchQuery = "",
             recentSearchQueries = RecentSearchQueriesUiState.Loading,
