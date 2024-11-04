@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OnboardingViewModel @Inject constructor(
-    private val saveUserDataUseCase: SaveUserDataUseCase
+    private val saveUserDataUseCase: SaveUserDataUseCase,
 ) : ViewModel() {
 
     var state by mutableStateOf(OnboardingUiState.ListFuelPreferences(listOf()))
@@ -25,12 +25,8 @@ class OnboardingViewModel @Inject constructor(
     }
 
     private fun getFuelList() {
-        listOf(
-            FuelType.GASOLINE_95,
-            FuelType.GASOLINE_98,
-            FuelType.DIESEL,
-            FuelType.DIESEL_PLUS
-        ).also { state = OnboardingUiState.ListFuelPreferences(it) }
+        FuelType.entries.toList()
+            .also { state = OnboardingUiState.ListFuelPreferences(it) }
     }
 
     fun saveSelectedFuel(selectedFuel: FuelType) {
