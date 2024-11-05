@@ -3,7 +3,7 @@ package com.gasguru.core.database.dao
 import android.content.Context
 import androidx.room.Room
 import app.cash.turbine.test
-import com.gasguru.core.database.FuelPumpDatabase
+import com.gasguru.core.database.GasGuruDatabase
 import com.gasguru.core.database.model.FuelStationEntity
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.testing.CoroutinesTestRule
@@ -13,7 +13,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 class FuelStationDaoTest {
 
     private lateinit var fuelStationDao: FuelStationDao
-    private lateinit var db: FuelPumpDatabase
+    private lateinit var db: GasGuruDatabase
 
     @get: org.junit.Rule
     val dispatcherRule = CoroutinesTestRule()
@@ -23,7 +23,7 @@ class FuelStationDaoTest {
         val context = androidx.test.core.app.ApplicationProvider.getApplicationContext<Context>()
         db = Room.inMemoryDatabaseBuilder(
             context,
-            FuelPumpDatabase::class.java
+            GasGuruDatabase::class.java
         ).build()
         fuelStationDao = db.fuelStationDao()
     }

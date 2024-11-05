@@ -23,7 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.R
 import com.gasguru.core.uikit.shape.CircleArrowShape
-import com.gasguru.core.uikit.theme.FuelPumpTheme
+import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 
 @Composable
@@ -46,7 +46,10 @@ fun StationMarker(model: StationMarkerModel) {
 
         ) {
             Image(
-                modifier = Modifier.size(24.dp).padding(3.dp),
+                modifier = Modifier
+                    .size(24.dp)
+                    .padding(3.dp)
+                    .clip(CircleShape),
                 painter = painterResource(id = model.icon),
                 contentScale = ContentScale.Fit,
                 contentDescription = "Station icon",
@@ -55,7 +58,7 @@ fun StationMarker(model: StationMarkerModel) {
         Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = "${model.price} €/l",
-            style = FuelPumpTheme.typography.smallBold,
+            style = GasGuruTheme.typography.smallBold,
             color = Color.White,
             modifier = Modifier
                 .align(Alignment.CenterVertically)
@@ -70,7 +73,7 @@ private fun StationMarkerPreview() {
     MyApplicationTheme {
         StationMarker(
             model = StationMarkerModel(
-                icon = R.drawable.ic_logo_repsol,
+                icon = R.drawable.ic_logo_azul_oil,
                 price = "1.235",
                 color = Color.Red,
                 isSelected = false,

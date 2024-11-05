@@ -5,7 +5,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-data class FuelPumpTypography(
+data class GasGuruTypography(
     val h1: TextStyle = TextStyle(
         fontFamily = interFamily,
         fontWeight = FontWeight.Bold,
@@ -92,4 +92,4 @@ data class FuelPumpTypography(
     ),
 )
 
-internal val LocalFuelPumpTypography = staticCompositionLocalOf { FuelPumpTypography() }
+internal val LocalGasGuruTypography = staticCompositionLocalOf { GasGuruTypography() }

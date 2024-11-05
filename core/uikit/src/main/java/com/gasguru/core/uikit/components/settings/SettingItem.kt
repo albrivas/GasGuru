@@ -24,7 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.R
-import com.gasguru.core.uikit.theme.FuelPumpTheme
+import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.Neutral300
 import com.gasguru.core.uikit.theme.Neutral500
@@ -58,13 +58,13 @@ fun SettingItem(
             Arrangement.spacedBy(6.dp)
         ) {
             Text(
-                style = FuelPumpTheme.typography.baseRegular,
+                style = GasGuruTheme.typography.baseRegular,
                 text = title,
             )
             Text(
                 text = selection,
                 color = TextSubtle,
-                style = FuelPumpTheme.typography.smallRegular
+                style = GasGuruTheme.typography.smallRegular
             )
         }
         Icon(

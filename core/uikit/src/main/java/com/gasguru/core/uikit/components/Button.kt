@@ -11,11 +11,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.gasguru.core.uikit.theme.FuelPumpTheme
+import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.Primary500
 
 @Composable
-fun FuelPumpButton(
+fun GasGuruButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
@@ -36,13 +36,13 @@ fun FuelPumpButton(
     ) {
         Text(
             text = text,
-            style = FuelPumpTheme.typography.baseBold
+            style = GasGuruTheme.typography.baseBold
         )
     }
 }
 
 @Preview
 @Composable
-private fun FuelPumpButtonPreview() {
-    FuelPumpButton(onClick = {}, text = "Siguiente")
+private fun GasGuruButtonPreview() {
+    GasGuruButton(onClick = {}, text = "Siguiente")
 }
