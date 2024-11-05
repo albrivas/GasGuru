@@ -1,14 +1,3 @@
-/*
- * File: RemoteDataSourceTest.kt
- * Project: FuelPump
- * Module: FuelPump.core.network.unitTest
- * Last modified: 12/29/22, 5:32 PM
- *
- * Created by albertorivas on 12/29/22, 5:33 PM
- * Copyright © 2022 Alberto Rivas. All rights reserved.
- *
- */
-
 package com.gasguru.core.network.datasource
 
 import com.gasguru.core.network.NetworkModuleTest

@@ -34,7 +34,7 @@ fun MyApplicationTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
-    typography: FuelPumpTypography = FuelPumpTheme.typography,
+    typography: GasGuruTypography = GasGuruTheme.typography,
     content: @Composable () -> Unit,
 ) {
     val colorScheme = when {
@@ -55,7 +55,7 @@ fun MyApplicationTheme(
         }
     }
 
-    CompositionLocalProvider(LocalFuelPumpTypography provides typography) {
+    CompositionLocalProvider(LocalGasGuruTypography provides typography) {
         MaterialTheme(
             colorScheme = colorScheme,
             content = content,

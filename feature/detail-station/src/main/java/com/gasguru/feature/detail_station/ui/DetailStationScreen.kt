@@ -54,6 +54,7 @@ import coil.compose.AsyncImage
 import com.gasguru.core.common.generateStaticMapUrl
 import com.gasguru.core.common.startRoute
 import com.gasguru.core.model.data.FuelStation
+import com.gasguru.core.model.data.FuelStationBrandsType
 import com.gasguru.core.model.data.previewFuelStationDomain
 import com.gasguru.core.ui.getFuelPriceItems
 import com.gasguru.core.ui.iconTint
@@ -63,7 +64,7 @@ import com.gasguru.core.uikit.components.information_card.InformationCard
 import com.gasguru.core.uikit.components.information_card.InformationCardModel
 import com.gasguru.core.uikit.components.price.PriceItem
 import com.gasguru.core.uikit.theme.AccentRed
-import com.gasguru.core.uikit.theme.FuelPumpTheme
+import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.Neutral100
 import com.gasguru.core.uikit.theme.Neutral300
@@ -163,7 +164,7 @@ fun DetailStationContent(station: FuelStation) {
                                 it.toString()
                             }
                         },
-                    style = FuelPumpTheme.typography.h3,
+                    style = GasGuruTheme.typography.h3,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
                     modifier = Modifier.testTag("name-station")
@@ -175,7 +176,7 @@ fun DetailStationContent(station: FuelStation) {
                 ) {
                     Text(
                         text = station.formatDistance(),
-                        style = FuelPumpTheme.typography.baseRegular,
+                        style = GasGuruTheme.typography.baseRegular,
                         color = TextSubtle,
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 1,
@@ -183,12 +184,12 @@ fun DetailStationContent(station: FuelStation) {
                     )
                     Text(
                         text = " · ",
-                        style = FuelPumpTheme.typography.baseRegular,
+                        style = GasGuruTheme.typography.baseRegular,
                         color = TextSubtle
                     )
                     Text(
                         text = isOpen,
-                        style = FuelPumpTheme.typography.baseRegular,
+                        style = GasGuruTheme.typography.baseRegular,
                         color = if (station.isStationOpen()) Primary500 else AccentRed,
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 1
@@ -217,6 +218,7 @@ fun DetailStationContent(station: FuelStation) {
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(4.dp)
+                        .clip(CircleShape)
                 )
             }
         }
@@ -234,7 +236,7 @@ fun DetailStationContent(station: FuelStation) {
 fun FuelTypes(station: FuelStation) {
     Text(
         text = stringResource(id = R.string.fuel_types),
-        style = FuelPumpTheme.typography.h5,
+        style = GasGuruTheme.typography.h5,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis
     )
@@ -258,7 +260,7 @@ fun InformationStation(station: FuelStation, navigateToGoogleMaps: () -> Unit) {
     Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text(
             text = stringResource(id = R.string.station_detail),
-            style = FuelPumpTheme.typography.h5,
+            style = GasGuruTheme.typography.h5,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
@@ -348,7 +350,8 @@ private fun DetailStationPreview() {
             uiState = DetailStationUiState.Success(
                 previewFuelStationDomain().copy(
                     isFavorite = true,
-                    schedule = "L-V: 06:00-22:00; S: 07:00-22:00; D: 08:00-22:00"
+                    schedule = "L-V: 06:00-22:00; S: 07:00-22:00; D: 08:00-22:00",
+                    brandStationBrandsType = FuelStationBrandsType.AZUL_OIL
                 )
             )
         )

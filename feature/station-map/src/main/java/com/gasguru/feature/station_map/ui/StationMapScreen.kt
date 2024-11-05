@@ -83,7 +83,7 @@ import com.gasguru.core.uikit.components.fuelItem.FuelStationItem
 import com.gasguru.core.uikit.components.fuelItem.FuelStationItemModel
 import com.gasguru.core.uikit.components.marker.StationMarker
 import com.gasguru.core.uikit.components.marker.StationMarkerModel
-import com.gasguru.core.uikit.theme.FuelPumpTheme
+import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.GrayExtraLight
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.Neutral100
@@ -195,7 +195,7 @@ internal fun StationMapScreen(
                 ) {
                     Text(
                         text = stringResource(id = R.string.sheet_title),
-                        style = FuelPumpTheme.typography.baseBold,
+                        style = GasGuruTheme.typography.baseBold,
                         color = TextSubtle
                     )
                     AnimatedVisibility(
@@ -211,7 +211,7 @@ internal fun StationMapScreen(
                                 }
                             },
                             text = stringResource(id = R.string.sheet_button),
-                            style = FuelPumpTheme.typography.baseRegular,
+                            style = GasGuruTheme.typography.baseRegular,
                             color = Primary600
                         )
                     }
@@ -415,7 +415,7 @@ fun SearchPlaces(
         label = ""
     )
 
-    ProvideTextStyle(value = FuelPumpTheme.typography.baseRegular) {
+    ProvideTextStyle(value = GasGuruTheme.typography.baseRegular) {
         SearchBar(
             modifier = Modifier
                 .fillMaxWidth()
@@ -430,7 +430,7 @@ fun SearchPlaces(
             placeholder = {
                 Text(
                     text = stringResource(id = R.string.hint_search_bar),
-                    style = FuelPumpTheme.typography.baseRegular,
+                    style = GasGuruTheme.typography.baseRegular,
                     color = TextSubtle
                 )
             },
@@ -530,7 +530,7 @@ fun SearchResultBody(
             text = stringResource(id = R.string.label_suggestion),
             modifier = Modifier
                 .align(Alignment.Start),
-            style = FuelPumpTheme.typography.baseBold
+            style = GasGuruTheme.typography.baseBold
         )
         LazyColumn(
             modifier = Modifier
@@ -562,7 +562,7 @@ fun SearchResultBody(
                         Text(
                             modifier = Modifier,
                             text = place.name,
-                            style = FuelPumpTheme.typography.baseRegular
+                            style = GasGuruTheme.typography.baseRegular
                         )
                     }
                 }
@@ -588,12 +588,12 @@ fun EmptyResultBody() {
             modifier = Modifier
                 .align(Alignment.Start)
                 .padding(bottom = 8.dp),
-            style = FuelPumpTheme.typography.h6
+            style = GasGuruTheme.typography.h6
         )
         Text(
             text = stringResource(id = R.string.label_empty_suggestions),
             modifier = Modifier.align(Alignment.Start),
-            style = FuelPumpTheme.typography.baseRegular
+            style = GasGuruTheme.typography.baseRegular
         )
     }
 }
@@ -610,12 +610,12 @@ fun EmptyRecentSearchesBody() {
             modifier = Modifier
                 .align(Alignment.Start)
                 .padding(bottom = 8.dp),
-            style = FuelPumpTheme.typography.h6
+            style = GasGuruTheme.typography.h6
         )
         Text(
             text = stringResource(id = R.string.label_empty_recents),
             modifier = Modifier.align(Alignment.Start),
-            style = FuelPumpTheme.typography.baseRegular
+            style = GasGuruTheme.typography.baseRegular
         )
     }
 }
@@ -640,7 +640,7 @@ fun RecentSearchQueriesBody(
         ) {
             Text(
                 text = stringResource(id = R.string.label_recent),
-                style = FuelPumpTheme.typography.h6
+                style = GasGuruTheme.typography.h6
             )
             if (recentSearchQueries.isNotEmpty()) {
                 Icon(
@@ -661,7 +661,7 @@ fun RecentSearchQueriesBody(
             items(recentSearchQueries) { recentSearchQuery ->
                 Text(
                     text = recentSearchQuery.name,
-                    style = FuelPumpTheme.typography.baseRegular,
+                    style = GasGuruTheme.typography.baseRegular,
                     modifier = Modifier
                         .clickable { onRecentSearchClicked(recentSearchQuery) }
                         .fillMaxWidth(),

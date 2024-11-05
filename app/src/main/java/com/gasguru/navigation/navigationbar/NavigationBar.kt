@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.gasguru.R
-import com.gasguru.core.uikit.theme.FuelPumpTheme
+import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.Primary600
 import com.gasguru.navigation.navigationbar.route.TopLevelRoutes
 
@@ -78,9 +78,9 @@ private fun RowScope.BarItem(
             Text(
                 text = label,
                 style = if (isSelected) {
-                    FuelPumpTheme.typography.captionBold
+                    GasGuruTheme.typography.captionBold
                 } else {
-                    FuelPumpTheme.typography.captionRegular
+                    GasGuruTheme.typography.captionRegular
                 },
             )
         },

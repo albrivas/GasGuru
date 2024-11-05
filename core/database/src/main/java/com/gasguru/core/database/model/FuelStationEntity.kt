@@ -1,14 +1,3 @@
-/*
- * File: FuelStationEntity.kt
- * Project: FuelPump
- * Module: FuelPump.core.database.main
- * Last modified: 1/4/23, 10:13 PM
- *
- * Created by albertorivas on 1/5/23, 12:13 AM
- * Copyright © 2023 Alberto Rivas. All rights reserved.
- *
- */
-
 package com.gasguru.core.database.model
 
 import android.location.Location

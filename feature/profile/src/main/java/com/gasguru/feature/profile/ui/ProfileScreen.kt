@@ -45,7 +45,7 @@ import com.gasguru.core.ui.translation
 import com.gasguru.core.uikit.components.settings.SettingItem
 import com.gasguru.core.uikit.fuel_list.FuelListSelection
 import com.gasguru.core.uikit.fuel_list.FuelListSelectionModel
-import com.gasguru.core.uikit.theme.FuelPumpTheme
+import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.Neutral100
 import com.gasguru.core.uikit.theme.TextMain
@@ -132,7 +132,7 @@ internal fun ProfileScreen(uiState: ProfileUiState, event: (ProfileEvents) -> Un
             ) {
                 Text(
                     text = stringResource(id = RUi.string.select_fuel_preference),
-                    style = FuelPumpTheme.typography.baseBold,
+                    style = GasGuruTheme.typography.baseBold,
                     color = TextMain
                 )
                 val list = FuelType.entries.map { Pair(it.getIcon(), it.translation()) }
@@ -169,7 +169,7 @@ fun SuccessContent(userData: UserData, showSheet: () -> Unit) {
         Text(
             modifier = Modifier,
             text = stringResource(id = R.string.profile),
-            style = FuelPumpTheme.typography.h5
+            style = GasGuruTheme.typography.h5
         )
         SettingItem(
             model = com.gasguru.core.uikit.components.settings.SettingItemModel(
@@ -194,7 +194,7 @@ fun VersionAppInfo(modifier: Modifier = Modifier) {
                 id = R.string.version,
                 getAppVersion()
             ),
-            style = FuelPumpTheme.typography.captionRegular,
+            style = GasGuruTheme.typography.captionRegular,
             color = TextSubtle
         )
     }
