@@ -54,6 +54,7 @@ import coil.compose.AsyncImage
 import com.gasguru.core.common.generateStaticMapUrl
 import com.gasguru.core.common.startRoute
 import com.gasguru.core.model.data.FuelStation
+import com.gasguru.core.model.data.FuelStationBrandsType
 import com.gasguru.core.model.data.previewFuelStationDomain
 import com.gasguru.core.ui.getFuelPriceItems
 import com.gasguru.core.ui.iconTint
@@ -217,6 +218,7 @@ fun DetailStationContent(station: FuelStation) {
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(4.dp)
+                        .clip(CircleShape)
                 )
             }
         }
@@ -348,7 +350,8 @@ private fun DetailStationPreview() {
             uiState = DetailStationUiState.Success(
                 previewFuelStationDomain().copy(
                     isFavorite = true,
-                    schedule = "L-V: 06:00-22:00; S: 07:00-22:00; D: 08:00-22:00"
+                    schedule = "L-V: 06:00-22:00; S: 07:00-22:00; D: 08:00-22:00",
+                    brandStationBrandsType = FuelStationBrandsType.AZUL_OIL
                 )
             )
         )
