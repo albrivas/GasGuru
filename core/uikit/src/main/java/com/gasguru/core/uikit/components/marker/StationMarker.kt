@@ -23,7 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.R
 import com.gasguru.core.uikit.shape.CircleArrowShape
-import com.gasguru.core.uikit.theme.FuelPumpTheme
+import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 
 @Composable
@@ -55,7 +55,7 @@ fun StationMarker(model: StationMarkerModel) {
         Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = "${model.price} €/l",
-            style = FuelPumpTheme.typography.smallBold,
+            style = GasGuruTheme.typography.smallBold,
             color = Color.White,
             modifier = Modifier
                 .align(Alignment.CenterVertically)

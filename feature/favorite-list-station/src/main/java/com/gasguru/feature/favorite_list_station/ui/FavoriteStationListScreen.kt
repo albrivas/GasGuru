@@ -41,7 +41,7 @@ import com.gasguru.core.uikit.components.alert.AlertTemplate
 import com.gasguru.core.uikit.components.alert.AlertTemplateModel
 import com.gasguru.core.uikit.components.fuelItem.FuelStationItem
 import com.gasguru.core.uikit.components.fuelItem.FuelStationItemModel
-import com.gasguru.core.uikit.theme.FuelPumpTheme
+import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.Neutral100
 import com.gasguru.core.uikit.theme.Neutral300
 import com.gasguru.feature.favorite_list_station.R
@@ -118,7 +118,7 @@ internal fun FavoriteListStationScreen(
                     Text(
                         modifier = Modifier,
                         text = stringResource(id = R.string.empty_favorites),
-                        style = FuelPumpTheme.typography.h4,
+                        style = GasGuruTheme.typography.h4,
                         textAlign = TextAlign.Center
                     )
                 }
@@ -143,7 +143,7 @@ fun ListFuelStations(
         Text(
             modifier = Modifier,
             text = stringResource(id = R.string.favorites),
-            style = FuelPumpTheme.typography.h5
+            style = GasGuruTheme.typography.h5
         )
         LazyColumn(
             modifier = modifier

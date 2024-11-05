@@ -1,14 +1,3 @@
-/*
- * File: NetworkPriceFuelStation.kt
- * Project: FuelPump
- * Module: FuelPump.core.network.main
- * Last modified: 12/29/22, 5:09 PM
- *
- * Created by albertorivas on 12/29/22, 5:33 PM
- * Copyright © 2022 Alberto Rivas. All rights reserved.
- *
- */
-
 package com.gasguru.core.network.model
 
 import com.squareup.moshi.Json

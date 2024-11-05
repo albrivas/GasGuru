@@ -24,10 +24,10 @@ import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.ui.getIcon
 import com.gasguru.core.ui.toFuelType
 import com.gasguru.core.ui.translation
-import com.gasguru.core.uikit.components.FuelPumpButton
+import com.gasguru.core.uikit.components.GasGuruButton
 import com.gasguru.core.uikit.fuel_list.FuelListSelection
 import com.gasguru.core.uikit.fuel_list.FuelListSelectionModel
-import com.gasguru.core.uikit.theme.FuelPumpTheme
+import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.feature.onboarding.R
 import com.gasguru.feature.onboarding_welcome.viewmodel.OnboardingUiState
@@ -63,7 +63,7 @@ internal fun OnboardingFuelPreferences(
             ) {
                 Text(
                     text = stringResource(id = R.string.welcome_title_fuel_preferences),
-                    style = FuelPumpTheme.typography.h2,
+                    style = GasGuruTheme.typography.h2,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(0.dp, 30.dp, 0.dp, 0.dp)
                 )
@@ -79,7 +79,7 @@ internal fun OnboardingFuelPreferences(
                         }
                     )
                 )
-                FuelPumpButton(
+                GasGuruButton(
                     onClick = {
                         selectedFuel?.let { saveSelection(it.toFuelType()) }
                         navigateToHome()

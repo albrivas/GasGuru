@@ -36,7 +36,7 @@ import com.gasguru.core.uikit.R
 import com.gasguru.core.uikit.components.chip.StatusChip
 import com.gasguru.core.uikit.components.chip.StatusChipModel
 import com.gasguru.core.uikit.theme.AccentRed
-import com.gasguru.core.uikit.theme.FuelPumpTheme
+import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.Neutral300
 import com.gasguru.core.uikit.theme.Neutral500
@@ -105,7 +105,7 @@ fun FuelStationItem(
                             it.toString()
                         }
                     },
-                style = FuelPumpTheme.typography.baseRegular,
+                style = GasGuruTheme.typography.baseRegular,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 color = TextMain
@@ -114,7 +114,7 @@ fun FuelStationItem(
                 modifier = Modifier,
                 text = distance,
                 maxLines = 1,
-                style = FuelPumpTheme.typography.smallRegular,
+                style = GasGuruTheme.typography.smallRegular,
                 color = TextSubtle,
                 overflow = TextOverflow.Ellipsis
             )
