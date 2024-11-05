@@ -28,8 +28,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.gasguru.core.uikit.components.FuelPumpButton
-import com.gasguru.core.uikit.theme.FuelPumpTheme
+import com.gasguru.core.uikit.components.GasGuruButton
+import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.GrayLight
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.feature.onboarding.R
@@ -78,7 +78,7 @@ internal fun OnboardingWelcomeScreen(
         Spacer(modifier = Modifier.height(66.dp))
         Text(
             text = stringResource(id = R.string.welcome),
-            style = FuelPumpTheme.typography.h2
+            style = GasGuruTheme.typography.h2
         )
 
         Spacer(modifier = Modifier.height(28.dp))
@@ -86,7 +86,7 @@ internal fun OnboardingWelcomeScreen(
             text = stringResource(id = R.string.welcome_text),
             color = GrayLight,
             textAlign = TextAlign.Center,
-            style = FuelPumpTheme.typography.baseRegular
+            style = GasGuruTheme.typography.baseRegular
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -94,11 +94,11 @@ internal fun OnboardingWelcomeScreen(
             text = stringResource(id = R.string.welcome_permission),
             color = GrayLight,
             textAlign = TextAlign.Center,
-            style = FuelPumpTheme.typography.baseRegular
+            style = GasGuruTheme.typography.baseRegular
         )
 
         Spacer(modifier = Modifier.weight(1f))
-        FuelPumpButton(
+        GasGuruButton(
             onClick = navigateToSelectFuel,
             enabled = isPermissionGranted,
             text = stringResource(id = R.string.welcome_button),

@@ -24,7 +24,7 @@ import com.gasguru.core.database.model.UserDataEntity
     exportSchema = true
 )
 @TypeConverters(UserDataConverters::class, ListConverters::class)
-abstract class FuelPumpDatabase : RoomDatabase() {
+abstract class GasGuruDatabase : RoomDatabase() {
     abstract fun fuelStationDao(): FuelStationDao
     abstract fun userDataDao(): UserDataDao
     abstract fun recentDao(): RecentSearchQueryDao

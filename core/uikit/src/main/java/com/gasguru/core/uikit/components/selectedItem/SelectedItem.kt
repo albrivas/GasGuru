@@ -25,7 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.R
-import com.gasguru.core.uikit.theme.FuelPumpTheme
+import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.Neutral300
 import com.gasguru.core.uikit.theme.Neutral500
@@ -69,7 +69,7 @@ fun BasicSelectedItem(
         )
         Text(
             modifier = Modifier.weight(1f).padding(start = 8.dp),
-            style = if (isSelected) FuelPumpTheme.typography.baseBold else FuelPumpTheme.typography.baseRegular,
+            style = if (isSelected) GasGuruTheme.typography.baseBold else GasGuruTheme.typography.baseRegular,
             color = Color.Black,
             textAlign = TextAlign.Start,
             text = stringResource(id = title),

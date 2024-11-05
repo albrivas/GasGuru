@@ -3,9 +3,9 @@ package com.gasguru.core.uikit.theme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 
-object FuelPumpTheme {
-    val typography: FuelPumpTypography
+object GasGuruTheme {
+    val typography: GasGuruTypography
         @Composable
         @ReadOnlyComposable
-        get() = LocalFuelPumpTypography.current
+        get() = LocalGasGuruTypography.current
 }

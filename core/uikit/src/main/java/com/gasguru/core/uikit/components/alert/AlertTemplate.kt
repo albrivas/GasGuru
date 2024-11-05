@@ -18,7 +18,7 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.gasguru.core.uikit.components.FuelPumpButton
+import com.gasguru.core.uikit.components.GasGuruButton
 import com.gasguru.core.uikit.theme.GrayLight
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 
@@ -52,7 +52,7 @@ fun AlertTemplate(model: AlertTemplateModel) {
                 }
             },
             bottomBar = {
-                FuelPumpButton(
+                GasGuruButton(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(24.dp),

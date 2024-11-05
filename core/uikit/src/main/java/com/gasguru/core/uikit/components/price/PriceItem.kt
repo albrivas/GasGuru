@@ -21,7 +21,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.R
-import com.gasguru.core.uikit.theme.FuelPumpTheme
+import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.Neutral300
 import com.gasguru.core.uikit.theme.TextSubtle
@@ -51,14 +51,14 @@ fun PriceItem(model: PriceItemModel) = with(model) {
         ) {
             Text(
                 text = fuelName,
-                style = FuelPumpTheme.typography.smallRegular,
+                style = GasGuruTheme.typography.smallRegular,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 color = TextSubtle
             )
             Text(
                 text = price,
-                style = FuelPumpTheme.typography.baseRegular,
+                style = GasGuruTheme.typography.baseRegular,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )

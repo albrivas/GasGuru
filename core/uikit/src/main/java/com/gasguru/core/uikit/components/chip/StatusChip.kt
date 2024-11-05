@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.gasguru.core.uikit.theme.FuelPumpTheme
+import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 
 @Composable
@@ -23,7 +23,7 @@ fun StatusChip(model: StatusChipModel, modifier: Modifier = Modifier) = with(mod
             modifier = Modifier.padding(start = 12.dp, top = 4.dp, end = 12.dp, bottom = 4.dp),
             text = text,
             color = color,
-            style = FuelPumpTheme.typography.baseRegular
+            style = GasGuruTheme.typography.baseRegular
         )
     }
 }

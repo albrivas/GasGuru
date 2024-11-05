@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.gasguru.core.uikit.R
-import com.gasguru.core.uikit.theme.FuelPumpTheme
+import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.Neutral300
 import com.gasguru.core.uikit.theme.Neutral500
@@ -75,14 +75,14 @@ fun InformationCard(model: InformationCardModel) = with(model) {
             ) {
                 Text(
                     text = title,
-                    style = FuelPumpTheme.typography.smallRegular,
+                    style = GasGuruTheme.typography.smallRegular,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
                     color = TextSubtle
                 )
                 Text(
                     text = subtitle,
-                    style = FuelPumpTheme.typography.smallRegular,
+                    style = GasGuruTheme.typography.smallRegular,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
                     color = if (type == InformationCardModel.InformationCardType.EXPANDABLE) Primary500 else TextMain
@@ -131,7 +131,7 @@ fun InformationCard(model: InformationCardModel) = with(model) {
             AnimatedVisibility(visible = open) {
                 Text(
                     text = description,
-                    style = FuelPumpTheme.typography.smallRegular,
+                    style = GasGuruTheme.typography.smallRegular,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.padding(top = 4.dp),
                     color = TextMain
