@@ -122,7 +122,7 @@ internal fun ProfileScreen(uiState: ProfileUiState, event: (ProfileEvents) -> Un
             sheetState = sheetState,
             containerColor = Neutral100,
             contentColor = Neutral100,
-            windowInsets = WindowInsets.navigationBars
+            contentWindowInsets = { WindowInsets.navigationBars }
         ) {
             Column(
                 modifier = Modifier

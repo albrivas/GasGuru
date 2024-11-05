@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -61,12 +62,17 @@ class StationMapViewModel @Inject constructor(
             if (query.length < SEARCH_QUERY_MIN_LENGTH) {
                 flowOf(SearchResultUiState.EmptyQuery)
             } else {
-                getPlacesUseCase(query).map { predictions ->
-                    if (predictions.isEmpty()) {
-                        SearchResultUiState.EmptySearchResult
-                    } else {
-                        SearchResultUiState.Success(predictions)
+                flow {
+                    emit(SearchResultUiState.Loading)
+                    getPlacesUseCase(query).collect { predictions ->
+                        if (predictions.isEmpty()) {
+                            emit(SearchResultUiState.EmptySearchResult)
+                        } else {
+                            emit(SearchResultUiState.Success(predictions))
+                        }
                     }
+                }.catch {
+                    emit(SearchResultUiState.LoadFailed)
                 }
             }
         }.stateIn(
@@ -104,6 +110,7 @@ class StationMapViewModel @Inject constructor(
 
     private fun getStationByCurrentLocation() {
         viewModelScope.launch {
+            _state.update { it.copy(loading = true) }
             userLocation.getCurrentLocation()?.let { location ->
                 getStationByLocation(location)
             }
@@ -123,9 +130,12 @@ class StationMapViewModel @Inject constructor(
 
     private fun getStationByPlace(placeId: String) =
         viewModelScope.launch {
-            getLocationPlaceUseCase(placeId).collect { location ->
-                getStationByLocation(location)
-            }
+            _state.update { it.copy(loading = true) }
+            getLocationPlaceUseCase(placeId)
+                .catch { _state.update { it.copy(loading = false) } }
+                .collect { location ->
+                    getStationByLocation(location)
+                }
         }
 
     private fun centerMapInCurrentLocation() {
@@ -147,14 +157,15 @@ class StationMapViewModel @Inject constructor(
             ) { fuelStations, userData ->
                 Pair(fuelStations, userData)
             }.catch { error ->
-                _state.update { it.copy(error = error) }
+                _state.update { it.copy(error = error, loading = false) }
             }.collect { (fuelStations, userData) ->
                 _state.update {
                     it.copy(
                         fuelStations = fuelStations,
                         selectedType = userData.fuelSelection,
                         centerMap = location.toLatLng(),
-                        zoomLevel = 14f
+                        zoomLevel = 14f,
+                        loading = false
                     )
                 }
             }
