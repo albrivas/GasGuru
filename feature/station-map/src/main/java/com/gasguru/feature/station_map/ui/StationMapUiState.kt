@@ -11,4 +11,5 @@ data class StationMapUiState(
     val error: Throwable? = null,
     val selectedType: FuelType? = null,
     val showListStations: Boolean = false,
+    val loading: Boolean = false,
 )
