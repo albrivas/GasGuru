@@ -20,7 +20,7 @@ import com.gasguru.core.database.model.UserDataEntity
         RecentSearchQueryEntity::class,
         FavoriteStationCrossRef::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = true
 )
 @TypeConverters(UserDataConverters::class, ListConverters::class)
