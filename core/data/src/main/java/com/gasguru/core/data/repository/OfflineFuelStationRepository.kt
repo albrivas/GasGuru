@@ -34,10 +34,10 @@ class OfflineFuelStationRepository @Inject constructor(
     private val ioScope = CoroutineScope(dispatcherIo + SupervisorJob())
 
     override suspend fun addAllStations() = withContext(ioScope.coroutineContext) {
-            remoteDataSource.getListFuelStations().fold(ifLeft = {}, ifRight = { data ->
-                fuelStationDao.insertFuelStation(data.listPriceFuelStation.map { it.asEntity() })
-                offlineUserDataRepository.updateLastUpdate()
-            })
+        remoteDataSource.getListFuelStations().fold(ifLeft = {}, ifRight = { data ->
+            fuelStationDao.insertFuelStation(data.listPriceFuelStation.map { it.asEntity() })
+            offlineUserDataRepository.updateLastUpdate()
+        })
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

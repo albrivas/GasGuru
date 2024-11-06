@@ -28,7 +28,7 @@ class SplashViewModel @Inject constructor(
     }
 
     fun updateFuelStations() = viewModelScope.launch(ioDispatcher) {
-        userData().catch {  }.collect { user ->
+        userData().catch { }.collect { user ->
             checkAndUpdateFuelStations(user.lastUpdate)
         }
     }
