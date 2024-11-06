@@ -1,7 +1,6 @@
 package com.gasguru.core.data.repository
 
 import android.location.Location
-import com.gasguru.core.data.mapper.asEntity
 import com.gasguru.core.database.dao.UserDataDao
 import com.gasguru.core.database.model.FavoriteStationCrossRef
 import com.gasguru.core.database.model.asExternalModel
@@ -19,8 +18,11 @@ class OfflineUserDataRepository @Inject constructor(
     override val userData: Flow<UserData>
         get() = userDataDao.getUserData().map { it.asExternalModel() }
 
-    override suspend fun updateUserData(userData: UserData) =
-        userDataDao.insertUserData(userData.asEntity())
+    override suspend fun updateSelectionFuel(fuelType: String) =
+        userDataDao.updateFuelSelection(selectedFuel = fuelType)
+
+    override suspend fun updateLastUpdate() =
+        userDataDao.updateLastUpdate(lastUpdate = System.currentTimeMillis())
 
     override suspend fun addFavoriteStation(stationId: Int) {
         val userId = getUserId()
@@ -39,9 +41,10 @@ class OfflineUserDataRepository @Inject constructor(
         userDataDao.getUserData().flatMapLatest { userEntity ->
             userDataDao.getUserWithFavoriteStations(userEntity.id)
                 .map { userWithFavorites ->
-                    val updatedStations = userWithFavorites.asExternalModel().favoriteStations.map { station ->
-                        station.copy(distance = station.location.distanceTo(userLocation))
-                    }
+                    val updatedStations =
+                        userWithFavorites.asExternalModel().favoriteStations.map { station ->
+                            station.copy(distance = station.location.distanceTo(userLocation))
+                        }
                     UserWithFavoriteStations(
                         user = userWithFavorites.asExternalModel().user,
                         favoriteStations = updatedStations

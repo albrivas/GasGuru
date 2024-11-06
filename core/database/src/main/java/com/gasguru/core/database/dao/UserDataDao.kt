@@ -18,8 +18,11 @@ interface UserDataDao {
     @Query("SELECT * FROM `user-data` LIMIT 1")
     fun getUserData(): Flow<UserDataEntity>
 
-    @Upsert
-    suspend fun insertUserData(user: UserDataEntity)
+    @Query("UPDATE `user-data` SET fuelSelection = :selectedFuel")
+    suspend fun updateFuelSelection(selectedFuel: String)
+
+    @Query("UPDATE `user-data` SET lastUpdate = :lastUpdate")
+    suspend fun updateLastUpdate(lastUpdate: Long)
 
     @Transaction
     @Query("SELECT * FROM `user-data` WHERE id = :userId")

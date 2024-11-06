@@ -7,7 +7,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface UserDataRepository {
     val userData: Flow<UserData>
-    suspend fun updateUserData(userData: UserData)
+    suspend fun updateSelectionFuel(fuelType: String)
+    suspend fun updateLastUpdate()
     suspend fun addFavoriteStation(stationId: Int)
     suspend fun removeFavoriteStation(stationId: Int)
     fun getUserWithFavoriteStations(userLocation: Location): Flow<UserWithFavoriteStations>
