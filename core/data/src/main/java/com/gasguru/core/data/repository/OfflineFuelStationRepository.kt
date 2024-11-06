@@ -4,7 +4,6 @@ import android.location.Location
 import com.gasguru.core.common.IoDispatcher
 import com.gasguru.core.data.mapper.asEntity
 import com.gasguru.core.database.dao.FuelStationDao
-import com.gasguru.core.database.dao.UserDataDao
 import com.gasguru.core.database.model.asExternalModel
 import com.gasguru.core.database.model.getLocation
 import com.gasguru.core.model.data.FuelStation
@@ -28,7 +27,6 @@ const val PRICE_RANGE = 3
 class OfflineFuelStationRepository @Inject constructor(
     private val fuelStationDao: FuelStationDao,
     private val remoteDataSource: RemoteDataSource,
-    private val userDataDao: UserDataDao,
     @IoDispatcher private val dispatcherIo: CoroutineDispatcher,
     private val offlineUserDataRepository: OfflineUserDataRepository,
 ) : FuelStationRepository {
@@ -36,9 +34,10 @@ class OfflineFuelStationRepository @Inject constructor(
     private val ioScope = CoroutineScope(dispatcherIo + SupervisorJob())
 
     override suspend fun addAllStations() = withContext(ioScope.coroutineContext) {
-        remoteDataSource.getListFuelStations().fold(ifLeft = {}, ifRight = { data ->
-            fuelStationDao.insertFuelStation(data.listPriceFuelStation.map { it.asEntity() })
-        })
+            remoteDataSource.getListFuelStations().fold(ifLeft = {}, ifRight = { data ->
+                fuelStationDao.insertFuelStation(data.listPriceFuelStation.map { it.asEntity() })
+                offlineUserDataRepository.updateLastUpdate()
+            })
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -46,7 +45,7 @@ class OfflineFuelStationRepository @Inject constructor(
         userLocation: Location,
         maxStations: Int,
     ): Flow<List<FuelStation>> =
-        userDataDao.getUserData().flatMapLatest { user ->
+        offlineUserDataRepository.userData.flatMapLatest { user ->
             fuelStationDao.getFuelStations(user.fuelSelection.name).map { items ->
                 val externalModel = items.map { it.asExternalModel() }
                     .sortedBy { it.location.distanceTo(userLocation) }

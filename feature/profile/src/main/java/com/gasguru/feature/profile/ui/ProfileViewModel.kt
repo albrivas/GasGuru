@@ -34,6 +34,6 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun saveSelectionFuel(fuelType: FuelType) = viewModelScope.launch {
-        saveFuelSelectionUseCase(fuelType = fuelType.name)
+        saveFuelSelectionUseCase(fuelType = fuelType)
     }
 }

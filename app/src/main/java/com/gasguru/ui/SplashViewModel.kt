@@ -5,13 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.gasguru.core.common.IoDispatcher
 import com.gasguru.core.domain.GetFuelStationUseCase
 import com.gasguru.core.domain.GetUserDataUseCase
-import com.gasguru.core.domain.UpdateLastUpdateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -22,16 +20,22 @@ import javax.inject.Inject
 class SplashViewModel @Inject constructor(
     private val fuelStation: GetFuelStationUseCase,
     private val userData: GetUserDataUseCase,
-    private val saveLastUpdateUseCase: UpdateLastUpdateUseCase,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
 
-    fun updateFuelStations() = viewModelScope.launch(ioDispatcher) {
-        val user = userData().first()
+    init {
+        getFuelStations()
+    }
 
-        if (!isTimestampWithin30Minutes(user.lastUpdate)) {
+    fun updateFuelStations() = viewModelScope.launch(ioDispatcher) {
+        userData().catch {  }.collect { user ->
+            checkAndUpdateFuelStations(user.lastUpdate)
+        }
+    }
+
+    private fun checkAndUpdateFuelStations(lastUpdate: Long) {
+        if (!isTimestampWithin30Minutes(lastUpdate)) {
             getFuelStations()
-            saveLastUpdateUseCase()
         }
     }
 

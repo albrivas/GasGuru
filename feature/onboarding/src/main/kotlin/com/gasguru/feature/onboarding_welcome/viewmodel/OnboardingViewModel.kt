@@ -30,7 +30,7 @@ class OnboardingViewModel @Inject constructor(
 
     fun saveSelectedFuel(selectedFuel: FuelType) {
         viewModelScope.launch {
-            saveFuelSelectionUseCase(fuelType = selectedFuel.name)
+            saveFuelSelectionUseCase(fuelType = selectedFuel)
         }
     }
 }
