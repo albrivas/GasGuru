@@ -23,19 +23,13 @@ class SplashViewModel @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
 
-    init {
-        getFuelStations()
-    }
-
     fun updateFuelStations() = viewModelScope.launch(ioDispatcher) {
-        userData().catch { }.collect { user ->
-            checkAndUpdateFuelStations(user.lastUpdate)
-        }
-    }
-
-    private fun checkAndUpdateFuelStations(lastUpdate: Long) {
-        if (!isTimestampWithin30Minutes(lastUpdate)) {
-            getFuelStations()
+        userData().catch {
+            getFuelStations() // Is first installation
+        }.collect { user ->
+            if (!isTimestampWithin30Minutes(user.lastUpdate)) {
+                getFuelStations()
+            }
         }
     }
 
