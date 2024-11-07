@@ -36,7 +36,6 @@ import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.Neutral300
 import com.gasguru.core.uikit.theme.Neutral500
-import com.gasguru.core.uikit.theme.Primary500
 import com.gasguru.core.uikit.theme.TextMain
 import com.gasguru.core.uikit.theme.TextSubtle
 
@@ -85,7 +84,7 @@ fun InformationCard(model: InformationCardModel) = with(model) {
                     style = GasGuruTheme.typography.smallRegular,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
-                    color = if (type == InformationCardModel.InformationCardType.EXPANDABLE) Primary500 else TextMain
+                    color = subtitleColor
                 )
             }
 

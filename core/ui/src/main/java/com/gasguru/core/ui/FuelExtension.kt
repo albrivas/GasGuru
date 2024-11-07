@@ -12,6 +12,7 @@ import com.gasguru.core.uikit.theme.AccentGreen
 import com.gasguru.core.uikit.theme.AccentOrange
 import com.gasguru.core.uikit.theme.AccentRed
 import com.gasguru.core.uikit.theme.secondaryLight
+import java.text.DecimalFormat
 import java.time.DayOfWeek
 import java.time.LocalTime
 import java.time.ZonedDateTime
@@ -79,16 +80,19 @@ fun PriceCategory.toColor() = when (this) {
     PriceCategory.EXPENSIVE -> AccentRed
 }
 
-fun FuelType?.getPrice(fuelStation: FuelStation) = when (this) {
-    FuelType.GASOLINE_95 -> "${fuelStation.priceGasoline95E5}"
-    FuelType.GASOLINE_98 -> "${fuelStation.priceGasoline98E5}"
-    FuelType.DIESEL -> "${fuelStation.priceGasoilA}"
-    FuelType.DIESEL_PLUS -> "${fuelStation.priceGasoilPremium}"
-    FuelType.GASOLINE_95_PREMIUM -> "${fuelStation.priceGasoline95E5Premium}"
-    FuelType.GASOLINE_95_E10 -> "${fuelStation.priceGasoline95E10}"
-    FuelType.GASOLINE_98_PREMIUM -> "${fuelStation.priceGasoline98E10}"
-    FuelType.GASOIL_B -> "${fuelStation.priceGasoilB}"
-    null -> "0.0"
+fun FuelType?.getPrice(fuelStation: FuelStation): String {
+    val decimalFormat = DecimalFormat("#.000")
+    return when (this) {
+        FuelType.GASOLINE_95 -> decimalFormat.format(fuelStation.priceGasoline95E5)
+        FuelType.GASOLINE_98 -> decimalFormat.format(fuelStation.priceGasoline98E5)
+        FuelType.DIESEL -> decimalFormat.format(fuelStation.priceGasoilA)
+        FuelType.DIESEL_PLUS -> decimalFormat.format(fuelStation.priceGasoilPremium)
+        FuelType.GASOLINE_95_PREMIUM -> decimalFormat.format(fuelStation.priceGasoline95E5Premium)
+        FuelType.GASOLINE_95_E10 -> decimalFormat.format(fuelStation.priceGasoline95E10)
+        FuelType.GASOLINE_98_PREMIUM -> decimalFormat.format(fuelStation.priceGasoline98E10)
+        FuelType.GASOIL_B -> decimalFormat.format(fuelStation.priceGasoilB)
+        null -> "0.000"
+    }
 }
 
 fun FuelType.getIcon() = when (this) {

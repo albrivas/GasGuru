@@ -46,6 +46,12 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                viewModel.updateFuelStations()
+            }
+        }
+
         splash.setKeepOnScreenCondition {
             when (uiState) {
                 SplashUiState.Loading -> true

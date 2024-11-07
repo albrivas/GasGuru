@@ -47,6 +47,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -341,8 +342,15 @@ fun MapView(
                     ) { MarkerState(position = station.location.toLatLng()) }
                 val isSelected = selectedLocation == station.idServiceStation
 
+                val price by remember(userSelectedFuelType, station) {
+                    derivedStateOf { userSelectedFuelType.getPrice(station) }
+                }
+                val color by remember(station) {
+                    derivedStateOf { station.priceCategory.toColor() }
+                }
+
                 MarkerComposable(
-                    keys = arrayOf(station.idServiceStation),
+                    keys = arrayOf(station.idServiceStation, price, color),
                     state = state,
                     onClick = {
                         selectedLocation = station.idServiceStation

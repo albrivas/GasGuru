@@ -207,7 +207,8 @@ private fun ProfileScreenPreview() {
         ProfileScreen(
             uiState = ProfileUiState.Success(
                 userData = UserData(
-                    fuelSelection = FuelType.GASOLINE_95
+                    fuelSelection = FuelType.GASOLINE_95,
+                    lastUpdate = 0L,
                 )
             ),
             event = { }
