@@ -18,7 +18,9 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
@@ -45,6 +47,7 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -138,6 +141,7 @@ fun DetailStationContent(station: FuelStation) {
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
+            .verticalScroll(rememberScrollState())
     ) {
         val context = LocalContext.current
         val isOpen = if (station.isStationOpen()) "Open" else "Closed"
@@ -234,6 +238,7 @@ fun DetailStationContent(station: FuelStation) {
 
 @Composable
 fun FuelTypes(station: FuelStation) {
+
     Text(
         text = stringResource(id = R.string.fuel_types),
         style = GasGuruTheme.typography.h5,
@@ -241,10 +246,12 @@ fun FuelTypes(station: FuelStation) {
         overflow = TextOverflow.Ellipsis
     )
     val fuelItems = station.getFuelPriceItems()
+    val height = calculateHeight(fuelItems.size)
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier
             .fillMaxWidth()
+            .height(height)
             .padding(top = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -253,6 +260,11 @@ fun FuelTypes(station: FuelStation) {
             PriceItem(model = item)
         }
     }
+}
+
+fun calculateHeight(size: Int): Dp {
+    val numRanges = (size + 1) / 2
+    return (numRanges * 85).dp
 }
 
 @Composable
