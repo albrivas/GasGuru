@@ -97,6 +97,7 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":core:data"))
     implementation(project(":core:domain"))
+    implementation(project(":core:common"))
     implementation(project(":feature:onboarding"))
     implementation(project(":feature:detail-station"))
     implementation(project(":feature:favorite-list-station"))

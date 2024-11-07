@@ -3,9 +3,8 @@ package com.gasguru.feature.profile.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gasguru.core.domain.GetUserDataUseCase
-import com.gasguru.core.domain.SaveUserDataUseCase
+import com.gasguru.core.domain.SaveFuelSelectionUseCase
 import com.gasguru.core.model.data.FuelType
-import com.gasguru.core.model.data.UserData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -16,11 +15,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    getUserDataUseCase: GetUserDataUseCase,
-    private val saveUserDataUseCase: SaveUserDataUseCase,
+    getUserData: GetUserDataUseCase,
+    private val saveFuelSelectionUseCase: SaveFuelSelectionUseCase,
 ) : ViewModel() {
 
-    val userData: StateFlow<ProfileUiState> = getUserDataUseCase().map {
+    val userData: StateFlow<ProfileUiState> = getUserData().map {
         ProfileUiState.Success(it)
     }.stateIn(
         scope = viewModelScope,
@@ -35,6 +34,6 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun saveSelectionFuel(fuelType: FuelType) = viewModelScope.launch {
-        saveUserDataUseCase(UserData(fuelSelection = fuelType))
+        saveFuelSelectionUseCase(fuelType = fuelType)
     }
 }

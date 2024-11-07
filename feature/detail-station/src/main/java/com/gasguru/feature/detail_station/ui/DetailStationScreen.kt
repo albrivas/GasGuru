@@ -270,6 +270,7 @@ fun InformationStation(station: FuelStation, navigateToGoogleMaps: () -> Unit) {
                 subtitle = if (station.isStationOpen()) "Open" else "Close",
                 description = station.scheduleList.joinToString(separator = "\n"),
                 type = InformationCardModel.InformationCardType.EXPANDABLE,
+                subtitleColor = if (station.isStationOpen()) Primary500 else AccentRed
             )
         )
         InformationCard(

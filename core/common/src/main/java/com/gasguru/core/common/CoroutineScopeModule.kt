@@ -31,6 +31,6 @@ class CoroutineScopeModule {
     @IoScope
     @Provides
     fun providesCoroutineScopeIo(
-        @MainDispatcher ioScope: CoroutineDispatcher,
+        @IoDispatcher ioScope: CoroutineDispatcher,
     ): CoroutineScope = CoroutineScope(SupervisorJob() + ioScope)
 }
