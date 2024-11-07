@@ -18,7 +18,9 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
@@ -45,6 +47,7 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -138,6 +141,7 @@ fun DetailStationContent(station: FuelStation) {
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
+            .verticalScroll(rememberScrollState())
     ) {
         val context = LocalContext.current
         val isOpen = if (station.isStationOpen()) "Open" else "Closed"
@@ -241,10 +245,12 @@ fun FuelTypes(station: FuelStation) {
         overflow = TextOverflow.Ellipsis
     )
     val fuelItems = station.getFuelPriceItems()
+    val height = calculateHeight(fuelItems.size)
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier
             .fillMaxWidth()
+            .height(height)
             .padding(top = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -253,6 +259,11 @@ fun FuelTypes(station: FuelStation) {
             PriceItem(model = item)
         }
     }
+}
+
+fun calculateHeight(size: Int): Dp {
+    val numRanges = (size + 1) / 2
+    return (numRanges * 85).dp
 }
 
 @Composable
@@ -264,11 +275,19 @@ fun InformationStation(station: FuelStation, navigateToGoogleMaps: () -> Unit) {
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
+        val textOpenClose = if (station.isStationOpen()) {
+            stringResource(
+                id = R.string.open
+            )
+        } else {
+            stringResource(id = R.string.close)
+        }
+
         InformationCard(
             model = InformationCardModel(
                 title = stringResource(id = R.string.schedule),
-                subtitle = if (station.isStationOpen()) "Open" else "Close",
-                description = station.scheduleList.joinToString(separator = "\n"),
+                subtitle = textOpenClose,
+                description = formatSchedule(station.schedule),
                 type = InformationCardModel.InformationCardType.EXPANDABLE,
                 subtitleColor = if (station.isStationOpen()) Primary500 else AccentRed
             )
@@ -339,6 +358,58 @@ fun HeaderStation(station: FuelStation, onBack: () -> Unit, onFavoriteClick: (Bo
                 contentDescription = "Favorite icon",
                 tint = if (station.isFavorite) AccentRed else Color.Black,
             )
+        }
+    }
+}
+
+@Composable
+fun formatSchedule(schedule: String): String {
+    return when {
+        schedule.contains("24H", ignoreCase = true) -> stringResource(R.string.open_24h)
+        else -> {
+            val daysOfWeek = mapOf(
+                "L" to stringResource(R.string.monday_short),
+                "M" to stringResource(R.string.tuesday_short),
+                "X" to stringResource(R.string.wednesday_short),
+                "J" to stringResource(R.string.thursday_short),
+                "V" to stringResource(R.string.friday_short),
+                "S" to stringResource(R.string.saturday_short),
+                "D" to stringResource(R.string.sunday_short)
+            )
+
+            val parts = schedule.split(";").map { it.trim() }
+            val formattedParts = parts.map { part ->
+                val dayRange = part.substringBefore(":")
+                val timeRange = part.substringAfter(":")
+
+                val formattedDays = when (dayRange.uppercase(java.util.Locale.getDefault())) {
+                    "L-V" -> "${daysOfWeek["L"]}-${daysOfWeek["V"]}"
+                    "L-S" -> "${daysOfWeek["L"]}-${daysOfWeek["S"]}"
+                    "L-D" -> "${daysOfWeek["L"]}-${daysOfWeek["D"]}"
+                    "M-V" -> "${daysOfWeek["M"]}-${daysOfWeek["V"]}"
+                    "M-S" -> "${daysOfWeek["M"]}-${daysOfWeek["S"]}"
+                    "M-D" -> "${daysOfWeek["M"]}-${daysOfWeek["D"]}"
+                    "X-V" -> "${daysOfWeek["X"]}-${daysOfWeek["V"]}"
+                    "X-S" -> "${daysOfWeek["X"]}-${daysOfWeek["S"]}"
+                    "X-D" -> "${daysOfWeek["X"]}-${daysOfWeek["D"]}"
+                    "J-V" -> "${daysOfWeek["J"]}-${daysOfWeek["V"]}"
+                    "J-S" -> "${daysOfWeek["J"]}-${daysOfWeek["S"]}"
+                    "J-D" -> "${daysOfWeek["J"]}-${daysOfWeek["D"]}"
+                    "V-S" -> "${daysOfWeek["V"]}-${daysOfWeek["S"]}"
+                    "V-D" -> "${daysOfWeek["V"]}-${daysOfWeek["D"]}"
+                    "S-D" -> "${daysOfWeek["S"]}-${daysOfWeek["D"]}"
+                    "L", "M", "X", "J", "V", "S", "D" -> daysOfWeek[
+                        dayRange.uppercase(
+                            java.util.Locale.getDefault()
+                        )
+                    ].toString()
+                    else -> dayRange // Default to original string if not a recognized format
+                }
+
+                "$formattedDays $timeRange"
+            }.filter { it.isNotBlank() } // Filter out empty strings
+
+            formattedParts.joinToString(separator = "\n")
         }
     }
 }

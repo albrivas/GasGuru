@@ -55,8 +55,6 @@ data class FuelStation(
     }
 
     fun formatDirection(): String = direction.lowercase().replaceFirstChar(Char::uppercase)
-
-    val scheduleList get() = schedule.split(";").map { it.trim() }
 }
 
 fun previewFuelStationDomain() = FuelStation(
