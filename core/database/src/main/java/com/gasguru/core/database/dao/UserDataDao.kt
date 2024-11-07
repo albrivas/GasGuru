@@ -2,6 +2,8 @@ package com.gasguru.core.database.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Upsert
@@ -18,8 +20,14 @@ interface UserDataDao {
     @Query("SELECT * FROM `user-data` LIMIT 1")
     fun getUserData(): Flow<UserDataEntity>
 
-    @Upsert
-    suspend fun insertUserData(user: UserDataEntity)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertUserData(userData: UserDataEntity)
+
+    @Query("UPDATE `user-data` SET fuelSelection = :selectedFuel")
+    suspend fun updateFuelSelection(selectedFuel: String)
+
+    @Query("UPDATE `user-data` SET lastUpdate = :lastUpdate")
+    suspend fun updateLastUpdate(lastUpdate: Long)
 
     @Transaction
     @Query("SELECT * FROM `user-data` WHERE id = :userId")
