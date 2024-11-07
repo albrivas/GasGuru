@@ -9,4 +9,12 @@
     <string name="schedule">Opening hours</string>
     <string name="fuel_types">Fuel types</string>
     <string name="station_detail">Details</string>
+    <string name="open_24h">24 hours</string>
+    <string name="monday_short">Monday</string>
+    <string name="tuesday_short">Tuesday</string>
+    <string name="wednesday_short">Wednesday</string>
+    <string name="thursday_short">Thursday</string>
+    <string name="friday_short">Friday</string>
+    <string name="saturday_short">Saturday</string>
+    <string name="sunday_short">Sunday</string>
 </resources>
