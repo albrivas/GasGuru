@@ -12,6 +12,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -209,7 +210,7 @@ internal fun StationMapScreen(
                         Text(
                             modifier = Modifier.clickable {
                                 coroutine.launch {
-                                    scaffoldState.bottomSheetState.expand()
+                                    scaffoldState.bottomSheetState.partialExpand()
                                 }
                             },
                             text = stringResource(id = R.string.sheet_button),
@@ -225,11 +226,10 @@ internal fun StationMapScreen(
                 )
             }
         },
-        content = { innerPadding ->
+        content = {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding)
             ) {
                 SearchPlaces(
                     searchQuery = searchQuery,
@@ -335,6 +335,7 @@ fun MapView(
             googleMapOptionsFactory = { GoogleMapOptions().mapId(BuildConfig.googleStyleId) },
             uiSettings = uiSettings,
             properties = mapProperties,
+            contentPadding = PaddingValues(bottom = 60.dp)
         ) {
             stations.forEach { station ->
                 val state =
@@ -380,7 +381,7 @@ fun FABLocation(
     event: (StationMapEvent) -> Unit = {},
 ) {
     Column(
-        modifier = modifier.padding(16.dp),
+        modifier = modifier.padding(horizontal = 16.dp, vertical = 76.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         FloatingActionButton(
