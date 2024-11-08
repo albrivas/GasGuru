@@ -6,6 +6,7 @@ on:
 
 jobs:
   build:
+    if: ${{ github.actor != 'dependabot[bot]' }}
     name: Build
     runs-on: ubuntu-22.04
     steps:
@@ -48,7 +49,7 @@ jobs:
           sudo udevadm trigger --name-match=kvm
 
       - name: Run connected test
-        uses: ReactiveCircus/android-emulator-runner@v2.32.0
+        uses: ReactiveCircus/android-emulator-runner@v2.33.0
         with:
           working-directory: ./
           api-level: 34
