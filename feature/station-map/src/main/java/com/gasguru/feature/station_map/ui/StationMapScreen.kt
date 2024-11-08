@@ -71,7 +71,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.gasguru.core.common.centerOnLocation
+import com.gasguru.core.common.centerOnMap
 import com.gasguru.core.common.toLatLng
 import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.FuelType
@@ -138,9 +138,9 @@ internal fun StationMapScreen(
         position = CameraPosition.fromLatLngZoom(LatLng(40.0, -4.0), 5.5f)
     }
 
-    LaunchedEffect(key1 = centerMap) {
-        centerMap?.let {
-            cameraState.centerOnLocation(location = centerMap, zoomLevel = zoomLevel)
+    LaunchedEffect(key1 = mapBounds) {
+        mapBounds?.let {
+            cameraState.centerOnMap(bounds = mapBounds, padding = 60)
         }
         event(StationMapEvent.ResetMapCenter)
     }
@@ -384,7 +384,6 @@ fun FABLocation(
     ) {
         FloatingActionButton(
             onClick = {
-                event(StationMapEvent.CenterMapInCurrentLocation)
                 event(StationMapEvent.GetStationByCurrentLocation)
             },
             modifier = modifier,
