@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                if(returnedFromBackground) {
+                if (returnedFromBackground) {
                     viewModel.updateFuelStations()
                     returnedFromBackground = false
                 }

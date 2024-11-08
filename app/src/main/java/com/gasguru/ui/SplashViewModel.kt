@@ -23,6 +23,10 @@ class SplashViewModel @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
 
+    init {
+        getFuelStations()
+    }
+
     fun updateFuelStations() = viewModelScope.launch(ioDispatcher) {
         userData().catch {
             getFuelStations() // Is first installation
