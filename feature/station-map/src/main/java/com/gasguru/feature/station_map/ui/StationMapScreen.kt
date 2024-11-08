@@ -91,6 +91,7 @@ import com.gasguru.core.uikit.theme.Neutral100
 import com.gasguru.core.uikit.theme.Neutral300
 import com.gasguru.core.uikit.theme.Primary600
 import com.gasguru.core.uikit.theme.TextSubtle
+import com.gasguru.feature.station_map.BuildConfig
 import com.gasguru.feature.station_map.R
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
@@ -331,7 +332,7 @@ fun MapView(
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraState,
-            googleMapOptionsFactory = { GoogleMapOptions().mapId("da696d048f7d52b8") },
+            googleMapOptionsFactory = { GoogleMapOptions().mapId(BuildConfig.googleStyleId) },
             uiSettings = uiSettings,
             properties = mapProperties,
         ) {
