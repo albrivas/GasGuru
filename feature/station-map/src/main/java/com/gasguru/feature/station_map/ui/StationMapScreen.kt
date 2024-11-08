@@ -12,6 +12,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -71,7 +72,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.gasguru.core.common.centerOnLocation
+import com.gasguru.core.common.centerOnMap
 import com.gasguru.core.common.toLatLng
 import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.FuelType
@@ -91,6 +92,7 @@ import com.gasguru.core.uikit.theme.Neutral100
 import com.gasguru.core.uikit.theme.Neutral300
 import com.gasguru.core.uikit.theme.Primary600
 import com.gasguru.core.uikit.theme.TextSubtle
+import com.gasguru.feature.station_map.BuildConfig
 import com.gasguru.feature.station_map.R
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
@@ -138,9 +140,9 @@ internal fun StationMapScreen(
         position = CameraPosition.fromLatLngZoom(LatLng(40.0, -4.0), 5.5f)
     }
 
-    LaunchedEffect(key1 = centerMap) {
-        centerMap?.let {
-            cameraState.centerOnLocation(location = centerMap, zoomLevel = zoomLevel)
+    LaunchedEffect(key1 = mapBounds) {
+        mapBounds?.let {
+            cameraState.centerOnMap(bounds = mapBounds, padding = 60)
         }
         event(StationMapEvent.ResetMapCenter)
     }
@@ -208,7 +210,7 @@ internal fun StationMapScreen(
                         Text(
                             modifier = Modifier.clickable {
                                 coroutine.launch {
-                                    scaffoldState.bottomSheetState.expand()
+                                    scaffoldState.bottomSheetState.partialExpand()
                                 }
                             },
                             text = stringResource(id = R.string.sheet_button),
@@ -224,11 +226,10 @@ internal fun StationMapScreen(
                 )
             }
         },
-        content = { innerPadding ->
+        content = {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding)
             ) {
                 SearchPlaces(
                     searchQuery = searchQuery,
@@ -331,9 +332,10 @@ fun MapView(
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraState,
-            googleMapOptionsFactory = { GoogleMapOptions().mapId("da696d048f7d52b8") },
+            googleMapOptionsFactory = { GoogleMapOptions().mapId(BuildConfig.googleStyleId) },
             uiSettings = uiSettings,
             properties = mapProperties,
+            contentPadding = PaddingValues(bottom = 60.dp)
         ) {
             stations.forEach { station ->
                 val state =
@@ -379,12 +381,11 @@ fun FABLocation(
     event: (StationMapEvent) -> Unit = {},
 ) {
     Column(
-        modifier = modifier.padding(16.dp),
+        modifier = modifier.padding(horizontal = 16.dp, vertical = 76.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         FloatingActionButton(
             onClick = {
-                event(StationMapEvent.CenterMapInCurrentLocation)
                 event(StationMapEvent.GetStationByCurrentLocation)
             },
             modifier = modifier,
