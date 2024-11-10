@@ -271,7 +271,6 @@ fun FuelTypes(station: FuelStation, lastUpdate: Long) {
             overflow = TextOverflow.Ellipsis
         )
     }
-
 }
 
 fun calculateHeight(size: Int): Dp {
@@ -375,7 +374,6 @@ fun HeaderStation(station: FuelStation, onBack: () -> Unit, onFavoriteClick: (Bo
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
 private fun DetailStationPreview() {
@@ -387,7 +385,8 @@ private fun DetailStationPreview() {
                     schedule = "L-V: 06:00-22:00; S: 07:00-22:00; D: 08:00-22:00",
                     brandStationBrandsType = FuelStationBrandsType.AZUL_OIL
                 )
-            ), lastUpdate = 0
+            ),
+            lastUpdate = 0
         )
     }
 }
