@@ -17,4 +17,12 @@
     <string name="friday_short">Friday</string>
     <string name="saturday_short">Saturday</string>
     <string name="sunday_short">Sunday</string>
+    <string name="update_now">Update now</string>
+    <string name="update_minute_ago">Update 1 minute ago</string>
+    <string name="update_minutes_ago">Update %d minutes ago</string>
+    <string name="update_hour_ago">Update 1 hour ago</string>
+    <string name="update_hours_ago">Update %d hours ago</string>
+    <string name="update_day_ago">Update 1 day ago</string>
+    <string name="update_days_ago">Update %d days ago</string>
+    <string name="update_long_ago">Update a long time ago</string>
 </resources>
