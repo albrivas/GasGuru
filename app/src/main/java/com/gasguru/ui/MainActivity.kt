@@ -25,6 +25,7 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
 
     private val viewModel: SplashViewModel by viewModels()
+    private var returnedFromBackground = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splash = installSplashScreen()
@@ -48,7 +49,10 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                viewModel.updateFuelStations()
+                if (returnedFromBackground) {
+                    viewModel.updateFuelStations()
+                    returnedFromBackground = false
+                }
             }
         }
 
@@ -70,5 +74,10 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        returnedFromBackground = true
     }
 }
