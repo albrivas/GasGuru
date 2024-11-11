@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gasguru.core.data.repository.LocationTracker
 import com.gasguru.core.domain.GetFuelStationByIdUseCase
+import com.gasguru.core.domain.GetUserDataUseCase
 import com.gasguru.core.domain.RemoveFavoriteStationUseCase
 import com.gasguru.core.domain.SaveFavoriteStationUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,6 +26,7 @@ class DetailStationViewModel @Inject constructor(
     userLocation: LocationTracker,
     private val saveFavoriteStationUseCase: SaveFavoriteStationUseCase,
     private val removeFavoriteStationUseCase: RemoveFavoriteStationUseCase,
+    userDataUseCase: GetUserDataUseCase,
 ) : ViewModel() {
 
     private val id: Int = checkNotNull(savedStateHandle["idServiceStation"])
@@ -51,4 +53,12 @@ class DetailStationViewModel @Inject constructor(
             removeFavoriteStationUseCase(stationId = id)
         }
     }
+
+    val lastUpdate: StateFlow<Long> = userDataUseCase().map {
+        it.lastUpdate
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = 0L,
+    )
 }
