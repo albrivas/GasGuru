@@ -1,6 +1,8 @@
 package com.gasguru.core.data.di
 
 import com.gasguru.core.data.repository.FuelStationRepository
+import com.gasguru.core.data.repository.GeocoderAddress
+import com.gasguru.core.data.repository.GeocoderAddressImpl
 import com.gasguru.core.data.repository.LocationTracker
 import com.gasguru.core.data.repository.LocationTrackerRepository
 import com.gasguru.core.data.repository.OfflineFuelStationRepository
@@ -25,36 +27,41 @@ interface DataModule {
 
     @Binds
     fun bindsFuelStationRepository(
-        fuelStationRepository: OfflineFuelStationRepository
+        fuelStationRepository: OfflineFuelStationRepository,
     ): FuelStationRepository
 
     @Binds
     fun bindRemoteDataSourceImp(
-        remoteDataSource: RemoteDataSourceImp
+        remoteDataSource: RemoteDataSourceImp,
     ): RemoteDataSource
 
     @Binds
     fun bindUserDataRepository(
-        userDataRepository: OfflineUserDataRepository
+        userDataRepository: OfflineUserDataRepository,
     ): UserDataRepository
 
     @Binds
     fun bindLocationTrackerRepository(
-        locationTrackerRepository: LocationTrackerRepository
+        locationTrackerRepository: LocationTrackerRepository,
     ): LocationTracker
 
     @Binds
     fun bindPlacesRepository(
-        placesRepository: PlacesRepositoryImp
+        placesRepository: PlacesRepositoryImp,
     ): PlacesRepository
 
     @Binds
     fun bindPlacesDataSource(
-        placesDataSource: PlacesDataSourceImp
+        placesDataSource: PlacesDataSourceImp,
     ): PlacesDataSource
 
     @Binds
     fun bindRecentSearchRepository(
-        recentSearchRepository: OfflineRecentSearchRepositoryImp
+        recentSearchRepository: OfflineRecentSearchRepositoryImp,
     ): OfflineRecentSearchRepository
+
+    @Binds
+    fun bindGeocoderAddress(
+        geocoderAddress: GeocoderAddressImpl,
+    ): GeocoderAddress
 }
