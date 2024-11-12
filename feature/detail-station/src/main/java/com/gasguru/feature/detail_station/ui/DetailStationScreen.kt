@@ -133,7 +133,11 @@ internal fun DetailStationScreen(
                         .background(color = Neutral100)
                         .padding(padding)
                 ) {
-                    DetailStationContent(station = uiState.station, lastUpdate = lastUpdate)
+                    DetailStationContent(
+                        station = uiState.station,
+                        lastUpdate = lastUpdate,
+                        address = uiState.address
+                    )
                 }
             }
         }
@@ -141,7 +145,7 @@ internal fun DetailStationScreen(
 }
 
 @Composable
-fun DetailStationContent(station: FuelStation, lastUpdate: Long) {
+fun DetailStationContent(station: FuelStation, lastUpdate: Long, address: String?) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -236,6 +240,7 @@ fun DetailStationContent(station: FuelStation, lastUpdate: Long) {
         Spacer(modifier = Modifier.height(24.dp))
         InformationStation(
             station = station,
+            address = address,
             navigateToGoogleMaps = { startRoute(context = context, location = station.location) }
         )
     }
@@ -279,7 +284,7 @@ fun calculateHeight(size: Int): Dp {
 }
 
 @Composable
-fun InformationStation(station: FuelStation, navigateToGoogleMaps: () -> Unit) {
+fun InformationStation(station: FuelStation, address: String?, navigateToGoogleMaps: () -> Unit) {
     Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text(
             text = stringResource(id = R.string.station_detail),
@@ -307,7 +312,7 @@ fun InformationStation(station: FuelStation, navigateToGoogleMaps: () -> Unit) {
         InformationCard(
             model = InformationCardModel(
                 title = stringResource(id = R.string.direction),
-                subtitle = station.formatDirection(),
+                subtitle = address ?: station.formatDirection(),
                 icon = com.gasguru.core.uikit.R.drawable.ic_direction,
                 onClick = navigateToGoogleMaps,
                 type = InformationCardModel.InformationCardType.NONE
@@ -323,7 +328,7 @@ fun HeaderStation(station: FuelStation, onBack: () -> Unit, onFavoriteClick: (Bo
         zoom = 17,
         width = 400,
         height = 240,
-        apiKey = BuildConfig.staticMapApiKey
+        apiKey = BuildConfig.googleApiKey
     )
     Box(modifier = Modifier.fillMaxWidth()) {
         AsyncImage(
@@ -384,7 +389,7 @@ private fun DetailStationPreview() {
                     isFavorite = true,
                     schedule = "L-V: 06:00-22:00; S: 07:00-22:00; D: 08:00-22:00",
                     brandStationBrandsType = FuelStationBrandsType.AZUL_OIL
-                )
+                ), address = null
             ),
             lastUpdate = 0
         )
