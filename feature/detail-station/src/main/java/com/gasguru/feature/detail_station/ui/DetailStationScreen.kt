@@ -389,7 +389,8 @@ private fun DetailStationPreview() {
                     isFavorite = true,
                     schedule = "L-V: 06:00-22:00; S: 07:00-22:00; D: 08:00-22:00",
                     brandStationBrandsType = FuelStationBrandsType.AZUL_OIL
-                ), address = null
+                ),
+                address = null
             ),
             lastUpdate = 0
         )

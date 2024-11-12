@@ -83,7 +83,7 @@ fun InformationCard(model: InformationCardModel) = with(model) {
                     text = subtitle,
                     style = GasGuruTheme.typography.smallRegular,
                     overflow = TextOverflow.Ellipsis,
-                    maxLines = 1,
+                    maxLines = 8,
                     color = subtitleColor
                 )
             }
