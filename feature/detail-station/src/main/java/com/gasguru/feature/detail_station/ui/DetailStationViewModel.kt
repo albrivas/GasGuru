@@ -3,6 +3,7 @@ package com.gasguru.feature.detail_station.ui
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gasguru.core.data.repository.GeocoderAddress
 import com.gasguru.core.data.repository.LocationTracker
 import com.gasguru.core.domain.GetFuelStationByIdUseCase
 import com.gasguru.core.domain.GetUserDataUseCase
@@ -12,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -27,6 +29,7 @@ class DetailStationViewModel @Inject constructor(
     private val saveFavoriteStationUseCase: SaveFavoriteStationUseCase,
     private val removeFavoriteStationUseCase: RemoveFavoriteStationUseCase,
     userDataUseCase: GetUserDataUseCase,
+    geocoderAddress: GeocoderAddress,
 ) : ViewModel() {
 
     private val id: Int = checkNotNull(savedStateHandle["idServiceStation"])
@@ -34,10 +37,18 @@ class DetailStationViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     val fuelStation: StateFlow<DetailStationUiState> = userLocation.getLastKnownLocation
         .flatMapLatest { location ->
-            location?.let {
-                getFuelStationByIdUseCase(id = id, userLocation = location).map { station ->
-                    DetailStationUiState.Success(station)
-                }
+            location?.let { safeLocation ->
+                getFuelStationByIdUseCase(id = id, userLocation = safeLocation)
+                    .flatMapLatest { station ->
+                        geocoderAddress.getAddressFromLocation(
+                            latitude = station.location.latitude,
+                            longitude = station.location.longitude
+                        ).map {
+                            DetailStationUiState.Success(station = station, address = it)
+                        }
+                    }.catch {
+                        DetailStationUiState.Error
+                    }
             } ?: flowOf(DetailStationUiState.Error)
         }
         .stateIn(
