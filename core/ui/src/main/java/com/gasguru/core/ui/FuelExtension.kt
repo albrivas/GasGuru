@@ -71,6 +71,15 @@ fun FuelStationBrandsType.toBrandStationIcon() = when (this) {
     FuelStationBrandsType.FARRUCO -> FuelStationIcons.Farruco
     FuelStationBrandsType.REPOSTAR -> FuelStationIcons.Repostar
     FuelStationBrandsType.UNKOWN -> FuelStationIcons.Uknown
+    FuelStationBrandsType.CAMPSA -> FuelStationIcons.Campsa
+    FuelStationBrandsType.AUTONETOIL -> FuelStationIcons.Autonetoil
+    FuelStationBrandsType.PETROPRIX -> FuelStationIcons.Petroprix
+    FuelStationBrandsType.ECONOIL -> FuelStationIcons.Econoil
+    FuelStationBrandsType.FISCOGAS -> FuelStationIcons.Fiscogas
+    FuelStationBrandsType.ENERGY_CARBURANTES -> FuelStationIcons.EnergyCarburantes
+    FuelStationBrandsType.AVIA -> FuelStationIcons.Avia
+    FuelStationBrandsType.GM_FUEL -> FuelStationIcons.GmFuel
+    FuelStationBrandsType.VALCARCE -> FuelStationIcons.Valcarce
 }
 
 fun PriceCategory.toColor() = when (this) {

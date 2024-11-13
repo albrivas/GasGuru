@@ -338,7 +338,7 @@ fun HeaderStation(station: FuelStation, onBack: () -> Unit, onFavoriteClick: (Bo
                 .background(Color.Gray),
             model = staticMapUrl,
             contentDescription = "Detail station map",
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.FillBounds
         )
         IconButton(
             modifier = Modifier
