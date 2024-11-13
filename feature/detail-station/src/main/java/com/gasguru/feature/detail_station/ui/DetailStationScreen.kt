@@ -215,7 +215,7 @@ fun DetailStationContent(station: FuelStation, lastUpdate: Long, address: String
                     .size(80.dp)
                     .clip(CircleShape)
                     .border(
-                        width = 1.dp,
+                        width = 2.dp,
                         color = Neutral300,
                         shape = CircleShape
                     )
@@ -230,7 +230,7 @@ fun DetailStationContent(station: FuelStation, lastUpdate: Long, address: String
                     contentDescription = "Fuel station brand",
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(4.dp)
+                        .padding(6.dp)
                         .clip(CircleShape)
                 )
             }

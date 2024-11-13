@@ -53,6 +53,7 @@ import com.gasguru.core.uikit.theme.TextSubtle
 import com.gasguru.feature.profile.R
 import kotlinx.coroutines.launch
 import com.gasguru.core.ui.R as RUi
+import com.gasguru.core.uikit.R as RUikit
 
 @Composable
 internal fun ProfileScreenRoute(viewModel: ProfileViewModel = hiltViewModel()) {
@@ -175,7 +176,7 @@ fun SuccessContent(userData: UserData, showSheet: () -> Unit) {
             model = com.gasguru.core.uikit.components.settings.SettingItemModel(
                 title = stringResource(id = R.string.fuel_selection),
                 selection = stringResource(id = userData.fuelSelection.translation()),
-                icon = R.drawable.ic_fuel_station,
+                icon = RUikit.drawable.ic_fuel_station,
                 onClick = { showSheet() },
             ),
             modifier = Modifier.testTag("fuel_setting_item")
