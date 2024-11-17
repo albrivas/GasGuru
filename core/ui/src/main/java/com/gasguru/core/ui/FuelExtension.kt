@@ -70,7 +70,7 @@ fun FuelStationBrandsType.toBrandStationIcon() = when (this) {
     FuelStationBrandsType.AZUL_OIL -> FuelStationIcons.AzulOil
     FuelStationBrandsType.FARRUCO -> FuelStationIcons.Farruco
     FuelStationBrandsType.REPOSTAR -> FuelStationIcons.Repostar
-    FuelStationBrandsType.UNKOWN -> FuelStationIcons.Uknown
+    FuelStationBrandsType.UNKNOWN -> FuelStationIcons.Uknown
     FuelStationBrandsType.CAMPSA -> FuelStationIcons.Campsa
     FuelStationBrandsType.AUTONETOIL -> FuelStationIcons.Autonetoil
     FuelStationBrandsType.PETROPRIX -> FuelStationIcons.Petroprix

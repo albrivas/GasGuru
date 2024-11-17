@@ -124,7 +124,7 @@ fun String.toBrandStation(): FuelStationBrandsType {
     brandMap.forEach { (key, value) ->
         if (brandNameLowercase.contains(key)) return value
     }
-    return FuelStationBrandsType.UNKOWN
+    return FuelStationBrandsType.UNKNOWN
 }
 
 fun FuelStationEntity.getLocation() = Location("").apply {
