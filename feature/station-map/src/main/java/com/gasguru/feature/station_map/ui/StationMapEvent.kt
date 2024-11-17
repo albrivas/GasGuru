@@ -11,3 +11,7 @@ sealed class StationMapEvent {
     data class UpdateSearchQuery(val query: String) : StationMapEvent()
     data class ShowListStations(val show: Boolean) : StationMapEvent()
 }
+
+sealed class FiltersEvent {
+    data class UpdateBrandFilter(val selected: List<String>) : FiltersEvent()
+}

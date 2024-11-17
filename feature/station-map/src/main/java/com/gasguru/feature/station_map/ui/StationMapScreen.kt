@@ -9,6 +9,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -75,12 +76,18 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.common.centerOnMap
 import com.gasguru.core.common.toLatLng
 import com.gasguru.core.model.data.FuelStation
+import com.gasguru.core.model.data.FuelStationBrandsType
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.RecentSearchQuery
 import com.gasguru.core.model.data.SearchPlace
 import com.gasguru.core.ui.getPrice
 import com.gasguru.core.ui.toBrandStationIcon
 import com.gasguru.core.ui.toColor
+import com.gasguru.core.uikit.components.chip.FilterType
+import com.gasguru.core.uikit.components.chip.SelectableFilter
+import com.gasguru.core.uikit.components.chip.SelectableFilterModel
+import com.gasguru.core.uikit.components.filter_sheet.FilterSheet
+import com.gasguru.core.uikit.components.filter_sheet.FilterSheetModel
 import com.gasguru.core.uikit.components.fuelItem.FuelStationItem
 import com.gasguru.core.uikit.components.fuelItem.FuelStationItemModel
 import com.gasguru.core.uikit.components.marker.StationMarker
@@ -116,11 +123,14 @@ fun StationMapScreenRoute(
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val searchResult by viewModel.searchResultUiState.collectAsStateWithLifecycle()
     val recentSearchQuery by viewModel.recentSearchQueriesUiState.collectAsStateWithLifecycle()
+    val filterGroup by viewModel.filterState.collectAsStateWithLifecycle()
     StationMapScreen(
         uiState = state,
         searchQuery = searchQuery,
         searchResultUiState = searchResult,
         recentSearchQueries = recentSearchQuery,
+        filterUiState = filterGroup,
+        eventFilter = viewModel::handleEventFilter,
         event = viewModel::handleEvent,
         navigateToDetail = navigateToDetail
     )
@@ -133,6 +143,8 @@ internal fun StationMapScreen(
     searchQuery: String,
     searchResultUiState: SearchResultUiState,
     recentSearchQueries: RecentSearchQueriesUiState,
+    filterUiState: FilterUiState,
+    eventFilter: (FiltersEvent) -> Unit = {},
     event: (StationMapEvent) -> Unit = {},
     navigateToDetail: (Int) -> Unit = {},
 ) = with(uiState) {
@@ -231,19 +243,31 @@ internal fun StationMapScreen(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                SearchPlaces(
-                    searchQuery = searchQuery,
-                    searchResultUiState = searchResultUiState,
-                    recentSearchQueries = recentSearchQueries,
-                    event = event,
-                )
                 MapView(
                     stations = fuelStations,
                     cameraState = cameraState,
                     userSelectedFuelType = selectedType,
                     loading = loading,
                     navigateToDetail = navigateToDetail,
+                    modifier = Modifier.fillMaxSize()
                 )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.TopStart)
+                ) {
+                    SearchPlaces(
+                        searchQuery = searchQuery,
+                        searchResultUiState = searchResultUiState,
+                        recentSearchQueries = recentSearchQueries,
+                        event = event,
+                    )
+                    FilterGroup(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        eventFilter = eventFilter,
+                        filterUiState = filterUiState,
+                    )
+                }
                 FABLocation(
                     modifier = Modifier.align(Alignment.BottomEnd),
                     event = event,
@@ -291,6 +315,7 @@ fun MapView(
     userSelectedFuelType: FuelType?,
     loading: Boolean,
     navigateToDetail: (Int) -> Unit = {},
+    modifier: Modifier = Modifier,
 ) {
     val markerStates = remember { mutableStateMapOf<Int, MarkerState>() }
     var selectedLocation by remember { mutableStateOf<Int?>(null) }
@@ -313,8 +338,7 @@ fun MapView(
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = modifier
     ) {
         if (loading) {
             Box(
@@ -473,7 +497,7 @@ fun SearchPlaces(
             },
             active = active,
             onActiveChange = { active = it },
-            shadowElevation = 8.dp,
+            shadowElevation = 2.dp,
             colors = SearchBarDefaults.colors(containerColor = Color.White)
         ) {
             when (searchResultUiState) {
@@ -680,6 +704,126 @@ fun RecentSearchQueriesBody(
     }
 }
 
+@Composable
+private fun FilterGroup(
+    filterUiState: FilterUiState,
+    eventFilter: (FiltersEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var showFilter by remember { mutableStateOf(false) }
+    var filterType by remember { mutableStateOf<FilterType>(FilterType.Brand) }
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        SelectableFilter(
+            model = SelectableFilterModel(
+                filterType = FilterType.Brand,
+                label = stringResource(id = R.string.filter_brand),
+                selectedLabel = stringResource(
+                    id = R.string.filter_brand_number,
+                    filterUiState.filterBrand.size
+                ),
+                selectedCount = filterUiState.filterBrand.size,
+                isSelected = filterUiState.filterBrand.isNotEmpty(),
+                onFilterClick = {
+                    filterType = FilterType.Brand
+                    showFilter = true
+                }
+            ),
+        )
+        SelectableFilter(
+            model = SelectableFilterModel(
+                filterType = FilterType.NumberOfStations,
+                label = stringResource(id = R.string.filter_number_nearby),
+                selectedLabel = stringResource(id = R.string.filter_number_nearby),
+                selectedCount = filterUiState.filterStationsNearby,
+                isSelected = true,
+                onFilterClick = {
+                    filterType = FilterType.NumberOfStations
+                    showFilter = true
+                }
+            ),
+        )
+        SelectableFilter(
+            model = SelectableFilterModel(
+                filterType = FilterType.Schedule,
+                label = stringResource(id = R.string.filter_schedule),
+                selectedLabel = filterUiState.filterSchedule.translate(),
+                isSelected = filterUiState.filterSchedule != OpeningHours.NONE,
+                onFilterClick = {
+                    filterType = FilterType.Schedule
+                    showFilter = true
+                }
+            ),
+        )
+    }
+
+    if (showFilter) {
+        when (filterType) {
+            FilterType.Brand -> {
+                FilterSheet(
+                    model = FilterSheetModel(
+                        title = stringResource(R.string.filter_brand_title),
+                        buttonText = stringResource(id = R.string.filter_button),
+                        isMultiOption = true,
+                        options = FuelStationBrandsType.entries
+                            .filter { it.value != FuelStationBrandsType.UNKNOWN.value }
+                            .sortedBy { it.value.lowercase() }
+                            .map { it.value },
+                        optionsSelected = filterUiState.filterBrand,
+                        onDismiss = { showFilter = false },
+                        onSaveButton = { eventFilter(FiltersEvent.UpdateBrandFilter(it)) }
+
+                    )
+                )
+            }
+
+            FilterType.NumberOfStations -> {
+                FilterSheet(
+                    model = FilterSheetModel(
+                        title = stringResource(R.string.filter_number_nearby_title),
+                        buttonText = stringResource(id = R.string.filter_button),
+                        isMultiOption = false,
+                        options = listOf("10", "15", "20", "25"),
+                        optionsSelected = listOf(filterUiState.filterStationsNearby.toString()),
+                        onDismiss = { showFilter = false },
+                        onSaveButton = {}
+
+                    )
+                )
+            }
+
+            FilterType.Schedule -> {
+                FilterSheet(
+                    model = FilterSheetModel(
+                        title = stringResource(id = R.string.filter_schedule),
+                        buttonText = stringResource(id = R.string.filter_button),
+                        isMultiOption = false,
+                        options = listOf(
+                            stringResource(id = R.string.filter_open_now),
+                            stringResource(id = R.string.filter_open_24)
+                        ),
+                        optionsSelected = listOf(filterUiState.filterSchedule.translate()),
+                        onDismiss = { showFilter = false },
+                        onSaveButton = { }
+
+                    )
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun OpeningHours.translate() = when (this) {
+    OpeningHours.NONE -> stringResource(id = R.string.filter_schedule)
+    OpeningHours.OPEN_NOW -> stringResource(id = R.string.filter_open_now)
+    OpeningHours.OPEN_24_H -> stringResource(id = R.string.filter_open_24)
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun StationMapScreenPreview() {
@@ -689,6 +833,7 @@ private fun StationMapScreenPreview() {
             searchResultUiState = SearchResultUiState.EmptyQuery,
             searchQuery = "",
             recentSearchQueries = RecentSearchQueriesUiState.Loading,
+            filterUiState = FilterUiState(),
             navigateToDetail = {}
         )
     }

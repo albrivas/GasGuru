@@ -13,6 +13,7 @@ import com.gasguru.core.domain.GetPlacesUseCase
 import com.gasguru.core.domain.GetRecentSearchQueryUseCase
 import com.gasguru.core.domain.GetUserDataUseCase
 import com.gasguru.core.domain.InsertRecentSearchQueryUseCase
+import com.gasguru.core.model.data.FuelStationBrandsType
 import com.gasguru.core.model.data.SearchPlace
 import com.google.android.gms.maps.model.LatLngBounds
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -51,8 +52,12 @@ class StationMapViewModel @Inject constructor(
     private val _state = MutableStateFlow(StationMapUiState())
     val state: StateFlow<StationMapUiState> = _state
 
+    private val _filterState = MutableStateFlow(FilterUiState())
+    val filterState: StateFlow<FilterUiState> = _filterState
+
     init {
         getStationByCurrentLocation()
+        getFilters()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -96,6 +101,12 @@ class StationMapViewModel @Inject constructor(
         }
     }
 
+    fun handleEventFilter(event: FiltersEvent) {
+        when (event) {
+            is FiltersEvent.UpdateBrandFilter -> updateFilterBrand(event.selected)
+        }
+    }
+
     private fun onSearchQueryChanged(query: String) {
         savedStateHandle[SEARCH_QUERY] = query
     }
@@ -132,7 +143,10 @@ class StationMapViewModel @Inject constructor(
     private fun getStationByLocation(location: Location) {
         viewModelScope.launch {
             combine(
-                fuelStationByLocation(userLocation = location, maxStations = 10),
+                fuelStationByLocation(
+                    userLocation = location,
+                    maxStations = 10
+                ),
                 getUserDataUseCase()
             ) { fuelStations, userData ->
                 Pair(fuelStations, userData)
@@ -154,6 +168,25 @@ class StationMapViewModel @Inject constructor(
                     )
                 }
             }
+        }
+    }
+
+    private fun getFilters() = viewModelScope.launch {
+        _filterState.update {
+            it.copy(
+                filterBrand = listOf(
+                    FuelStationBrandsType.CEPSA.value,
+                    FuelStationBrandsType.REPSOL.value
+                ),
+                filterStationsNearby = 10,
+                filterSchedule = OpeningHours.OPEN_24_H
+            )
+        }
+    }
+
+    private fun updateFilterBrand(stationsSelected: List<String>) {
+        _filterState.update {
+            it.copy(filterBrand = stationsSelected)
         }
     }
 
