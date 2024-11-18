@@ -11,6 +11,5 @@ data class SelectableFilterModel(
     val label: String,
     val selectedLabel: String,
     val isSelected: Boolean,
-    val selectedCount: Int? = null,
     val onFilterClick: (FilterType) -> Unit = {}
 )

@@ -71,7 +71,6 @@ private fun SelectableFilterMultiSelectionPreview() {
             label = "Brand",
             selectedLabel = "Brands (3)",
             isSelected = true,
-            selectedCount = null,
             onFilterClick = {}
         )
     )
@@ -86,7 +85,6 @@ private fun SelectableFilterUnselectedPreview() {
             label = "Schedule",
             selectedLabel = "Open now",
             isSelected = false,
-            selectedCount = null,
             onFilterClick = {}
         )
     )
