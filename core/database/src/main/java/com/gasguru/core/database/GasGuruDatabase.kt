@@ -3,6 +3,7 @@ package com.gasguru.core.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.gasguru.core.database.converters.FilterTypeConverter
 import com.gasguru.core.database.converters.ListConverters
 import com.gasguru.core.database.converters.UserDataConverters
 import com.gasguru.core.database.dao.FilterDao
@@ -26,7 +27,7 @@ import com.gasguru.core.database.model.UserDataEntity
     version = 7,
     exportSchema = true
 )
-@TypeConverters(UserDataConverters::class, ListConverters::class)
+@TypeConverters(UserDataConverters::class, ListConverters::class, FilterTypeConverter::class)
 abstract class GasGuruDatabase : RoomDatabase() {
     abstract fun fuelStationDao(): FuelStationDao
     abstract fun userDataDao(): UserDataDao
