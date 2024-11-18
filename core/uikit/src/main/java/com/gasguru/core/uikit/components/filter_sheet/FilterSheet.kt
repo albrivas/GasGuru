@@ -123,7 +123,7 @@ private fun FilterSheetContent(model: FilterSheetModel, onDismiss: () -> Unit) =
                         .fillMaxWidth()
                         .background(color = Color.White)
                         .padding(horizontal = 8.dp)
-                        .clickable { handleSelectionItem(item, listSelection, isMultiOption) },
+                        .clickable { handleSelectionItem(item, listSelection, isMultiOption, isMustSelection) },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
@@ -145,7 +145,14 @@ private fun FilterSheetContent(model: FilterSheetModel, onDismiss: () -> Unit) =
 
                     RadioButton(
                         selected = listSelection.contains(item),
-                        onClick = { handleSelectionItem(item, listSelection, isMultiOption) },
+                        onClick = {
+                            handleSelectionItem(
+                                item,
+                                listSelection,
+                                isMultiOption,
+                                isMustSelection
+                            )
+                        },
                         colors = RadioButtonDefaults.colors(
                             selectedColor = Primary600,
                             unselectedColor = Neutral500
@@ -172,9 +179,11 @@ fun handleSelectionItem(
     item: String,
     listSelection: MutableList<String>,
     isMultiOption: Boolean,
+    isMustSelection: Boolean,
 ) {
     if (listSelection.contains(item)) {
-        listSelection.remove(item)
+        if (!isMustSelection)
+            listSelection.remove(item)
     } else {
         if (isMultiOption) {
             listSelection.add(item)
@@ -193,6 +202,7 @@ private fun FilterSheetContentPreview() {
             title = "Estaciones de servicio",
             buttonText = "Save",
             isMultiOption = true,
+            isMustSelection = false,
             options = listOf("Repsol", "Cepsa", "BP"),
             optionsSelected = listOf("Repsol"),
             onSaveButton = {},

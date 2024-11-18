@@ -769,6 +769,7 @@ private fun FilterGroup(
                         title = stringResource(R.string.filter_brand_title),
                         buttonText = stringResource(id = R.string.filter_button),
                         isMultiOption = true,
+                        isMustSelection = false,
                         options = FuelStationBrandsType.entries
                             .filter { it.value != FuelStationBrandsType.UNKNOWN.value }
                             .sortedBy { it.value.lowercase() }
@@ -787,6 +788,7 @@ private fun FilterGroup(
                         title = stringResource(R.string.filter_number_nearby_title),
                         buttonText = stringResource(id = R.string.filter_button),
                         isMultiOption = false,
+                        isMustSelection = true,
                         options = listOf("10", "15", "20", "25"),
                         optionsSelected = listOf(filterUiState.filterStationsNearby.toString()),
                         onDismiss = { showFilter = false },
@@ -802,6 +804,7 @@ private fun FilterGroup(
                         title = stringResource(id = R.string.filter_schedule),
                         buttonText = stringResource(id = R.string.filter_button),
                         isMultiOption = false,
+                        isMustSelection = false,
                         options = listOf(
                             stringResource(id = R.string.filter_open_now),
                             stringResource(id = R.string.filter_open_24)
