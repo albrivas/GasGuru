@@ -5,10 +5,12 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.gasguru.core.database.converters.ListConverters
 import com.gasguru.core.database.converters.UserDataConverters
+import com.gasguru.core.database.dao.FilterDao
 import com.gasguru.core.database.dao.FuelStationDao
 import com.gasguru.core.database.dao.RecentSearchQueryDao
 import com.gasguru.core.database.dao.UserDataDao
 import com.gasguru.core.database.model.FavoriteStationCrossRef
+import com.gasguru.core.database.model.FilterEntity
 import com.gasguru.core.database.model.FuelStationEntity
 import com.gasguru.core.database.model.RecentSearchQueryEntity
 import com.gasguru.core.database.model.UserDataEntity
@@ -18,9 +20,10 @@ import com.gasguru.core.database.model.UserDataEntity
         FuelStationEntity::class,
         UserDataEntity::class,
         RecentSearchQueryEntity::class,
-        FavoriteStationCrossRef::class
+        FavoriteStationCrossRef::class,
+        FilterEntity::class
     ],
-    version = 6,
+    version = 7,
     exportSchema = true
 )
 @TypeConverters(UserDataConverters::class, ListConverters::class)
@@ -28,4 +31,5 @@ abstract class GasGuruDatabase : RoomDatabase() {
     abstract fun fuelStationDao(): FuelStationDao
     abstract fun userDataDao(): UserDataDao
     abstract fun recentDao(): RecentSearchQueryDao
+    abstract fun filterDao(): FilterDao
 }
