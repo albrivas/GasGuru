@@ -5,15 +5,18 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gasguru.core.common.toLatLng
-import com.gasguru.core.data.repository.LocationTracker
 import com.gasguru.core.domain.ClearRecentSearchQueriesUseCase
 import com.gasguru.core.domain.FuelStationByLocationUseCase
+import com.gasguru.core.domain.GetFiltersUseCase
 import com.gasguru.core.domain.GetLocationPlaceUseCase
 import com.gasguru.core.domain.GetPlacesUseCase
 import com.gasguru.core.domain.GetRecentSearchQueryUseCase
 import com.gasguru.core.domain.GetUserDataUseCase
 import com.gasguru.core.domain.InsertRecentSearchQueryUseCase
-import com.gasguru.core.model.data.FuelStationBrandsType
+import com.gasguru.core.domain.SaveFilterUseCase
+import com.gasguru.core.domain.location.GetCurrentLocationUseCase
+import com.gasguru.core.model.data.FilterType
+import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.SearchPlace
 import com.google.android.gms.maps.model.LatLngBounds
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,6 +25,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -37,7 +41,6 @@ private const val SEARCH_QUERY_MIN_LENGTH = 2
 @HiltViewModel
 class StationMapViewModel @Inject constructor(
     private val fuelStationByLocation: FuelStationByLocationUseCase,
-    private val userLocation: LocationTracker,
     private val getUserDataUseCase: GetUserDataUseCase,
     private val savedStateHandle: SavedStateHandle,
     private val getPlacesUseCase: GetPlacesUseCase,
@@ -45,6 +48,9 @@ class StationMapViewModel @Inject constructor(
     private val clearRecentSearchQueriesUseCase: ClearRecentSearchQueriesUseCase,
     private val insertRecentSearchQueryUseCase: InsertRecentSearchQueryUseCase,
     getRecentSearchQueryUseCase: GetRecentSearchQueryUseCase,
+    private val getCurrentLocationUseCase: GetCurrentLocationUseCase,
+    getFiltersUseCase: GetFiltersUseCase,
+    private val saveFilterUseCase: SaveFilterUseCase,
 ) : ViewModel() {
 
     val searchQuery = savedStateHandle.getStateFlow(key = SEARCH_QUERY, initialValue = "")
@@ -52,12 +58,9 @@ class StationMapViewModel @Inject constructor(
     private val _state = MutableStateFlow(StationMapUiState())
     val state: StateFlow<StationMapUiState> = _state
 
-    private val _filterState = MutableStateFlow(FilterUiState())
-    val filterState: StateFlow<FilterUiState> = _filterState
-
     init {
         getStationByCurrentLocation()
-        getFilters()
+        // getFilters()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -98,12 +101,9 @@ class StationMapViewModel @Inject constructor(
             is StationMapEvent.ResetMapCenter -> resetMapCenter()
             is StationMapEvent.UpdateSearchQuery -> onSearchQueryChanged(event.query)
             is StationMapEvent.ShowListStations -> showListStation(event.show)
-        }
-    }
-
-    fun handleEventFilter(event: FiltersEvent) {
-        when (event) {
-            is FiltersEvent.UpdateBrandFilter -> updateFilterBrand(event.selected)
+            is StationMapEvent.UpdateBrandFilter -> updateFilterBrand(event.selected)
+            is StationMapEvent.UpdateNearbyFilter -> updateFilterNearby(event.number)
+            is StationMapEvent.UpdateScheduleFilter -> updateFilterSchedule(event.schedule)
         }
     }
 
@@ -114,7 +114,7 @@ class StationMapViewModel @Inject constructor(
     private fun getStationByCurrentLocation() {
         viewModelScope.launch {
             _state.update { it.copy(loading = true) }
-            userLocation.getCurrentLocation()?.let { location ->
+            getCurrentLocationUseCase()?.let { location ->
                 getStationByLocation(location)
             }
         }
@@ -143,51 +143,73 @@ class StationMapViewModel @Inject constructor(
     private fun getStationByLocation(location: Location) {
         viewModelScope.launch {
             combine(
+                filters,
+                getUserDataUseCase()
+            ) { filterState, userData ->
+                Pair(filterState, userData)
+            }.collectLatest { (filterState, userData) ->
                 fuelStationByLocation(
                     userLocation = location,
-                    maxStations = 10
-                ),
-                getUserDataUseCase()
-            ) { fuelStations, userData ->
-                Pair(fuelStations, userData)
-            }.catch { error ->
-                _state.update { it.copy(error = error, loading = false) }
-            }.collect { (fuelStations, userData) ->
-
-                val allLocations = fuelStations.map { it.location.toLatLng() } + location.toLatLng()
-                val boundsBuilder = LatLngBounds.Builder()
-                allLocations.forEach { boundsBuilder.include(it) }
-                val bounds = boundsBuilder.build()
-
-                _state.update {
-                    it.copy(
-                        fuelStations = fuelStations,
-                        selectedType = userData.fuelSelection,
-                        loading = false,
-                        mapBounds = bounds
-                    )
+                    maxStations = filterState.filterStationsNearby
+                ).catch { error ->
+                    _state.update { it.copy(error = error, loading = false) }
+                }.collect { fuelStations ->
+                    val bounds = calculateBounds(fuelStations = fuelStations, location = location)
+                    _state.update {
+                        it.copy(
+                            fuelStations = fuelStations,
+                            loading = false,
+                            selectedType = userData.fuelSelection,
+                            mapBounds = bounds
+                        )
+                    }
                 }
             }
         }
     }
 
-    private fun getFilters() = viewModelScope.launch {
-        _filterState.update {
-            it.copy(
-                filterBrand = listOf(
-                    FuelStationBrandsType.CEPSA.value,
-                    FuelStationBrandsType.REPSOL.value
-                ),
-                filterStationsNearby = 10,
-                filterSchedule = OpeningHours.OPEN_24_H
-            )
-        }
+    private fun calculateBounds(fuelStations: List<FuelStation>, location: Location): LatLngBounds {
+        val allLocations =
+            fuelStations.map { it.location.toLatLng() } + location.toLatLng()
+        val boundsBuilder = LatLngBounds.Builder()
+        allLocations.forEach { boundsBuilder.include(it) }
+        return boundsBuilder.build()
     }
 
-    private fun updateFilterBrand(stationsSelected: List<String>) {
-        _filterState.update {
-            it.copy(filterBrand = stationsSelected)
-        }
+    val filters: StateFlow<FilterUiState> = getFiltersUseCase()
+        .map { filters ->
+            val filterBrand = filters.find { it.type == FilterType.BRAND }?.selection ?: emptyList()
+            val filterStationsNearby =
+                filters.find { it.type == FilterType.NEARBY }?.selection?.firstOrNull()
+                    ?.toIntOrNull() ?: 10
+            val filterSchedule =
+                filters.find { it.type == FilterType.SCHEDULE }?.selection?.firstOrNull()
+                    ?.let { OpeningHours.valueOf(it) } ?: OpeningHours.NONE
+
+            FilterUiState(
+                filterBrand = filterBrand,
+                filterStationsNearby = filterStationsNearby,
+                filterSchedule = filterSchedule
+            )
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = FilterUiState(),
+        )
+
+    private fun updateFilterBrand(stationsSelected: List<String>) = viewModelScope.launch {
+        saveFilterUseCase(filterType = FilterType.BRAND, selection = stationsSelected)
+    }
+
+    private fun updateFilterNearby(numberSelected: String) = viewModelScope.launch {
+        saveFilterUseCase(filterType = FilterType.NEARBY, selection = listOf(numberSelected))
+    }
+
+    private fun updateFilterSchedule(scheduleSelected: OpeningHours) = viewModelScope.launch {
+        saveFilterUseCase(
+            filterType = FilterType.SCHEDULE,
+            selection = listOf(scheduleSelected.name)
+        )
     }
 
     private fun showListStation(show: Boolean) = _state.update { it.copy(showListStations = show) }

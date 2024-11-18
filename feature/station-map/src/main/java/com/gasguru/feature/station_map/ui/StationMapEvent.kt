@@ -10,8 +10,7 @@ sealed class StationMapEvent {
     data object ResetMapCenter : StationMapEvent()
     data class UpdateSearchQuery(val query: String) : StationMapEvent()
     data class ShowListStations(val show: Boolean) : StationMapEvent()
-}
-
-sealed class FiltersEvent {
-    data class UpdateBrandFilter(val selected: List<String>) : FiltersEvent()
+    data class UpdateBrandFilter(val selected: List<String>) : StationMapEvent()
+    data class UpdateNearbyFilter(val number: String) : StationMapEvent()
+    data class UpdateScheduleFilter(val schedule: OpeningHours) : StationMapEvent()
 }

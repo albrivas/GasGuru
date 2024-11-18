@@ -63,6 +63,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -123,14 +124,13 @@ fun StationMapScreenRoute(
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val searchResult by viewModel.searchResultUiState.collectAsStateWithLifecycle()
     val recentSearchQuery by viewModel.recentSearchQueriesUiState.collectAsStateWithLifecycle()
-    val filterGroup by viewModel.filterState.collectAsStateWithLifecycle()
+    val filterGroup by viewModel.filters.collectAsStateWithLifecycle()
     StationMapScreen(
         uiState = state,
         searchQuery = searchQuery,
         searchResultUiState = searchResult,
         recentSearchQueries = recentSearchQuery,
         filterUiState = filterGroup,
-        eventFilter = viewModel::handleEventFilter,
         event = viewModel::handleEvent,
         navigateToDetail = navigateToDetail
     )
@@ -144,7 +144,6 @@ internal fun StationMapScreen(
     searchResultUiState: SearchResultUiState,
     recentSearchQueries: RecentSearchQueriesUiState,
     filterUiState: FilterUiState,
-    eventFilter: (FiltersEvent) -> Unit = {},
     event: (StationMapEvent) -> Unit = {},
     navigateToDetail: (Int) -> Unit = {},
 ) = with(uiState) {
@@ -264,7 +263,7 @@ internal fun StationMapScreen(
                     )
                     FilterGroup(
                         modifier = Modifier.padding(horizontal = 16.dp),
-                        eventFilter = eventFilter,
+                        event = event,
                         filterUiState = filterUiState,
                     )
                 }
@@ -707,7 +706,7 @@ fun RecentSearchQueriesBody(
 @Composable
 private fun FilterGroup(
     filterUiState: FilterUiState,
-    eventFilter: (FiltersEvent) -> Unit,
+    event: (StationMapEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showFilter by remember { mutableStateOf(false) }
@@ -720,26 +719,9 @@ private fun FilterGroup(
     ) {
         SelectableFilter(
             model = SelectableFilterModel(
-                filterType = FilterType.Brand,
-                label = stringResource(id = R.string.filter_brand),
-                selectedLabel = stringResource(
-                    id = R.string.filter_brand_number,
-                    filterUiState.filterBrand.size
-                ),
-                selectedCount = filterUiState.filterBrand.size,
-                isSelected = filterUiState.filterBrand.isNotEmpty(),
-                onFilterClick = {
-                    filterType = FilterType.Brand
-                    showFilter = true
-                }
-            ),
-        )
-        SelectableFilter(
-            model = SelectableFilterModel(
                 filterType = FilterType.NumberOfStations,
                 label = stringResource(id = R.string.filter_number_nearby),
                 selectedLabel = stringResource(id = R.string.filter_number_nearby),
-                selectedCount = filterUiState.filterStationsNearby,
                 isSelected = true,
                 onFilterClick = {
                     filterType = FilterType.NumberOfStations
@@ -749,9 +731,24 @@ private fun FilterGroup(
         )
         SelectableFilter(
             model = SelectableFilterModel(
+                filterType = FilterType.Brand,
+                label = stringResource(id = R.string.filter_brand),
+                selectedLabel = stringResource(
+                    id = R.string.filter_brand_number,
+                    filterUiState.filterBrand.size
+                ),
+                isSelected = filterUiState.filterBrand.isNotEmpty(),
+                onFilterClick = {
+                    filterType = FilterType.Brand
+                    showFilter = true
+                }
+            ),
+        )
+        SelectableFilter(
+            model = SelectableFilterModel(
                 filterType = FilterType.Schedule,
                 label = stringResource(id = R.string.filter_schedule),
-                selectedLabel = filterUiState.filterSchedule.translate(),
+                selectedLabel = stringResource(id = filterUiState.filterSchedule.resId),
                 isSelected = filterUiState.filterSchedule != OpeningHours.NONE,
                 onFilterClick = {
                     filterType = FilterType.Schedule
@@ -762,69 +759,82 @@ private fun FilterGroup(
     }
 
     if (showFilter) {
-        when (filterType) {
-            FilterType.Brand -> {
-                FilterSheet(
-                    model = FilterSheetModel(
-                        title = stringResource(R.string.filter_brand_title),
-                        buttonText = stringResource(id = R.string.filter_button),
-                        isMultiOption = true,
-                        isMustSelection = false,
-                        options = FuelStationBrandsType.entries
-                            .filter { it.value != FuelStationBrandsType.UNKNOWN.value }
-                            .sortedBy { it.value.lowercase() }
-                            .map { it.value },
-                        optionsSelected = filterUiState.filterBrand,
-                        onDismiss = { showFilter = false },
-                        onSaveButton = { eventFilter(FiltersEvent.UpdateBrandFilter(it)) }
-
-                    )
-                )
-            }
-
-            FilterType.NumberOfStations -> {
-                FilterSheet(
-                    model = FilterSheetModel(
-                        title = stringResource(R.string.filter_number_nearby_title),
-                        buttonText = stringResource(id = R.string.filter_button),
-                        isMultiOption = false,
-                        isMustSelection = true,
-                        options = listOf("10", "15", "20", "25"),
-                        optionsSelected = listOf(filterUiState.filterStationsNearby.toString()),
-                        onDismiss = { showFilter = false },
-                        onSaveButton = {}
-
-                    )
-                )
-            }
-
-            FilterType.Schedule -> {
-                FilterSheet(
-                    model = FilterSheetModel(
-                        title = stringResource(id = R.string.filter_schedule),
-                        buttonText = stringResource(id = R.string.filter_button),
-                        isMultiOption = false,
-                        isMustSelection = false,
-                        options = listOf(
-                            stringResource(id = R.string.filter_open_now),
-                            stringResource(id = R.string.filter_open_24)
-                        ),
-                        optionsSelected = listOf(filterUiState.filterSchedule.translate()),
-                        onDismiss = { showFilter = false },
-                        onSaveButton = { }
-
-                    )
-                )
-            }
-        }
+        ShowFilterSheet(
+            filterType = filterType,
+            filterUiState = filterUiState,
+            showFilter = { showFilter = false },
+            event = event
+        )
     }
 }
 
 @Composable
-private fun OpeningHours.translate() = when (this) {
-    OpeningHours.NONE -> stringResource(id = R.string.filter_schedule)
-    OpeningHours.OPEN_NOW -> stringResource(id = R.string.filter_open_now)
-    OpeningHours.OPEN_24_H -> stringResource(id = R.string.filter_open_24)
+fun ShowFilterSheet(
+    filterType: FilterType,
+    filterUiState: FilterUiState,
+    showFilter: () -> Unit,
+    event: (StationMapEvent) -> Unit,
+) {
+    val context = LocalContext.current
+
+    when (filterType) {
+        FilterType.Brand -> {
+            FilterSheet(
+                model = FilterSheetModel(
+                    title = stringResource(R.string.filter_brand_title),
+                    buttonText = stringResource(id = R.string.filter_button),
+                    isMultiOption = true,
+                    isMustSelection = false,
+                    options = FuelStationBrandsType.entries
+                        .filter { it.value != FuelStationBrandsType.UNKNOWN.value }
+                        .sortedBy { it.value.lowercase() }
+                        .map { it.value },
+                    optionsSelected = filterUiState.filterBrand,
+                    onDismiss = { showFilter() },
+                    onSaveButton = { event(StationMapEvent.UpdateBrandFilter(it)) }
+                )
+            )
+        }
+
+        FilterType.NumberOfStations -> {
+            FilterSheet(
+                model = FilterSheetModel(
+                    title = stringResource(R.string.filter_number_nearby_title),
+                    buttonText = stringResource(id = R.string.filter_button),
+                    isMultiOption = false,
+                    isMustSelection = true,
+                    options = listOf("10", "15", "20", "25"),
+                    optionsSelected = listOf(filterUiState.filterStationsNearby.toString()),
+                    onDismiss = { showFilter() },
+                    onSaveButton = { event(StationMapEvent.UpdateNearbyFilter(it.first())) }
+                )
+            )
+        }
+
+        FilterType.Schedule -> {
+            FilterSheet(
+                model = FilterSheetModel(
+                    title = stringResource(id = R.string.filter_schedule),
+                    buttonText = stringResource(id = R.string.filter_button),
+                    isMultiOption = false,
+                    isMustSelection = false,
+                    options = OpeningHours.entries
+                        .filter { it != OpeningHours.NONE }
+                        .map { stringResource(id = it.resId) },
+                    optionsSelected = listOf(stringResource(id = filterUiState.filterSchedule.resId)),
+                    onDismiss = { showFilter() },
+                    onSaveButton = {
+                        val schedule = if (it.isEmpty()) {
+                            OpeningHours.NONE
+                        } else {
+                            OpeningHours.fromTranslatedString(it.first(), context)
+                        }
+                        event(StationMapEvent.UpdateScheduleFilter(schedule))
+                    }
+                )
+            )
+        }
+    }
 }
 
 @Preview(showBackground = true)
