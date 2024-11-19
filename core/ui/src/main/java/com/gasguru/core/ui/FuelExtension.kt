@@ -13,11 +13,6 @@ import com.gasguru.core.uikit.theme.AccentOrange
 import com.gasguru.core.uikit.theme.AccentRed
 import com.gasguru.core.uikit.theme.secondaryLight
 import java.text.DecimalFormat
-import java.time.DayOfWeek
-import java.time.LocalTime
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 import com.gasguru.core.uikit.R as RUikit
 
 fun FuelType.translation() = when (this) {
@@ -160,65 +155,4 @@ fun FuelStation.getFuelPriceItems(): List<PriceItemModel> {
         )
 
     ).filter { it.price > "0.0 €/L" }
-}
-
-const val FORMAT_TIME_24H = "HH:mm"
-const val SCHEDULE_24H = "L-D: 24H"
-
-@Suppress("ReturnCount")
-fun FuelStation.isStationOpen(): Boolean {
-    val now = ZonedDateTime.now()
-    val currentDay = now.dayOfWeek
-    val currentTime = now.toLocalTime()
-
-    if (schedule.trim().uppercase(Locale.ROOT) == SCHEDULE_24H) {
-        return true
-    }
-
-    val scheduleParts = schedule.split(";")
-    for (part in scheduleParts) {
-        val regex = Regex("""([LMXJVSD-]+):\s*([0-9]{2}:[0-9]{2})-([0-9]{2}:[0-9]{2})""")
-        val matchResult = regex.find(part.trim())
-
-        if (matchResult != null) {
-            val days = matchResult.groupValues[1]
-            val startTime = matchResult.groupValues[2]
-            val endTime = matchResult.groupValues[3]
-
-            if (isDayMatched(days, currentDay) && isTimeInRange(startTime, endTime, currentTime)) {
-                return true
-            }
-        }
-    }
-
-    return false
-}
-
-fun isTimeInRange(startTimeStr: String, endTimeStr: String, currentTime: LocalTime): Boolean {
-    val formatter = DateTimeFormatter.ofPattern(FORMAT_TIME_24H)
-
-    val startTime = LocalTime.parse(startTimeStr, formatter)
-    val endTime = LocalTime.parse(endTimeStr, formatter)
-
-    if (endTime.isAfter(startTime) || endTime == startTime) {
-        return currentTime.isAfter(startTime) && currentTime.isBefore(endTime)
-    }
-
-    return currentTime.isAfter(startTime) || currentTime.isBefore(endTime)
-}
-
-fun isDayMatched(days: String, currentDay: DayOfWeek): Boolean {
-    return when (days) {
-        "L-D" -> true
-        "L-V" -> currentDay.value in 1..5
-        "L-S" -> currentDay.value in 1..6
-        "L" -> currentDay == DayOfWeek.MONDAY
-        "M" -> currentDay == DayOfWeek.TUESDAY
-        "X" -> currentDay == DayOfWeek.WEDNESDAY
-        "J" -> currentDay == DayOfWeek.THURSDAY
-        "V" -> currentDay == DayOfWeek.FRIDAY
-        "S" -> currentDay == DayOfWeek.SATURDAY
-        "D" -> currentDay == DayOfWeek.SUNDAY
-        else -> false
-    }
 }
