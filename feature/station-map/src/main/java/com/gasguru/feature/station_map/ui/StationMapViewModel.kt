@@ -15,6 +15,7 @@ import com.gasguru.core.domain.GetUserDataUseCase
 import com.gasguru.core.domain.InsertRecentSearchQueryUseCase
 import com.gasguru.core.domain.SaveFilterUseCase
 import com.gasguru.core.domain.location.GetCurrentLocationUseCase
+import com.gasguru.core.model.data.Filter
 import com.gasguru.core.model.data.FilterType
 import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.SearchPlace
@@ -60,7 +61,6 @@ class StationMapViewModel @Inject constructor(
 
     init {
         getStationByCurrentLocation()
-        // getFilters()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -150,7 +150,9 @@ class StationMapViewModel @Inject constructor(
             }.collectLatest { (filterState, userData) ->
                 fuelStationByLocation(
                     userLocation = location,
-                    maxStations = filterState.filterStationsNearby
+                    maxStations = filterState.filterStationsNearby,
+                    brands = filterState.filterBrand,
+                    schedule = filterState.filterSchedule.toDomainModel()
                 ).catch { error ->
                     _state.update { it.copy(error = error, loading = false) }
                 }.collect { fuelStations ->
@@ -178,18 +180,12 @@ class StationMapViewModel @Inject constructor(
 
     val filters: StateFlow<FilterUiState> = getFiltersUseCase()
         .map { filters ->
-            val filterBrand = filters.find { it.type == FilterType.BRAND }?.selection ?: emptyList()
-            val filterStationsNearby =
-                filters.find { it.type == FilterType.NEARBY }?.selection?.firstOrNull()
-                    ?.toIntOrNull() ?: 10
-            val filterSchedule =
-                filters.find { it.type == FilterType.SCHEDULE }?.selection?.firstOrNull()
-                    ?.let { OpeningHours.valueOf(it) } ?: OpeningHours.NONE
+            val filtersByType = filters.associateBy { it.type }
 
             FilterUiState(
-                filterBrand = filterBrand,
-                filterStationsNearby = filterStationsNearby,
-                filterSchedule = filterSchedule
+                filterBrand = filtersByType.getBrandFilter(),
+                filterStationsNearby = filtersByType.getNearbyFilter(),
+                filterSchedule = filtersByType.getScheduleFilter()
             )
         }.stateIn(
             scope = viewModelScope,
@@ -205,12 +201,30 @@ class StationMapViewModel @Inject constructor(
         saveFilterUseCase(filterType = FilterType.NEARBY, selection = listOf(numberSelected))
     }
 
-    private fun updateFilterSchedule(scheduleSelected: OpeningHours) = viewModelScope.launch {
-        saveFilterUseCase(
-            filterType = FilterType.SCHEDULE,
-            selection = listOf(scheduleSelected.name)
-        )
-    }
+    private fun updateFilterSchedule(scheduleSelected: FilterUiState.OpeningHours) =
+        viewModelScope.launch {
+            saveFilterUseCase(
+                filterType = FilterType.SCHEDULE,
+                selection = listOf(scheduleSelected.name)
+            )
+        }
 
     private fun showListStation(show: Boolean) = _state.update { it.copy(showListStations = show) }
+
+    private fun Map<FilterType, Filter>.getBrandFilter() =
+        this[FilterType.BRAND]?.selection ?: emptyList()
+
+    private fun Map<FilterType, Filter>.getNearbyFilter() =
+        this[FilterType.NEARBY]?.selection?.firstOrNull()?.toIntOrNull() ?: 10
+
+    private fun Map<FilterType, Filter>.getScheduleFilter() =
+        this[FilterType.SCHEDULE]?.selection?.firstOrNull()
+            ?.let { FilterUiState.OpeningHours.valueOf(it) } ?: FilterUiState.OpeningHours.NONE
+
+    private fun FilterUiState.OpeningHours.toDomainModel(): com.gasguru.core.model.data.OpeningHours =
+        when (this) {
+            FilterUiState.OpeningHours.NONE -> com.gasguru.core.model.data.OpeningHours.NONE
+            FilterUiState.OpeningHours.OPEN_NOW -> com.gasguru.core.model.data.OpeningHours.OPEN_NOW
+            FilterUiState.OpeningHours.OPEN_24_H -> com.gasguru.core.model.data.OpeningHours.OPEN_24H
+        }
 }

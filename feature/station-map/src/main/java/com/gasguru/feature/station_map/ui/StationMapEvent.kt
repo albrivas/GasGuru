@@ -12,5 +12,5 @@ sealed class StationMapEvent {
     data class ShowListStations(val show: Boolean) : StationMapEvent()
     data class UpdateBrandFilter(val selected: List<String>) : StationMapEvent()
     data class UpdateNearbyFilter(val number: String) : StationMapEvent()
-    data class UpdateScheduleFilter(val schedule: OpeningHours) : StationMapEvent()
+    data class UpdateScheduleFilter(val schedule: FilterUiState.OpeningHours) : StationMapEvent()
 }

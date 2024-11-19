@@ -78,7 +78,6 @@ fun FilterSheet(model: FilterSheetModel, modifier: Modifier = Modifier) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun FilterSheetContent(model: FilterSheetModel, onDismiss: () -> Unit) = with(model) {
     val listSelection = remember {
@@ -182,8 +181,9 @@ fun handleSelectionItem(
     isMustSelection: Boolean,
 ) {
     if (listSelection.contains(item)) {
-        if (!isMustSelection)
+        if (!isMustSelection) {
             listSelection.remove(item)
+        }
     } else {
         if (isMultiOption) {
             listSelection.add(item)

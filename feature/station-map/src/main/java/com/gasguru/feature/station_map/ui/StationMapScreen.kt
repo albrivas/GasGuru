@@ -51,7 +51,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -316,7 +315,6 @@ fun MapView(
     navigateToDetail: (Int) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    val markerStates = remember { mutableStateMapOf<Int, MarkerState>() }
     var selectedLocation by remember { mutableStateOf<Int?>(null) }
     val uiSettings by remember {
         mutableStateOf(
@@ -361,10 +359,9 @@ fun MapView(
             contentPadding = PaddingValues(bottom = 60.dp)
         ) {
             stations.forEach { station ->
-                val state =
-                    markerStates.getOrPut(
-                        station.idServiceStation
-                    ) { MarkerState(position = station.location.toLatLng()) }
+                val state = remember(station.idServiceStation) {
+                    MarkerState(position = station.location.toLatLng())
+                }
                 val isSelected = selectedLocation == station.idServiceStation
 
                 val price by remember(userSelectedFuelType, station) {
@@ -511,7 +508,7 @@ fun SearchPlaces(
                 }
 
                 SearchResultUiState.LoadFailed,
-                -> Unit
+                    -> Unit
 
                 SearchResultUiState.EmptyQuery -> {
                     if (recentSearchQueries is RecentSearchQueriesUiState.Success) {
@@ -749,7 +746,7 @@ private fun FilterGroup(
                 filterType = FilterType.Schedule,
                 label = stringResource(id = R.string.filter_schedule),
                 selectedLabel = stringResource(id = filterUiState.filterSchedule.resId),
-                isSelected = filterUiState.filterSchedule != OpeningHours.NONE,
+                isSelected = filterUiState.filterSchedule != FilterUiState.OpeningHours.NONE,
                 onFilterClick = {
                     filterType = FilterType.Schedule
                     showFilter = true
@@ -818,16 +815,16 @@ fun ShowFilterSheet(
                     buttonText = stringResource(id = R.string.filter_button),
                     isMultiOption = false,
                     isMustSelection = false,
-                    options = OpeningHours.entries
-                        .filter { it != OpeningHours.NONE }
+                    options = FilterUiState.OpeningHours.entries
+                        .filter { it != FilterUiState.OpeningHours.NONE }
                         .map { stringResource(id = it.resId) },
                     optionsSelected = listOf(stringResource(id = filterUiState.filterSchedule.resId)),
                     onDismiss = { showFilter() },
                     onSaveButton = {
                         val schedule = if (it.isEmpty()) {
-                            OpeningHours.NONE
+                            FilterUiState.OpeningHours.NONE
                         } else {
-                            OpeningHours.fromTranslatedString(it.first(), context)
+                            FilterUiState.OpeningHours.fromTranslatedString(it.first(), context)
                         }
                         event(StationMapEvent.UpdateScheduleFilter(schedule))
                     }
