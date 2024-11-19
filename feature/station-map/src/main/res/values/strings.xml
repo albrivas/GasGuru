@@ -15,5 +15,5 @@
     <string name="filter_open_24">Open 24 h</string>
     <string name="filter_button">Save</string>
     <string name="filter_brand_title">Fuel stations</string>
-    <string name="filter_number_nearby_title">Nº nearby</string>
+    <string name="filter_number_nearby_title">Nº Nearby</string>
 </resources>
