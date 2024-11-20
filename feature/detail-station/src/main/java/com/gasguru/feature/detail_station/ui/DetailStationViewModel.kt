@@ -30,8 +30,7 @@ class DetailStationViewModel @Inject constructor(
     private val saveFavoriteStationUseCase: SaveFavoriteStationUseCase,
     private val removeFavoriteStationUseCase: RemoveFavoriteStationUseCase,
     private val getAddressFromLocationUseCase: GetAddressFromLocationUseCase,
-
-    ) : ViewModel() {
+) : ViewModel() {
 
     private val id: Int = checkNotNull(savedStateHandle["idServiceStation"])
 

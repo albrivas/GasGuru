@@ -508,7 +508,7 @@ fun SearchPlaces(
                 }
 
                 SearchResultUiState.LoadFailed,
-                    -> Unit
+                -> Unit
 
                 SearchResultUiState.EmptyQuery -> {
                     if (recentSearchQueries is RecentSearchQueriesUiState.Success) {
