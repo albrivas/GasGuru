@@ -54,6 +54,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.gasguru.core.common.CommonUtils.isStationOpen
 import com.gasguru.core.common.generateStaticMapUrl
 import com.gasguru.core.common.startRoute
 import com.gasguru.core.model.data.FuelStation
@@ -61,7 +62,6 @@ import com.gasguru.core.model.data.FuelStationBrandsType
 import com.gasguru.core.model.data.previewFuelStationDomain
 import com.gasguru.core.ui.getFuelPriceItems
 import com.gasguru.core.ui.iconTint
-import com.gasguru.core.ui.isStationOpen
 import com.gasguru.core.ui.toBrandStationIcon
 import com.gasguru.core.uikit.components.information_card.InformationCard
 import com.gasguru.core.uikit.components.information_card.InformationCardModel
