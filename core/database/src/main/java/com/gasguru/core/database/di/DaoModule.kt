@@ -1,6 +1,7 @@
 package com.gasguru.core.database.di
 
 import com.gasguru.core.database.GasGuruDatabase
+import com.gasguru.core.database.dao.FilterDao
 import com.gasguru.core.database.dao.FuelStationDao
 import com.gasguru.core.database.dao.RecentSearchQueryDao
 import com.gasguru.core.database.dao.UserDataDao
@@ -23,4 +24,8 @@ class DaoModule {
     @Provides
     fun provideRecentDao(appDatabase: GasGuruDatabase): RecentSearchQueryDao =
         appDatabase.recentDao()
+
+    @Provides
+    fun provideFilterDao(appDatabase: GasGuruDatabase): FilterDao =
+        appDatabase.filterDao()
 }

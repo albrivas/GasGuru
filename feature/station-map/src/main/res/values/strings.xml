@@ -7,4 +7,13 @@
     <string name="hint_search_bar">Search by locations</string>
     <string name="sheet_title">Nearby stations</string>
     <string name="sheet_button">Show list</string>
+    <string name="filter_brand_number">Brands (%1$s)</string>
+    <string name="filter_brand">Brands</string>
+    <string name="filter_schedule">Schedule</string>
+    <string name="filter_number_nearby">Nº nearby</string>
+    <string name="filter_open_now">Open now</string>
+    <string name="filter_open_24">Open 24 h</string>
+    <string name="filter_button">Save</string>
+    <string name="filter_brand_title">Fuel stations</string>
+    <string name="filter_number_nearby_title">Nº Nearby</string>
 </resources>

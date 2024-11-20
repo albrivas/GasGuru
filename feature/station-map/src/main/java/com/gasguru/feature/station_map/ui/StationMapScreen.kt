@@ -9,6 +9,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -50,7 +51,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -62,6 +62,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -75,12 +76,18 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.common.centerOnMap
 import com.gasguru.core.common.toLatLng
 import com.gasguru.core.model.data.FuelStation
+import com.gasguru.core.model.data.FuelStationBrandsType
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.RecentSearchQuery
 import com.gasguru.core.model.data.SearchPlace
 import com.gasguru.core.ui.getPrice
 import com.gasguru.core.ui.toBrandStationIcon
 import com.gasguru.core.ui.toColor
+import com.gasguru.core.uikit.components.chip.FilterType
+import com.gasguru.core.uikit.components.chip.SelectableFilter
+import com.gasguru.core.uikit.components.chip.SelectableFilterModel
+import com.gasguru.core.uikit.components.filter_sheet.FilterSheet
+import com.gasguru.core.uikit.components.filter_sheet.FilterSheetModel
 import com.gasguru.core.uikit.components.fuelItem.FuelStationItem
 import com.gasguru.core.uikit.components.fuelItem.FuelStationItemModel
 import com.gasguru.core.uikit.components.marker.StationMarker
@@ -116,11 +123,13 @@ fun StationMapScreenRoute(
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val searchResult by viewModel.searchResultUiState.collectAsStateWithLifecycle()
     val recentSearchQuery by viewModel.recentSearchQueriesUiState.collectAsStateWithLifecycle()
+    val filterGroup by viewModel.filters.collectAsStateWithLifecycle()
     StationMapScreen(
         uiState = state,
         searchQuery = searchQuery,
         searchResultUiState = searchResult,
         recentSearchQueries = recentSearchQuery,
+        filterUiState = filterGroup,
         event = viewModel::handleEvent,
         navigateToDetail = navigateToDetail
     )
@@ -133,6 +142,7 @@ internal fun StationMapScreen(
     searchQuery: String,
     searchResultUiState: SearchResultUiState,
     recentSearchQueries: RecentSearchQueriesUiState,
+    filterUiState: FilterUiState,
     event: (StationMapEvent) -> Unit = {},
     navigateToDetail: (Int) -> Unit = {},
 ) = with(uiState) {
@@ -231,19 +241,31 @@ internal fun StationMapScreen(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                SearchPlaces(
-                    searchQuery = searchQuery,
-                    searchResultUiState = searchResultUiState,
-                    recentSearchQueries = recentSearchQueries,
-                    event = event,
-                )
                 MapView(
                     stations = fuelStations,
                     cameraState = cameraState,
                     userSelectedFuelType = selectedType,
                     loading = loading,
                     navigateToDetail = navigateToDetail,
+                    modifier = Modifier.fillMaxSize()
                 )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.TopStart)
+                ) {
+                    SearchPlaces(
+                        searchQuery = searchQuery,
+                        searchResultUiState = searchResultUiState,
+                        recentSearchQueries = recentSearchQueries,
+                        event = event,
+                    )
+                    FilterGroup(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        event = event,
+                        filterUiState = filterUiState,
+                    )
+                }
                 FABLocation(
                     modifier = Modifier.align(Alignment.BottomEnd),
                     event = event,
@@ -291,8 +313,8 @@ fun MapView(
     userSelectedFuelType: FuelType?,
     loading: Boolean,
     navigateToDetail: (Int) -> Unit = {},
+    modifier: Modifier = Modifier,
 ) {
-    val markerStates = remember { mutableStateMapOf<Int, MarkerState>() }
     var selectedLocation by remember { mutableStateOf<Int?>(null) }
     val uiSettings by remember {
         mutableStateOf(
@@ -313,8 +335,7 @@ fun MapView(
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = modifier
     ) {
         if (loading) {
             Box(
@@ -338,10 +359,9 @@ fun MapView(
             contentPadding = PaddingValues(bottom = 60.dp)
         ) {
             stations.forEach { station ->
-                val state =
-                    markerStates.getOrPut(
-                        station.idServiceStation
-                    ) { MarkerState(position = station.location.toLatLng()) }
+                val state = remember(station.idServiceStation) {
+                    MarkerState(position = station.location.toLatLng())
+                }
                 val isSelected = selectedLocation == station.idServiceStation
 
                 val price by remember(userSelectedFuelType, station) {
@@ -473,7 +493,7 @@ fun SearchPlaces(
             },
             active = active,
             onActiveChange = { active = it },
-            shadowElevation = 8.dp,
+            shadowElevation = 2.dp,
             colors = SearchBarDefaults.colors(containerColor = Color.White)
         ) {
             when (searchResultUiState) {
@@ -680,6 +700,140 @@ fun RecentSearchQueriesBody(
     }
 }
 
+@Composable
+private fun FilterGroup(
+    filterUiState: FilterUiState,
+    event: (StationMapEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var showFilter by remember { mutableStateOf(false) }
+    var filterType by remember { mutableStateOf<FilterType>(FilterType.Brand) }
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        SelectableFilter(
+            model = SelectableFilterModel(
+                filterType = FilterType.NumberOfStations,
+                label = stringResource(id = R.string.filter_number_nearby),
+                selectedLabel = stringResource(id = R.string.filter_number_nearby),
+                isSelected = true,
+                onFilterClick = {
+                    filterType = FilterType.NumberOfStations
+                    showFilter = true
+                }
+            ),
+        )
+        SelectableFilter(
+            model = SelectableFilterModel(
+                filterType = FilterType.Brand,
+                label = stringResource(id = R.string.filter_brand),
+                selectedLabel = stringResource(
+                    id = R.string.filter_brand_number,
+                    filterUiState.filterBrand.size
+                ),
+                isSelected = filterUiState.filterBrand.isNotEmpty(),
+                onFilterClick = {
+                    filterType = FilterType.Brand
+                    showFilter = true
+                }
+            ),
+        )
+        SelectableFilter(
+            model = SelectableFilterModel(
+                filterType = FilterType.Schedule,
+                label = stringResource(id = R.string.filter_schedule),
+                selectedLabel = stringResource(id = filterUiState.filterSchedule.resId),
+                isSelected = filterUiState.filterSchedule != FilterUiState.OpeningHours.NONE,
+                onFilterClick = {
+                    filterType = FilterType.Schedule
+                    showFilter = true
+                }
+            ),
+        )
+    }
+
+    if (showFilter) {
+        ShowFilterSheet(
+            filterType = filterType,
+            filterUiState = filterUiState,
+            showFilter = { showFilter = false },
+            event = event
+        )
+    }
+}
+
+@Composable
+fun ShowFilterSheet(
+    filterType: FilterType,
+    filterUiState: FilterUiState,
+    showFilter: () -> Unit,
+    event: (StationMapEvent) -> Unit,
+) {
+    val context = LocalContext.current
+
+    when (filterType) {
+        FilterType.Brand -> {
+            FilterSheet(
+                model = FilterSheetModel(
+                    title = stringResource(R.string.filter_brand_title),
+                    buttonText = stringResource(id = R.string.filter_button),
+                    isMultiOption = true,
+                    isMustSelection = false,
+                    options = FuelStationBrandsType.entries
+                        .filter { it.value != FuelStationBrandsType.UNKNOWN.value }
+                        .sortedBy { it.value.lowercase() }
+                        .map { it.value },
+                    optionsSelected = filterUiState.filterBrand,
+                    onDismiss = { showFilter() },
+                    onSaveButton = { event(StationMapEvent.UpdateBrandFilter(it)) }
+                )
+            )
+        }
+
+        FilterType.NumberOfStations -> {
+            FilterSheet(
+                model = FilterSheetModel(
+                    title = stringResource(R.string.filter_number_nearby_title),
+                    buttonText = stringResource(id = R.string.filter_button),
+                    isMultiOption = false,
+                    isMustSelection = true,
+                    options = listOf("10", "15", "20", "25"),
+                    optionsSelected = listOf(filterUiState.filterStationsNearby.toString()),
+                    onDismiss = { showFilter() },
+                    onSaveButton = { event(StationMapEvent.UpdateNearbyFilter(it.first())) }
+                )
+            )
+        }
+
+        FilterType.Schedule -> {
+            FilterSheet(
+                model = FilterSheetModel(
+                    title = stringResource(id = R.string.filter_schedule),
+                    buttonText = stringResource(id = R.string.filter_button),
+                    isMultiOption = false,
+                    isMustSelection = false,
+                    options = FilterUiState.OpeningHours.entries
+                        .filter { it != FilterUiState.OpeningHours.NONE }
+                        .map { stringResource(id = it.resId) },
+                    optionsSelected = listOf(stringResource(id = filterUiState.filterSchedule.resId)),
+                    onDismiss = { showFilter() },
+                    onSaveButton = {
+                        val schedule = if (it.isEmpty()) {
+                            FilterUiState.OpeningHours.NONE
+                        } else {
+                            FilterUiState.OpeningHours.fromTranslatedString(it.first(), context)
+                        }
+                        event(StationMapEvent.UpdateScheduleFilter(schedule))
+                    }
+                )
+            )
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun StationMapScreenPreview() {
@@ -689,6 +843,7 @@ private fun StationMapScreenPreview() {
             searchResultUiState = SearchResultUiState.EmptyQuery,
             searchQuery = "",
             recentSearchQueries = RecentSearchQueriesUiState.Loading,
+            filterUiState = FilterUiState(),
             navigateToDetail = {}
         )
     }
