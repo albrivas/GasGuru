@@ -2,9 +2,10 @@ package com.gasguru.feature.favorite_list_station.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gasguru.core.data.repository.LocationTracker
 import com.gasguru.core.domain.GetFavoriteStationsUseCase
 import com.gasguru.core.domain.GetUserDataUseCase
+import com.gasguru.core.domain.location.GetLastKnownLocationUseCase
+import com.gasguru.core.domain.location.IsLocationEnabledUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,9 +19,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FavoriteListStationViewModel @Inject constructor(
-    private val userLocation: LocationTracker,
     private val getUserDataUseCase: GetUserDataUseCase,
     private val getFavoriteStationsUseCase: GetFavoriteStationsUseCase,
+    private val isLocationEnabledUseCase: IsLocationEnabledUseCase,
+    private val getLastKnownLocationUseCase: GetLastKnownLocationUseCase,
 ) : ViewModel() {
 
     private val _state =
@@ -33,7 +35,7 @@ class FavoriteListStationViewModel @Inject constructor(
 
     fun checkLocationEnabled() {
         viewModelScope.launch {
-            val isLocationEnabled = userLocation.isLocationEnabled()
+            val isLocationEnabled = isLocationEnabledUseCase()
             if (!isLocationEnabled) {
                 _state.update { FavoriteStationListUiState.DisableLocation }
             } else {
@@ -44,7 +46,7 @@ class FavoriteListStationViewModel @Inject constructor(
 
     private fun getFavoriteStations() {
         viewModelScope.launch {
-            val lastLocation = userLocation.getLastKnownLocation.firstOrNull()
+            val lastLocation = getLastKnownLocationUseCase().firstOrNull()
             lastLocation?.let {
                 combine(
                     getFavoriteStationsUseCase(userLocation = lastLocation),

@@ -1,5 +1,7 @@
 package com.gasguru.core.data.di
 
+import com.gasguru.core.data.repository.FilterRepository
+import com.gasguru.core.data.repository.FilterRepositoryImpl
 import com.gasguru.core.data.repository.FuelStationRepository
 import com.gasguru.core.data.repository.GeocoderAddress
 import com.gasguru.core.data.repository.GeocoderAddressImpl
@@ -64,4 +66,9 @@ interface DataModule {
     fun bindGeocoderAddress(
         geocoderAddress: GeocoderAddressImpl,
     ): GeocoderAddress
+
+    @Binds
+    fun bindFilterRepository(
+        filterRepository: FilterRepositoryImpl
+    ): FilterRepository
 }
