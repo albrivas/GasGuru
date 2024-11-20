@@ -9,7 +9,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +20,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -60,7 +60,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -180,11 +179,7 @@ internal fun StationMapScreen(
                 )
             }
         },
-        sheetShape = if (scaffoldState.bottomSheetState.currentValue == SheetValue.Expanded) {
-            RectangleShape
-        } else {
-            MaterialTheme.shapes.large
-        },
+        sheetShape = MaterialTheme.shapes.large,
         sheetContent = {
             Column(
                 modifier = Modifier
@@ -220,7 +215,7 @@ internal fun StationMapScreen(
                         Text(
                             modifier = Modifier.clickable {
                                 coroutine.launch {
-                                    scaffoldState.bottomSheetState.partialExpand()
+                                    scaffoldState.bottomSheetState.expand()
                                 }
                             },
                             text = stringResource(id = R.string.sheet_button),
@@ -261,7 +256,7 @@ internal fun StationMapScreen(
                         event = event,
                     )
                     FilterGroup(
-                        modifier = Modifier.padding(horizontal = 16.dp),
+                        modifier = Modifier,
                         event = event,
                         filterUiState = filterUiState,
                     )
@@ -402,7 +397,7 @@ fun FABLocation(
 ) {
     Column(
         modifier = modifier.padding(horizontal = 16.dp, vertical = 76.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         FloatingActionButton(
             onClick = {
@@ -508,7 +503,7 @@ fun SearchPlaces(
                 }
 
                 SearchResultUiState.LoadFailed,
-                -> Unit
+                    -> Unit
 
                 SearchResultUiState.EmptyQuery -> {
                     if (recentSearchQueries is RecentSearchQueriesUiState.Success) {
@@ -708,51 +703,23 @@ private fun FilterGroup(
 ) {
     var showFilter by remember { mutableStateOf(false) }
     var filterType by remember { mutableStateOf<FilterType>(FilterType.Brand) }
-    Row(
+
+    val filterModels = getFiltersModel(
+        filterUiState = filterUiState, onFilterClick = { type ->
+            filterType = type
+            showFilter = true
+        }
+    )
+    LazyRow(
         modifier = modifier
-            .fillMaxWidth()
-            .horizontalScroll(rememberScrollState()),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+            .fillMaxWidth(),
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        SelectableFilter(
-            model = SelectableFilterModel(
-                filterType = FilterType.NumberOfStations,
-                label = stringResource(id = R.string.filter_number_nearby),
-                selectedLabel = stringResource(id = R.string.filter_number_nearby),
-                isSelected = true,
-                onFilterClick = {
-                    filterType = FilterType.NumberOfStations
-                    showFilter = true
-                }
-            ),
-        )
-        SelectableFilter(
-            model = SelectableFilterModel(
-                filterType = FilterType.Brand,
-                label = stringResource(id = R.string.filter_brand),
-                selectedLabel = stringResource(
-                    id = R.string.filter_brand_number,
-                    filterUiState.filterBrand.size
-                ),
-                isSelected = filterUiState.filterBrand.isNotEmpty(),
-                onFilterClick = {
-                    filterType = FilterType.Brand
-                    showFilter = true
-                }
-            ),
-        )
-        SelectableFilter(
-            model = SelectableFilterModel(
-                filterType = FilterType.Schedule,
-                label = stringResource(id = R.string.filter_schedule),
-                selectedLabel = stringResource(id = filterUiState.filterSchedule.resId),
-                isSelected = filterUiState.filterSchedule != FilterUiState.OpeningHours.NONE,
-                onFilterClick = {
-                    filterType = FilterType.Schedule
-                    showFilter = true
-                }
-            ),
-        )
+
+        items(filterModels) { filterModel ->
+            SelectableFilter(model = filterModel)
+        }
     }
 
     if (showFilter) {
@@ -764,6 +731,37 @@ private fun FilterGroup(
         )
     }
 }
+
+@Composable
+private fun getFiltersModel(
+    filterUiState: FilterUiState,
+    onFilterClick: (FilterType) -> Unit,
+): List<SelectableFilterModel> = listOf(
+    SelectableFilterModel(
+        filterType = FilterType.NumberOfStations,
+        label = stringResource(id = R.string.filter_number_nearby),
+        selectedLabel = stringResource(id = R.string.filter_number_nearby),
+        isSelected = true,
+        onFilterClick = { onFilterClick(it) }
+    ),
+    SelectableFilterModel(
+        filterType = FilterType.Brand,
+        label = stringResource(id = R.string.filter_brand),
+        selectedLabel = stringResource(
+            id = R.string.filter_brand_number,
+            filterUiState.filterBrand.size
+        ),
+        isSelected = filterUiState.filterBrand.isNotEmpty(),
+        onFilterClick = { onFilterClick(it) }
+    ),
+    SelectableFilterModel(
+        filterType = FilterType.Schedule,
+        label = stringResource(id = R.string.filter_schedule),
+        selectedLabel = stringResource(id = filterUiState.filterSchedule.resId),
+        isSelected = filterUiState.filterSchedule != FilterUiState.OpeningHours.NONE,
+        onFilterClick = { onFilterClick(it) }
+    ),
+)
 
 @Composable
 fun ShowFilterSheet(
