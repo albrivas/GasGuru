@@ -10,7 +10,7 @@
     <string name="filter_brand_number">Brands (%1$s)</string>
     <string name="filter_brand">Brands</string>
     <string name="filter_schedule">Schedule</string>
-    <string name="filter_number_nearby">Nº nearby</string>
+    <string name="filter_number_nearby">Nº Nearby</string>
     <string name="filter_open_now">Open now</string>
     <string name="filter_open_24">Open 24 h</string>
     <string name="filter_button">Save</string>
