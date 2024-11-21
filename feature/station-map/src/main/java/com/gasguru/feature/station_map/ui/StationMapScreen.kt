@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -51,6 +52,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -61,7 +63,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -73,6 +78,7 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.common.centerOnMap
+import com.gasguru.core.common.dpToPx
 import com.gasguru.core.common.toLatLng
 import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.FuelStationBrandsType
@@ -149,6 +155,26 @@ internal fun StationMapScreen(
         position = CameraPosition.fromLatLngZoom(LatLng(40.0, -4.0), 5.5f)
     }
 
+    var filtersHeightPx by remember { mutableIntStateOf(0) }
+    var searchBarHeightPx by remember { mutableIntStateOf(0) }
+    val bottomBarHeightPx = 90.dpToPx()
+    val peekHeight = 60.dp
+
+    val density = LocalDensity.current
+    val configuration = LocalConfiguration.current
+
+    val maxHeightSheetDp = remember(filtersHeightPx, searchBarHeightPx) {
+        val screenHeightPx = with(density) { configuration.screenHeightDp.dp.toPx() }
+        with(density) {
+            (screenHeightPx -
+                    filtersHeightPx -
+                    searchBarHeightPx -
+                    bottomBarHeightPx -
+                    peekHeight.toPx()
+                    ).toDp()
+        }
+    }
+
     LaunchedEffect(key1 = mapBounds) {
         mapBounds?.let {
             cameraState.centerOnMap(bounds = mapBounds, padding = 60)
@@ -158,13 +184,12 @@ internal fun StationMapScreen(
 
     val scaffoldState = rememberBottomSheetScaffoldState()
     val coroutine = rememberCoroutineScope()
-
     BottomSheetScaffold(
         sheetContainerColor = Neutral100,
         sheetContentColor = Neutral100,
         scaffoldState = scaffoldState,
         sheetShadowElevation = 32.dp,
-        sheetPeekHeight = 60.dp,
+        sheetPeekHeight = peekHeight,
         sheetDragHandle = {
             Surface(
                 modifier = Modifier.padding(vertical = 8.dp),
@@ -179,12 +204,12 @@ internal fun StationMapScreen(
                 )
             }
         },
-        sheetShape = MaterialTheme.shapes.large,
         sheetContent = {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                    .heightIn(max = maxHeightSheetDp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 val sheetState = scaffoldState.bottomSheetState.currentValue
@@ -253,11 +278,13 @@ internal fun StationMapScreen(
                         searchQuery = searchQuery,
                         searchResultUiState = searchResultUiState,
                         recentSearchQueries = recentSearchQueries,
+                        onHeight = { searchBarHeightPx = it },
                         event = event,
                     )
                     FilterGroup(
                         modifier = Modifier,
                         event = event,
+                        onHeight = { filtersHeightPx = it },
                         filterUiState = filterUiState,
                     )
                 }
@@ -423,6 +450,7 @@ fun SearchPlaces(
     searchQuery: String,
     searchResultUiState: SearchResultUiState,
     recentSearchQueries: RecentSearchQueriesUiState,
+    onHeight: (Int) -> Unit,
     event: (StationMapEvent) -> Unit = {},
 ) {
     var active by remember { mutableStateOf(false) }
@@ -447,7 +475,8 @@ fun SearchPlaces(
                     top = statusBarPaddingAnimation,
                     start = paddingAnimation,
                     end = paddingAnimation
-                ),
+                )
+                .onGloballyPositioned { onHeight(it.size.height) },
             query = searchQuery,
             onQueryChange = { event(StationMapEvent.UpdateSearchQuery(it)) },
             onSearch = {},
@@ -699,24 +728,26 @@ fun RecentSearchQueriesBody(
 private fun FilterGroup(
     filterUiState: FilterUiState,
     event: (StationMapEvent) -> Unit,
+    onHeight: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showFilter by remember { mutableStateOf(false) }
     var filterType by remember { mutableStateOf<FilterType>(FilterType.Brand) }
 
     val filterModels = getFiltersModel(
-        filterUiState = filterUiState, onFilterClick = { type ->
+        filterUiState = filterUiState,
+        onFilterClick = { type ->
             filterType = type
             showFilter = true
         }
     )
     LazyRow(
         modifier = modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .onGloballyPositioned { onHeight(it.size.height) },
         contentPadding = PaddingValues(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-
         items(filterModels) { filterModel ->
             SelectableFilter(model = filterModel)
         }
