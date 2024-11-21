@@ -16,12 +16,14 @@ fun NavGraphBuilder.detailStationScreen(onBack: () -> Unit) {
     composable<DetailStationRoute>(
         enterTransition = {
             return@composable slideIntoContainer(
-                AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
+                AnimatedContentTransitionScope.SlideDirection.Start,
+                tween(700)
             )
         },
         popExitTransition = {
             return@composable slideOutOfContainer(
-                AnimatedContentTransitionScope.SlideDirection.End, tween(700)
+                AnimatedContentTransitionScope.SlideDirection.End,
+                tween(700)
             )
         },
     ) {

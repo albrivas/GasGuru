@@ -160,12 +160,13 @@ internal fun StationMapScreen(
     val maxHeightSheetDp = remember(filtersHeightPx, searchBarHeightPx) {
         val screenHeightPx = with(density) { configuration.screenHeightDp.dp.toPx() }
         with(density) {
-            (screenHeightPx -
+            (
+                screenHeightPx -
                     filtersHeightPx -
                     searchBarHeightPx -
                     bottomBarHeightPx -
                     peekHeight.toPx()
-                    ).toDp()
+                ).toDp()
         }
     }
 
@@ -513,7 +514,7 @@ fun SearchPlaces(
                 }
 
                 SearchResultUiState.LoadFailed,
-                    -> Unit
+                -> Unit
 
                 SearchResultUiState.EmptyQuery -> {
                     if (recentSearchQueries is RecentSearchQueriesUiState.Success) {
