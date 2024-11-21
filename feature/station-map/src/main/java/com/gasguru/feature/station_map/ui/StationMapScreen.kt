@@ -1,10 +1,7 @@
 package com.gasguru.feature.station_map.ui
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,7 +14,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -44,7 +40,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
@@ -72,7 +67,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -190,6 +184,7 @@ internal fun StationMapScreen(
         scaffoldState = scaffoldState,
         sheetShadowElevation = 32.dp,
         sheetPeekHeight = peekHeight,
+        sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
         sheetDragHandle = {
             Surface(
                 modifier = Modifier.padding(vertical = 8.dp),
@@ -212,17 +207,10 @@ internal fun StationMapScreen(
                     .heightIn(max = maxHeightSheetDp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                val sheetState = scaffoldState.bottomSheetState.currentValue
-                val offset = animateDpAsState(
-                    targetValue = if (sheetState == SheetValue.Expanded) 16.dp else (2).dp,
-                    animationSpec = tween(durationMillis = 100),
-                    label = ""
-                )
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 17.dp)
-                        .offset { IntOffset(x = 0, y = offset.value.roundToPx()) },
+                        .padding(bottom = 17.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -231,23 +219,16 @@ internal fun StationMapScreen(
                         style = GasGuruTheme.typography.baseBold,
                         color = TextSubtle
                     )
-                    AnimatedVisibility(
-                        visible = sheetState == SheetValue.PartiallyExpanded,
-                        enter = fadeIn(),
-                        exit = fadeOut(),
-                        label = "Show list animation"
-                    ) {
-                        Text(
-                            modifier = Modifier.clickable {
-                                coroutine.launch {
-                                    scaffoldState.bottomSheetState.expand()
-                                }
-                            },
-                            text = stringResource(id = R.string.sheet_button),
-                            style = GasGuruTheme.typography.baseRegular,
-                            color = Primary600
-                        )
-                    }
+                    Text(
+                        modifier = Modifier.clickable {
+                            coroutine.launch {
+                                scaffoldState.bottomSheetState.expand()
+                            }
+                        },
+                        text = stringResource(id = R.string.sheet_button),
+                        style = GasGuruTheme.typography.baseRegular,
+                        color = Primary600
+                    )
                 }
                 ListFuelStations(
                     stations = fuelStations,
