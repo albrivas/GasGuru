@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface RecentSearchQueryDao {
-    @Query(value = "SELECT * FROM `recent-search-queries` LIMIT :limit")
+    @Query(value = "SELECT * FROM `recent-search-queries` ORDER BY id DESC LIMIT :limit")
     fun getRecentSearchQueryEntities(limit: Int): Flow<List<RecentSearchQueryEntity>>
 
     @Upsert
