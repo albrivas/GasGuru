@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.detekt)
+    alias(libs.plugins.junit5)
 }
 
 android {
@@ -12,6 +13,7 @@ android {
         minSdk = 26
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments["runnerBuilder"] = "de.mannodermaus.junit5.AndroidJUnit5Builder"
         consumerProguardFiles("consumer-rules.pro")
     }
 
@@ -56,13 +58,13 @@ dependencies {
     api(libs.hilt.android.testing)
     api(libs.bundles.testing)
 
-    debugApi(libs.androidx.compose.ui.test.manifest)
+    api(libs.androidx.compose.ui.test.manifest)
 
-    debugApi(libs.androidx.compose.ui.test.manifest)
-    debugApi(libs.androidx.compose.ui.tooling)
+    api(libs.androidx.compose.ui.test.manifest)
+    api(libs.androidx.compose.ui.tooling)
 
-    debugApi(libs.junit5.compose)
-    debugApi(libs.junit5.api)
-    debugApi(libs.junit5.extensions)
-    debugApi(libs.junit5.runner)
+    api(libs.junit5.compose)
+    api(libs.junit5.api)
+    api(libs.junit5.extensions)
+    api(libs.junit5.runner)
 }

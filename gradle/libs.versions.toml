@@ -42,10 +42,10 @@ secrets = "2.0.1"
 places = "4.0.0"
 coil = "2.6.0"
 splashScreen = "1.0.0"
-junit5Api = "5.10.0"
+junit5Api = "5.11.2"
 junit5Extensions = "1.4.0"
 junit5Compose = "1.4.0"
-junit5Plugin = "1.10.0.0"
+junit5Plugin = "1.11.2.0"
 junit5Runner = "1.4.0"
 materialIcons = "1.7.4"
 constraintLayout = "1.0.1"
@@ -110,6 +110,7 @@ junit5-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "ju
 junit5-extensions = { module = "de.mannodermaus.junit5:android-test-extensions", version.ref = "junit5Extensions" }
 junit5-compose = { module = "de.mannodermaus.junit5:android-test-compose", version.ref = "junit5Compose" }
 junit5-runner = { module = "de.mannodermaus.junit5:android-test-runner", version.ref = "junit5Runner" }
+junit5-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit5Api" }
 material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIcons" }
 constraint-layout = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintLayout"}
 
