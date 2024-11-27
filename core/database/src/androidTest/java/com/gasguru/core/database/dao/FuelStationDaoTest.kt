@@ -33,7 +33,6 @@ class FuelStationDaoTest {
     @AfterEach
     fun closeDb() = db.close()
 
-
     @Test
     @DisplayName("Retrieves all fuel stations when no filters are applied")
     fun getAllStations() = runTest {
