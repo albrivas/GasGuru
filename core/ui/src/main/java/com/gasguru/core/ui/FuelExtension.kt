@@ -1,5 +1,6 @@
 package com.gasguru.core.ui
 
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.gasguru.core.model.data.FuelStation
@@ -84,18 +85,40 @@ fun PriceCategory.toColor() = when (this) {
     PriceCategory.EXPENSIVE -> AccentRed
 }
 
-fun FuelType?.getPrice(fuelStation: FuelStation): String {
+fun FuelType?.getPrice(context: Context, fuelStation: FuelStation): String {
     val decimalFormat = DecimalFormat("#.000")
     return when (this) {
-        FuelType.GASOLINE_95 -> decimalFormat.format(fuelStation.priceGasoline95E5)
-        FuelType.GASOLINE_98 -> decimalFormat.format(fuelStation.priceGasoline98E5)
-        FuelType.DIESEL -> decimalFormat.format(fuelStation.priceGasoilA)
-        FuelType.DIESEL_PLUS -> decimalFormat.format(fuelStation.priceGasoilPremium)
-        FuelType.GASOLINE_95_PREMIUM -> decimalFormat.format(fuelStation.priceGasoline95E5Premium)
-        FuelType.GASOLINE_95_E10 -> decimalFormat.format(fuelStation.priceGasoline95E10)
-        FuelType.GASOLINE_98_PREMIUM -> decimalFormat.format(fuelStation.priceGasoline98E10)
-        FuelType.GASOIL_B -> decimalFormat.format(fuelStation.priceGasoilB)
         null -> "0.000"
+        else -> {
+            val price = getFuelPrice(this, fuelStation)
+            if (price == 0.0) {
+                when (this) {
+                    FuelType.GASOLINE_95 -> context.getString(R.string.sin_sp95)
+                    FuelType.GASOLINE_98 -> context.getString(R.string.sin_sp98)
+                    FuelType.DIESEL -> context.getString(R.string.sin_gasoleo_a)
+                    FuelType.DIESEL_PLUS -> context.getString(R.string.sin_gasoleo_premium)
+                    FuelType.GASOLINE_95_PREMIUM -> context.getString(R.string.sin_sp95_premium)
+                    FuelType.GASOLINE_95_E10 -> context.getString(R.string.sin_sp95_e10)
+                    FuelType.GASOLINE_98_PREMIUM -> context.getString(R.string.sin_sp98_premium)
+                    FuelType.GASOIL_B -> context.getString(R.string.sin_gasoleo_b)
+                }
+            } else {
+                "${decimalFormat.format(price)} €/l"
+            }
+        }
+    }
+}
+
+private fun getFuelPrice(fuelType: FuelType, fuelStation: FuelStation): Double {
+    return when (fuelType) {
+        FuelType.GASOLINE_95 -> fuelStation.priceGasoline95E5
+        FuelType.GASOLINE_98 -> fuelStation.priceGasoline98E5
+        FuelType.DIESEL -> fuelStation.priceGasoilA
+        FuelType.DIESEL_PLUS -> fuelStation.priceGasoilPremium
+        FuelType.GASOLINE_95_PREMIUM -> fuelStation.priceGasoline95E5Premium
+        FuelType.GASOLINE_95_E10 -> fuelStation.priceGasoline95E10
+        FuelType.GASOLINE_98_PREMIUM -> fuelStation.priceGasoline98E10
+        FuelType.GASOIL_B -> fuelStation.priceGasoilB
     }
 }
 
