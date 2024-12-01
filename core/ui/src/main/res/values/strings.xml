@@ -10,4 +10,12 @@
     <string name="gasoline_98_premium">SP 98 E10</string>
     <string name="gasoil_b">Gasoil B</string>
     <string name="select_fuel_preference">Elige tu tipo de combustible</string>
+    <string name="sin_sp95">Without SP 95</string>
+    <string name="sin_sp98">Without SP 98</string>
+    <string name="sin_gasoleo_a">Without Diesel</string>
+    <string name="sin_gasoleo_premium">Without Diesel +</string>
+    <string name="sin_sp95_premium">Without SP 95 Premium</string>
+    <string name="sin_sp95_e10">Without SP 95 E10</string>
+    <string name="sin_sp98_premium">Without SP 98 Premium</string>
+    <string name="sin_gasoleo_b">Without Gasoil B</string>
 </resources>
