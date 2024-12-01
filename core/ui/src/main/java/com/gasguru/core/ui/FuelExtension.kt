@@ -86,7 +86,7 @@ fun PriceCategory.toColor() = when (this) {
 }
 
 fun FuelType?.getPrice(context: Context, fuelStation: FuelStation): String {
-    val decimalFormat = DecimalFormat("#.000")
+    val decimalFormat = DecimalFormat("0.000")
     return when (this) {
         null -> "0.000"
         else -> {
