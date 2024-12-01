@@ -286,6 +286,7 @@ fun ListFuelStations(
     selectedFuel: FuelType?,
     navigateToDetail: (Int) -> Unit = {},
 ) {
+    val context = LocalContext.current
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -300,7 +301,7 @@ fun ListFuelStations(
                     icon = item.brandStationBrandsType.toBrandStationIcon(),
                     name = item.brandStationName,
                     distance = item.formatDistance(),
-                    price = selectedFuel.getPrice(item),
+                    price = selectedFuel.getPrice(context, item),
                     index = index,
                     categoryColor = item.priceCategory.toColor(),
                     onItemClick = navigateToDetail
@@ -319,6 +320,7 @@ fun MapView(
     navigateToDetail: (Int) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
     var selectedLocation by remember { mutableStateOf<Int?>(null) }
     val uiSettings by remember {
         mutableStateOf(
@@ -369,7 +371,7 @@ fun MapView(
                 val isSelected = selectedLocation == station.idServiceStation
 
                 val price by remember(userSelectedFuelType, station) {
-                    derivedStateOf { userSelectedFuelType.getPrice(station) }
+                    derivedStateOf { userSelectedFuelType.getPrice(context, station) }
                 }
                 val color by remember(station) {
                     derivedStateOf { station.priceCategory.toColor() }
@@ -388,7 +390,7 @@ fun MapView(
                     StationMarker(
                         model = StationMarkerModel(
                             icon = station.brandStationBrandsType.toBrandStationIcon(),
-                            price = userSelectedFuelType.getPrice(station),
+                            price = userSelectedFuelType.getPrice(context, station),
                             color = station.priceCategory.toColor(),
                             isSelected = isSelected,
                         )
