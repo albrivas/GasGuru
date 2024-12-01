@@ -13,6 +13,8 @@ android {
         minSdk = 26
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments["runnerBuilder"] = "de.mannodermaus.junit5.AndroidJUnit5Builder"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildFeatures {
@@ -42,6 +44,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:testing"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.lottie.compose)
     api(libs.androidx.compose.material3)
@@ -50,4 +53,9 @@ dependencies {
     detektPlugins(libs.detekt.formatting)
     implementation(libs.constraint.layout)
     implementation(libs.material.icons.extended)
+
+    androidTestImplementation(libs.junit5.compose)
+    androidTestImplementation(libs.junit5.api)
+    androidTestImplementation(libs.junit5.extensions)
+    androidTestRuntimeOnly(libs.junit5.runner)
 }
