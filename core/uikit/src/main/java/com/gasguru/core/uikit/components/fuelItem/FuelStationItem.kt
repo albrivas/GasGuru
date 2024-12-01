@@ -95,7 +95,7 @@ fun FuelStationItem(
                 .weight(0.4f)
         ) {
             Text(
-                modifier = Modifier,
+                modifier = Modifier.testTag("station-name"),
                 text = name.toLowerCase(Locale.current)
                     .replaceFirstChar {
                         if (it.isLowerCase()) {
@@ -112,7 +112,7 @@ fun FuelStationItem(
                 color = TextMain
             )
             Text(
-                modifier = Modifier,
+                modifier = Modifier.testTag("station-distance"),
                 text = distance,
                 maxLines = 1,
                 style = GasGuruTheme.typography.smallRegular,
@@ -128,7 +128,7 @@ fun FuelStationItem(
             horizontalAlignment = Alignment.End
         ) {
             StatusChip(
-                modifier = Modifier.testTag("status-station"),
+                modifier = Modifier.testTag("station-price"),
                 model = StatusChipModel(
                     text = price,
                     color = categoryColor,
