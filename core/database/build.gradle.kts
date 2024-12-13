@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.detekt)
+    alias(libs.plugins.junit5)
 }
 
 android {
@@ -12,7 +13,8 @@ android {
     defaultConfig {
         minSdk = 26
 
-        testInstrumentationRunner = "com.gasguru.core.testing.HiltTestRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments["runnerBuilder"] = "de.mannodermaus.junit5.AndroidJUnit5Builder"
         consumerProguardFiles("consumer-rules.pro")
 
         // The schemas directory contains a schema file for each version of the Room database.
@@ -59,5 +61,11 @@ dependencies {
     detektPlugins(libs.detekt.formatting)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.moshi.kotlin)
-    testImplementation(project(":core:testing"))
+    androidTestImplementation(libs.junit5.api)
+    androidTestImplementation(libs.junit5.extensions)
+    androidTestImplementation(libs.junit5.runner)
+    androidTestRuntimeOnly(libs.junit5.engine)
+    androidTestImplementation(libs.androidx.test.core)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.turbine)
 }

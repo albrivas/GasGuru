@@ -1,6 +1,7 @@
 package com.gasguru.core.data.repository
 
 import android.location.Location
+import com.gasguru.core.common.CommonUtils.isStationOpen
 import com.gasguru.core.common.IoDispatcher
 import com.gasguru.core.data.mapper.asEntity
 import com.gasguru.core.database.dao.FuelStationDao
@@ -8,6 +9,7 @@ import com.gasguru.core.database.model.asExternalModel
 import com.gasguru.core.database.model.getLocation
 import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.FuelType
+import com.gasguru.core.model.data.OpeningHours
 import com.gasguru.core.model.data.PriceCategory
 import com.gasguru.core.network.datasource.RemoteDataSource
 import kotlinx.coroutines.CoroutineDispatcher
@@ -20,6 +22,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import java.util.Locale
 import javax.inject.Inject
 
 const val PRICE_RANGE = 3
@@ -44,11 +47,24 @@ class OfflineFuelStationRepository @Inject constructor(
     override fun getFuelStationByLocation(
         userLocation: Location,
         maxStations: Int,
+        brands: List<String>,
+        schedule: OpeningHours,
     ): Flow<List<FuelStation>> =
         offlineUserDataRepository.userData.flatMapLatest { user ->
-            fuelStationDao.getFuelStations(user.fuelSelection.name).map { items ->
+            fuelStationDao.getFuelStations(
+                fuelType = user.fuelSelection.name,
+                brands = brands.map { it.uppercase() }
+            ).map { items ->
                 val externalModel = items.map { it.asExternalModel() }
                     .sortedBy { it.location.distanceTo(userLocation) }
+                    .filter {
+                        when (schedule) {
+                            OpeningHours.OPEN_NOW -> it.isStationOpen()
+                            OpeningHours.OPEN_24H -> it.schedule.trim()
+                                .uppercase(Locale.ROOT) == "L-D: 24H"
+                            OpeningHours.NONE -> true
+                        }
+                    }
                     .take(maxStations)
 
                 val (minPrice, maxPrice) = externalModel.calculateFuelPrices(user.fuelSelection)
@@ -82,21 +98,6 @@ class OfflineFuelStationRepository @Inject constructor(
                     }
             }
             .flowOn(Dispatchers.IO)
-
-    override suspend fun updateFavoriteStatus(id: Int, isFavorite: Boolean) {
-        withContext(dispatcherIo) {
-            fuelStationDao.updateFavoriteStatus(id, isFavorite)
-        }
-    }
-
-    override fun getFavoriteFuelStations(userLocation: Location): Flow<List<FuelStation>> =
-        fuelStationDao.getFavoriteFuelStations()
-            .map { items ->
-                items.map {
-                    it.asExternalModel().copy(distance = it.getLocation().distanceTo(userLocation))
-                }
-            }
-            .flowOn(dispatcherIo)
 
     private fun List<FuelStation>.calculateFuelPrices(fuelType: FuelType): Pair<Double, Double> {
         val prices = when (fuelType) {

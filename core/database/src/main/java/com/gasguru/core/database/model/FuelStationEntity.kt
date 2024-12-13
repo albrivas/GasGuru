@@ -108,14 +108,23 @@ fun String.toBrandStation(): FuelStationBrandsType {
         "azul-oil" to FuelStationBrandsType.AZUL_OIL,
         "silver" to FuelStationBrandsType.SILVER_FUEL,
         "farruco" to FuelStationBrandsType.FARRUCO,
-        "fernandez bermejo" to FuelStationBrandsType.REPOSTAR
+        "fernandez bermejo" to FuelStationBrandsType.REPOSTAR,
+        "campsa" to FuelStationBrandsType.CAMPSA,
+        "autonetoil" to FuelStationBrandsType.AUTONETOIL,
+        "petroprix" to FuelStationBrandsType.PETROPRIX,
+        "econoil" to FuelStationBrandsType.ECONOIL,
+        "fiscogas" to FuelStationBrandsType.FISCOGAS,
+        "energy carburantes" to FuelStationBrandsType.ENERGY_CARBURANTES,
+        "avia" to FuelStationBrandsType.AVIA,
+        "gm fuel" to FuelStationBrandsType.GM_FUEL,
+        "valcarce" to FuelStationBrandsType.VALCARCE,
     )
 
     val brandNameLowercase = this.lowercase()
     brandMap.forEach { (key, value) ->
         if (brandNameLowercase.contains(key)) return value
     }
-    return FuelStationBrandsType.UNKOWN // Manejo del caso 'else'
+    return FuelStationBrandsType.UNKNOWN
 }
 
 fun FuelStationEntity.getLocation() = Location("").apply {

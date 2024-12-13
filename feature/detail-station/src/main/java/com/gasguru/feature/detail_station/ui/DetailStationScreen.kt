@@ -54,6 +54,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.gasguru.core.common.CommonUtils.isStationOpen
 import com.gasguru.core.common.generateStaticMapUrl
 import com.gasguru.core.common.startRoute
 import com.gasguru.core.model.data.FuelStation
@@ -61,7 +62,6 @@ import com.gasguru.core.model.data.FuelStationBrandsType
 import com.gasguru.core.model.data.previewFuelStationDomain
 import com.gasguru.core.ui.getFuelPriceItems
 import com.gasguru.core.ui.iconTint
-import com.gasguru.core.ui.isStationOpen
 import com.gasguru.core.ui.toBrandStationIcon
 import com.gasguru.core.uikit.components.information_card.InformationCard
 import com.gasguru.core.uikit.components.information_card.InformationCardModel
@@ -133,7 +133,11 @@ internal fun DetailStationScreen(
                         .background(color = Neutral100)
                         .padding(padding)
                 ) {
-                    DetailStationContent(station = uiState.station, lastUpdate = lastUpdate)
+                    DetailStationContent(
+                        station = uiState.station,
+                        lastUpdate = lastUpdate,
+                        address = uiState.address
+                    )
                 }
             }
         }
@@ -141,7 +145,7 @@ internal fun DetailStationScreen(
 }
 
 @Composable
-fun DetailStationContent(station: FuelStation, lastUpdate: Long) {
+fun DetailStationContent(station: FuelStation, lastUpdate: Long, address: String?) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -211,7 +215,7 @@ fun DetailStationContent(station: FuelStation, lastUpdate: Long) {
                     .size(80.dp)
                     .clip(CircleShape)
                     .border(
-                        width = 1.dp,
+                        width = 2.dp,
                         color = Neutral300,
                         shape = CircleShape
                     )
@@ -226,7 +230,7 @@ fun DetailStationContent(station: FuelStation, lastUpdate: Long) {
                     contentDescription = "Fuel station brand",
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(4.dp)
+                        .padding(6.dp)
                         .clip(CircleShape)
                 )
             }
@@ -236,6 +240,7 @@ fun DetailStationContent(station: FuelStation, lastUpdate: Long) {
         Spacer(modifier = Modifier.height(24.dp))
         InformationStation(
             station = station,
+            address = address,
             navigateToGoogleMaps = { startRoute(context = context, location = station.location) }
         )
     }
@@ -279,7 +284,7 @@ fun calculateHeight(size: Int): Dp {
 }
 
 @Composable
-fun InformationStation(station: FuelStation, navigateToGoogleMaps: () -> Unit) {
+fun InformationStation(station: FuelStation, address: String?, navigateToGoogleMaps: () -> Unit) {
     Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text(
             text = stringResource(id = R.string.station_detail),
@@ -307,7 +312,7 @@ fun InformationStation(station: FuelStation, navigateToGoogleMaps: () -> Unit) {
         InformationCard(
             model = InformationCardModel(
                 title = stringResource(id = R.string.direction),
-                subtitle = station.formatDirection(),
+                subtitle = address ?: station.formatDirection(),
                 icon = com.gasguru.core.uikit.R.drawable.ic_direction,
                 onClick = navigateToGoogleMaps,
                 type = InformationCardModel.InformationCardType.NONE
@@ -323,7 +328,7 @@ fun HeaderStation(station: FuelStation, onBack: () -> Unit, onFavoriteClick: (Bo
         zoom = 17,
         width = 400,
         height = 240,
-        apiKey = BuildConfig.staticMapApiKey
+        apiKey = BuildConfig.googleApiKey
     )
     Box(modifier = Modifier.fillMaxWidth()) {
         AsyncImage(
@@ -333,7 +338,7 @@ fun HeaderStation(station: FuelStation, onBack: () -> Unit, onFavoriteClick: (Bo
                 .background(Color.Gray),
             model = staticMapUrl,
             contentDescription = "Detail station map",
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.FillBounds
         )
         IconButton(
             modifier = Modifier
@@ -384,7 +389,8 @@ private fun DetailStationPreview() {
                     isFavorite = true,
                     schedule = "L-V: 06:00-22:00; S: 07:00-22:00; D: 08:00-22:00",
                     brandStationBrandsType = FuelStationBrandsType.AZUL_OIL
-                )
+                ),
+                address = null
             ),
             lastUpdate = 0
         )
