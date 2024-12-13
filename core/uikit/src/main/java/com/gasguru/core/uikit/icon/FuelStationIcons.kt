@@ -28,5 +28,14 @@ object FuelStationIcons {
     val AzulOil = R.drawable.ic_logo_azul_oil
     val Farruco = R.drawable.ic_logo_farruco
     val Repostar = R.drawable.ic_logo_repostar
-    val Uknown = R.drawable.ic_logo_green
+    val Campsa = R.drawable.ic_logo_campsa
+    val Autonetoil = R.drawable.ic_logo_autonetoil
+    val Petroprix = R.drawable.ic_logo_petroprix
+    val Econoil = R.drawable.ic_logo_econoil
+    val Fiscogas = R.drawable.ic_logo_fiscogas
+    val EnergyCarburantes = R.drawable.ic_logo_energy_carburantes
+    val Avia = R.drawable.ic_logo_avia
+    val GmFuel = R.drawable.ic_logo_gm
+    val Valcarce = R.drawable.ic_logo_valcarce
+    val Uknown = R.drawable.ic_fuel_station
 }

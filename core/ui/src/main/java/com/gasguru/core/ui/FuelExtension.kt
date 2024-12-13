@@ -1,5 +1,6 @@
 package com.gasguru.core.ui
 
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.gasguru.core.model.data.FuelStation
@@ -13,11 +14,6 @@ import com.gasguru.core.uikit.theme.AccentOrange
 import com.gasguru.core.uikit.theme.AccentRed
 import com.gasguru.core.uikit.theme.secondaryLight
 import java.text.DecimalFormat
-import java.time.DayOfWeek
-import java.time.LocalTime
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 import com.gasguru.core.uikit.R as RUikit
 
 fun FuelType.translation() = when (this) {
@@ -70,7 +66,16 @@ fun FuelStationBrandsType.toBrandStationIcon() = when (this) {
     FuelStationBrandsType.AZUL_OIL -> FuelStationIcons.AzulOil
     FuelStationBrandsType.FARRUCO -> FuelStationIcons.Farruco
     FuelStationBrandsType.REPOSTAR -> FuelStationIcons.Repostar
-    FuelStationBrandsType.UNKOWN -> FuelStationIcons.Uknown
+    FuelStationBrandsType.UNKNOWN -> FuelStationIcons.Uknown
+    FuelStationBrandsType.CAMPSA -> FuelStationIcons.Campsa
+    FuelStationBrandsType.AUTONETOIL -> FuelStationIcons.Autonetoil
+    FuelStationBrandsType.PETROPRIX -> FuelStationIcons.Petroprix
+    FuelStationBrandsType.ECONOIL -> FuelStationIcons.Econoil
+    FuelStationBrandsType.FISCOGAS -> FuelStationIcons.Fiscogas
+    FuelStationBrandsType.ENERGY_CARBURANTES -> FuelStationIcons.EnergyCarburantes
+    FuelStationBrandsType.AVIA -> FuelStationIcons.Avia
+    FuelStationBrandsType.GM_FUEL -> FuelStationIcons.GmFuel
+    FuelStationBrandsType.VALCARCE -> FuelStationIcons.Valcarce
 }
 
 fun PriceCategory.toColor() = when (this) {
@@ -80,18 +85,40 @@ fun PriceCategory.toColor() = when (this) {
     PriceCategory.EXPENSIVE -> AccentRed
 }
 
-fun FuelType?.getPrice(fuelStation: FuelStation): String {
-    val decimalFormat = DecimalFormat("#.000")
+fun FuelType?.getPrice(context: Context, fuelStation: FuelStation): String {
+    val decimalFormat = DecimalFormat("0.000")
     return when (this) {
-        FuelType.GASOLINE_95 -> decimalFormat.format(fuelStation.priceGasoline95E5)
-        FuelType.GASOLINE_98 -> decimalFormat.format(fuelStation.priceGasoline98E5)
-        FuelType.DIESEL -> decimalFormat.format(fuelStation.priceGasoilA)
-        FuelType.DIESEL_PLUS -> decimalFormat.format(fuelStation.priceGasoilPremium)
-        FuelType.GASOLINE_95_PREMIUM -> decimalFormat.format(fuelStation.priceGasoline95E5Premium)
-        FuelType.GASOLINE_95_E10 -> decimalFormat.format(fuelStation.priceGasoline95E10)
-        FuelType.GASOLINE_98_PREMIUM -> decimalFormat.format(fuelStation.priceGasoline98E10)
-        FuelType.GASOIL_B -> decimalFormat.format(fuelStation.priceGasoilB)
         null -> "0.000"
+        else -> {
+            val price = getFuelPrice(this, fuelStation)
+            if (price == 0.0) {
+                when (this) {
+                    FuelType.GASOLINE_95 -> context.getString(R.string.sin_sp95)
+                    FuelType.GASOLINE_98 -> context.getString(R.string.sin_sp98)
+                    FuelType.DIESEL -> context.getString(R.string.sin_gasoleo_a)
+                    FuelType.DIESEL_PLUS -> context.getString(R.string.sin_gasoleo_premium)
+                    FuelType.GASOLINE_95_PREMIUM -> context.getString(R.string.sin_sp95_premium)
+                    FuelType.GASOLINE_95_E10 -> context.getString(R.string.sin_sp95_e10)
+                    FuelType.GASOLINE_98_PREMIUM -> context.getString(R.string.sin_sp98_premium)
+                    FuelType.GASOIL_B -> context.getString(R.string.sin_gasoleo_b)
+                }
+            } else {
+                "${decimalFormat.format(price)} €/l"
+            }
+        }
+    }
+}
+
+private fun getFuelPrice(fuelType: FuelType, fuelStation: FuelStation): Double {
+    return when (fuelType) {
+        FuelType.GASOLINE_95 -> fuelStation.priceGasoline95E5
+        FuelType.GASOLINE_98 -> fuelStation.priceGasoline98E5
+        FuelType.DIESEL -> fuelStation.priceGasoilA
+        FuelType.DIESEL_PLUS -> fuelStation.priceGasoilPremium
+        FuelType.GASOLINE_95_PREMIUM -> fuelStation.priceGasoline95E5Premium
+        FuelType.GASOLINE_95_E10 -> fuelStation.priceGasoline95E10
+        FuelType.GASOLINE_98_PREMIUM -> fuelStation.priceGasoline98E10
+        FuelType.GASOIL_B -> fuelStation.priceGasoilB
     }
 }
 
@@ -151,65 +178,4 @@ fun FuelStation.getFuelPriceItems(): List<PriceItemModel> {
         )
 
     ).filter { it.price > "0.0 €/L" }
-}
-
-const val FORMAT_TIME_24H = "HH:mm"
-const val SCHEDULE_24H = "L-D: 24H"
-
-@Suppress("ReturnCount")
-fun FuelStation.isStationOpen(): Boolean {
-    val now = ZonedDateTime.now()
-    val currentDay = now.dayOfWeek
-    val currentTime = now.toLocalTime()
-
-    if (schedule.trim().uppercase(Locale.ROOT) == SCHEDULE_24H) {
-        return true
-    }
-
-    val scheduleParts = schedule.split(";")
-    for (part in scheduleParts) {
-        val regex = Regex("""([LMXJVSD-]+):\s*([0-9]{2}:[0-9]{2})-([0-9]{2}:[0-9]{2})""")
-        val matchResult = regex.find(part.trim())
-
-        if (matchResult != null) {
-            val days = matchResult.groupValues[1]
-            val startTime = matchResult.groupValues[2]
-            val endTime = matchResult.groupValues[3]
-
-            if (isDayMatched(days, currentDay) && isTimeInRange(startTime, endTime, currentTime)) {
-                return true
-            }
-        }
-    }
-
-    return false
-}
-
-fun isTimeInRange(startTimeStr: String, endTimeStr: String, currentTime: LocalTime): Boolean {
-    val formatter = DateTimeFormatter.ofPattern(FORMAT_TIME_24H)
-
-    val startTime = LocalTime.parse(startTimeStr, formatter)
-    val endTime = LocalTime.parse(endTimeStr, formatter)
-
-    if (endTime.isAfter(startTime) || endTime == startTime) {
-        return currentTime.isAfter(startTime) && currentTime.isBefore(endTime)
-    }
-
-    return currentTime.isAfter(startTime) || currentTime.isBefore(endTime)
-}
-
-fun isDayMatched(days: String, currentDay: DayOfWeek): Boolean {
-    return when (days) {
-        "L-D" -> true
-        "L-V" -> currentDay.value in 1..5
-        "L-S" -> currentDay.value in 1..6
-        "L" -> currentDay == DayOfWeek.MONDAY
-        "M" -> currentDay == DayOfWeek.TUESDAY
-        "X" -> currentDay == DayOfWeek.WEDNESDAY
-        "J" -> currentDay == DayOfWeek.THURSDAY
-        "V" -> currentDay == DayOfWeek.FRIDAY
-        "S" -> currentDay == DayOfWeek.SATURDAY
-        "D" -> currentDay == DayOfWeek.SUNDAY
-        else -> false
-    }
 }

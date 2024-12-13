@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -53,6 +54,7 @@ import com.gasguru.core.uikit.theme.TextSubtle
 import com.gasguru.feature.profile.R
 import kotlinx.coroutines.launch
 import com.gasguru.core.ui.R as RUi
+import com.gasguru.core.uikit.R as RUikit
 
 @Composable
 internal fun ProfileScreenRoute(viewModel: ProfileViewModel = hiltViewModel()) {
@@ -119,6 +121,7 @@ internal fun ProfileScreen(uiState: ProfileUiState, event: (ProfileEvents) -> Un
                     )
                 }
             },
+            shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
             sheetState = sheetState,
             containerColor = Neutral100,
             contentColor = Neutral100,
@@ -175,7 +178,7 @@ fun SuccessContent(userData: UserData, showSheet: () -> Unit) {
             model = com.gasguru.core.uikit.components.settings.SettingItemModel(
                 title = stringResource(id = R.string.fuel_selection),
                 selection = stringResource(id = userData.fuelSelection.translation()),
-                icon = R.drawable.ic_fuel_station,
+                icon = RUikit.drawable.ic_fuel_station,
                 onClick = { showSheet() },
             ),
             modifier = Modifier.testTag("fuel_setting_item")

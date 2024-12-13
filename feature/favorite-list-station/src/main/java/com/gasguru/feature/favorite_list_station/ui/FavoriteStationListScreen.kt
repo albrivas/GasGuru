@@ -24,6 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -134,6 +135,7 @@ fun ListFuelStations(
     selectedFuel: FuelType,
     navigateToDetail: (Int) -> Unit = {},
 ) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -160,7 +162,7 @@ fun ListFuelStations(
                         icon = item.brandStationBrandsType.toBrandStationIcon(),
                         name = item.brandStationName,
                         distance = item.formatDistance(),
-                        price = selectedFuel.getPrice(item),
+                        price = selectedFuel.getPrice(context, item),
                         index = index,
                         categoryColor = item.priceCategory.toColor(),
                         onItemClick = navigateToDetail
