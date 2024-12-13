@@ -48,7 +48,7 @@ junit5Compose = "1.4.0"
 junit5Plugin = "1.11.2.0"
 junit5Runner = "1.4.0"
 materialIcons = "1.7.4"
-constraintLayout = "1.0.1"
+constraintLayout = "1.1.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
