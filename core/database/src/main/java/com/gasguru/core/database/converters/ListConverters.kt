@@ -10,16 +10,16 @@ class ListConverters {
         .add(KotlinJsonAdapterFactory())
         .build()
 
-    private val listType = Types.newParameterizedType(List::class.java, Integer::class.javaObjectType)
-    private val adapter = moshi.adapter<List<Int>>(listType)
+    private val listType = Types.newParameterizedType(List::class.java, String::class.javaObjectType)
+    private val adapter = moshi.adapter<List<String>>(listType)
 
     @TypeConverter
-    fun fromList(list: List<Int>): String {
+    fun fromList(list: List<String>): String {
         return adapter.toJson(list)
     }
 
     @TypeConverter
-    fun toList(data: String): List<Int> {
+    fun toList(data: String): List<String> {
         return adapter.fromJson(data) ?: emptyList()
     }
 }

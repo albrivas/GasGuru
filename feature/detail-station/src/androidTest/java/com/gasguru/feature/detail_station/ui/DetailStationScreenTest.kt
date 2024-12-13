@@ -27,7 +27,7 @@ class DetailStationScreenTest : BaseTest() {
         extension.use {
             setContent {
                 DetailStationScreen(
-                    uiState = DetailStationUiState.Success(station = station),
+                    uiState = DetailStationUiState.Success(station = station, address = null),
                     onFavoriteClick = { isFavorite ->
                         station = station.copy(isFavorite = isFavorite)
                     },

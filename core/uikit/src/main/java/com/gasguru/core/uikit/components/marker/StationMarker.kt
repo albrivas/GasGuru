@@ -57,7 +57,7 @@ fun StationMarker(model: StationMarkerModel) {
         }
         Spacer(modifier = Modifier.width(8.dp))
         Text(
-            text = "${model.price} €/l",
+            text = model.price,
             style = GasGuruTheme.typography.smallBold,
             color = Color.White,
             modifier = Modifier
