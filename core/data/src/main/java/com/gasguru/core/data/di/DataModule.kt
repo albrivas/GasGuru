@@ -14,6 +14,8 @@ import com.gasguru.core.data.repository.OfflineUserDataRepository
 import com.gasguru.core.data.repository.PlacesRepository
 import com.gasguru.core.data.repository.PlacesRepositoryImp
 import com.gasguru.core.data.repository.UserDataRepository
+import com.gasguru.core.data.util.ConnectivityManagerNetworkMonitor
+import com.gasguru.core.data.util.NetworkMonitor
 import com.gasguru.core.network.datasource.PlacesDataSource
 import com.gasguru.core.network.datasource.PlacesDataSourceImp
 import com.gasguru.core.network.datasource.RemoteDataSource
@@ -69,6 +71,11 @@ interface DataModule {
 
     @Binds
     fun bindFilterRepository(
-        filterRepository: FilterRepositoryImpl
+        filterRepository: FilterRepositoryImpl,
     ): FilterRepository
+
+    @Binds
+    fun bindConnectivityManager(
+        connectivityManagerNetworkMonitor: ConnectivityManagerNetworkMonitor,
+    ): NetworkMonitor
 }
