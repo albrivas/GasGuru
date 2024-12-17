@@ -1,4 +1,4 @@
-package com.gasguru.ui
+package com.gasguru
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
