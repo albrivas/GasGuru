@@ -49,7 +49,6 @@ class ConnectivityManagerNetworkMonitor @Inject constructor(
             .build()
         connectivityManager.registerNetworkCallback(request, callback)
 
-
         /**
          * Sends the latest connectivity status to the underlying channel.
          */
@@ -58,7 +57,6 @@ class ConnectivityManagerNetworkMonitor @Inject constructor(
         awaitClose {
             connectivityManager.unregisterNetworkCallback(callback)
         }
-
     }.flowOn(ioDispatcher).conflate()
 
     private fun ConnectivityManager.isCurrentlyConnected() = activeNetwork
