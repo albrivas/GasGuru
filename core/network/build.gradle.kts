@@ -7,6 +7,9 @@ plugins {
     alias(libs.plugins.detekt)
 }
 
+val baseUrl = "\"https://sedeaplicaciones.minetur.gob.es/\""
+val routesBaseUrl = "\"https://routes.googleapis.com/\""
+
 android {
     namespace = "com.gasguru.core.network"
     compileSdk = 35
@@ -15,6 +18,9 @@ android {
         minSdk = 26
 
         consumerProguardFiles("consumer-rules.pro")
+
+        buildConfigField("String", "BASE_URL", baseUrl)
+        buildConfigField("String", "ROUTE_BASE_URL", routesBaseUrl)
     }
 
     buildFeatures {
@@ -44,11 +50,8 @@ android {
         }
     }
 
-    val baseUrl = "\"https://sedeaplicaciones.minetur.gob.es/\""
-
     buildTypes {
         release {
-            buildConfigField("String", "BASE_URL", baseUrl)
             buildConfigField(
                 "okhttp3.logging.HttpLoggingInterceptor.Level",
                 "LEVEL_LOGS",
@@ -56,7 +59,6 @@ android {
             )
         }
         debug {
-            buildConfigField("String", "BASE_URL", baseUrl)
             buildConfigField(
                 "okhttp3.logging.HttpLoggingInterceptor.Level",
                 "LEVEL_LOGS",
