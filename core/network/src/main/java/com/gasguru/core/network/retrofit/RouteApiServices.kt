@@ -11,7 +11,6 @@ fun interface RouteApiServices {
         const val ROUTES_PATH = "directions/v2:computeRoutes"
     }
 
-
     @POST(ROUTES_PATH)
     suspend fun routes(@Body requestRoute: RequestRoute): NetworkRoutes
 }

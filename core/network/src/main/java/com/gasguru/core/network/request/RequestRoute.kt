@@ -1,6 +1,5 @@
 package com.gasguru.core.network.request
 
-
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -35,7 +34,6 @@ data class RequestOrigin(
     @Json(name = "location")
     val location: RequestLocation
 )
-
 
 @JsonClass(generateAdapter = true)
 data class RequestLocation(

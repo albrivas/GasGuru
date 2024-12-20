@@ -12,7 +12,7 @@ class RoutesInterceptor @Inject constructor(
     override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
         val request = chain.request()
 
-        val cert = if(BuildConfig.DEBUG) BuildConfig.sha1Debug else BuildConfig.sha1PlayStore
+        val cert = if (BuildConfig.DEBUG) BuildConfig.sha1Debug else BuildConfig.sha1PlayStore
 
         val newRequest = request.newBuilder()
             .addHeader("Content-Type", "application/json")

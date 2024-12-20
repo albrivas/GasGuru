@@ -105,4 +105,3 @@ class NetworkModule {
     fun provideRouteApiService(@Named(ROUTE_API_RETROFIT) retrofit: Retrofit): RouteApiServices =
         retrofit.create(RouteApiServices::class.java)
 }
-

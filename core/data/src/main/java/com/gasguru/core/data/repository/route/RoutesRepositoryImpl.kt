@@ -21,7 +21,8 @@ class RoutesRepositoryImpl @Inject constructor(
         routesDataSource.getRoute(
             origin = LatLng(40.4517461, -3.7046773),
             destination = LatLng(
-                40.4742744, -3.7148831
+                40.4742744,
+                -3.7148831
             )
         ).map {
             emit(
