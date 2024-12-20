@@ -14,10 +14,14 @@ import com.gasguru.core.data.repository.OfflineUserDataRepository
 import com.gasguru.core.data.repository.PlacesRepository
 import com.gasguru.core.data.repository.PlacesRepositoryImp
 import com.gasguru.core.data.repository.UserDataRepository
+import com.gasguru.core.data.repository.route.RoutesRepository
+import com.gasguru.core.data.repository.route.RoutesRepositoryImpl
 import com.gasguru.core.network.datasource.PlacesDataSource
 import com.gasguru.core.network.datasource.PlacesDataSourceImp
 import com.gasguru.core.network.datasource.RemoteDataSource
 import com.gasguru.core.network.datasource.RemoteDataSourceImp
+import com.gasguru.core.network.datasource.RoutesDataSource
+import com.gasguru.core.network.datasource.RoutesDataSourceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -36,6 +40,11 @@ interface DataModule {
     fun bindRemoteDataSourceImp(
         remoteDataSource: RemoteDataSourceImp,
     ): RemoteDataSource
+
+    @Binds
+    fun bindRouteDataSourceImp(
+        routesDataSource: RoutesDataSourceImpl
+    ): RoutesDataSource
 
     @Binds
     fun bindUserDataRepository(
@@ -71,4 +80,9 @@ interface DataModule {
     fun bindFilterRepository(
         filterRepository: FilterRepositoryImpl
     ): FilterRepository
+
+    @Binds
+    fun bindRoutesRepository(
+        routesRepository: RoutesRepositoryImpl
+    ): RoutesRepository
 }

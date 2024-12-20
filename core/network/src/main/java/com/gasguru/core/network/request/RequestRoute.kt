@@ -11,7 +11,9 @@ data class RequestRoute(
     @Json(name = "origin")
     val origin: RequestOrigin,
     @Json(name = "travelMode")
-    val travelMode: String
+    val travelMode: String,
+    @Json(name = "languageCode")
+    val languageCode: String
 )
 
 @JsonClass(generateAdapter = true)
