@@ -66,13 +66,15 @@ class StationMapViewModel @Inject constructor(
         getStationByCurrentLocation()
     }
 
-    val polyline: StateFlow<Route?> = getRouteUseCase(origin = Location("").apply {
-        latitude = 40.483785
-        longitude = -3.700888
-    }, destination = Location("").apply {
-        latitude = 40.480084
-        longitude = -3.704560
-    }
+    val polyline: StateFlow<Route?> = getRouteUseCase(
+        origin = Location("").apply {
+            latitude = 40.483785
+            longitude = -3.700888
+        },
+        destination = Location("").apply {
+            latitude = 40.480084
+            longitude = -3.704560
+        }
     ).stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
