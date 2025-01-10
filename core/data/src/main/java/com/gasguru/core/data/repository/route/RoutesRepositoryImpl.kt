@@ -17,13 +17,10 @@ class RoutesRepositoryImpl @Inject constructor(
     private val routesDataSource: RoutesDataSource,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : RoutesRepository {
-    override fun getRoute(origin: LatLng?, destination: LatLng?): Flow<Route> = flow {
+    override fun getRoute(origin: Location, destination: Location): Flow<Route> = flow {
         routesDataSource.getRoute(
-            origin = LatLng(40.4517461, -3.7046773),
-            destination = LatLng(
-                40.4742744,
-                -3.7148831
-            )
+            origin = LatLng(origin.latitude, origin.longitude),
+            destination = LatLng(destination.latitude, destination.longitude)
         ).map {
             emit(
                 Route(

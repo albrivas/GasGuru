@@ -1,9 +1,9 @@
 package com.gasguru.core.data.repository.route
 
+import android.location.Location
 import com.gasguru.core.model.data.Route
-import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.Flow
 
 fun interface RoutesRepository {
-    fun getRoute(origin: LatLng?, destination: LatLng?): Flow<Route>
+    fun getRoute(origin: Location, destination: Location): Flow<Route>
 }

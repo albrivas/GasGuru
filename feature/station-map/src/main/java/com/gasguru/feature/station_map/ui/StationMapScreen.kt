@@ -78,6 +78,7 @@ import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.FuelStationBrandsType
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.RecentSearchQuery
+import com.gasguru.core.model.data.Route
 import com.gasguru.core.model.data.SearchPlace
 import com.gasguru.core.ui.getPrice
 import com.gasguru.core.ui.toBrandStationIcon
@@ -123,12 +124,14 @@ fun StationMapScreenRoute(
     val searchResult by viewModel.searchResultUiState.collectAsStateWithLifecycle()
     val recentSearchQuery by viewModel.recentSearchQueriesUiState.collectAsStateWithLifecycle()
     val filterGroup by viewModel.filters.collectAsStateWithLifecycle()
+    val route by viewModel.polyline.collectAsStateWithLifecycle()
     StationMapScreen(
         uiState = state,
         searchQuery = searchQuery,
         searchResultUiState = searchResult,
         recentSearchQueries = recentSearchQuery,
         filterUiState = filterGroup,
+        route = route,
         event = viewModel::handleEvent,
         navigateToDetail = navigateToDetail
     )
@@ -142,6 +145,7 @@ internal fun StationMapScreen(
     searchResultUiState: SearchResultUiState,
     recentSearchQueries: RecentSearchQueriesUiState,
     filterUiState: FilterUiState,
+    route: Route?,
     event: (StationMapEvent) -> Unit = {},
     navigateToDetail: (Int) -> Unit = {},
 ) = with(uiState) {
@@ -161,12 +165,12 @@ internal fun StationMapScreen(
         val screenHeightPx = with(density) { configuration.screenHeightDp.dp.toPx() }
         with(density) {
             (
-                screenHeightPx -
-                    filtersHeightPx -
-                    searchBarHeightPx -
-                    bottomBarHeightPx -
-                    peekHeight.toPx()
-                ).toDp()
+                    screenHeightPx -
+                            filtersHeightPx -
+                            searchBarHeightPx -
+                            bottomBarHeightPx -
+                            peekHeight.toPx()
+                    ).toDp()
         }
     }
 
@@ -248,6 +252,7 @@ internal fun StationMapScreen(
                     cameraState = cameraState,
                     userSelectedFuelType = selectedType,
                     loading = loading,
+                    route = route,
                     navigateToDetail = navigateToDetail,
                     modifier = Modifier.fillMaxSize()
                 )
@@ -317,6 +322,7 @@ fun MapView(
     cameraState: CameraPositionState,
     userSelectedFuelType: FuelType?,
     loading: Boolean,
+    route: Route?,
     navigateToDetail: (Int) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
@@ -364,6 +370,17 @@ fun MapView(
             properties = mapProperties,
             contentPadding = PaddingValues(bottom = 60.dp)
         ) {
+//            route?.let {
+//                val legs = it.legs.map(PolyUtil::decode)
+//                legs.forEach { leg ->
+//                    Polyline(
+//                        points = leg,
+//                        width = 20f,
+//                        jointType = JointType.ROUND,
+//                        color = Primary900
+//                    )
+//                }
+//            }
             stations.forEach { station ->
                 val state = remember(station.idServiceStation) {
                     MarkerState(position = station.location.toLatLng())
@@ -516,7 +533,7 @@ fun SearchPlaces(
                 }
 
                 SearchResultUiState.LoadFailed,
-                -> Unit
+                    -> Unit
 
                 SearchResultUiState.EmptyQuery -> {
                     if (recentSearchQueries is RecentSearchQueriesUiState.Success) {
@@ -855,6 +872,7 @@ private fun StationMapScreenPreview() {
             uiState = StationMapUiState(),
             searchResultUiState = SearchResultUiState.EmptyQuery,
             searchQuery = "",
+            route = null,
             recentSearchQueries = RecentSearchQueriesUiState.Loading,
             filterUiState = FilterUiState(),
             navigateToDetail = {}
