@@ -49,6 +49,7 @@ junit5Plugin = "1.11.2.0"
 junit5Runner = "1.4.0"
 materialIcons = "1.7.4"
 constraintLayout = "1.1.0"
+mapsUtil = "3.8.2"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
@@ -102,6 +103,7 @@ kotlin-coroutines-play = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-pl
 lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
+maps-utils = { module = "com.google.maps.android:android-maps-utils", version.ref = "mapsUtil" }
 play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
 places = { module = "com.google.android.libraries.places:places", version.ref = "places" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
