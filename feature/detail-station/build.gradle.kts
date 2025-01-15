@@ -67,6 +67,8 @@ dependencies {
     implementation(libs.coil.compose)
     detektPlugins(libs.detekt.formatting)
     implementation(libs.constraint.layout)
+    implementation(libs.vico.compose)
+    implementation(libs.vico.compose.m3)
 
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
