@@ -30,7 +30,7 @@ data class NetworkPriceHistory(
     @Json(name = "Municipio")
     val municipality: String,
     @Json(name = "PrecioProducto")
-    val price: String,
+    val price: Double,
     @Json(name = "Provincia")
     val province: String,
     @Json(name = "Remisión")

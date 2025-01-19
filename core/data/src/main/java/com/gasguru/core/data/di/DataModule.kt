@@ -14,6 +14,8 @@ import com.gasguru.core.data.repository.OfflineUserDataRepository
 import com.gasguru.core.data.repository.PlacesRepository
 import com.gasguru.core.data.repository.PlacesRepositoryImp
 import com.gasguru.core.data.repository.UserDataRepository
+import com.gasguru.core.data.repository.history.GetHistoryByFuelRepository
+import com.gasguru.core.data.repository.history.GetHistoryByFuelRepositoryImpl
 import com.gasguru.core.network.datasource.PlacesDataSource
 import com.gasguru.core.network.datasource.PlacesDataSourceImp
 import com.gasguru.core.network.datasource.RemoteDataSource
@@ -71,4 +73,9 @@ interface DataModule {
     fun bindFilterRepository(
         filterRepository: FilterRepositoryImpl
     ): FilterRepository
+
+    @Binds
+    fun bindsHistoryRepository(
+        getHistoryByFuelRepository: GetHistoryByFuelRepositoryImpl
+    ): GetHistoryByFuelRepository
 }
