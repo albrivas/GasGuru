@@ -4,4 +4,5 @@
     <string name="map_nav">Estaciones</string>
     <string name="list_nav">Favoritos</string>
     <string name="profile_nav">Perfil</string>
+    <string name="not_connected">⚠️ No estas conectado a internet</string>
 </resources>

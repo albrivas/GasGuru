@@ -14,7 +14,7 @@ import com.gasguru.navigation.navigationbar.navigateToNavigationBar
 import com.gasguru.navigation.navigationbar.navigationBarHost
 
 @Composable
-fun MainNavigation(startDestination: Any = OnboardingRoutes.OnboardingWelcomeRoute) {
+fun GasGuruNavHost(startDestination: Any = OnboardingRoutes.OnboardingWelcomeRoute) {
     val navController = rememberNavController()
     val navigationBarController = rememberNavController()
 
