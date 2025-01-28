@@ -13,7 +13,7 @@ interface RemoteDataSource {
     suspend fun getPriceHistory(
         date: String,
         idMunicipality: String,
-        idStation: String,
-        idProduct: String,
+        idStation: Int,
+        idProduct: Int,
     ): Either<NetworkError, NetworkPriceHistory>
 }

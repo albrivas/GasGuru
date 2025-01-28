@@ -8,8 +8,8 @@ fun interface GetHistoryByFuelRepository {
     fun getHistory(
         numberOfDays: Int,
         date: LocalDate,
-        idStation: String,
+        idStation: Int,
         idMunicipality: String,
-        idProduct: String,
+        idProduct: Int,
     ): Flow<List<PriceHistory>>
 }

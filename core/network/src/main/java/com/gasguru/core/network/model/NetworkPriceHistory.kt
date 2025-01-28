@@ -14,7 +14,7 @@ data class NetworkPriceHistory(
     @Json(name = "IDCCAA")
     val idAutonomousCommunity: String,
     @Json(name = "IDEESS")
-    val idServiceStation: String,
+    val idServiceStation: Int,
     @Json(name = "IDMunicipio")
     val idMunicipality: String,
     @Json(name = "IDProvincia")
@@ -30,7 +30,7 @@ data class NetworkPriceHistory(
     @Json(name = "Municipio")
     val municipality: String,
     @Json(name = "PrecioProducto")
-    val price: Double,
+    val price: String,
     @Json(name = "Provincia")
     val province: String,
     @Json(name = "Remisión")
