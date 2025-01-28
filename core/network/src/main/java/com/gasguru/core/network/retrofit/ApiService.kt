@@ -12,7 +12,7 @@ interface ApiService {
             "ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/"
 
         const val PRICE_HISTORY =
-            "ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestresHist/{date}/{idMunicipality}/{idProduct}"
+            "ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestresHist/FiltroMunicipioProducto/{date}/{idMunicipality}/{idProduct}"
     }
 
     @GET(LIST_FUEL_STATIONS)
@@ -22,6 +22,6 @@ interface ApiService {
     suspend fun priceHistory(
         @Path("date") date: String,
         @Path("idMunicipality") idMunicipality: String,
-        @Path("idProduct") idProduct: String,
+        @Path("idProduct") idProduct: Int,
     ): NetworkListPriceHistory
 }

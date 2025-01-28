@@ -5,7 +5,6 @@ import com.gasguru.core.model.data.PriceHistory
 import com.gasguru.core.network.datasource.RemoteDataSource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -21,17 +20,17 @@ class GetHistoryByFuelRepositoryImpl @Inject constructor(
     override fun getHistory(
         numberOfDays: Int,
         date: LocalDate,
-        idStation: String,
+        idStation: Int,
         idMunicipality: String,
-        idProduct: String,
+        idProduct: Int,
     ): Flow<List<PriceHistory>> {
         val dates = getLastDays(numberOfDays, date)
         val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
 
         return flow {
             val priceHistoryList = coroutineScope {
-                dates.map { localDate ->
-                    async {
+                async {
+                    dates.map { localDate ->
                         val formattedDate = localDate.format(formatter)
                         val response = dataSource.getPriceHistory(
                             formattedDate,
@@ -46,14 +45,15 @@ class GetHistoryByFuelRepositoryImpl @Inject constructor(
                                 listOf(
                                     PriceHistory(
                                         date = formattedDate,
-                                        price = it.price
+                                        price = it.price.replace(oldValue = ",", newValue = ".")
+                                            .toDouble()
                                     )
                                 )
                             }
                         )
                     }
                 }
-            }.awaitAll()
+            }.await()
 
             emit(priceHistoryList.flatten())
         }.flowOn(ioDispatcher)
@@ -61,4 +61,4 @@ class GetHistoryByFuelRepositoryImpl @Inject constructor(
 }
 
 private fun getLastDays(numberOfDays: Int, date: LocalDate) =
-    (0..numberOfDays).map { date.minusDays(it.toLong()) }.reversed()
+    (0..numberOfDays).map { date.minusDays(it.toLong()) }.reversed().filter { it != date }
