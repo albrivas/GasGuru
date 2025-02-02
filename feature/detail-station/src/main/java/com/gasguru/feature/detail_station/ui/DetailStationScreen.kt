@@ -37,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -59,6 +60,7 @@ import com.gasguru.core.common.generateStaticMapUrl
 import com.gasguru.core.common.startRoute
 import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.FuelStationBrandsType
+import com.gasguru.core.model.data.PriceHistory
 import com.gasguru.core.model.data.previewFuelStationDomain
 import com.gasguru.core.ui.getFuelPriceItems
 import com.gasguru.core.ui.iconTint
@@ -77,16 +79,36 @@ import com.gasguru.feature.detail_station.BuildConfig
 import com.gasguru.feature.detail_station.R
 import com.gasguru.feature.detail_station.formatSchedule
 import com.gasguru.feature.detail_station.getTimeElapsedString
+import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
+import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStart
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLine
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
+import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
+import com.patrykandpatrick.vico.compose.common.fill
+import com.patrykandpatrick.vico.compose.common.shader.verticalGradient
+import com.patrykandpatrick.vico.core.cartesian.Scroll
+import com.patrykandpatrick.vico.core.cartesian.axis.HorizontalAxis
+import com.patrykandpatrick.vico.core.cartesian.axis.VerticalAxis
+import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModel
+import com.patrykandpatrick.vico.core.cartesian.data.LineCartesianLayerModel
+import com.patrykandpatrick.vico.core.cartesian.layer.LineCartesianLayer
+import com.patrykandpatrick.vico.core.cartesian.marker.DefaultCartesianMarker
+import com.patrykandpatrick.vico.core.common.component.TextComponent
+import com.patrykandpatrick.vico.core.common.shader.ShaderProvider
 
 @Composable
 internal fun DetailStationScreenRoute(
     onBack: () -> Unit,
     viewModel: DetailStationViewModel = hiltViewModel(),
 ) {
-    val state by viewModel.fuelStation.collectAsStateWithLifecycle()
+    val state by viewModel.detailUiState.collectAsStateWithLifecycle()
     val lastUpdate by viewModel.lastUpdate.collectAsStateWithLifecycle()
+    val historyState by viewModel.historyUiState.collectAsStateWithLifecycle()
     DetailStationScreen(
         uiState = state,
+        historyUiState = historyState,
         lastUpdate = lastUpdate,
         onBack = onBack,
         onFavoriteClick = viewModel::onFavoriteClick
@@ -96,6 +118,7 @@ internal fun DetailStationScreenRoute(
 @Composable
 internal fun DetailStationScreen(
     uiState: DetailStationUiState,
+    historyUiState: PriceHistoryUiState,
     lastUpdate: Long,
     onBack: () -> Unit = {},
     onFavoriteClick: (Boolean) -> Unit = {},
@@ -136,7 +159,8 @@ internal fun DetailStationScreen(
                     DetailStationContent(
                         station = uiState.station,
                         lastUpdate = lastUpdate,
-                        address = uiState.address
+                        address = uiState.address,
+                        historyUiState = historyUiState,
                     )
                 }
             }
@@ -144,14 +168,53 @@ internal fun DetailStationScreen(
     }
 }
 
+
 @Composable
-fun DetailStationContent(station: FuelStation, lastUpdate: Long, address: String?) {
+fun DetailStationContent(
+    station: FuelStation,
+    lastUpdate: Long,
+    address: String?,
+    historyUiState: PriceHistoryUiState,
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
+
+        if (historyUiState is PriceHistoryUiState.Success) {
+            CartesianChartHost(
+                chart = rememberCartesianChart(
+                    rememberLineCartesianLayer(
+                        lineProvider =
+                        LineCartesianLayer.LineProvider.series(
+                            LineCartesianLayer.rememberLine(
+                                fill = LineCartesianLayer.LineFill.single(fill(Primary500)),
+                                areaFill =
+                                LineCartesianLayer.AreaFill.single(
+                                    fill(
+                                        ShaderProvider.verticalGradient(
+                                            arrayOf(
+                                                Primary500.copy(alpha = 0.4f),
+                                                Color.Transparent
+                                            )
+                                        )
+                                    )
+                                ),
+                            )
+                        ),
+                    ),
+                    startAxis = VerticalAxis.rememberStart(),
+                    bottomAxis = HorizontalAxis.rememberBottom(),
+                    marker = DefaultCartesianMarker(label = TextComponent(color = Color.Black.toArgb()))
+                ),
+
+                model = CartesianChartModel(LineCartesianLayerModel.build { series(historyUiState.prices.map { it.price }) }),
+                scrollState = rememberVicoScrollState(true, Scroll.Absolute.Start),
+            )
+        }
+
         val context = LocalContext.current
         val isOpen = if (station.isStationOpen()) "Open" else "Closed"
         ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
@@ -391,6 +454,13 @@ private fun DetailStationPreview() {
                     brandStationBrandsType = FuelStationBrandsType.AZUL_OIL
                 ),
                 address = null
+            ),
+            historyUiState = PriceHistoryUiState.Success(
+                listOf(
+                    PriceHistory("12-01-2025", 1.657),
+                    PriceHistory("12-01-2025", 1.667),
+                    PriceHistory("12-01-2025", 1.627)
+                )
             ),
             lastUpdate = 0
         )
