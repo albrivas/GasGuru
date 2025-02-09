@@ -42,9 +42,12 @@ import com.gasguru.core.uikit.components.alert.AlertTemplate
 import com.gasguru.core.uikit.components.alert.AlertTemplateModel
 import com.gasguru.core.uikit.components.fuelItem.FuelStationItem
 import com.gasguru.core.uikit.components.fuelItem.FuelStationItemModel
+import com.gasguru.core.uikit.components.swipe.SwipeItem
+import com.gasguru.core.uikit.components.swipe.SwipeItemModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.Neutral100
 import com.gasguru.core.uikit.theme.Neutral300
+import com.gasguru.core.uikit.theme.Red500
 import com.gasguru.feature.favorite_list_station.R
 
 @Composable
@@ -52,11 +55,11 @@ fun FavoriteListStationScreenRoute(
     navigateToDetail: (Int) -> Unit,
     viewModel: FavoriteListStationViewModel = hiltViewModel(),
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val state by viewModel.favoriteStations.collectAsStateWithLifecycle()
     FavoriteListStationScreen(
         uiState = state,
         navigateToDetail = navigateToDetail,
-        checkLocationEnabled = viewModel::checkLocationEnabled,
+        event = viewModel::handleEvents
     )
 }
 
@@ -64,7 +67,7 @@ fun FavoriteListStationScreenRoute(
 internal fun FavoriteListStationScreen(
     uiState: FavoriteStationListUiState,
     navigateToDetail: (Int) -> Unit,
-    checkLocationEnabled: () -> Unit,
+    event: (FavoriteStationEvent) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -75,7 +78,9 @@ internal fun FavoriteListStationScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         when (uiState) {
-            FavoriteStationListUiState.Error -> Unit
+            FavoriteStationListUiState.Error -> {
+
+            }
             FavoriteStationListUiState.Loading -> {
                 Box(
                     modifier = Modifier
@@ -90,15 +95,14 @@ internal fun FavoriteListStationScreen(
             is FavoriteStationListUiState.Favorites -> ListFuelStations(
                 stations = uiState.favoriteStations,
                 selectedFuel = uiState.userSelectedFuelType,
-                navigateToDetail = navigateToDetail
+                navigateToDetail = navigateToDetail,
+                event = event
             )
 
             FavoriteStationListUiState.DisableLocation -> AlertTemplate(
                 model = AlertTemplateModel(
                     animation = com.gasguru.core.ui.R.raw.enable_location,
                     description = stringResource(id = R.string.location_disable_description),
-                    buttonText = stringResource(id = R.string.button_enable_location),
-                    onClick = checkLocationEnabled
                 )
             )
 
@@ -133,6 +137,7 @@ fun ListFuelStations(
     modifier: Modifier = Modifier,
     stations: List<FuelStation>,
     selectedFuel: FuelType,
+    event: (FavoriteStationEvent) -> Unit,
     navigateToDetail: (Int) -> Unit = {},
 ) {
     val context = LocalContext.current
@@ -154,19 +159,34 @@ fun ListFuelStations(
                 .background(color = Color.White)
                 .wrapContentHeight(),
         ) {
-            itemsIndexed(stations) { index, item ->
-                FuelStationItem(
-                    modifier = Modifier.testTag("item $index"),
-                    model = FuelStationItemModel(
-                        idServiceStation = item.idServiceStation,
-                        icon = item.brandStationBrandsType.toBrandStationIcon(),
-                        name = item.brandStationName,
-                        distance = item.formatDistance(),
-                        price = selectedFuel.getPrice(context, item),
-                        index = index,
-                        categoryColor = item.priceCategory.toColor(),
-                        onItemClick = navigateToDetail
-                    )
+            itemsIndexed(
+                items = stations,
+                key = { _, item -> item.idServiceStation }) { index, item ->
+                SwipeItem(
+                    modifier = Modifier.animateItem(),
+                    model = SwipeItemModel(
+                        enableDismissFromEndToStart = true,
+                        enableDismissFromStartToEnd = true,
+                        iconAnimated = com.gasguru.core.ui.R.raw.trash_animated,
+                        backgroundColor = Red500,
+                        onClick = {
+                            event(FavoriteStationEvent.RemoveFavoriteStation(item.idServiceStation))
+                        },
+                    ) {
+                        FuelStationItem(
+                            modifier = Modifier.testTag("item $index"),
+                            model = FuelStationItemModel(
+                                idServiceStation = item.idServiceStation,
+                                icon = item.brandStationBrandsType.toBrandStationIcon(),
+                                name = item.brandStationName,
+                                distance = item.formatDistance(),
+                                price = selectedFuel.getPrice(context, item),
+                                index = index,
+                                categoryColor = item.priceCategory.toColor(),
+                                onItemClick = navigateToDetail
+                            )
+                        )
+                    }
                 )
             }
         }
@@ -179,6 +199,6 @@ fun EmptyFavoritesPreview() {
     FavoriteListStationScreen(
         uiState = FavoriteStationListUiState.EmptyFavorites,
         navigateToDetail = {},
-        checkLocationEnabled = {},
+        event = {}
     )
 }
