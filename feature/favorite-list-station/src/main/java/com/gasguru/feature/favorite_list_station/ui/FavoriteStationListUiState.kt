@@ -11,3 +11,7 @@ sealed interface FavoriteStationListUiState {
         FavoriteStationListUiState
     data object EmptyFavorites : FavoriteStationListUiState
 }
+
+sealed class FavoriteStationEvent {
+    data class RemoveFavoriteStation(val idStation: Int) : FavoriteStationEvent()
+}
