@@ -12,11 +12,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.gasguru.core.uikit.R
 import com.gasguru.core.uikit.components.fuelItem.FuelStationItem
@@ -26,17 +28,29 @@ import com.gasguru.core.uikit.theme.Red500
 
 @Composable
 fun SwipeItem(modifier: Modifier = Modifier, model: SwipeItemModel) = with(model) {
-    val swipeState = rememberSwipeToDismissBoxState()
-    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(iconAnimated))
+    val swipeState = rememberSwipeToDismissBoxState(confirmValueChange = { value ->
+        when (value) {
+            SwipeToDismissBoxValue.StartToEnd,
+            SwipeToDismissBoxValue.EndToStart,
+            -> {
+                onClick()
+            }
 
-    when (swipeState.currentValue) {
-        SwipeToDismissBoxValue.StartToEnd -> {}
-
-        SwipeToDismissBoxValue.EndToStart -> {
-            onClick()
+            SwipeToDismissBoxValue.Settled -> return@rememberSwipeToDismissBoxState false
         }
 
-        SwipeToDismissBoxValue.Settled -> {}
+        return@rememberSwipeToDismissBoxState true
+    }, positionalThreshold = { it * .50f })
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(iconAnimated))
+
+    val backgroundColorAlpha = when {
+        swipeState.progress > 0 -> {
+            backgroundColor.copy(alpha = swipeState.progress * 6f)
+        }
+        swipeState.progress < 0 -> {
+            backgroundColor.copy(alpha = -swipeState.progress * 6f)
+        }
+        else -> backgroundColor.copy(alpha = 0f)
     }
 
     SwipeToDismissBox(
@@ -48,30 +62,31 @@ fun SwipeItem(modifier: Modifier = Modifier, model: SwipeItemModel) = with(model
             Row(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(backgroundColor),
+                    .background(backgroundColorAlpha),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 LottieAnimation(
                     modifier = Modifier
-                        .padding(24.dp),
+                        .padding(24.dp)
+                        .alpha(backgroundColorAlpha.alpha),
                     composition = composition,
-                    iterations = 1,
+                    iterations = LottieConstants.IterateForever,
                     restartOnPlay = false,
-                    isPlaying = true,
+                    isPlaying = true
                 )
 
                 LottieAnimation(
                     modifier = Modifier
-                        .padding(24.dp),
+                        .padding(24.dp)
+                        .alpha(backgroundColorAlpha.alpha),
                     composition = composition,
-                    iterations = 1,
+                    iterations = LottieConstants.IterateForever,
                     restartOnPlay = false,
                     isPlaying = true
                 )
             }
         }
-
     ) {
         content()
     }

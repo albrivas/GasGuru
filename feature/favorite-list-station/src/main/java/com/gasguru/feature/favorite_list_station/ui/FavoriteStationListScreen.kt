@@ -78,9 +78,7 @@ internal fun FavoriteListStationScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         when (uiState) {
-            FavoriteStationListUiState.Error -> {
-
-            }
+            FavoriteStationListUiState.Error -> Unit
             FavoriteStationListUiState.Loading -> {
                 Box(
                     modifier = Modifier
@@ -157,11 +155,13 @@ fun ListFuelStations(
                 .clip(RoundedCornerShape(8.dp))
                 .border(1.dp, Neutral300, RoundedCornerShape(8.dp))
                 .background(color = Color.White)
-                .wrapContentHeight(),
+                .wrapContentHeight()
+                .testTag("favorite_list"),
         ) {
             itemsIndexed(
                 items = stations,
-                key = { _, item -> item.idServiceStation }) { index, item ->
+                key = { _, item -> item.idServiceStation }
+            ) { index, item ->
                 SwipeItem(
                     modifier = Modifier.animateItem(),
                     model = SwipeItemModel(
