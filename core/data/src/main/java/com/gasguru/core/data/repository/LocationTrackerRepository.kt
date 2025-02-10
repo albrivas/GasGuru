@@ -36,7 +36,7 @@ class LocationTrackerRepository @Inject constructor(
 
         trySend(
             locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
-                    locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
         )
 
         val locationListener = object : LocationListener {
@@ -50,7 +50,6 @@ class LocationTrackerRepository @Inject constructor(
 
             override fun onLocationChanged(location: Location) {}
         }
-
 
         locationManager.requestLocationUpdates(
             LocationManager.GPS_PROVIDER,
