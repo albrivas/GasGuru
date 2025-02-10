@@ -62,6 +62,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.navigation.compose)
     detektPlugins(libs.detekt.formatting)
+    implementation(libs.material.icons.extended)
 
     //androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.test.manifest)

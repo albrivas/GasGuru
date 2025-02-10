@@ -1,4 +1,4 @@
-package com.gasguru.ui
+package com.gasguru
 
 sealed interface SplashUiState {
     data object Loading : SplashUiState
