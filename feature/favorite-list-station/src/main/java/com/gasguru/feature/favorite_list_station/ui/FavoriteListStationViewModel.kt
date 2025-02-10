@@ -4,16 +4,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gasguru.core.domain.GetFavoriteStationsUseCase
 import com.gasguru.core.domain.GetUserDataUseCase
+import com.gasguru.core.domain.RemoveFavoriteStationUseCase
 import com.gasguru.core.domain.location.GetLastKnownLocationUseCase
 import com.gasguru.core.domain.location.IsLocationEnabledUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,42 +24,32 @@ import javax.inject.Inject
 class FavoriteListStationViewModel @Inject constructor(
     private val getUserDataUseCase: GetUserDataUseCase,
     private val getFavoriteStationsUseCase: GetFavoriteStationsUseCase,
-    private val isLocationEnabledUseCase: IsLocationEnabledUseCase,
-    private val getLastKnownLocationUseCase: GetLastKnownLocationUseCase,
+    isLocationEnabledUseCase: IsLocationEnabledUseCase,
+    getLastKnownLocationUseCase: GetLastKnownLocationUseCase,
+    private val removeFavoriteStationUseCase: RemoveFavoriteStationUseCase,
 ) : ViewModel() {
 
-    private val _state =
-        MutableStateFlow<FavoriteStationListUiState>(FavoriteStationListUiState.Loading)
-    val state: StateFlow<FavoriteStationListUiState> = _state
-
-    init {
-        checkLocationEnabled()
-    }
-
-    fun checkLocationEnabled() {
-        viewModelScope.launch {
-            val isLocationEnabled = isLocationEnabledUseCase()
-            if (!isLocationEnabled) {
-                _state.update { FavoriteStationListUiState.DisableLocation }
-            } else {
-                getFavoriteStations()
-            }
+    fun handleEvents(event: FavoriteStationEvent) {
+        when (event) {
+            is FavoriteStationEvent.RemoveFavoriteStation -> removeFavoriteStation(event.idStation)
         }
     }
 
-    private fun getFavoriteStations() {
-        viewModelScope.launch {
-            val lastLocation = getLastKnownLocationUseCase().firstOrNull()
-            lastLocation?.let {
-                combine(
-                    getFavoriteStationsUseCase(userLocation = lastLocation),
-                    getUserDataUseCase()
-                ) { stations, userData ->
-                    Pair(stations, userData)
-                }.onStart { _state.update { FavoriteStationListUiState.Loading } }
-                    .catch { _state.update { FavoriteStationListUiState.Error } }
-                    .collect { (stations, userData) ->
-                        _state.update {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val favoriteStations: StateFlow<FavoriteStationListUiState> = isLocationEnabledUseCase()
+        .flatMapLatest { isLocationEnabled ->
+            if (!isLocationEnabled) {
+                flowOf(FavoriteStationListUiState.DisableLocation)
+            } else {
+                getLastKnownLocationUseCase()
+                    .map { location ->
+                        location ?: throw IllegalStateException("Location is null")
+                    }
+                    .flatMapLatest { location ->
+                        combine(
+                            getFavoriteStationsUseCase(userLocation = location),
+                            getUserDataUseCase()
+                        ) { stations, userData ->
                             if (stations.favoriteStations.isEmpty()) {
                                 FavoriteStationListUiState.EmptyFavorites
                             } else {
@@ -69,5 +62,16 @@ class FavoriteListStationViewModel @Inject constructor(
                     }
             }
         }
+        .catch {
+            emit(FavoriteStationListUiState.Error)
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = FavoriteStationListUiState.Loading
+        )
+
+    private fun removeFavoriteStation(idStation: Int) = viewModelScope.launch {
+        removeFavoriteStationUseCase.invoke(idStation)
     }
 }
