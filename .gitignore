@@ -220,3 +220,5 @@ google-services.json
 
 # Kotlin kompiler
 .kotlin/*
+
+.gitconfig
