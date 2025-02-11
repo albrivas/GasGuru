@@ -65,7 +65,7 @@ jobs:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_STORE }}
           packageName: com.gasguru
           releaseFiles: app/build/outputs/bundle/release/app-release.aab
-          track: alpha
+          track: production
           status: completed
           whatsNewDirectory: distribution/whatsnew
 
