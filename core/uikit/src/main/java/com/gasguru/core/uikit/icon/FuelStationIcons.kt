@@ -37,5 +37,6 @@ object FuelStationIcons {
     val Avia = R.drawable.ic_logo_avia
     val GmFuel = R.drawable.ic_logo_gm
     val Valcarce = R.drawable.ic_logo_valcarce
+    val Moeve = R.drawable.ic_logo_moeve
     val Uknown = R.drawable.ic_fuel_station
 }

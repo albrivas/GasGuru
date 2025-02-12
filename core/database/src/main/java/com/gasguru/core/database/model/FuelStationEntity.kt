@@ -118,6 +118,7 @@ fun String.toBrandStation(): FuelStationBrandsType {
         "avia" to FuelStationBrandsType.AVIA,
         "gm fuel" to FuelStationBrandsType.GM_FUEL,
         "valcarce" to FuelStationBrandsType.VALCARCE,
+        "moeve" to FuelStationBrandsType.MOEVE,
     )
 
     val brandNameLowercase = this.lowercase()
