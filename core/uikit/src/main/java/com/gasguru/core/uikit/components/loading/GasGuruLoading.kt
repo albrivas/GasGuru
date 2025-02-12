@@ -22,7 +22,7 @@ fun GasGuruLoading(
     ) {
         CircularProgressIndicator(
             modifier = Modifier.align(Alignment.Center),
-            color = color
+            color = color,
         )
     }
 }
