@@ -75,6 +75,7 @@ fun FuelStationBrandsType.toBrandStationIcon() = when (this) {
     FuelStationBrandsType.ENERGY_CARBURANTES -> FuelStationIcons.EnergyCarburantes
     FuelStationBrandsType.AVIA -> FuelStationIcons.Avia
     FuelStationBrandsType.GM_FUEL -> FuelStationIcons.GmFuel
+    FuelStationBrandsType.MOEVE -> FuelStationIcons.Moeve
     FuelStationBrandsType.VALCARCE -> FuelStationIcons.Valcarce
 }
 
