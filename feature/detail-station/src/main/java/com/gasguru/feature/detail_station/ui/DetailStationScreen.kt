@@ -25,7 +25,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -65,6 +64,8 @@ import com.gasguru.core.ui.iconTint
 import com.gasguru.core.ui.toBrandStationIcon
 import com.gasguru.core.uikit.components.information_card.InformationCard
 import com.gasguru.core.uikit.components.information_card.InformationCardModel
+import com.gasguru.core.uikit.components.loading.GasGuruLoading
+import com.gasguru.core.uikit.components.loading.GasGuruLoadingModel
 import com.gasguru.core.uikit.components.price.PriceItem
 import com.gasguru.core.uikit.theme.AccentRed
 import com.gasguru.core.uikit.theme.GasGuruTheme
@@ -72,6 +73,7 @@ import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.Neutral100
 import com.gasguru.core.uikit.theme.Neutral300
 import com.gasguru.core.uikit.theme.Primary500
+import com.gasguru.core.uikit.theme.Primary800
 import com.gasguru.core.uikit.theme.TextSubtle
 import com.gasguru.feature.detail_station.BuildConfig
 import com.gasguru.feature.detail_station.R
@@ -103,18 +105,12 @@ internal fun DetailStationScreen(
     when (uiState) {
         DetailStationUiState.Error -> Unit
         DetailStationUiState.Loading -> {
-            Box(
+            GasGuruLoading(
                 modifier = Modifier
                     .fillMaxSize()
                     .statusBarsPadding(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .testTag("loading")
-                )
-            }
+                model = GasGuruLoadingModel(color = Primary800)
+            )
         }
 
         is DetailStationUiState.Success -> {

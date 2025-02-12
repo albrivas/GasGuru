@@ -29,7 +29,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.BottomSheetScaffold
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
@@ -89,6 +88,8 @@ import com.gasguru.core.uikit.components.filter_sheet.FilterSheet
 import com.gasguru.core.uikit.components.filter_sheet.FilterSheetModel
 import com.gasguru.core.uikit.components.fuelItem.FuelStationItem
 import com.gasguru.core.uikit.components.fuelItem.FuelStationItemModel
+import com.gasguru.core.uikit.components.loading.GasGuruLoading
+import com.gasguru.core.uikit.components.loading.GasGuruLoadingModel
 import com.gasguru.core.uikit.components.marker.StationMarker
 import com.gasguru.core.uikit.components.marker.StationMarkerModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
@@ -97,6 +98,7 @@ import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.Neutral100
 import com.gasguru.core.uikit.theme.Neutral300
 import com.gasguru.core.uikit.theme.Primary600
+import com.gasguru.core.uikit.theme.Primary800
 import com.gasguru.core.uikit.theme.TextSubtle
 import com.gasguru.feature.station_map.BuildConfig
 import com.gasguru.feature.station_map.R
@@ -344,16 +346,13 @@ fun MapView(
         modifier = modifier
     ) {
         if (loading) {
-            Box(
+            GasGuruLoading(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color.Black.copy(alpha = 0.5f))
-                    .zIndex(1f)
-            ) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            }
+                    .zIndex(1f),
+                model = GasGuruLoadingModel(color = Primary800)
+            )
         }
 
         GoogleMap(

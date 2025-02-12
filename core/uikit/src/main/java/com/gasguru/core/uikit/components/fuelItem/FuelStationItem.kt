@@ -76,13 +76,13 @@ fun FuelStationItem(
                     .size(40.dp)
                     .clip(CircleShape)
                     .border(width = 1.dp, color = Neutral300, shape = CircleShape)
-
             ) {
                 Image(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(4.dp)
-                        .clip(CircleShape),
+                        .clip(CircleShape)
+                        .align(Alignment.Center),
                     painter = painterResource(id = icon),
                     contentDescription = "Fuel station brand"
                 )

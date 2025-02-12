@@ -36,5 +36,6 @@ enum class FuelStationBrandsType(val value: String) {
     AVIA("Avia"),
     GM_FUEL("Gm fuel"),
     VALCARCE("Valcarce"),
+    MOEVE("Moeve"),
     UNKNOWN("Unknown"),
 }
