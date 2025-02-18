@@ -157,4 +157,6 @@ detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets" }
 junit5 = { id = "de.mannodermaus.android-junit5", version.ref = "junit5Plugin" }
 
+gasguru-android-application = { id = "gasguru.android.application" }
+
 

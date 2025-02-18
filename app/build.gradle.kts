@@ -1,8 +1,7 @@
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.gasguru.android.application)
     alias(libs.plugins.hilt.gradle)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.gms)
@@ -20,7 +19,6 @@ val keypass: String = localProperties.getProperty("keyPassword")
 
 android {
     namespace = "com.gasguru"
-    compileSdk = 35
 
     signingConfigs {
         create("release") {
@@ -33,8 +31,6 @@ android {
 
     defaultConfig {
         applicationId = "com.gasguru"
-        minSdk = 26
-        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -65,15 +61,6 @@ android {
         }
     }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
-    }
-
     buildFeatures {
         compose = true
         aidl = false
@@ -93,18 +80,18 @@ android {
 
 dependencies {
 
-    implementation(project(":core:uikit"))
-    implementation(project(":core:ui"))
-    implementation(project(":core:data"))
-    implementation(project(":core:domain"))
-    implementation(project(":core:common"))
-    implementation(project(":feature:onboarding"))
-    implementation(project(":feature:detail-station"))
-    implementation(project(":feature:favorite-list-station"))
-    implementation(project(":feature:station-map"))
-    implementation(project(":feature:profile"))
-    implementation(project(":core:model"))
-    androidTestImplementation(project(":core:testing"))
+    implementation(projects.core.uikit)
+    implementation(projects.core.ui)
+    implementation(projects.core.data)
+    implementation(projects.core.domain)
+    implementation(projects.core.common)
+    implementation(projects.feature.onboarding)
+    implementation(projects.feature.detailStation)
+    implementation(projects.feature.favoriteListStation)
+    implementation(projects.feature.stationMap)
+    implementation(projects.feature.profile)
+    implementation(projects.core.model)
+    androidTestImplementation(projects.core.testing)
     detektPlugins(libs.detekt.formatting)
 
     // Core Android dependencies

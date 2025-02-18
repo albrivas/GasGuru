@@ -4,7 +4,7 @@ plugins {
     `kotlin-dsl`
 }
 
-group = "com.gasguru.build_logic.convention"
+group = "com.gasguru.build-logic.convention"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -33,5 +33,14 @@ tasks {
     validatePlugins {
         enableStricterValidation = true
         failOnWarning = true
+    }
+}
+
+gradlePlugin {
+    plugins {
+        register("androidApplication") {
+            id = libs.plugins.gasguru.android.application.get().pluginId
+            implementationClass = "com.gasguru.build_logic.convention.AndroidApplicationConventionPlugin"
+        }
     }
 }
