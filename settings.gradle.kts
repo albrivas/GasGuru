@@ -16,6 +16,7 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "GasGuru"
+//enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include(":app")
 
@@ -34,3 +35,4 @@ include(":feature:detail-station")
 include(":feature:favorite-list-station")
 include(":feature:station-map")
 include(":feature:profile")
+include(":build-logic:convention")
