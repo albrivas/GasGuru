@@ -1,8 +1,15 @@
 pluginManagement {
+    includeBuild("build-logic")
     repositories {
-        gradlePluginPortal()
-        google()
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
         mavenCentral()
+        gradlePluginPortal()
     }
 }
 
@@ -14,9 +21,8 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-
 rootProject.name = "GasGuru"
-//enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include(":app")
 
@@ -35,4 +41,3 @@ include(":feature:detail-station")
 include(":feature:favorite-list-station")
 include(":feature:station-map")
 include(":feature:profile")
-include(":build-logic:convention")
