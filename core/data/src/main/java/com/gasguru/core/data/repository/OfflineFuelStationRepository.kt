@@ -5,6 +5,7 @@ import com.gasguru.core.common.CommonUtils.isStationOpen
 import com.gasguru.core.common.IoDispatcher
 import com.gasguru.core.data.mapper.asEntity
 import com.gasguru.core.database.dao.FuelStationDao
+import com.gasguru.core.database.model.FuelStationEntity
 import com.gasguru.core.database.model.asExternalModel
 import com.gasguru.core.database.model.getLocation
 import com.gasguru.core.model.data.FuelStation
@@ -12,6 +13,7 @@ import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.OpeningHours
 import com.gasguru.core.model.data.PriceCategory
 import com.gasguru.core.network.datasource.RemoteDataSource
+import com.gasguru.core.network.model.NetworkPriceFuelStation
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +23,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
 
@@ -36,11 +38,15 @@ class OfflineFuelStationRepository @Inject constructor(
 
     private val ioScope = CoroutineScope(dispatcherIo + SupervisorJob())
 
-    override suspend fun addAllStations() = withContext(ioScope.coroutineContext) {
-        remoteDataSource.getListFuelStations().fold(ifLeft = {}, ifRight = { data ->
-            fuelStationDao.insertFuelStation(data.listPriceFuelStation.map { it.asEntity() })
-            offlineUserDataRepository.updateLastUpdate()
-        })
+    override suspend fun addAllStations() {
+        ioScope.launch {
+            remoteDataSource.getListFuelStations().fold(ifLeft = {}, ifRight = { data ->
+                fuelStationDao.insertFuelStation(
+                    data.listPriceFuelStation.map(NetworkPriceFuelStation::asEntity)
+                )
+                offlineUserDataRepository.updateLastUpdate()
+            })
+        }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -55,13 +61,14 @@ class OfflineFuelStationRepository @Inject constructor(
                 fuelType = user.fuelSelection.name,
                 brands = brands.map { it.uppercase() }
             ).map { items ->
-                val externalModel = items.map { it.asExternalModel() }
+                val externalModel = items.map(FuelStationEntity::asExternalModel)
                     .sortedBy { it.location.distanceTo(userLocation) }
                     .filter {
                         when (schedule) {
                             OpeningHours.OPEN_NOW -> it.isStationOpen()
                             OpeningHours.OPEN_24H -> it.schedule.trim()
                                 .uppercase(Locale.ROOT) == "L-D: 24H"
+
                             OpeningHours.NONE -> true
                         }
                     }
