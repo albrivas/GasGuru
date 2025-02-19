@@ -41,10 +41,10 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:database"))
-    implementation(project(":core:network"))
-    implementation(project(":core:model"))
-    implementation(project(":core:common"))
+    implementation(projects.core.database)
+    implementation(projects.core.network)
+    implementation(projects.core.model)
+    implementation(projects.core.common)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     detektPlugins(libs.detekt.formatting)
@@ -53,5 +53,5 @@ dependencies {
     implementation(libs.io.arrow.kt.arrow.core)
     implementation(libs.play.services.location)
     implementation(libs.places)
-    testImplementation(project(":core:testing"))
+    testImplementation(projects.core.testing)
 }

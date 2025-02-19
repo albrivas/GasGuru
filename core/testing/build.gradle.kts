@@ -44,7 +44,7 @@ android {
 
 dependencies {
 
-    implementation(project(":core:data"))
+    implementation(projects.core.data)
     detektPlugins(libs.detekt.formatting)
 
     api(libs.junit)

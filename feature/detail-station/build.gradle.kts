@@ -45,12 +45,12 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:ui"))
-    implementation(project(":core:domain"))
-    implementation(project(":core:model"))
-    implementation(project(":core:uikit"))
-    implementation(project(":core:common"))
-    androidTestImplementation(project(":core:testing"))
+    implementation(projects.core.ui)
+    implementation(projects.core.domain)
+    implementation(projects.core.model)
+    implementation(projects.core.uikit)
+    implementation(projects.core.common)
+    androidTestImplementation(projects.core.testing)
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.runtime.ktx)

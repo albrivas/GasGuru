@@ -43,8 +43,8 @@ android {
 
 dependencies {
 
-    implementation(project(":core:model"))
-    implementation(project(":core:uikit"))
+    implementation(projects.core.model)
+    implementation(projects.core.uikit)
     // Core Android dependencies
     implementation(libs.androidx.core.ktx)
 

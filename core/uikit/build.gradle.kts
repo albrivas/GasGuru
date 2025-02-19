@@ -44,7 +44,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:testing"))
+    implementation(projects.core.testing)
     implementation(libs.androidx.core.ktx)
     implementation(libs.lottie.compose)
     api(libs.androidx.compose.material3)

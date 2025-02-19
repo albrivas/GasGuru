@@ -81,5 +81,5 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mock.webserver)
-    testImplementation(project(":core:testing"))
+    testImplementation(projects.core.testing)
 }
