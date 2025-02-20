@@ -42,6 +42,10 @@ gradlePlugin {
             id = libs.plugins.gasguru.android.application.get().pluginId
             implementationClass = "AndroidApplicationConventionPlugin"
         }
+        register("androidLibraryCompose") {
+            id = libs.plugins.gasguru.compose.library.get().pluginId
+            implementationClass = "AndroidLibraryComposeConventionPlugin"
+        }
         register("androidLibrary") {
             id = libs.plugins.gasguru.android.library.get().pluginId
             implementationClass = "AndroidLibraryConventionPlugin"

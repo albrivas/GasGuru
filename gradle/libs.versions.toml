@@ -1,5 +1,5 @@
 [versions]
-androidGradlePlugin = "8.7.2"
+androidGradlePlugin = "8.7.3"
 androidx-room = "2.6.1"
 androidxActivity = "1.9.3"
 androidxComposeCompiler = "1.5.14"
@@ -160,3 +160,4 @@ junit5 = { id = "de.mannodermaus.android-junit5", version.ref = "junit5Plugin" }
 gasguru-android-application = { id = "gasguru.android.application" }
 gasguru-android-library = { id = "gasguru.android.library" }
 gasguru-hilt = { id = "gasguru.hilt" }
+gasguru-compose-library = { id = "gasguru.android.library.compose" }

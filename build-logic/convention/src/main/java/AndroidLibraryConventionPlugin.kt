@@ -16,8 +16,13 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
             extensions.configure<LibraryExtension> {
                 configureKotlinAndroid(this)
                 configureDetekt(this)
-                defaultConfig.targetSdk = 35
-                defaultConfig.testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+                defaultConfig.apply {
+                    targetSdk = 35
+                    testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+                    testInstrumentationRunnerArguments["runnerBuilder"] = "de.mannodermaus.junit5.AndroidJUnit5Builder"
+                }
+
                 testOptions.animationsDisabled = true
             }
         }
