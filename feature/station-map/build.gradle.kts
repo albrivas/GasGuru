@@ -49,6 +49,7 @@ dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.model)
     implementation(projects.core.uikit)
+    implementation(projects.core.common)
     androidTestImplementation(projects.core.testing)
 
     implementation(libs.androidx.activity.compose)
