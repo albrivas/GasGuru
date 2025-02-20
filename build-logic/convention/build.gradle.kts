@@ -42,5 +42,13 @@ gradlePlugin {
             id = libs.plugins.gasguru.android.application.get().pluginId
             implementationClass = "AndroidApplicationConventionPlugin"
         }
+        register("androidLibrary") {
+            id = libs.plugins.gasguru.android.library.get().pluginId
+            implementationClass = "AndroidLibraryConventionPlugin"
+        }
+        register("hilt") {
+            id = libs.plugins.gasguru.hilt.get().pluginId
+            implementationClass = "HiltConventionPlugin"
+        }
     }
 }
