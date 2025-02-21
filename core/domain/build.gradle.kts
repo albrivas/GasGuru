@@ -14,5 +14,4 @@ dependencies {
     implementation(libs.androidx.core.ktx)
 
     testImplementation(projects.core.testing)
-    androidTestRuntimeOnly(libs.junit5.runner)
 }

@@ -34,5 +34,4 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mock.webserver)
     testImplementation(projects.core.testing)
-    androidTestRuntimeOnly(libs.junit5.runner)
 }

@@ -16,5 +16,4 @@ dependencies {
     androidTestImplementation(libs.junit5.compose)
     androidTestImplementation(libs.junit5.api)
     androidTestImplementation(libs.junit5.extensions)
-    androidTestRuntimeOnly(libs.junit5.runner)
 }
