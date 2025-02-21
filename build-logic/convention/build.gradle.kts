@@ -54,5 +54,9 @@ gradlePlugin {
             id = libs.plugins.gasguru.hilt.get().pluginId
             implementationClass = "HiltConventionPlugin"
         }
+        register("room") {
+            id = libs.plugins.gasguru.room.get().pluginId
+            implementationClass = "AndroidRoomConventionPlugin"
+        }
     }
 }
