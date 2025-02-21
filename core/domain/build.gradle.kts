@@ -14,5 +14,5 @@ dependencies {
     implementation(libs.androidx.core.ktx)
 
     testImplementation(projects.core.testing)
-    debugImplementation(libs.androidx.compose.ui.tooling)
+    androidTestRuntimeOnly(libs.junit5.runner)
 }

@@ -41,6 +41,5 @@ dependencies {
     implementation(libs.maps.compose)
     
     testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.androidx.test.espresso.core)
+    androidTestRuntimeOnly(libs.junit5.runner)
 }
