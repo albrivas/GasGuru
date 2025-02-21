@@ -16,6 +16,9 @@ internal fun Project.configureAndroidCompose(
 
         buildFeatures {
             compose = true
+            aidl = false
+            renderScript = false
+            shaders = false
         }
     }
 
