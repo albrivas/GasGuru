@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.gasguru.android.library)
     alias(libs.plugins.gasguru.hilt)
     alias(libs.plugins.gasguru.compose.library)
-    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.secrets)
 }
 
@@ -20,10 +19,9 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.uikit)
     implementation(projects.core.common)
-    androidTestImplementation(projects.core.testing)
-
     implementation(libs.constraint.layout)
 
+    androidTestImplementation(projects.core.testing)
     androidTestImplementation(libs.junit5.api)
     androidTestImplementation(libs.junit5.extensions)
     androidTestRuntimeOnly(libs.junit5.runner)

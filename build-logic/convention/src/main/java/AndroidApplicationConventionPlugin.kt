@@ -1,4 +1,5 @@
 import com.android.build.api.dsl.ApplicationExtension
+import com.gasguru.build_logic.convention.configureDetekt
 import com.gasguru.build_logic.convention.configureKotlinAndroid
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -14,6 +15,7 @@ class AndroidApplicationConventionPlugin: Plugin<Project> {
 
             extensions.configure<ApplicationExtension> {
                 configureKotlinAndroid(this)
+                configureDetekt(this)
                 defaultConfig.targetSdk = 35
             }
         }

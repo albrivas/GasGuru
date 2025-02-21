@@ -2,13 +2,12 @@ import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 
 plugins {
     alias(libs.plugins.gasguru.android.application)
-    alias(libs.plugins.hilt.gradle)
+    alias(libs.plugins.gasguru.hilt)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.gms)
     alias(libs.plugins.firebase.crashlitycs)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.detekt)
     alias(libs.plugins.secrets)
 }
 
@@ -92,16 +91,11 @@ dependencies {
     implementation(projects.feature.profile)
     implementation(projects.core.model)
     androidTestImplementation(projects.core.testing)
-    detektPlugins(libs.detekt.formatting)
 
     // Core Android dependencies
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
-
-    // Hilt Dependency Injection
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
 
     // Arch Components
     implementation(libs.androidx.lifecycle.viewmodel.compose)
