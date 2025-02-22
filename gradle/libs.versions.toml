@@ -1,5 +1,5 @@
 [versions]
-androidGradlePlugin = "8.7.2"
+androidGradlePlugin = "8.7.3"
 androidx-room = "2.6.1"
 androidxActivity = "1.9.3"
 androidxComposeCompiler = "1.5.14"
@@ -49,6 +49,7 @@ junit5Plugin = "1.11.2.0"
 junit5Runner = "1.4.0"
 materialIcons = "1.7.7"
 constraintLayout = "1.1.0"
+androidTools = "31.7.3"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
@@ -114,6 +115,17 @@ junit5-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref
 material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIcons" }
 constraint-layout = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintLayout"}
 
+# Dependencies of the included build-logic
+android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
+android-tools-common = { group = "com.android.tools", name = "common", version.ref = "androidTools" }
+compose-gradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
+firebase-crashlytics-gradlePlugin = { group = "com.google.firebase", name = "firebase-crashlytics-gradle", version.ref = "firebase-crashlytics-gradle" }
+kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
+room-gradlePlugin = { group = "androidx.room", name = "room-gradle-plugin", version.ref = "androidx-room" }
+secrets-gradlePlugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "secrets" }
+detekt-gradlePlugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
+
 [bundles]
 com-squareup-retrofit2 = [
     "com-squareup-okhttp3-logging-interceptor",
@@ -144,5 +156,10 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets" }
 junit5 = { id = "de.mannodermaus.android-junit5", version.ref = "junit5Plugin" }
+room = { id = "androidx.room", version.ref = "androidx-room" }
 
-
+gasguru-android-application = { id = "gasguru.android.application" }
+gasguru-android-library = { id = "gasguru.android.library" }
+gasguru-hilt = { id = "gasguru.hilt" }
+gasguru-compose-library = { id = "gasguru.android.library.compose" }
+gasguru-room = { id = "gasguru.room" }
