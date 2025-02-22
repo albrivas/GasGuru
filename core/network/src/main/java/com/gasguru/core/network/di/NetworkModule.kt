@@ -16,6 +16,7 @@ import javax.inject.Singleton
 const val CONNECTION_TIMEOUT: Long = 60
 const val WRITE_TIMEOUT: Long = 60
 const val READ_TIMEOUT: Long = 60
+const val BASE_URL: String = "https://sedeaplicaciones.minetur.gob.es/"
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -24,7 +25,8 @@ class NetworkModule {
     @Singleton
     @Provides
     fun providesHttpLoggingInterceptor() = HttpLoggingInterceptor().apply {
-        level = BuildConfig.LEVEL_LOGS
+        level =
+            if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
     }
 
     @Singleton
@@ -42,7 +44,7 @@ class NetworkModule {
     @Provides
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit =
         Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
+            .baseUrl(BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
