@@ -12,8 +12,6 @@ import com.gasguru.core.model.data.previewFuelStationDomain
 import com.gasguru.core.testing.BaseTest
 import com.gasguru.core.ui.IconTintKey
 import com.gasguru.core.uikit.theme.AccentRed
-import com.gasguru.feature.detail_station.ui.DetailStationScreen
-import com.gasguru.feature.detail_station.ui.DetailStationUiState
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
@@ -29,10 +27,11 @@ class DetailStationScreenTest : BaseTest() {
         extension.use {
             setContent {
                 DetailStationScreen(
-                    uiState = DetailStationUiState.Success(station = station),
+                    uiState = DetailStationUiState.Success(station = station, address = null),
                     onFavoriteClick = { isFavorite ->
                         station = station.copy(isFavorite = isFavorite)
-                    }
+                    },
+                    lastUpdate = 0
                 )
             }
 

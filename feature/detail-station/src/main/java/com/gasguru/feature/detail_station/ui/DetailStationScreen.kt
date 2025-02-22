@@ -54,6 +54,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.gasguru.core.common.CommonUtils.isStationOpen
 import com.gasguru.core.common.generateStaticMapUrl
 import com.gasguru.core.common.startRoute
 import com.gasguru.core.model.data.FuelStation
@@ -61,7 +62,6 @@ import com.gasguru.core.model.data.FuelStationBrandsType
 import com.gasguru.core.model.data.previewFuelStationDomain
 import com.gasguru.core.ui.getFuelPriceItems
 import com.gasguru.core.ui.iconTint
-import com.gasguru.core.ui.isStationOpen
 import com.gasguru.core.ui.toBrandStationIcon
 import com.gasguru.core.uikit.components.information_card.InformationCard
 import com.gasguru.core.uikit.components.information_card.InformationCardModel
@@ -75,6 +75,8 @@ import com.gasguru.core.uikit.theme.Primary500
 import com.gasguru.core.uikit.theme.TextSubtle
 import com.gasguru.feature.detail_station.BuildConfig
 import com.gasguru.feature.detail_station.R
+import com.gasguru.feature.detail_station.formatSchedule
+import com.gasguru.feature.detail_station.getTimeElapsedString
 
 @Composable
 internal fun DetailStationScreenRoute(
@@ -82,8 +84,10 @@ internal fun DetailStationScreenRoute(
     viewModel: DetailStationViewModel = hiltViewModel(),
 ) {
     val state by viewModel.fuelStation.collectAsStateWithLifecycle()
+    val lastUpdate by viewModel.lastUpdate.collectAsStateWithLifecycle()
     DetailStationScreen(
         uiState = state,
+        lastUpdate = lastUpdate,
         onBack = onBack,
         onFavoriteClick = viewModel::onFavoriteClick
     )
@@ -92,6 +96,7 @@ internal fun DetailStationScreenRoute(
 @Composable
 internal fun DetailStationScreen(
     uiState: DetailStationUiState,
+    lastUpdate: Long,
     onBack: () -> Unit = {},
     onFavoriteClick: (Boolean) -> Unit = {},
 ) {
@@ -128,7 +133,11 @@ internal fun DetailStationScreen(
                         .background(color = Neutral100)
                         .padding(padding)
                 ) {
-                    DetailStationContent(station = uiState.station)
+                    DetailStationContent(
+                        station = uiState.station,
+                        lastUpdate = lastUpdate,
+                        address = uiState.address
+                    )
                 }
             }
         }
@@ -136,7 +145,7 @@ internal fun DetailStationScreen(
 }
 
 @Composable
-fun DetailStationContent(station: FuelStation) {
+fun DetailStationContent(station: FuelStation, lastUpdate: Long, address: String?) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -206,7 +215,7 @@ fun DetailStationContent(station: FuelStation) {
                     .size(80.dp)
                     .clip(CircleShape)
                     .border(
-                        width = 1.dp,
+                        width = 2.dp,
                         color = Neutral300,
                         shape = CircleShape
                     )
@@ -221,53 +230,61 @@ fun DetailStationContent(station: FuelStation) {
                     contentDescription = "Fuel station brand",
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(4.dp)
+                        .padding(6.dp)
                         .clip(CircleShape)
                 )
             }
         }
         Spacer(modifier = Modifier.height(24.dp))
-        FuelTypes(station = station)
+        FuelTypes(station = station, lastUpdate = lastUpdate)
         Spacer(modifier = Modifier.height(24.dp))
         InformationStation(
             station = station,
+            address = address,
             navigateToGoogleMaps = { startRoute(context = context, location = station.location) }
         )
     }
 }
 
 @Composable
-fun FuelTypes(station: FuelStation) {
-    Text(
-        text = stringResource(id = R.string.fuel_types),
-        style = GasGuruTheme.typography.h5,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis
-    )
-    val fuelItems = station.getFuelPriceItems()
-    val height = calculateHeight(fuelItems.size)
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(height)
-            .padding(top = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        items(fuelItems) { item ->
-            PriceItem(model = item)
+fun FuelTypes(station: FuelStation, lastUpdate: Long) {
+    Column(modifier = Modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Text(
+            text = stringResource(id = R.string.fuel_types),
+            style = GasGuruTheme.typography.h5,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        val fuelItems = station.getFuelPriceItems()
+        val height = calculateHeight(fuelItems.size)
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(height),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(fuelItems) { item ->
+                PriceItem(model = item)
+            }
         }
+        Text(
+            text = getTimeElapsedString(lastUpdate),
+            style = GasGuruTheme.typography.captionRegular,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
     }
 }
 
 fun calculateHeight(size: Int): Dp {
     val numRanges = (size + 1) / 2
-    return (numRanges * 85).dp
+    return (numRanges * 80).dp
 }
 
 @Composable
-fun InformationStation(station: FuelStation, navigateToGoogleMaps: () -> Unit) {
+fun InformationStation(station: FuelStation, address: String?, navigateToGoogleMaps: () -> Unit) {
     Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text(
             text = stringResource(id = R.string.station_detail),
@@ -295,7 +312,7 @@ fun InformationStation(station: FuelStation, navigateToGoogleMaps: () -> Unit) {
         InformationCard(
             model = InformationCardModel(
                 title = stringResource(id = R.string.direction),
-                subtitle = station.formatDirection(),
+                subtitle = address ?: station.formatDirection(),
                 icon = com.gasguru.core.uikit.R.drawable.ic_direction,
                 onClick = navigateToGoogleMaps,
                 type = InformationCardModel.InformationCardType.NONE
@@ -311,7 +328,7 @@ fun HeaderStation(station: FuelStation, onBack: () -> Unit, onFavoriteClick: (Bo
         zoom = 17,
         width = 400,
         height = 240,
-        apiKey = BuildConfig.staticMapApiKey
+        apiKey = BuildConfig.googleApiKey
     )
     Box(modifier = Modifier.fillMaxWidth()) {
         AsyncImage(
@@ -321,7 +338,7 @@ fun HeaderStation(station: FuelStation, onBack: () -> Unit, onFavoriteClick: (Bo
                 .background(Color.Gray),
             model = staticMapUrl,
             contentDescription = "Detail station map",
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.FillBounds
         )
         IconButton(
             modifier = Modifier
@@ -362,58 +379,6 @@ fun HeaderStation(station: FuelStation, onBack: () -> Unit, onFavoriteClick: (Bo
     }
 }
 
-@Composable
-fun formatSchedule(schedule: String): String {
-    return when {
-        schedule.contains("24H", ignoreCase = true) -> stringResource(R.string.open_24h)
-        else -> {
-            val daysOfWeek = mapOf(
-                "L" to stringResource(R.string.monday_short),
-                "M" to stringResource(R.string.tuesday_short),
-                "X" to stringResource(R.string.wednesday_short),
-                "J" to stringResource(R.string.thursday_short),
-                "V" to stringResource(R.string.friday_short),
-                "S" to stringResource(R.string.saturday_short),
-                "D" to stringResource(R.string.sunday_short)
-            )
-
-            val parts = schedule.split(";").map { it.trim() }
-            val formattedParts = parts.map { part ->
-                val dayRange = part.substringBefore(":")
-                val timeRange = part.substringAfter(":")
-
-                val formattedDays = when (dayRange.uppercase(java.util.Locale.getDefault())) {
-                    "L-V" -> "${daysOfWeek["L"]}-${daysOfWeek["V"]}"
-                    "L-S" -> "${daysOfWeek["L"]}-${daysOfWeek["S"]}"
-                    "L-D" -> "${daysOfWeek["L"]}-${daysOfWeek["D"]}"
-                    "M-V" -> "${daysOfWeek["M"]}-${daysOfWeek["V"]}"
-                    "M-S" -> "${daysOfWeek["M"]}-${daysOfWeek["S"]}"
-                    "M-D" -> "${daysOfWeek["M"]}-${daysOfWeek["D"]}"
-                    "X-V" -> "${daysOfWeek["X"]}-${daysOfWeek["V"]}"
-                    "X-S" -> "${daysOfWeek["X"]}-${daysOfWeek["S"]}"
-                    "X-D" -> "${daysOfWeek["X"]}-${daysOfWeek["D"]}"
-                    "J-V" -> "${daysOfWeek["J"]}-${daysOfWeek["V"]}"
-                    "J-S" -> "${daysOfWeek["J"]}-${daysOfWeek["S"]}"
-                    "J-D" -> "${daysOfWeek["J"]}-${daysOfWeek["D"]}"
-                    "V-S" -> "${daysOfWeek["V"]}-${daysOfWeek["S"]}"
-                    "V-D" -> "${daysOfWeek["V"]}-${daysOfWeek["D"]}"
-                    "S-D" -> "${daysOfWeek["S"]}-${daysOfWeek["D"]}"
-                    "L", "M", "X", "J", "V", "S", "D" -> daysOfWeek[
-                        dayRange.uppercase(
-                            java.util.Locale.getDefault()
-                        )
-                    ].toString()
-                    else -> dayRange // Default to original string if not a recognized format
-                }
-
-                "$formattedDays $timeRange"
-            }.filter { it.isNotBlank() } // Filter out empty strings
-
-            formattedParts.joinToString(separator = "\n")
-        }
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
 private fun DetailStationPreview() {
@@ -424,8 +389,10 @@ private fun DetailStationPreview() {
                     isFavorite = true,
                     schedule = "L-V: 06:00-22:00; S: 07:00-22:00; D: 08:00-22:00",
                     brandStationBrandsType = FuelStationBrandsType.AZUL_OIL
-                )
-            )
+                ),
+                address = null
+            ),
+            lastUpdate = 0
         )
     }
 }

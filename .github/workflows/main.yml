@@ -24,7 +24,7 @@ jobs:
       - name: Generate local.properties
         run: |
           echo "googleApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }}" >> local.properties
-          echo "staticMapApiKey=${{ secrets.STATIC_MAPS_API_KEY }}" >> local.properties
+          echo "googleStyleId=${{ secrets.GOOGLE_STYLE_MAP_ID }}" >> local.properties
           echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> local.properties
           echo "keyAlias=${{ secrets.KEYSTORE_ALIAS }}" >> local.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> local.properties

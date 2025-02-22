@@ -92,10 +92,10 @@ fun FuelStationItem(
             modifier = Modifier
                 .padding(end = 16.dp, top = 16.dp, bottom = 16.dp, start = 12.dp)
                 .align(Alignment.CenterVertically)
-                .weight(1f)
+                .weight(0.4f)
         ) {
             Text(
-                modifier = Modifier,
+                modifier = Modifier.testTag("station-name"),
                 text = name.toLowerCase(Locale.current)
                     .replaceFirstChar {
                         if (it.isLowerCase()) {
@@ -112,7 +112,7 @@ fun FuelStationItem(
                 color = TextMain
             )
             Text(
-                modifier = Modifier,
+                modifier = Modifier.testTag("station-distance"),
                 text = distance,
                 maxLines = 1,
                 style = GasGuruTheme.typography.smallRegular,
@@ -124,11 +124,13 @@ fun FuelStationItem(
             modifier = Modifier
                 .padding(end = 16.dp, top = 16.dp, bottom = 16.dp)
                 .align(Alignment.CenterVertically)
+                .weight(0.6f),
+            horizontalAlignment = Alignment.End
         ) {
             StatusChip(
-                modifier = Modifier.testTag("status-station"),
+                modifier = Modifier.testTag("station-price"),
                 model = StatusChipModel(
-                    text = "$price €/l",
+                    text = price,
                     color = categoryColor,
                 )
             )
@@ -156,7 +158,7 @@ fun PreviewFuelItem() {
                 icon = R.drawable.ic_logo_repsol,
                 name = "EDAN REPSOL",
                 distance = "567 m",
-                price = "1.67",
+                price = "1.75 €/l",
                 index = 3686,
                 categoryColor = AccentRed,
                 onItemClick = {}

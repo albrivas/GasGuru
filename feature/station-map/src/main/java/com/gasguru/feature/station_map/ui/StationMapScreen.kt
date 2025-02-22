@@ -1,10 +1,7 @@
 package com.gasguru.feature.station_map.ui
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -12,13 +9,15 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -41,7 +40,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
@@ -49,7 +47,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -59,27 +57,36 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.gasguru.core.common.centerOnLocation
+import com.gasguru.core.common.centerOnMap
+import com.gasguru.core.common.dpToPx
 import com.gasguru.core.common.toLatLng
 import com.gasguru.core.model.data.FuelStation
+import com.gasguru.core.model.data.FuelStationBrandsType
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.RecentSearchQuery
 import com.gasguru.core.model.data.SearchPlace
 import com.gasguru.core.ui.getPrice
 import com.gasguru.core.ui.toBrandStationIcon
 import com.gasguru.core.ui.toColor
+import com.gasguru.core.uikit.components.chip.FilterType
+import com.gasguru.core.uikit.components.chip.SelectableFilter
+import com.gasguru.core.uikit.components.chip.SelectableFilterModel
+import com.gasguru.core.uikit.components.filter_sheet.FilterSheet
+import com.gasguru.core.uikit.components.filter_sheet.FilterSheetModel
 import com.gasguru.core.uikit.components.fuelItem.FuelStationItem
 import com.gasguru.core.uikit.components.fuelItem.FuelStationItemModel
 import com.gasguru.core.uikit.components.marker.StationMarker
@@ -91,6 +98,7 @@ import com.gasguru.core.uikit.theme.Neutral100
 import com.gasguru.core.uikit.theme.Neutral300
 import com.gasguru.core.uikit.theme.Primary600
 import com.gasguru.core.uikit.theme.TextSubtle
+import com.gasguru.feature.station_map.BuildConfig
 import com.gasguru.feature.station_map.R
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
@@ -114,11 +122,13 @@ fun StationMapScreenRoute(
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val searchResult by viewModel.searchResultUiState.collectAsStateWithLifecycle()
     val recentSearchQuery by viewModel.recentSearchQueriesUiState.collectAsStateWithLifecycle()
+    val filterGroup by viewModel.filters.collectAsStateWithLifecycle()
     StationMapScreen(
         uiState = state,
         searchQuery = searchQuery,
         searchResultUiState = searchResult,
         recentSearchQueries = recentSearchQuery,
+        filterUiState = filterGroup,
         event = viewModel::handleEvent,
         navigateToDetail = navigateToDetail
     )
@@ -131,6 +141,7 @@ internal fun StationMapScreen(
     searchQuery: String,
     searchResultUiState: SearchResultUiState,
     recentSearchQueries: RecentSearchQueriesUiState,
+    filterUiState: FilterUiState,
     event: (StationMapEvent) -> Unit = {},
     navigateToDetail: (Int) -> Unit = {},
 ) = with(uiState) {
@@ -138,22 +149,43 @@ internal fun StationMapScreen(
         position = CameraPosition.fromLatLngZoom(LatLng(40.0, -4.0), 5.5f)
     }
 
-    LaunchedEffect(key1 = centerMap) {
-        centerMap?.let {
-            cameraState.centerOnLocation(location = centerMap, zoomLevel = zoomLevel)
+    var filtersHeightPx by remember { mutableIntStateOf(0) }
+    var searchBarHeightPx by remember { mutableIntStateOf(0) }
+    val bottomBarHeightPx = 90.dpToPx()
+    val peekHeight = 60.dp
+
+    val density = LocalDensity.current
+    val configuration = LocalConfiguration.current
+
+    val maxHeightSheetDp = remember(filtersHeightPx, searchBarHeightPx) {
+        val screenHeightPx = with(density) { configuration.screenHeightDp.dp.toPx() }
+        with(density) {
+            (
+                screenHeightPx -
+                    filtersHeightPx -
+                    searchBarHeightPx -
+                    bottomBarHeightPx -
+                    peekHeight.toPx()
+                ).toDp()
+        }
+    }
+
+    LaunchedEffect(key1 = mapBounds) {
+        mapBounds?.let {
+            cameraState.centerOnMap(bounds = mapBounds, padding = 60)
         }
         event(StationMapEvent.ResetMapCenter)
     }
 
     val scaffoldState = rememberBottomSheetScaffoldState()
     val coroutine = rememberCoroutineScope()
-
     BottomSheetScaffold(
         sheetContainerColor = Neutral100,
         sheetContentColor = Neutral100,
         scaffoldState = scaffoldState,
         sheetShadowElevation = 32.dp,
-        sheetPeekHeight = 60.dp,
+        sheetPeekHeight = peekHeight,
+        sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
         sheetDragHandle = {
             Surface(
                 modifier = Modifier.padding(vertical = 8.dp),
@@ -168,29 +200,18 @@ internal fun StationMapScreen(
                 )
             }
         },
-        sheetShape = if (scaffoldState.bottomSheetState.currentValue == SheetValue.Expanded) {
-            RectangleShape
-        } else {
-            MaterialTheme.shapes.large
-        },
         sheetContent = {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                    .heightIn(max = maxHeightSheetDp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                val sheetState = scaffoldState.bottomSheetState.currentValue
-                val offset = animateDpAsState(
-                    targetValue = if (sheetState == SheetValue.Expanded) 16.dp else (2).dp,
-                    animationSpec = tween(durationMillis = 100),
-                    label = ""
-                )
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 17.dp)
-                        .offset { IntOffset(x = 0, y = offset.value.roundToPx()) },
+                        .padding(bottom = 17.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -199,23 +220,16 @@ internal fun StationMapScreen(
                         style = GasGuruTheme.typography.baseBold,
                         color = TextSubtle
                     )
-                    AnimatedVisibility(
-                        visible = sheetState == SheetValue.PartiallyExpanded,
-                        enter = fadeIn(),
-                        exit = fadeOut(),
-                        label = "Show list animation"
-                    ) {
-                        Text(
-                            modifier = Modifier.clickable {
-                                coroutine.launch {
-                                    scaffoldState.bottomSheetState.expand()
-                                }
-                            },
-                            text = stringResource(id = R.string.sheet_button),
-                            style = GasGuruTheme.typography.baseRegular,
-                            color = Primary600
-                        )
-                    }
+                    Text(
+                        modifier = Modifier.clickable {
+                            coroutine.launch {
+                                scaffoldState.bottomSheetState.expand()
+                            }
+                        },
+                        text = stringResource(id = R.string.sheet_button),
+                        style = GasGuruTheme.typography.baseRegular,
+                        color = Primary600
+                    )
                 }
                 ListFuelStations(
                     stations = fuelStations,
@@ -224,25 +238,38 @@ internal fun StationMapScreen(
                 )
             }
         },
-        content = { innerPadding ->
+        content = {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding)
             ) {
-                SearchPlaces(
-                    searchQuery = searchQuery,
-                    searchResultUiState = searchResultUiState,
-                    recentSearchQueries = recentSearchQueries,
-                    event = event,
-                )
                 MapView(
                     stations = fuelStations,
                     cameraState = cameraState,
                     userSelectedFuelType = selectedType,
                     loading = loading,
                     navigateToDetail = navigateToDetail,
+                    modifier = Modifier.fillMaxSize()
                 )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.TopStart)
+                ) {
+                    SearchPlaces(
+                        searchQuery = searchQuery,
+                        searchResultUiState = searchResultUiState,
+                        recentSearchQueries = recentSearchQueries,
+                        onHeight = { searchBarHeightPx = it },
+                        event = event,
+                    )
+                    FilterGroup(
+                        modifier = Modifier,
+                        event = event,
+                        onHeight = { filtersHeightPx = it },
+                        filterUiState = filterUiState,
+                    )
+                }
                 FABLocation(
                     modifier = Modifier.align(Alignment.BottomEnd),
                     event = event,
@@ -259,6 +286,7 @@ fun ListFuelStations(
     selectedFuel: FuelType?,
     navigateToDetail: (Int) -> Unit = {},
 ) {
+    val context = LocalContext.current
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -273,7 +301,7 @@ fun ListFuelStations(
                     icon = item.brandStationBrandsType.toBrandStationIcon(),
                     name = item.brandStationName,
                     distance = item.formatDistance(),
-                    price = selectedFuel.getPrice(item),
+                    price = selectedFuel.getPrice(context, item),
                     index = index,
                     categoryColor = item.priceCategory.toColor(),
                     onItemClick = navigateToDetail
@@ -290,8 +318,9 @@ fun MapView(
     userSelectedFuelType: FuelType?,
     loading: Boolean,
     navigateToDetail: (Int) -> Unit = {},
+    modifier: Modifier = Modifier,
 ) {
-    val markerStates = remember { mutableStateMapOf<Int, MarkerState>() }
+    val context = LocalContext.current
     var selectedLocation by remember { mutableStateOf<Int?>(null) }
     val uiSettings by remember {
         mutableStateOf(
@@ -312,8 +341,7 @@ fun MapView(
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = modifier
     ) {
         if (loading) {
             Box(
@@ -331,19 +359,19 @@ fun MapView(
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraState,
-            googleMapOptionsFactory = { GoogleMapOptions().mapId("da696d048f7d52b8") },
+            googleMapOptionsFactory = { GoogleMapOptions().mapId(BuildConfig.googleStyleId) },
             uiSettings = uiSettings,
             properties = mapProperties,
+            contentPadding = PaddingValues(bottom = 60.dp)
         ) {
             stations.forEach { station ->
-                val state =
-                    markerStates.getOrPut(
-                        station.idServiceStation
-                    ) { MarkerState(position = station.location.toLatLng()) }
+                val state = remember(station.idServiceStation) {
+                    MarkerState(position = station.location.toLatLng())
+                }
                 val isSelected = selectedLocation == station.idServiceStation
 
                 val price by remember(userSelectedFuelType, station) {
-                    derivedStateOf { userSelectedFuelType.getPrice(station) }
+                    derivedStateOf { userSelectedFuelType.getPrice(context, station) }
                 }
                 val color by remember(station) {
                     derivedStateOf { station.priceCategory.toColor() }
@@ -362,7 +390,7 @@ fun MapView(
                     StationMarker(
                         model = StationMarkerModel(
                             icon = station.brandStationBrandsType.toBrandStationIcon(),
-                            price = userSelectedFuelType.getPrice(station),
+                            price = userSelectedFuelType.getPrice(context, station),
                             color = station.priceCategory.toColor(),
                             isSelected = isSelected,
                         )
@@ -379,12 +407,11 @@ fun FABLocation(
     event: (StationMapEvent) -> Unit = {},
 ) {
     Column(
-        modifier = modifier.padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        modifier = modifier.padding(horizontal = 16.dp, vertical = 76.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         FloatingActionButton(
             onClick = {
-                event(StationMapEvent.CenterMapInCurrentLocation)
                 event(StationMapEvent.GetStationByCurrentLocation)
             },
             modifier = modifier,
@@ -407,6 +434,7 @@ fun SearchPlaces(
     searchQuery: String,
     searchResultUiState: SearchResultUiState,
     recentSearchQueries: RecentSearchQueriesUiState,
+    onHeight: (Int) -> Unit,
     event: (StationMapEvent) -> Unit = {},
 ) {
     var active by remember { mutableStateOf(false) }
@@ -431,7 +459,8 @@ fun SearchPlaces(
                     top = statusBarPaddingAnimation,
                     start = paddingAnimation,
                     end = paddingAnimation
-                ),
+                )
+                .onGloballyPositioned { onHeight(it.size.height) },
             query = searchQuery,
             onQueryChange = { event(StationMapEvent.UpdateSearchQuery(it)) },
             onSearch = {},
@@ -472,7 +501,7 @@ fun SearchPlaces(
             },
             active = active,
             onActiveChange = { active = it },
-            shadowElevation = 8.dp,
+            shadowElevation = 2.dp,
             colors = SearchBarDefaults.colors(containerColor = Color.White)
         ) {
             when (searchResultUiState) {
@@ -679,6 +708,145 @@ fun RecentSearchQueriesBody(
     }
 }
 
+@Composable
+private fun FilterGroup(
+    filterUiState: FilterUiState,
+    event: (StationMapEvent) -> Unit,
+    onHeight: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var showFilter by remember { mutableStateOf(false) }
+    var filterType by remember { mutableStateOf<FilterType>(FilterType.Brand) }
+
+    val filterModels = getFiltersModel(
+        filterUiState = filterUiState,
+        onFilterClick = { type ->
+            filterType = type
+            showFilter = true
+        }
+    )
+    LazyRow(
+        modifier = modifier
+            .fillMaxWidth()
+            .onGloballyPositioned { onHeight(it.size.height) },
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        items(filterModels) { filterModel ->
+            SelectableFilter(model = filterModel)
+        }
+    }
+
+    if (showFilter) {
+        ShowFilterSheet(
+            filterType = filterType,
+            filterUiState = filterUiState,
+            showFilter = { showFilter = false },
+            event = event
+        )
+    }
+}
+
+@Composable
+private fun getFiltersModel(
+    filterUiState: FilterUiState,
+    onFilterClick: (FilterType) -> Unit,
+): List<SelectableFilterModel> = listOf(
+    SelectableFilterModel(
+        filterType = FilterType.NumberOfStations,
+        label = stringResource(id = R.string.filter_number_nearby),
+        selectedLabel = stringResource(id = R.string.filter_number_nearby),
+        isSelected = true,
+        onFilterClick = { onFilterClick(it) }
+    ),
+    SelectableFilterModel(
+        filterType = FilterType.Brand,
+        label = stringResource(id = R.string.filter_brand),
+        selectedLabel = stringResource(
+            id = R.string.filter_brand_number,
+            filterUiState.filterBrand.size
+        ),
+        isSelected = filterUiState.filterBrand.isNotEmpty(),
+        onFilterClick = { onFilterClick(it) }
+    ),
+    SelectableFilterModel(
+        filterType = FilterType.Schedule,
+        label = stringResource(id = R.string.filter_schedule),
+        selectedLabel = stringResource(id = filterUiState.filterSchedule.resId),
+        isSelected = filterUiState.filterSchedule != FilterUiState.OpeningHours.NONE,
+        onFilterClick = { onFilterClick(it) }
+    ),
+)
+
+@Composable
+fun ShowFilterSheet(
+    filterType: FilterType,
+    filterUiState: FilterUiState,
+    showFilter: () -> Unit,
+    event: (StationMapEvent) -> Unit,
+) {
+    val context = LocalContext.current
+
+    when (filterType) {
+        FilterType.Brand -> {
+            FilterSheet(
+                model = FilterSheetModel(
+                    title = stringResource(R.string.filter_brand_title),
+                    buttonText = stringResource(id = R.string.filter_button),
+                    isMultiOption = true,
+                    isMustSelection = false,
+                    options = FuelStationBrandsType.entries
+                        .filter { it.value != FuelStationBrandsType.UNKNOWN.value }
+                        .sortedBy { it.value.lowercase() }
+                        .map { it.value },
+                    optionsSelected = filterUiState.filterBrand,
+                    onDismiss = { showFilter() },
+                    onSaveButton = { event(StationMapEvent.UpdateBrandFilter(it)) }
+                )
+            )
+        }
+
+        FilterType.NumberOfStations -> {
+            FilterSheet(
+                model = FilterSheetModel(
+                    title = stringResource(R.string.filter_number_nearby_title),
+                    buttonText = stringResource(id = R.string.filter_button),
+                    isMultiOption = false,
+                    isMustSelection = true,
+                    options = listOf("10", "15", "20", "25"),
+                    optionsSelected = listOf(filterUiState.filterStationsNearby.toString()),
+                    onDismiss = { showFilter() },
+                    onSaveButton = { event(StationMapEvent.UpdateNearbyFilter(it.first())) }
+                )
+            )
+        }
+
+        FilterType.Schedule -> {
+            FilterSheet(
+                model = FilterSheetModel(
+                    title = stringResource(id = R.string.filter_schedule),
+                    buttonText = stringResource(id = R.string.filter_button),
+                    isMultiOption = false,
+                    isMustSelection = false,
+                    options = FilterUiState.OpeningHours.entries
+                        .filter { it != FilterUiState.OpeningHours.NONE }
+                        .map { stringResource(id = it.resId) },
+                    optionsSelected = listOf(stringResource(id = filterUiState.filterSchedule.resId)),
+                    onDismiss = { showFilter() },
+                    onSaveButton = {
+                        val schedule = if (it.isEmpty()) {
+                            FilterUiState.OpeningHours.NONE
+                        } else {
+                            FilterUiState.OpeningHours.fromTranslatedString(it.first(), context)
+                        }
+                        event(StationMapEvent.UpdateScheduleFilter(schedule))
+                    }
+                )
+            )
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun StationMapScreenPreview() {
@@ -688,6 +856,7 @@ private fun StationMapScreenPreview() {
             searchResultUiState = SearchResultUiState.EmptyQuery,
             searchQuery = "",
             recentSearchQueries = RecentSearchQueriesUiState.Loading,
+            filterUiState = FilterUiState(),
             navigateToDetail = {}
         )
     }

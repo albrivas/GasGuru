@@ -4,12 +4,14 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Resources
 import android.location.Location
 import android.location.LocationManager
 import android.net.Uri
 import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.compose.CameraPositionState
 
 fun Location?.toLatLng(): LatLng {
@@ -27,10 +29,12 @@ fun LatLng?.toLocation() = Location("").apply {
     }
 }
 
-suspend fun CameraPositionState.centerOnLocation(location: LatLng, zoomLevel: Float) =
+fun Int.dpToPx() = (this * Resources.getSystem().displayMetrics.density).toInt()
+
+suspend fun CameraPositionState.centerOnMap(bounds: LatLngBounds, padding: Int) =
     animate(
-        update = CameraUpdateFactory.newLatLngZoom(location, zoomLevel),
-        durationMs = 300
+        update = CameraUpdateFactory.newLatLngBounds(bounds, padding.dpToPx()),
+        durationMs = 500
     )
 
 fun Context.hasLocationPermission(): Boolean {
@@ -57,7 +61,7 @@ fun startRoute(context: Context, location: Location) {
                 "&mode=driving"
         )
     }
-    ContextCompat.startActivity(context, intent, null)
+    context.startActivity(intent, null)
 }
 
 fun generateStaticMapUrl(
