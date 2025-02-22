@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -42,7 +43,8 @@ class SplashViewModel @Inject constructor(
     }
 
     val uiState: StateFlow<Result<SplashUiState>> = userData()
-        .map { Result.success(SplashUiState.Success) }
+        .take(1)
+        .map { Result.success(SplashUiState.Success(it.isOnboardingSuccess)) }
         .catch { emit(Result.failure(it)) }
         .stateIn(
             scope = viewModelScope,
