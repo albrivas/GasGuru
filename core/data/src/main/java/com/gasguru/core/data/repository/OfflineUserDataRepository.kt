@@ -10,6 +10,7 @@ import com.gasguru.core.model.data.UserData
 import com.gasguru.core.model.data.UserWithFavoriteStations
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -19,11 +20,12 @@ class OfflineUserDataRepository @Inject constructor(
     private val userDataDao: UserDataDao,
 ) : UserDataRepository {
     override val userData: Flow<UserData>
-        get() = userDataDao.getUserData().map { it.asExternalModel() }
+        get() = userDataDao.getUserData()
+            .map { it?.asExternalModel() ?: UserData() }
 
     override suspend fun updateSelectionFuel(fuelType: FuelType) {
         val user = userDataDao.getUserData().firstOrNull()?.asExternalModel() ?: UserData()
-        saveUserData(user.copy(fuelSelection = fuelType))
+        saveUserData(user.copy(fuelSelection = fuelType, isOnboardingSuccess = true))
     }
 
     override suspend fun updateLastUpdate() {
@@ -45,7 +47,7 @@ class OfflineUserDataRepository @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getUserWithFavoriteStations(userLocation: Location): Flow<UserWithFavoriteStations> =
-        userDataDao.getUserData().flatMapLatest { userEntity ->
+        userDataDao.getUserData().filterNotNull().flatMapLatest { userEntity ->
             userDataDao.getUserWithFavoriteStations(userEntity.id)
                 .map { userWithFavorites ->
                     val updatedStations =

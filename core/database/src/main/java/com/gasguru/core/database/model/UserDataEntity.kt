@@ -15,9 +15,12 @@ data class UserDataEntity(
     val fuelSelection: FuelType,
     @ColumnInfo(defaultValue = "0")
     val lastUpdate: Long,
+    @ColumnInfo(defaultValue = "0")
+    val isOnboardingSuccess: Boolean
 )
 
 fun UserDataEntity.asExternalModel() = UserData(
     fuelSelection = fuelSelection,
-    lastUpdate = lastUpdate
+    lastUpdate = lastUpdate,
+    isOnboardingSuccess = isOnboardingSuccess
 )

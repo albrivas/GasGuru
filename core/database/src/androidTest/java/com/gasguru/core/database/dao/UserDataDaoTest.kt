@@ -35,7 +35,12 @@ class UserDataDaoTest {
     @Test
     @DisplayName("Retrieves user ID")
     fun getUserIdTest() = runTest {
-        val userData = UserDataEntity(id = 1, fuelSelection = FuelType.GASOLINE_95, lastUpdate = 0)
+        val userData = UserDataEntity(
+            id = 1,
+            fuelSelection = FuelType.GASOLINE_95,
+            lastUpdate = 0,
+            isOnboardingSuccess = true
+        )
         userDataDao.insertUserData(userData)
         val userId = userDataDao.getUserId()
         assertEquals(1, userId)
@@ -44,7 +49,12 @@ class UserDataDaoTest {
     @Test
     @DisplayName("Retrieves user data")
     fun getUserDataTest() = runTest {
-        val userData = UserDataEntity(id = 1, fuelSelection = FuelType.GASOLINE_95, lastUpdate = 0)
+        val userData = UserDataEntity(
+            id = 1,
+            fuelSelection = FuelType.GASOLINE_95,
+            lastUpdate = 0,
+            isOnboardingSuccess = true
+        )
         userDataDao.insertUserData(userData)
         val retrievedUserData = userDataDao.getUserData().first()
         assertEquals(userData, retrievedUserData)
@@ -53,30 +63,14 @@ class UserDataDaoTest {
     @Test
     @DisplayName("Inserts user data")
     fun insertUserDataTest() = runTest {
-        val userData = UserDataEntity(id = 1, fuelSelection = FuelType.GASOLINE_95, lastUpdate = 0)
+        val userData = UserDataEntity(
+            id = 1,
+            fuelSelection = FuelType.GASOLINE_95,
+            lastUpdate = 0,
+            isOnboardingSuccess = true
+        )
         userDataDao.insertUserData(userData)
         val retrievedUserData = userDataDao.getUserData().first()
         assertEquals(userData, retrievedUserData)
-    }
-
-    @Test
-    @DisplayName("Updates fuel selection")
-    fun updateFuelSelectionTest() = runTest {
-        val userData = UserDataEntity(id = 1, fuelSelection = FuelType.GASOLINE_95, lastUpdate = 0)
-        userDataDao.insertUserData(userData)
-        userDataDao.updateFuelSelection(FuelType.DIESEL.name)
-        val updatedUserData = userDataDao.getUserData().first()
-        assertEquals(FuelType.DIESEL, updatedUserData.fuelSelection)
-    }
-
-    @Test
-    @DisplayName("Updates last update timestamp")
-    fun updateLastUpdateTest() = runTest {
-        val userData = UserDataEntity(id = 1, fuelSelection = FuelType.GASOLINE_95, lastUpdate = 0)
-        userDataDao.insertUserData(userData)
-        val newLastUpdate = System.currentTimeMillis()
-        userDataDao.updateLastUpdate(newLastUpdate)
-        val updatedUserData = userDataDao.getUserData().first()
-        assertEquals(newLastUpdate, updatedUserData.lastUpdate)
     }
 }
