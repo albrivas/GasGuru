@@ -8,6 +8,7 @@ import com.gasguru.core.database.migrations.MIGRATION_3_4
 import com.gasguru.core.database.migrations.MIGRATION_4_5
 import com.gasguru.core.database.migrations.MIGRATION_5_6
 import com.gasguru.core.database.migrations.MIGRATION_6_7
+import com.gasguru.core.database.migrations.MIGRATION_7_8
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,7 +27,13 @@ class DatabaseModule {
             appContext,
             GasGuruDatabase::class.java,
             "fuel-pump-database"
-        ).addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
-            .build()
+        ).addMigrations(
+            MIGRATION_2_3,
+            MIGRATION_3_4,
+            MIGRATION_4_5,
+            MIGRATION_5_6,
+            MIGRATION_6_7,
+            MIGRATION_7_8
+        ).build()
     }
 }
