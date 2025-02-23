@@ -9,6 +9,7 @@ const val DB_VERSION_4 = 4
 const val DB_VERSION_5 = 5
 const val DB_VERSION_6 = 6
 const val DB_VERSION_7 = 7
+const val DB_VERSION_8 = 8
 
 internal val MIGRATION_2_3 = object : Migration(DB_VERSION_2, DB_VERSION_3) {
     override fun migrate(db: SupportSQLiteDatabase) {
@@ -53,5 +54,11 @@ internal val MIGRATION_6_7 = object : Migration(DB_VERSION_6, DB_VERSION_7) {
             )
             """.trimIndent()
         )
+    }
+}
+
+internal val MIGRATION_7_8 = object : Migration(DB_VERSION_7, DB_VERSION_8) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE 'user-data' ADD COLUMN 'isOnboardingSuccess' INTEGER NOT NULL DEFAULT 0")
     }
 }
