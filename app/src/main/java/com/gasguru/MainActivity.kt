@@ -65,7 +65,7 @@ class MainActivity : ComponentActivity() {
         splash.setKeepOnScreenCondition {
             when (uiState) {
                 SplashUiState.Loading -> true
-                SplashUiState.Success -> false
+                is SplashUiState.Success -> false
                 SplashUiState.Error -> false
             }
         }
@@ -75,10 +75,14 @@ class MainActivity : ComponentActivity() {
             val appState = rememberGasGuruAppState(networkMonitor)
 
             MyApplicationTheme(darkTheme = false) {
-                when (uiState) {
-                    SplashUiState.Success -> GasGuruApp(
+                when (val state = uiState) {
+                    is SplashUiState.Success -> GasGuruApp(
                         appState = appState,
-                        startDestination = NavigationBarRoute
+                        startDestination = if (state.isOnboardingSuccess) {
+                            NavigationBarRoute
+                        } else {
+                            OnboardingRoutes.OnboardingWelcomeRoute
+                        }
                     )
 
                     SplashUiState.Error -> GasGuruApp(

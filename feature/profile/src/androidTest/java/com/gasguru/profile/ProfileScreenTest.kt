@@ -5,7 +5,6 @@ import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.UserData
 import com.gasguru.core.testing.BaseTest
 import com.gasguru.feature.profile.R
@@ -31,7 +30,7 @@ class ProfileScreenTest : BaseTest() {
     fun showDialog(): Unit = extension.use {
         setContent {
             ProfileScreen(
-                uiState = ProfileUiState.Success(UserData(FuelType.GASOLINE_95)),
+                uiState = ProfileUiState.Success(UserData()),
                 event = {})
         }
 
@@ -44,7 +43,7 @@ class ProfileScreenTest : BaseTest() {
     fun showAppVersionInfo(): Unit = extension.use {
         setContent {
             ProfileScreen(
-                uiState = ProfileUiState.Success(UserData(FuelType.GASOLINE_95)),
+                uiState = ProfileUiState.Success(UserData()),
                 event = {})
         }
 
