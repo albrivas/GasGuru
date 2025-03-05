@@ -10,6 +10,13 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
+    <uses-feature
+        android:name="android.hardware.type.automotive"
+        android:required="true" />
+    <uses-feature
+        android:name="android.software.car.templates_host"
+        android:required="true" />
+
     <application
         android:name=".GasGuruApplication"
         android:allowBackup="true"
@@ -34,6 +41,14 @@
         <meta-data
             android:name="com.google.android.gms.car.application"
             android:resource="@xml/automotive_app_desc" />
+
+        <service
+            android:name="com.gasguru.auto.common.GasGuruAutomotiveService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="androidx.car.app.CarAppService" />
+            </intent-filter>
+        </service>
 
         <activity
             android:name=".MainActivity"
