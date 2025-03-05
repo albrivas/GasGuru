@@ -2,8 +2,8 @@
 <resources>
     <string name="welcome">¡Bienvenido!</string>
     <string name="welcome_text">Encuentra gasolineras cercanas al instante. Accede a precios actualizados y ahorra tiempo en tu búsqueda</string>
-    <string name="welcome_permission">Concede permisos de locaclización para comenzar a explorar</string>
-    <string name="welcome_button">Siguiente</string>
+    <string name="welcome_permission">Concede permisos de localización para comenzar a explorar</string>
+    <string name="welcome_button">Continue</string>
     <string name="welcome_title_fuel_preferences">Elige tu tipo de combustible</string>
     <string name="welcome_subtitle_fuel_preferences">Seleccione una opción:</string>
 </resources>

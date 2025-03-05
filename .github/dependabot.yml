@@ -5,10 +5,12 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    target-branch: "dependencies"
   - package-ecosystem: "gradle"
     directory: "/"
     schedule:
       interval: "weekly"
+    target-branch: "dependencies"
     registries: "*"
     labels: [ "version update" ]
     groups:

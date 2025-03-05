@@ -1,8 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="gasoline_95">Gasoline 95</string>
-    <string name="gasoline_98">Gasoline 98</string>
+    <string name="gasoline_95">SP 95</string>
+    <string name="gasoline_98">SP 98</string>
     <string name="diesel">Diesel</string>
     <string name="electric">Electric</string>
     <string name="diesel_plus">Diesel +</string>
+    <string name="gasoline_95_premium">SP 95 Premium</string>
+    <string name="gasoline_95_e10">SP 95 E10</string>
+    <string name="gasoline_98_premium">SP 98 E10</string>
+    <string name="gasoil_b">Gasoil B</string>
+    <string name="select_fuel_preference">Elige tu tipo de combustible</string>
+    <string name="sin_sp95">Without SP 95</string>
+    <string name="sin_sp98">Without SP 98</string>
+    <string name="sin_gasoleo_a">Without Diesel</string>
+    <string name="sin_gasoleo_premium">Without Diesel +</string>
+    <string name="sin_sp95_premium">Without SP 95 Premium</string>
+    <string name="sin_sp95_e10">Without SP 95 E10</string>
+    <string name="sin_sp98_premium">Without SP 98 Premium</string>
+    <string name="sin_gasoleo_b">Without Gasoil B</string>
 </resources>

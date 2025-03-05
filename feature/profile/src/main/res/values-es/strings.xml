@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="fuel_selection">Combustible seleccionado</string>
-    <string name="preferences">Preferencias</string>
+    <string name="profile">Perfil</string>
     <string name="fuel">Combustible</string>
-
+    <string name="version">Versión %1$s</string>
 </resources>

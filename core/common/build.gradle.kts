@@ -1,18 +1,24 @@
+import com.google.android.libraries.mapsplatform.secrets_gradle_plugin.loadPropertiesFile
+
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.detekt)
+    alias(libs.plugins.gasguru.android.library)
+    alias(libs.plugins.gasguru.hilt)
 }
 
+val versionProperties = loadPropertiesFile("../../versions.properties")
+val versionMajor: String = versionProperties.getProperty("versionMajor")
+val versionMinor: String = versionProperties.getProperty("versionMinor")
+val versionPatch: String = versionProperties.getProperty("versionPatch")
+val codeVersion: String = versionProperties.getProperty("versionCode")
+
 android {
-    namespace = "com.albrivas.fuelpump.core.common"
-    compileSdk = 34
+    namespace = "com.gasguru.core.common"
 
     defaultConfig {
-        minSdk = 26
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("Integer", "versionMajor", versionMajor)
+        buildConfigField("Integer", "versionMinor", versionMinor)
+        buildConfigField("Integer", "versionPatch", versionPatch)
+        buildConfigField("Integer", "versionCode", codeVersion)
     }
 
     buildTypes {
@@ -20,33 +26,19 @@ android {
             isMinifyEnabled = false
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-            merges += "META-INF/LICENSE.md"
-            merges += "META-INF/LICENSE-notice.md"
-        }
+
+    buildFeatures {
+        buildConfig = true
     }
 }
 
 dependencies {
-
+    implementation(projects.core.model)
     implementation(libs.androidx.core.ktx)
     implementation(libs.appcompat)
     implementation(libs.material)
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
     implementation(libs.play.services.maps)
     implementation(libs.maps.compose)
-    detektPlugins(libs.detekt.formatting)
+    
     testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.androidx.test.espresso.core)
 }

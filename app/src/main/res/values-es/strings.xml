@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">FuelPump</string>
-    <string name="map_nav">Mapa</string>
+    <string name="app_name">GasGuru</string>
+    <string name="map_nav">Estaciones</string>
     <string name="list_nav">Favoritos</string>
     <string name="profile_nav">Perfil</string>
+    <string name="not_connected">⚠️ No estas conectado a internet</string>
 </resources>

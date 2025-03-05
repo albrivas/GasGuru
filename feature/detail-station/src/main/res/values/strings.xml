@@ -6,5 +6,23 @@
     <string name="close">Close</string>
     <string name="price">Price</string>
     <string name="direction">Direction</string>
-    <string name="schedule">Schedule</string>
+    <string name="schedule">Opening hours</string>
+    <string name="fuel_types">Fuel types</string>
+    <string name="station_detail">Details</string>
+    <string name="open_24h">24 hours</string>
+    <string name="monday_short">Monday</string>
+    <string name="tuesday_short">Tuesday</string>
+    <string name="wednesday_short">Wednesday</string>
+    <string name="thursday_short">Thursday</string>
+    <string name="friday_short">Friday</string>
+    <string name="saturday_short">Saturday</string>
+    <string name="sunday_short">Sunday</string>
+    <string name="update_now">Update now</string>
+    <string name="update_minute_ago">Update 1 minute ago</string>
+    <string name="update_minutes_ago">Update %d minutes ago</string>
+    <string name="update_hour_ago">Update 1 hour ago</string>
+    <string name="update_hours_ago">Update %d hours ago</string>
+    <string name="update_day_ago">Update 1 day ago</string>
+    <string name="update_days_ago">Update %d days ago</string>
+    <string name="update_long_ago">Update a long time ago</string>
 </resources>

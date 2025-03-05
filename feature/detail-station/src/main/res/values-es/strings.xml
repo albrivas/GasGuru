@@ -7,4 +7,22 @@
     <string name="price">Precio</string>
     <string name="direction">Direccion</string>
     <string name="schedule">Horario</string>
+    <string name="fuel_types">Tipos de combustible</string>
+    <string name="station_detail">Detalles</string>
+    <string name="open_24h">24 horas</string>
+    <string name="monday_short">Lunes</string>
+    <string name="tuesday_short">Martes</string>
+    <string name="wednesday_short">Miercoles</string>
+    <string name="thursday_short">Jueves</string>
+    <string name="friday_short">Viernes</string>
+    <string name="saturday_short">Sábado</string>
+    <string name="sunday_short">Domingo</string>
+    <string name="update_now">Actualizado ahora</string>
+    <string name="update_minute_ago">Actualizado hace 1 minuto</string>
+    <string name="update_minutes_ago">Actualizado hace %d minutos</string>
+    <string name="update_hour_ago">Actualizado hace 1 hora</string>
+    <string name="update_hours_ago">Actualizado hace %d horas</string>
+    <string name="update_day_ago">Actualizado hace 1 día</string>
+    <string name="update_days_ago">Actualizado hace %d días</string>
+    <string name="update_long_ago">Actualizado hace mucho tiempo</string>
 </resources>

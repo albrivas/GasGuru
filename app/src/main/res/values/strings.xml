@@ -1,6 +1,7 @@
 <resources>
-    <string name="app_name">FuelPump</string>
-    <string name="map_nav">Map</string>
+    <string name="app_name">GasGuru</string>
+    <string name="map_nav">Stations</string>
     <string name="list_nav">Favorite</string>
     <string name="profile_nav">Profile</string>
+    <string name="not_connected">⚠️ You aren’t connected to the internet</string>
 </resources>

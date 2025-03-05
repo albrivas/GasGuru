@@ -5,5 +5,15 @@
     <string name="label_suggestion">Sugerencias</string>
     <string name="label_recent">Recientes</string>
     <string name="hint_search_bar">Buscar por lugares</string>
-
+    <string name="sheet_title">Estaciones cercanas</string>
+    <string name="sheet_button">Mostrar lista</string>
+    <string name="filter_brand_number">Marcas (%1$s)</string>
+    <string name="filter_brand">Marcas</string>
+    <string name="filter_schedule">Horario</string>
+    <string name="filter_number_nearby">Nº cercanas</string>
+    <string name="filter_open_now">Abierto ahora</string>
+    <string name="filter_open_24">Abierto 24 h</string>
+    <string name="filter_button">Guardar</string>
+    <string name="filter_brand_title">Fuel stations</string>
+    <string name="filter_number_nearby_title">Nº Cercanas</string>
 </resources>
