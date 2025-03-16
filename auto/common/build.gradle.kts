@@ -10,6 +10,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.domain)
     implementation(libs.androidx.auto)
     implementation(libs.androidx.car.app)
     implementation(libs.kotlinx.serialization.json)
