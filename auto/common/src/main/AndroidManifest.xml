@@ -6,9 +6,8 @@
     <application>
 
         <service
-            android:name=".FuelPumpAutomotiveService"
-            android:exported="true"
-            android:permission="androidx.car.app.MAP_TEMPLATES">
+            android:name=".GasGuruAutomotiveService"
+            android:exported="true">
             <intent-filter>
                 <action android:name="androidx.car.app.CarAppService" />
                 <category android:name="androidx.car.app.category.POI" />
@@ -18,6 +17,10 @@
         <meta-data
             android:name="androidx.car.app.minCarApiLevel"
             android:value="1" />
+
+        <meta-data
+            android:name="com.google.android.gms.car.application"
+            android:resource="@xml/automotive_app_desc" />
 
     </application>
 
