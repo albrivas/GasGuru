@@ -90,6 +90,7 @@ dependencies {
     implementation(projects.feature.stationMap)
     implementation(projects.feature.profile)
     implementation(projects.core.model)
+    implementation(projects.auto.common)
     androidTestImplementation(projects.core.testing)
 
     // Core Android dependencies
