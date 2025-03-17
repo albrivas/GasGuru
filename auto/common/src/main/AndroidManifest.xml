@@ -4,8 +4,8 @@
     <uses-permission android:name="androidx.car.app.MAP_TEMPLATES" />
 
     <application
-        android:usesCleartextTraffic="false"
-        android:allowBackup="false">
+        android:allowBackup="false"
+        android:usesCleartextTraffic="false">
 
         <service
             android:name=".GasGuruAutomotiveService"
