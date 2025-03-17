@@ -175,9 +175,3 @@ class FuelStationScreen(carContext: CarContext) : Screen(carContext) {
         return builder.build()
     }
 }
-
-data class CarUiState(
-    val loading: Boolean = false,
-    val stations: List<FuelStation> = emptyList(),
-    val selectedFuel: FuelType? = null,
-)
