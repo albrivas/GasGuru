@@ -17,7 +17,6 @@ import com.gasguru.core.domain.SaveFilterUseCase
 import com.gasguru.core.domain.location.GetCurrentLocationUseCase
 import com.gasguru.core.model.data.Filter
 import com.gasguru.core.model.data.FilterType
-import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.SearchPlace
 import com.google.android.gms.maps.model.LatLngBounds
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -156,7 +155,7 @@ class StationMapViewModel @Inject constructor(
                 ).catch { error ->
                     _state.update { it.copy(error = error, loading = false) }
                 }.collect { fuelStations ->
-                    val bounds = calculateBounds(fuelStations = fuelStations, location = location)
+                    val bounds = calculateBounds(fuelStations = fuelStations.map { it.location }, location = location)
                     _state.update {
                         it.copy(
                             fuelStations = fuelStations,
@@ -170,9 +169,9 @@ class StationMapViewModel @Inject constructor(
         }
     }
 
-    private fun calculateBounds(fuelStations: List<FuelStation>, location: Location): LatLngBounds {
+    private fun calculateBounds(fuelStations: List<Location>, location: Location): LatLngBounds {
         val allLocations =
-            fuelStations.map { it.location.toLatLng() } + location.toLatLng()
+            fuelStations.map { it.toLatLng() } + location.toLatLng()
         val boundsBuilder = LatLngBounds.Builder()
         allLocations.forEach { boundsBuilder.include(it) }
         return boundsBuilder.build()
