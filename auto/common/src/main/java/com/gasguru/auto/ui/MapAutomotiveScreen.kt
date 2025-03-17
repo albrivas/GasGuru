@@ -33,7 +33,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 
-class FuelStationScreen(carContext: CarContext) : Screen(carContext) {
+class MapAutomotiveScreen(carContext: CarContext) : Screen(carContext) {
 
     private var hasLocationPermission = false
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
@@ -84,7 +84,8 @@ class FuelStationScreen(carContext: CarContext) : Screen(carContext) {
         coroutineScope.launch {
             getCurrentLocationUseCase()?.let { location ->
                 combine(
-                    getUserDataUseCase(), getFuelStationByLocation(
+                    getUserDataUseCase(),
+                    getFuelStationByLocation(
                         userLocation = location,
                         maxStations = 25,
                         brands = emptyList(),
@@ -117,12 +118,14 @@ class FuelStationScreen(carContext: CarContext) : Screen(carContext) {
                     .setPlace(
                         Place.Builder(
                             CarLocation.create(
-                                station.location.latitude, station.location.longitude
+                                station.location.latitude,
+                                station.location.longitude
                             )
                         ).setMarker(
                             PlaceMarker.Builder().setColor(
                                 CarColor.createCustom(
-                                    Color.White.toArgb(), Primary600.toArgb(),
+                                    Color.White.toArgb(),
+                                    Primary600.toArgb(),
                                 )
                             ).build()
                         )

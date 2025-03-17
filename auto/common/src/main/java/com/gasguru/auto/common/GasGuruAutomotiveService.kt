@@ -5,7 +5,7 @@ import androidx.car.app.CarAppService
 import androidx.car.app.Screen
 import androidx.car.app.Session
 import androidx.car.app.validation.HostValidator
-import com.gasguru.auto.ui.FuelStationScreen
+import com.gasguru.auto.ui.MapAutomotiveScreen
 
 class GasGuruAutomotiveService : CarAppService() {
     override fun createHostValidator(): HostValidator {
@@ -19,6 +19,6 @@ class GasGuruAutomotiveService : CarAppService() {
 
 class GasGuruSession : Session() {
     override fun onCreateScreen(intent: Intent): Screen {
-        return FuelStationScreen(carContext)
+        return MapAutomotiveScreen(carContext)
     }
 }
