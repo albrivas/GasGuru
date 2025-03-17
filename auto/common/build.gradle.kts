@@ -11,6 +11,10 @@ android {
 
 dependencies {
     implementation(projects.core.domain)
+    implementation(projects.core.model)
+    implementation(projects.core.common)
+    implementation(projects.core.uikit)
+    implementation(projects.core.ui)
     implementation(libs.androidx.auto)
     implementation(libs.androidx.car.app)
     implementation(libs.kotlinx.serialization.json)
