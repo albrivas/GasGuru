@@ -50,6 +50,8 @@ junit5Runner = "1.4.0"
 materialIcons = "1.7.7"
 constraintLayout = "1.1.0"
 androidTools = "31.7.3"
+androidxCarApp = "1.4.0"
+
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
@@ -114,6 +116,8 @@ junit5-runner = { module = "de.mannodermaus.junit5:android-test-runner", version
 junit5-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit5Api" }
 material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIcons" }
 constraint-layout = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintLayout"}
+androidx-car-app = { module = "androidx.car.app:app", version.ref = "androidxCarApp" }
+androidx-auto = { module = "androidx.car.app:app-projected", version.ref = "androidxCarApp" }
 
 # Dependencies of the included build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
@@ -125,6 +129,7 @@ ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devto
 room-gradlePlugin = { group = "androidx.room", name = "room-gradle-plugin", version.ref = "androidx-room" }
 secrets-gradlePlugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "secrets" }
 detekt-gradlePlugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
+
 
 [bundles]
 com-squareup-retrofit2 = [

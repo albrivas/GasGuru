@@ -301,7 +301,7 @@ fun ListFuelStations(
                 model = FuelStationItemModel(
                     idServiceStation = item.idServiceStation,
                     icon = item.brandStationBrandsType.toBrandStationIcon(),
-                    name = item.brandStationName,
+                    name = item.formatName(),
                     distance = item.formatDistance(),
                     price = selectedFuel.getPrice(context, item),
                     index = index,
