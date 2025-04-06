@@ -3,9 +3,9 @@ import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 plugins {
     alias(libs.plugins.gasguru.android.application)
     alias(libs.plugins.gasguru.hilt)
+    alias(libs.plugins.gasguru.firebase)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.gms)
-    alias(libs.plugins.firebase.crashlitycs)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.secrets)
@@ -37,7 +37,6 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-        manifestPlaceholders["crashlyticsEnabled"] = false
     }
 
     buildTypes {
@@ -56,7 +55,7 @@ android {
             isDebuggable = true
             applicationIdSuffix = ".debug"
             resValue("string", "app_name", "GasGuru Debug")
-            manifestPlaceholders["crashlyticsEnabled"] = false
+            manifestPlaceholders["crashlyticsEnabled"] = true
         }
     }
 
