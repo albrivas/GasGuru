@@ -1,4 +1,3 @@
-
 import com.android.build.gradle.LibraryExtension
 import com.gasguru.build_logic.convention.configureDetekt
 import com.gasguru.build_logic.convention.configureKotlinAndroid
@@ -22,13 +21,14 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                 defaultConfig.apply {
                     targetSdk = 35
                     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-                    testInstrumentationRunnerArguments["runnerBuilder"] = "de.mannodermaus.junit5.AndroidJUnit5Builder"
+                    testInstrumentationRunnerArguments["runnerBuilder"] =
+                        "de.mannodermaus.junit5.AndroidJUnit5Builder"
                 }
 
                 testOptions.animationsDisabled = true
 
                 dependencies {
-add("androidTestRuntimeOnly", getLibrary("junit5.runner"))
+                    add("androidTestRuntimeOnly", getLibrary("junit5.runner"))
                 }
             }
 
