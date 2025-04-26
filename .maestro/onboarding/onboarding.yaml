@@ -2,9 +2,8 @@ appId: com.gasguru.debug
 
 name: "Onboarding flow - Select fuel"
 ---
-- tapOn: "Save"
+- tapOn: "Continue"
 - tapOn: "SP 95"
-- tapOn: "Save"
-- back
-- assertNotVisible:
+- tapOn: "Continue"
+- assertVisible:
     text: "Search"
