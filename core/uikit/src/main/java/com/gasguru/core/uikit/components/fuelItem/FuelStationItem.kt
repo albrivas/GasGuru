@@ -27,9 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.R
@@ -76,13 +74,13 @@ fun FuelStationItem(
                     .size(40.dp)
                     .clip(CircleShape)
                     .border(width = 1.dp, color = Neutral300, shape = CircleShape)
-
             ) {
                 Image(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(4.dp)
-                        .clip(CircleShape),
+                        .clip(CircleShape)
+                        .align(Alignment.Center),
                     painter = painterResource(id = icon),
                     contentDescription = "Fuel station brand"
                 )
@@ -96,16 +94,7 @@ fun FuelStationItem(
         ) {
             Text(
                 modifier = Modifier.testTag("station-name"),
-                text = name.toLowerCase(Locale.current)
-                    .replaceFirstChar {
-                        if (it.isLowerCase()) {
-                            it.titlecase(
-                                java.util.Locale.getDefault()
-                            )
-                        } else {
-                            it.toString()
-                        }
-                    },
+                text = name,
                 style = GasGuruTheme.typography.baseRegular,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

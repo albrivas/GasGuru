@@ -55,16 +55,17 @@ data class FuelStation(
     }
 
     fun formatDirection(): String = direction.lowercase().replaceFirstChar(Char::uppercase)
+    fun formatName(): String = brandStationName.lowercase().replaceFirstChar(Char::uppercase)
 }
 
-fun previewFuelStationDomain() = FuelStation(
+fun previewFuelStationDomain(idServiceStation: Int = 0) = FuelStation(
     bioEthanolPercentage = "",
     esterMethylPercentage = "",
     postalCode = "",
     direction = "C/RIOS ROSAS - MADRID",
     schedule = "L-D: 24H",
     idAutonomousCommunity = "",
-    idServiceStation = 1,
+    idServiceStation = idServiceStation,
     idMunicipality = "",
     idProvince = "",
     location = Location(""),

@@ -1,15 +1,13 @@
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.hilt.gradle)
+    alias(libs.plugins.gasguru.android.application)
+    alias(libs.plugins.gasguru.hilt)
+    alias(libs.plugins.gasguru.firebase)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.gms)
-    alias(libs.plugins.firebase.crashlitycs)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.detekt)
     alias(libs.plugins.secrets)
 }
 
@@ -20,7 +18,6 @@ val keypass: String = localProperties.getProperty("keyPassword")
 
 android {
     namespace = "com.gasguru"
-    compileSdk = 35
 
     signingConfigs {
         create("release") {
@@ -33,8 +30,6 @@ android {
 
     defaultConfig {
         applicationId = "com.gasguru"
-        minSdk = 26
-        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -42,7 +37,6 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-        manifestPlaceholders["crashlyticsEnabled"] = false
     }
 
     buildTypes {
@@ -61,17 +55,8 @@ android {
             isDebuggable = true
             applicationIdSuffix = ".debug"
             resValue("string", "app_name", "GasGuru Debug")
-            manifestPlaceholders["crashlyticsEnabled"] = false
+            manifestPlaceholders["crashlyticsEnabled"] = true
         }
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
     buildFeatures {
@@ -93,28 +78,24 @@ android {
 
 dependencies {
 
-    implementation(project(":core:uikit"))
-    implementation(project(":core:ui"))
-    implementation(project(":core:data"))
-    implementation(project(":core:domain"))
-    implementation(project(":core:common"))
-    implementation(project(":feature:onboarding"))
-    implementation(project(":feature:detail-station"))
-    implementation(project(":feature:favorite-list-station"))
-    implementation(project(":feature:station-map"))
-    implementation(project(":feature:profile"))
-    implementation(project(":core:model"))
-    androidTestImplementation(project(":core:testing"))
-    detektPlugins(libs.detekt.formatting)
+    implementation(projects.core.uikit)
+    implementation(projects.core.ui)
+    implementation(projects.core.data)
+    implementation(projects.core.domain)
+    implementation(projects.core.common)
+    implementation(projects.feature.onboarding)
+    implementation(projects.feature.detailStation)
+    implementation(projects.feature.favoriteListStation)
+    implementation(projects.feature.stationMap)
+    implementation(projects.feature.profile)
+    implementation(projects.core.model)
+    implementation(projects.auto.common)
+    androidTestImplementation(projects.core.testing)
 
     // Core Android dependencies
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
-
-    // Hilt Dependency Injection
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
 
     // Arch Components
     implementation(libs.androidx.lifecycle.viewmodel.compose)

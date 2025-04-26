@@ -48,6 +48,7 @@ fun SelectableFilter(
             disabledContainerColor = Color.White,
             disabledTrailingIconColor = TextMain,
             labelColor = TextMain,
+            iconColor = TextMain,
             selectedLabelColor = Color.White,
             selectedTrailingIconColor = Color.White,
         ),
