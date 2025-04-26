@@ -61,4 +61,15 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew assembleDebug
         working-directory: ./
+
+      - name: Install Maestro CLI
+        run: |
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+
+      - name: Install APK in Emulator
+        run: adb install app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Run Maestro Tests
+        run: maestro test .maestro/main.yaml
         
