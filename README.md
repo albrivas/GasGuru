@@ -1,6 +1,14 @@
 # GasGuru
 GasGuru is an app to check fuel prices at all gas stations in Spain
 
+## Static Code Analysis with Detekt
+
+To analyze the code with [Detekt](https://detekt.dev/) and check for code style and potential issues, run:
+
+```bash
+./gradlew codeCheck
+```
+
 # Running Tests Locally
 
 ## Requirements
@@ -23,7 +31,7 @@ keyPassword=YOUR_KEY_PASSWORD
 
 2. Place your `google-services.json` file at `app/google-services.json`.
 
-## Install Maestro (https://docs.maestro.dev/getting-started/installing-maestro)
+## Install [Maestro Mobile](https://docs.maestro.dev/getting-started/installing-maestro)
 
 ```bash
 curl -Ls "https://get.maestro.mobile.dev" | bash
