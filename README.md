@@ -1,56 +1,57 @@
 # GasGuru
 GasGuru is an app to check fuel prices at all gas stations in Spain
 
-# Ejecución de tests en local
+# Running Tests Locally
 
-## Requisitos
+## Requirements
 
 - JDK 17
-- Android SDK y ADB configurados
-- Emulador Android (API 34 recomendado)
+- Android SDK and ADB configured
+- Android Emulator (API 34 recommended)
 
-## Configuración inicial
+## Initial Setup
 
-1. Crea el archivo `local.properties` en la raíz del proyecto con el siguiente contenido:
+1. Create a `local.properties` file at the root of the project with the following content:
 
-googleApiKey=TU_GOOGLE_MAPS_API_KEY 
-googleStyleId=TU_GOOGLE_STYLE_MAP_ID 
-storePassword=TU_KEYSTORE_PASSWORD 
-keyAlias=TU_KEYSTORE_ALIAS 
-keyPassword=TU_KEY_PASSWORD
+```properties
+googleApiKey=YOUR_GOOGLE_MAPS_API_KEY
+googleStyleId=YOUR_GOOGLE_STYLE_MAP_ID
+storePassword=YOUR_KEYSTORE_PASSWORD
+keyAlias=YOUR_KEYSTORE_ALIAS
+keyPassword=YOUR_KEY_PASSWORD
+```
 
-2. Coloca tu archivo `google-services.json` en `app/google-services.json`.
+2. Place your `google-services.json` file at `app/google-services.json`.
 
-## Instalación de Maestro CLI
+## Install Maestro (https://docs.maestro.dev/getting-started/installing-maestro)
 
 ```bash
 curl -Ls "https://get.maestro.mobile.dev" | bash
 export PATH="$HOME/.maestro/bin:$PATH"
 ```
 
+## Test execution
 
-## Ejecución de tests
-
-1. Inicia un emulador Android:
+1. Start an Android Emulator:
 
 ```bash
-$ANDROID_HOME/emulator/emulator -avd <nombre_de_tu_emulador> -no-snapshot-save -no-window -no-boot-anim
+$ANDROID_HOME/emulator/emulator -avd <emulator_name> -no-snapshot-save -no-window -no-boot-anim
 ```
-2. Ejecuta los tests instrumentados (Compose):
+2. Run instrumented test (Compose):
 ```bash
 ./gradlew connectedCheck
 ```
-3. Compila el APK de debug:
+3. Build the debug APK:
 ```bash
 ./gradlew assembleDebug
 ```
-4. Instala el APK en el emulador:
+4. Install APK on the emulator:
 ```bash
 adb install app/build/outputs/apk/debug/app-debug.apk
 ```
-5. Ejecuta los tests E2E con Maestro:
+5. Execute the E2E test with Maestro:
 ```bash
 maestro test .maestro/config.yaml
-# Si quieres guardar un video del test en local
+# Record test in local
 maestro record --local config.yaml
 ```
