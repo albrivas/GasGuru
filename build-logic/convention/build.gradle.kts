@@ -58,5 +58,9 @@ gradlePlugin {
             id = libs.plugins.gasguru.room.get().pluginId
             implementationClass = "AndroidRoomConventionPlugin"
         }
+        register("firebase") {
+            id = libs.plugins.gasguru.firebase.get().pluginId
+            implementationClass = "AndroidApplicationFirebaseConventionPlugin"
+        }
     }
 }

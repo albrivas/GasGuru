@@ -55,6 +55,7 @@ data class FuelStation(
     }
 
     fun formatDirection(): String = direction.lowercase().replaceFirstChar(Char::uppercase)
+    fun formatName(): String = brandStationName.lowercase().replaceFirstChar(Char::uppercase)
 }
 
 fun previewFuelStationDomain(idServiceStation: Int = 0) = FuelStation(
