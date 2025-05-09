@@ -37,7 +37,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.appcompat)
     implementation(libs.material)
-    implementation(libs.play.services.maps)
+    api(libs.play.services.maps)
     implementation(libs.maps.compose)
     
     testImplementation(libs.junit)

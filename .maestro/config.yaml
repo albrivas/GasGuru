@@ -1,0 +1,5 @@
+appId: com.gasguru.debug
+---
+- launchApp:
+    clearState: true
+- runFlow: "onboarding/onboarding.yaml"
