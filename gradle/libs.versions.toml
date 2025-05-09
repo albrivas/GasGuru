@@ -44,9 +44,7 @@ coil = "2.7.0"
 splashScreen = "1.0.1"
 junit5Api = "5.12.0"
 junit5Extensions = "1.7.0"
-junit5Compose = "1.4.0"
 junit5Plugin = "1.11.3.0"
-junit5Runner = "1.4.0"
 materialIcons = "1.7.8"
 constraintLayout = "1.1.0"
 androidTools = "31.7.3"
@@ -111,8 +109,8 @@ coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coi
 splash-screen = { module = "androidx.core:core-splashscreen", version.ref = "splashScreen" }
 junit5-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit5Api" }
 junit5-extensions = { module = "de.mannodermaus.junit5:android-test-extensions", version.ref = "junit5Extensions" }
-junit5-compose = { module = "de.mannodermaus.junit5:android-test-compose", version.ref = "junit5Compose" }
-junit5-runner = { module = "de.mannodermaus.junit5:android-test-runner", version.ref = "junit5Runner" }
+junit5-compose = { module = "de.mannodermaus.junit5:android-test-compose", version.ref = "junit5Extensions" }
+junit5-runner = { module = "de.mannodermaus.junit5:android-test-runner", version.ref = "junit5Extensions" }
 junit5-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit5Api" }
 material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIcons" }
 constraint-layout = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintLayout"}
