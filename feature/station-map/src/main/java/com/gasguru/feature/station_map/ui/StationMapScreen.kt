@@ -164,12 +164,12 @@ internal fun StationMapScreen(
         val screenHeightPx = with(density) { configuration.screenHeightDp.dp.toPx() }
         with(density) {
             (
-                    screenHeightPx -
-                            filtersHeightPx -
-                            searchBarHeightPx -
-                            bottomBarHeightPx -
-                            peekHeight.toPx()
-                    ).toDp()
+                screenHeightPx -
+                    filtersHeightPx -
+                    searchBarHeightPx -
+                    bottomBarHeightPx -
+                    peekHeight.toPx()
+                ).toDp()
         }
     }
 
@@ -516,7 +516,7 @@ fun SearchPlaces(
                 }
 
                 SearchResultUiState.LoadFailed,
-                    -> Unit
+                -> Unit
 
                 SearchResultUiState.EmptyQuery -> {
                     if (recentSearchQueries is RecentSearchQueriesUiState.Success) {

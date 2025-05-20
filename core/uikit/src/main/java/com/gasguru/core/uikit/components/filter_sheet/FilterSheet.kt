@@ -143,7 +143,7 @@ private fun FilterSheetContent(model: FilterSheetModel, onDismiss: () -> Unit) =
                                 isMustSelection
                             )
                         }.drawBehind {
-                            if(item != options.last()) {
+                            if (item != options.last()) {
                                 val lineY = size.height - 1.dp.toPx()
                                 drawLine(
                                     color = Neutral300,
@@ -152,10 +152,9 @@ private fun FilterSheetContent(model: FilterSheetModel, onDismiss: () -> Unit) =
                                     strokeWidth = 1.dp.toPx()
                                 )
                             }
-                    },
+                        },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-
                     iconMap?.get(item)?.let { iconResId ->
                         CircleIcon(model = CircleIconModel(icon = iconResId, size = 32.dp))
                     }
