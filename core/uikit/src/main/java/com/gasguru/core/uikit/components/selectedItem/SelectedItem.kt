@@ -39,8 +39,8 @@ fun BasicSelectedItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(color = Color.White)
             .then(if (model.isRoundedItem) Modifier.clip(RoundedCornerShape(8.dp)) else Modifier)
+            .background(color = Color.White)
             .selectable(
                 selected = true,
                 onClick = { onItemSelected(model) }
