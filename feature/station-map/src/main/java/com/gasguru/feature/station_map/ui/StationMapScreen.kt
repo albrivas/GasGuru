@@ -86,6 +86,7 @@ import com.gasguru.core.uikit.components.chip.SelectableFilter
 import com.gasguru.core.uikit.components.chip.SelectableFilterModel
 import com.gasguru.core.uikit.components.filter_sheet.FilterSheet
 import com.gasguru.core.uikit.components.filter_sheet.FilterSheetModel
+import com.gasguru.core.uikit.components.filter_sheet.FilterSheetType
 import com.gasguru.core.uikit.components.fuelItem.FuelStationItem
 import com.gasguru.core.uikit.components.fuelItem.FuelStationItemModel
 import com.gasguru.core.uikit.components.loading.GasGuruLoading
@@ -786,6 +787,10 @@ fun ShowFilterSheet(
 ) {
     val context = LocalContext.current
 
+    val brands = FuelStationBrandsType.entries
+        .filter { it.value != FuelStationBrandsType.UNKNOWN.value }
+        .sortedBy { it.value.lowercase() }
+
     when (filterType) {
         FilterType.Brand -> {
             FilterSheet(
@@ -794,13 +799,12 @@ fun ShowFilterSheet(
                     buttonText = stringResource(id = R.string.filter_button),
                     isMultiOption = true,
                     isMustSelection = false,
-                    options = FuelStationBrandsType.entries
-                        .filter { it.value != FuelStationBrandsType.UNKNOWN.value }
-                        .sortedBy { it.value.lowercase() }
-                        .map { it.value },
+                    options = brands.map { it.value },
                     optionsSelected = filterUiState.filterBrand,
                     onDismiss = { showFilter() },
-                    onSaveButton = { event(StationMapEvent.UpdateBrandFilter(it)) }
+                    onSaveButton = { event(StationMapEvent.UpdateBrandFilter(it)) },
+                    type = FilterSheetType.ICON,
+                    iconMap = brands.associate { it.value to it.toBrandStationIcon() }
                 )
             )
         }
