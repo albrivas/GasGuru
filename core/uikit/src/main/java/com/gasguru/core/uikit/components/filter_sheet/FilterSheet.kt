@@ -1,6 +1,7 @@
 package com.gasguru.core.uikit.components.filter_sheet
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -29,12 +31,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.components.GasGuruButton
+import com.gasguru.core.uikit.icon.CircleIcon
+import com.gasguru.core.uikit.icon.CircleIconModel
+import com.gasguru.core.uikit.icon.FuelStationIcons
 import com.gasguru.core.uikit.theme.GasGuruTheme
+import com.gasguru.core.uikit.theme.Neutral100
+import com.gasguru.core.uikit.theme.Neutral300
 import com.gasguru.core.uikit.theme.Neutral500
 import com.gasguru.core.uikit.theme.Primary600
 import com.gasguru.core.uikit.theme.TextMain
@@ -48,8 +57,8 @@ fun FilterSheet(model: FilterSheetModel, modifier: Modifier = Modifier) {
     ModalBottomSheet(
         onDismissRequest = { model.onDismiss() },
         sheetState = state,
-        containerColor = Color.White,
-        contentColor = Color.White,
+        containerColor = Neutral100,
+        contentColor = Neutral100,
         shape = MaterialTheme.shapes.large,
         contentWindowInsets = { WindowInsets.navigationBars },
         dragHandle = {
@@ -83,10 +92,10 @@ private fun FilterSheetContent(model: FilterSheetModel, onDismiss: () -> Unit) =
     val listSelection = remember {
         mutableStateListOf<String>().apply { addAll(optionsSelected) }
     }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(color = Color.White)
     ) {
         Row(
             modifier = Modifier
@@ -113,18 +122,43 @@ private fun FilterSheetContent(model: FilterSheetModel, onDismiss: () -> Unit) =
 
         Column(
             modifier = Modifier
-                .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
+                .weight(1f, fill = false)
+                .padding(start = 16.dp, end = 16.dp)
+                .background(Color.White)
+                .border(1.dp, Neutral300, RoundedCornerShape(8.dp))
         ) {
             options.forEach { item ->
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .align(Alignment.CenterHorizontally)
                         .background(color = Color.White)
-                        .padding(horizontal = 8.dp)
-                        .clickable { handleSelectionItem(item, listSelection, isMultiOption, isMustSelection) },
+                        .padding(start = 8.dp, end = 8.dp)
+                        .clickable {
+                            handleSelectionItem(
+                                item,
+                                listSelection,
+                                isMultiOption,
+                                isMustSelection
+                            )
+                        }.drawBehind {
+                            if (item != options.last()) {
+                                val lineY = size.height - 1.dp.toPx()
+                                drawLine(
+                                    color = Neutral300,
+                                    start = Offset(0f, lineY),
+                                    end = Offset(size.width, lineY),
+                                    strokeWidth = 1.dp.toPx()
+                                )
+                            }
+                        },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    iconMap?.get(item)?.let { iconResId ->
+                        CircleIcon(model = CircleIconModel(icon = iconResId, size = 32.dp))
+                    }
+
                     Text(
                         modifier = Modifier
                             .weight(1f)
@@ -146,10 +180,10 @@ private fun FilterSheetContent(model: FilterSheetModel, onDismiss: () -> Unit) =
                         selected = listSelection.contains(item),
                         onClick = {
                             handleSelectionItem(
-                                item,
-                                listSelection,
-                                isMultiOption,
-                                isMustSelection
+                                item = item,
+                                listSelection = listSelection,
+                                isMultiOption = isMultiOption,
+                                isMustSelection = isMustSelection
                             )
                         },
                         colors = RadioButtonDefaults.colors(
@@ -159,18 +193,19 @@ private fun FilterSheetContent(model: FilterSheetModel, onDismiss: () -> Unit) =
                     )
                 }
             }
-            GasGuruButton(
-                onClick = {
-                    onSaveButton(listSelection)
-                    onDismiss()
-                },
-                enabled = true,
-                text = buttonText,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            )
         }
+
+        GasGuruButton(
+            onClick = {
+                onSaveButton(listSelection)
+                onDismiss()
+            },
+            enabled = true,
+            text = buttonText,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        )
     }
 }
 
@@ -207,6 +242,11 @@ private fun FilterSheetContentPreview() {
             optionsSelected = listOf("Repsol"),
             onSaveButton = {},
             onDismiss = {},
+            iconMap = mapOf(
+                "Repsol" to FuelStationIcons.Repsol,
+                "Cepsa" to FuelStationIcons.Cepsa,
+                "BP" to FuelStationIcons.Bp
+            )
         ),
         onDismiss = {}
     )
