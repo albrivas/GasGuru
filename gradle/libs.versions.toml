@@ -128,6 +128,7 @@ room-gradlePlugin = { group = "androidx.room", name = "room-gradle-plugin", vers
 secrets-gradlePlugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "secrets" }
 detekt-gradlePlugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 
+
 [bundles]
 com-squareup-retrofit2 = [
     "com-squareup-okhttp3-logging-interceptor",
