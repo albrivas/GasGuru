@@ -103,7 +103,6 @@ internal fun OnboardingWelcomeScreen(
             enabled = isPermissionGranted,
             text = stringResource(id = R.string.welcome_button),
             modifier = Modifier
-                .padding(bottom = 17.dp)
                 .systemBarsPadding()
                 .testTag("button_next")
         )
