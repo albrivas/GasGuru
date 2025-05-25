@@ -9,4 +9,10 @@ data class FilterSheetModel(
     val optionsSelected: List<String>,
     val onSaveButton: (List<String>) -> Unit,
     val onDismiss: () -> Unit,
+    val type: FilterSheetType = FilterSheetType.NORMAL,
+    val iconMap: Map<String, Int>? = null
 )
+
+enum class FilterSheetType {
+    NORMAL, ICON
+}
