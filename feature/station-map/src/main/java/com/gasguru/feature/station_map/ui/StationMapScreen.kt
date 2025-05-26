@@ -29,7 +29,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.BottomSheetScaffold
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
@@ -88,8 +87,11 @@ import com.gasguru.core.uikit.components.chip.SelectableFilter
 import com.gasguru.core.uikit.components.chip.SelectableFilterModel
 import com.gasguru.core.uikit.components.filter_sheet.FilterSheet
 import com.gasguru.core.uikit.components.filter_sheet.FilterSheetModel
+import com.gasguru.core.uikit.components.filter_sheet.FilterSheetType
 import com.gasguru.core.uikit.components.fuelItem.FuelStationItem
 import com.gasguru.core.uikit.components.fuelItem.FuelStationItemModel
+import com.gasguru.core.uikit.components.loading.GasGuruLoading
+import com.gasguru.core.uikit.components.loading.GasGuruLoadingModel
 import com.gasguru.core.uikit.components.marker.StationMarker
 import com.gasguru.core.uikit.components.marker.StationMarkerModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
@@ -98,6 +100,7 @@ import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.Neutral100
 import com.gasguru.core.uikit.theme.Neutral300
 import com.gasguru.core.uikit.theme.Primary600
+import com.gasguru.core.uikit.theme.Primary800
 import com.gasguru.core.uikit.theme.TextSubtle
 import com.gasguru.feature.station_map.BuildConfig
 import com.gasguru.feature.station_map.R
@@ -304,7 +307,7 @@ fun ListFuelStations(
                 model = FuelStationItemModel(
                     idServiceStation = item.idServiceStation,
                     icon = item.brandStationBrandsType.toBrandStationIcon(),
-                    name = item.brandStationName,
+                    name = item.formatName(),
                     distance = item.formatDistance(),
                     price = selectedFuel.getPrice(context, item),
                     index = index,
@@ -350,16 +353,13 @@ fun MapView(
         modifier = modifier
     ) {
         if (loading) {
-            Box(
+            GasGuruLoading(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color.Black.copy(alpha = 0.5f))
-                    .zIndex(1f)
-            ) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            }
+                    .zIndex(1f),
+                model = GasGuruLoadingModel(color = Primary800)
+            )
         }
 
         GoogleMap(
@@ -804,6 +804,10 @@ fun ShowFilterSheet(
 ) {
     val context = LocalContext.current
 
+    val brands = FuelStationBrandsType.entries
+        .filter { it.value != FuelStationBrandsType.UNKNOWN.value }
+        .sortedBy { it.value.lowercase() }
+
     when (filterType) {
         FilterType.Brand -> {
             FilterSheet(
@@ -812,13 +816,12 @@ fun ShowFilterSheet(
                     buttonText = stringResource(id = R.string.filter_button),
                     isMultiOption = true,
                     isMustSelection = false,
-                    options = FuelStationBrandsType.entries
-                        .filter { it.value != FuelStationBrandsType.UNKNOWN.value }
-                        .sortedBy { it.value.lowercase() }
-                        .map { it.value },
+                    options = brands.map { it.value },
                     optionsSelected = filterUiState.filterBrand,
                     onDismiss = { showFilter() },
-                    onSaveButton = { event(StationMapEvent.UpdateBrandFilter(it)) }
+                    onSaveButton = { event(StationMapEvent.UpdateBrandFilter(it)) },
+                    type = FilterSheetType.ICON,
+                    iconMap = brands.associate { it.value to it.toBrandStationIcon() }
                 )
             )
         }

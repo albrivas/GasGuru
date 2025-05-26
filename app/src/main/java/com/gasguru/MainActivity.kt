@@ -1,4 +1,4 @@
-package com.gasguru.ui
+package com.gasguru
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -12,20 +12,26 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.gasguru.core.data.util.NetworkMonitor
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.feature.onboarding_welcome.navigation.OnboardingRoutes
 import com.gasguru.navigation.navigationbar.route.NavigationBarRoute
-import com.gasguru.navigation.root.MainNavigation
+import com.gasguru.ui.GasGuruApp
+import com.gasguru.ui.rememberGasGuruAppState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val viewModel: SplashViewModel by viewModels()
     private var returnedFromBackground = false
+
+    @Inject
+    lateinit var networkMonitor: NetworkMonitor
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splash = installSplashScreen()
@@ -59,17 +65,31 @@ class MainActivity : ComponentActivity() {
         splash.setKeepOnScreenCondition {
             when (uiState) {
                 SplashUiState.Loading -> true
-                SplashUiState.Success -> false
+                is SplashUiState.Success -> false
                 SplashUiState.Error -> false
             }
         }
 
         enableEdgeToEdge()
         setContent {
+            val appState = rememberGasGuruAppState(networkMonitor)
+
             MyApplicationTheme(darkTheme = false) {
-                when (uiState) {
-                    SplashUiState.Success -> MainNavigation(startDestination = NavigationBarRoute)
-                    SplashUiState.Error -> MainNavigation(startDestination = OnboardingRoutes.OnboardingWelcomeRoute)
+                when (val state = uiState) {
+                    is SplashUiState.Success -> GasGuruApp(
+                        appState = appState,
+                        startDestination = if (state.isOnboardingSuccess) {
+                            NavigationBarRoute
+                        } else {
+                            OnboardingRoutes.OnboardingWelcomeRoute
+                        }
+                    )
+
+                    SplashUiState.Error -> GasGuruApp(
+                        appState = appState,
+                        startDestination = OnboardingRoutes.OnboardingWelcomeRoute
+                    )
+
                     else -> Unit
                 }
             }

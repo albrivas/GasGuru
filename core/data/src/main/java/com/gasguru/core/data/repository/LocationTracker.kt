@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface LocationTracker {
     suspend fun getCurrentLocation(): Location?
-    suspend fun isLocationEnabled(): Boolean
+    val isLocationEnabled: Flow<Boolean>
     val getCurrentLocationFlow: Flow<Location?>
     val getLastKnownLocation: Flow<Location?>
 }
