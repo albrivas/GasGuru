@@ -16,94 +16,89 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.concurrent.TimeUnit
-import javax.inject.Named
 import javax.inject.Singleton
 
-const val CONNECTION_TIMEOUT: Long = 60
-const val WRITE_TIMEOUT: Long = 60
-const val READ_TIMEOUT: Long = 60
-const val BASE_URL: String = "https://sedeaplicaciones.minetur.gob.es/"
+private const val CONNECTION_TIMEOUT = 60L
+private const val WRITE_TIMEOUT = 60L
+private const val READ_TIMEOUT = 60L
+private const val BASE_URL = "https://sedeaplicaciones.minetur.gob.es/"
+private const val ROUTE_BASE_URL = "https://routes.googleapis.com/"
 
 @Module
 @InstallIn(SingletonComponent::class)
-class NetworkModule {
+object NetworkModule {
 
-    companion object {
-        private const val FUEL_API_OK_HTTP_CLIENT = "fuelApiOkHttpClient"
-        private const val ROUTE_API_OK_HTTP_CLIENT = "routeApiOkHttpClient"
-        private const val FUEL_API_RETROFIT = "fuelApiRetrofit"
-        private const val ROUTE_API_RETROFIT = "routeApiRetrofit"
-        const val FUEL_API_SERVICE = "fuelApiService"
-        const val ROUTE_API_SERVICE = "routeApiService"
-    }
-
-    @Singleton
     @Provides
-    fun providesHttpLoggingInterceptor() = HttpLoggingInterceptor().apply {
-        level =
-            if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
-    }
-
     @Singleton
+    fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor =
+        HttpLoggingInterceptor().apply {
+            level = if (BuildConfig.DEBUG) {
+                HttpLoggingInterceptor.Level.BODY
+            } else {
+                HttpLoggingInterceptor.Level.NONE
+            }
+        }
+
     @Provides
-    fun providesRoutesInterceptor(@ApplicationContext context: Context): Interceptor =
+    @Singleton
+    fun provideRoutesInterceptor(@ApplicationContext context: Context): Interceptor =
         RoutesInterceptor(context)
 
-    @Singleton
     @Provides
-    @Named(FUEL_API_OK_HTTP_CLIENT)
-    fun providesFuelOkHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor): OkHttpClient =
-        OkHttpClient.Builder()
-            .addInterceptor(httpLoggingInterceptor)
-            .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS)
-            .readTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
-            .writeTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
-            .build()
+    @Singleton
+    @FuelApi
+    fun provideFuelOkHttpClient(
+        loggingInterceptor: HttpLoggingInterceptor
+    ): OkHttpClient = OkHttpClient.Builder()
+        .addInterceptor(loggingInterceptor)
+        .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS)
+        .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
+        .writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
+        .build()
 
-    @Singleton
     @Provides
-    @Named(ROUTE_API_OK_HTTP_CLIENT)
-    fun providesRouteOkHttpClient(
-        httpLoggingInterceptor: HttpLoggingInterceptor,
-        routesInterceptor: RoutesInterceptor,
-    ): OkHttpClient =
-        OkHttpClient.Builder()
-            .addInterceptor(httpLoggingInterceptor)
-            .addInterceptor(routesInterceptor)
-            .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS)
-            .readTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
-            .writeTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
-            .build()
+    @Singleton
+    @RouteApi
+    fun provideRouteOkHttpClient(
+        loggingInterceptor: HttpLoggingInterceptor,
+        routesInterceptor: Interceptor
+    ): OkHttpClient = OkHttpClient.Builder()
+        .addInterceptor(loggingInterceptor)
+        .addInterceptor(routesInterceptor)
+        .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS)
+        .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
+        .writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
+        .build()
 
-    @Singleton
     @Provides
-    @Named(FUEL_API_RETROFIT)
-    fun provideFuelRetrofit(@Named(FUEL_API_OK_HTTP_CLIENT) okHttpClient: OkHttpClient): Retrofit =
+    @Singleton
+    @FuelApi
+    fun provideFuelRetrofit(@FuelApi okHttpClient: OkHttpClient): Retrofit =
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
 
-    @Singleton
     @Provides
-    @Named(ROUTE_API_RETROFIT)
-    fun provideRouteRetrofit(@Named(ROUTE_API_OK_HTTP_CLIENT) okHttpClient: OkHttpClient): Retrofit =
+    @Singleton
+    @RouteApi
+    fun provideRouteRetrofit(@RouteApi okHttpClient: OkHttpClient): Retrofit =
         Retrofit.Builder()
-            .baseUrl(BuildConfig.ROUTE_BASE_URL)
+            .baseUrl(ROUTE_BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
 
-    @Singleton
     @Provides
-    @Named(FUEL_API_SERVICE)
-    fun provideFuelApiService(@Named(FUEL_API_RETROFIT) retrofit: Retrofit): ApiService =
+    @Singleton
+    @FuelApi
+    fun provideFuelApiService(@FuelApi retrofit: Retrofit): ApiService =
         retrofit.create(ApiService::class.java)
 
-    @Singleton
     @Provides
-    @Named(ROUTE_API_SERVICE)
-    fun provideRouteApiService(@Named(ROUTE_API_RETROFIT) retrofit: Retrofit): RouteApiServices =
+    @Singleton
+    @RouteApi
+    fun provideRouteApiService(@RouteApi retrofit: Retrofit): RouteApiServices =
         retrofit.create(RouteApiServices::class.java)
 }

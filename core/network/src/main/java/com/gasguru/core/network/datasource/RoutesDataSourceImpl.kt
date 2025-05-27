@@ -2,7 +2,7 @@ package com.gasguru.core.network.datasource
 
 import arrow.core.Either
 import com.gasguru.core.network.common.tryCall
-import com.gasguru.core.network.di.NetworkModule
+import com.gasguru.core.network.di.RouteApi
 import com.gasguru.core.network.model.NetworkError
 import com.gasguru.core.network.model.route.NetworkRoutes
 import com.gasguru.core.network.request.RequestDestination
@@ -13,10 +13,9 @@ import com.gasguru.core.network.request.RequestRoute
 import com.gasguru.core.network.retrofit.RouteApiServices
 import com.google.android.gms.maps.model.LatLng
 import javax.inject.Inject
-import javax.inject.Named
 
 class RoutesDataSourceImpl @Inject constructor(
-    @Named(NetworkModule.ROUTE_API_SERVICE) private val routeApiServices: RouteApiServices,
+    @RouteApi private val routeApiServices: RouteApiServices,
 ) : RoutesDataSource {
     override suspend fun getRoute(
         origin: LatLng,
