@@ -9,6 +9,6 @@ import javax.inject.Inject
 class GetRouteUseCase @Inject constructor(
     private val routesRepository: RoutesRepository,
 ) {
-    operator fun invoke(origin: Location, destination: Location): Flow<Route> =
+    operator fun invoke(origin: Location, destination: Location): Flow<Route?> =
         routesRepository.getRoute(origin, destination)
 }

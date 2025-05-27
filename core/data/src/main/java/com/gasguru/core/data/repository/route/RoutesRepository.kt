@@ -5,5 +5,5 @@ import com.gasguru.core.model.data.Route
 import kotlinx.coroutines.flow.Flow
 
 fun interface RoutesRepository {
-    fun getRoute(origin: Location, destination: Location): Flow<Route>
+    fun getRoute(origin: Location, destination: Location): Flow<Route?>
 }
