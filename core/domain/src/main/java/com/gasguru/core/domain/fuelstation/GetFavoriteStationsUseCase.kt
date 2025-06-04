@@ -1,4 +1,4 @@
-package com.gasguru.core.domain
+package com.gasguru.core.domain.fuelstation
 
 import android.location.Location
 import com.gasguru.core.data.repository.user.UserDataRepository

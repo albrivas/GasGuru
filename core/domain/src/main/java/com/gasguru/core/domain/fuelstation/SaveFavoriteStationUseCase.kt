@@ -1,4 +1,4 @@
-package com.gasguru.core.domain
+package com.gasguru.core.domain.fuelstation
 
 import com.gasguru.core.data.repository.user.UserDataRepository
 import javax.inject.Inject

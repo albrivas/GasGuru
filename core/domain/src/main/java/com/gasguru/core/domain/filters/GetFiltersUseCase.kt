@@ -1,4 +1,4 @@
-package com.gasguru.core.domain
+package com.gasguru.core.domain.filters
 
 import com.gasguru.core.data.repository.filter.FilterRepository
 import com.gasguru.core.model.data.Filter

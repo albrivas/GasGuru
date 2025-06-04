@@ -1,4 +1,4 @@
-package com.gasguru.core.domain
+package com.gasguru.core.domain.places
 
 import com.gasguru.core.data.repository.places.PlacesRepository
 import javax.inject.Inject

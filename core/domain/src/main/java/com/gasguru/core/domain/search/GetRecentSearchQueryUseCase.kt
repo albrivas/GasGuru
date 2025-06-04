@@ -1,4 +1,4 @@
-package com.gasguru.core.domain
+package com.gasguru.core.domain.search
 
 import com.gasguru.core.data.repository.search.OfflineRecentSearchRepository
 import com.gasguru.core.model.data.RecentSearchQuery

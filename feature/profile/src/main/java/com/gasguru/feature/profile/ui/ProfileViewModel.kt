@@ -2,8 +2,8 @@ package com.gasguru.feature.profile.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gasguru.core.domain.GetUserDataUseCase
-import com.gasguru.core.domain.SaveFuelSelectionUseCase
+import com.gasguru.core.domain.user.GetUserDataUseCase
+import com.gasguru.core.domain.fuelstation.SaveFuelSelectionUseCase
 import com.gasguru.core.model.data.FuelType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
