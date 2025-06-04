@@ -19,8 +19,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import com.gasguru.auto.di.CarScreenEntryPoint
 import com.gasguru.core.domain.fuelstation.FuelStationByLocationUseCase
-import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.domain.location.GetCurrentLocationUseCase
+import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.OpeningHours
