@@ -16,11 +16,7 @@ class FilterRepositoryImpl @Inject constructor(
     override val getFilters: Flow<List<Filter>>
         get() = dao.getFilters().map { it.asExternalModel() }
             .catch {
-                listOf(
-                    Filter(FilterType.NEARBY, listOf("10")),
-                    Filter(FilterType.NEARBY, emptyList()),
-                    Filter(FilterType.SCHEDULE, emptyList())
-                )
+                defaultValues()
             }
 
     override suspend fun insertOrUpdateFilter(filterType: FilterType, selection: List<String>) {
@@ -30,4 +26,10 @@ class FilterRepositoryImpl @Inject constructor(
             dao.insertFilter(FilterEntity(type = filterType, selection = selection))
         }
     }
+
+    private fun defaultValues() = listOf(
+        Filter(FilterType.NEARBY, listOf("10")),
+        Filter(FilterType.NEARBY, emptyList()),
+        Filter(FilterType.SCHEDULE, emptyList())
+    )
 }
