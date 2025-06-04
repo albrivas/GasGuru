@@ -1,4 +1,4 @@
-package com.gasguru.core.uikit.shape
+package com.gasguru.core.uikit.components.shape
 
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Rect

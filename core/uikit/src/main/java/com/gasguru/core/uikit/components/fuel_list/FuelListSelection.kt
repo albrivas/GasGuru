@@ -1,4 +1,4 @@
-package com.gasguru.core.uikit.fuel_list
+package com.gasguru.core.uikit.components.fuel_list
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth

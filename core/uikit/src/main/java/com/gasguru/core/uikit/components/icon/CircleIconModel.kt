@@ -1,4 +1,4 @@
-package com.gasguru.core.uikit.icon
+package com.gasguru.core.uikit.components.icon
 
 import androidx.compose.ui.unit.Dp
 

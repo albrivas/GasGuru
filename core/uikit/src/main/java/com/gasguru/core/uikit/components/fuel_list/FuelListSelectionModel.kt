@@ -1,4 +1,4 @@
-package com.gasguru.core.uikit.fuel_list
+package com.gasguru.core.uikit.components.fuel_list
 
 data class FuelListSelectionModel(
     val list: List<Pair<Int, Int>>,
