@@ -1,7 +1,7 @@
 package com.gasguru.core.domain
 
 import android.location.Location
-import com.gasguru.core.data.repository.OfflineFuelStationRepository
+import com.gasguru.core.data.repository.stations.OfflineFuelStationRepository
 import javax.inject.Inject
 
 class GetFuelStationByIdUseCase @Inject constructor(

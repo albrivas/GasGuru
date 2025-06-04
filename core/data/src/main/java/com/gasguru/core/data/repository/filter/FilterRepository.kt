@@ -1,4 +1,4 @@
-package com.gasguru.core.data.repository
+package com.gasguru.core.data.repository.filter
 
 import com.gasguru.core.model.data.Filter
 import com.gasguru.core.model.data.FilterType

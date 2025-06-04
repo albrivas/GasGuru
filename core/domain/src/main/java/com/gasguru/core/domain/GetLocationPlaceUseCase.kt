@@ -1,6 +1,6 @@
 package com.gasguru.core.domain
 
-import com.gasguru.core.data.repository.PlacesRepository
+import com.gasguru.core.data.repository.places.PlacesRepository
 import javax.inject.Inject
 
 class GetLocationPlaceUseCase @Inject constructor(

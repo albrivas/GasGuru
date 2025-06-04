@@ -1,4 +1,4 @@
-package com.gasguru.core.data.repository
+package com.gasguru.core.data.repository.search
 
 import com.gasguru.core.data.mapper.asExternalModel
 import com.gasguru.core.database.dao.RecentSearchQueryDao

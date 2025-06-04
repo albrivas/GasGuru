@@ -1,6 +1,6 @@
 package com.gasguru.core.domain
 
-import com.gasguru.core.data.repository.GeocoderAddress
+import com.gasguru.core.data.repository.geocoder.GeocoderAddress
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

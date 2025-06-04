@@ -1,6 +1,6 @@
 package com.gasguru.core.domain
 
-import com.gasguru.core.data.repository.UserDataRepository
+import com.gasguru.core.data.repository.user.UserDataRepository
 import javax.inject.Inject
 
 class SaveFavoriteStationUseCase @Inject constructor(

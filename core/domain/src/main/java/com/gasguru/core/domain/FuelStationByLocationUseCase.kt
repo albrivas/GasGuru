@@ -1,7 +1,7 @@
 package com.gasguru.core.domain
 
 import android.location.Location
-import com.gasguru.core.data.repository.OfflineFuelStationRepository
+import com.gasguru.core.data.repository.stations.OfflineFuelStationRepository
 import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.OpeningHours
 import kotlinx.coroutines.flow.Flow

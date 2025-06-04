@@ -1,4 +1,4 @@
-package com.gasguru.core.data.repository
+package com.gasguru.core.data.repository.location
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -48,7 +48,7 @@ class LocationTrackerRepository @Inject constructor(
                 trySend(false)
             }
 
-            override fun onLocationChanged(location: Location) {}
+            override fun onLocationChanged(location: Location) = Unit
         }
 
         locationManager.requestLocationUpdates(

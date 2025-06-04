@@ -1,6 +1,6 @@
 package com.gasguru.core.domain
 
-import com.gasguru.core.data.repository.OfflineRecentSearchRepository
+import com.gasguru.core.data.repository.search.OfflineRecentSearchRepository
 import javax.inject.Inject
 
 class InsertRecentSearchQueryUseCase @Inject constructor(

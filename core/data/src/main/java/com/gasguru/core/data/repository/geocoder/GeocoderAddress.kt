@@ -1,4 +1,4 @@
-package com.gasguru.core.data.repository
+package com.gasguru.core.data.repository.geocoder
 
 import kotlinx.coroutines.flow.Flow
 

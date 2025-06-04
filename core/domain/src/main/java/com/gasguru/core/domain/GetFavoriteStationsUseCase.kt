@@ -1,7 +1,7 @@
 package com.gasguru.core.domain
 
 import android.location.Location
-import com.gasguru.core.data.repository.UserDataRepository
+import com.gasguru.core.data.repository.user.UserDataRepository
 import javax.inject.Inject
 
 class GetFavoriteStationsUseCase @Inject constructor(

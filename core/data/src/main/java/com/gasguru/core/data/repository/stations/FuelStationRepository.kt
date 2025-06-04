@@ -1,4 +1,4 @@
-package com.gasguru.core.data.repository
+package com.gasguru.core.data.repository.stations
 
 import android.location.Location
 import com.gasguru.core.model.data.FuelStation

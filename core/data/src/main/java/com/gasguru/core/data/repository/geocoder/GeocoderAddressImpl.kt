@@ -1,7 +1,8 @@
-package com.gasguru.core.data.repository
+package com.gasguru.core.data.repository.geocoder
 
 import android.content.Context
 import android.location.Address
+import android.location.Geocoder
 import android.location.Geocoder.GeocodeListener
 import android.os.Build
 import com.gasguru.core.common.IoDispatcher
@@ -22,7 +23,7 @@ class GeocoderAddressImpl @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : GeocoderAddress {
     override fun getAddressFromLocation(latitude: Double, longitude: Double): Flow<String?> = flow {
-        val geocoder = android.location.Geocoder(context, Locale.getDefault())
+        val geocoder = Geocoder(context, Locale.getDefault())
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             callbackFlow {

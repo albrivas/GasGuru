@@ -1,4 +1,4 @@
-package com.gasguru.core.data.repository
+package com.gasguru.core.data.repository.search
 
 import com.gasguru.core.model.data.RecentSearchQuery
 import kotlinx.coroutines.flow.Flow

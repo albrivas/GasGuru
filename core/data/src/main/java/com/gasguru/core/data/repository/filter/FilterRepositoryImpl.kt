@@ -1,4 +1,4 @@
-package com.gasguru.core.data.repository
+package com.gasguru.core.data.repository.filter
 
 import com.gasguru.core.database.dao.FilterDao
 import com.gasguru.core.database.model.FilterEntity

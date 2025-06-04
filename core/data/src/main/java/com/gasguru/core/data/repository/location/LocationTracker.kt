@@ -1,4 +1,4 @@
-package com.gasguru.core.data.repository
+package com.gasguru.core.data.repository.location
 
 import android.location.Location
 import kotlinx.coroutines.flow.Flow

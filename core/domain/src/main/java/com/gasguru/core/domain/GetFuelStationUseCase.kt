@@ -1,6 +1,6 @@
 package com.gasguru.core.domain
 
-import com.gasguru.core.data.repository.OfflineFuelStationRepository
+import com.gasguru.core.data.repository.stations.OfflineFuelStationRepository
 import javax.inject.Inject
 
 class GetFuelStationUseCase @Inject constructor(

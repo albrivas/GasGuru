@@ -1,9 +1,10 @@
-package com.gasguru.core.data.repository
+package com.gasguru.core.data.repository.stations
 
 import android.location.Location
 import com.gasguru.core.common.CommonUtils.isStationOpen
 import com.gasguru.core.common.IoDispatcher
 import com.gasguru.core.data.mapper.asEntity
+import com.gasguru.core.data.repository.user.OfflineUserDataRepository
 import com.gasguru.core.database.dao.FuelStationDao
 import com.gasguru.core.database.model.FuelStationEntity
 import com.gasguru.core.database.model.asExternalModel
