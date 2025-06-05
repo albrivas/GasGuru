@@ -36,7 +36,7 @@ class PlacesDataSourceImp @Inject constructor(
             val placeFields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG)
             val request = FetchPlaceRequest.newInstance(placeId, placeFields)
             val response = placesClient.fetchPlace(request).await()
-            emit(response.place.latLng)
+            emit(response.place.location?.let { LatLng(it.latitude, it.longitude) })
         } catch (e: ApiException) {
             Log.e("PlacesDataSourceImp", "Error getting place location", e)
             emit(null)

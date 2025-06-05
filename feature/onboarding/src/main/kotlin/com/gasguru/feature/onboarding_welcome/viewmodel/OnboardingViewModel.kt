@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gasguru.core.domain.SaveFuelSelectionUseCase
+import com.gasguru.core.domain.fuelstation.SaveFuelSelectionUseCase
 import com.gasguru.core.model.data.FuelType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch

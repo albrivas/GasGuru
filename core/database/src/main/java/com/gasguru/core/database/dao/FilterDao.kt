@@ -10,15 +10,15 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface FilterDao {
-    @Query("SELECT * FROM filter")
+    @Query("SELECT * FROM `filter`")
     fun getFilters(): Flow<List<FilterEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFilter(filter: FilterEntity)
 
-    @Query("UPDATE filter SET selection = :newSelection WHERE type = :filterType")
+    @Query("UPDATE `filter` SET selection = :newSelection WHERE type = :filterType")
     suspend fun updateFilterByType(filterType: FilterType, newSelection: List<String>)
 
-    @Query("SELECT COUNT(*) FROM filter WHERE type = :filterType")
+    @Query("SELECT COUNT(*) FROM `filter` WHERE type = :filterType")
     suspend fun isFilterExist(filterType: FilterType): Int
 }
