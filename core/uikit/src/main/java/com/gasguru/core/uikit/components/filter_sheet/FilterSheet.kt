@@ -38,9 +38,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.components.GasGuruButton
-import com.gasguru.core.uikit.icon.CircleIcon
-import com.gasguru.core.uikit.icon.CircleIconModel
-import com.gasguru.core.uikit.icon.FuelStationIcons
+import com.gasguru.core.uikit.components.icon.CircleIcon
+import com.gasguru.core.uikit.components.icon.CircleIconModel
+import com.gasguru.core.uikit.components.icon.FuelStationIcons
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.Neutral100
 import com.gasguru.core.uikit.theme.Neutral300

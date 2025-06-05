@@ -25,8 +25,8 @@ import com.gasguru.core.ui.getIcon
 import com.gasguru.core.ui.toFuelType
 import com.gasguru.core.ui.translation
 import com.gasguru.core.uikit.components.GasGuruButton
-import com.gasguru.core.uikit.fuel_list.FuelListSelection
-import com.gasguru.core.uikit.fuel_list.FuelListSelectionModel
+import com.gasguru.core.uikit.components.fuel_list.FuelListSelection
+import com.gasguru.core.uikit.components.fuel_list.FuelListSelectionModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.feature.onboarding.R

@@ -1,6 +1,6 @@
 package com.gasguru.data
 
-import com.gasguru.core.data.repository.OfflineFuelStationRepository
+import com.gasguru.core.data.repository.stations.OfflineFuelStationRepository
 import com.gasguru.core.testing.CoroutinesTestRule
 import io.mockk.MockKAnnotations
 import kotlinx.coroutines.ExperimentalCoroutinesApi
