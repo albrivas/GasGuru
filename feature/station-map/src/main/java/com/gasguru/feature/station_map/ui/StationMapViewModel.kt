@@ -11,14 +11,13 @@ import com.gasguru.core.domain.fuelstation.FuelStationByLocationUseCase
 import com.gasguru.core.domain.location.GetCurrentLocationUseCase
 import com.gasguru.core.domain.places.GetLocationPlaceUseCase
 import com.gasguru.core.domain.places.GetPlacesUseCase
+import com.gasguru.core.domain.route.GetRouteUseCase
 import com.gasguru.core.domain.search.ClearRecentSearchQueriesUseCase
 import com.gasguru.core.domain.search.GetRecentSearchQueryUseCase
 import com.gasguru.core.domain.search.InsertRecentSearchQueryUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
-import com.gasguru.core.domain.route.GetRouteUseCase
 import com.gasguru.core.model.data.Filter
 import com.gasguru.core.model.data.FilterType
-import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.Route
 import com.gasguru.core.model.data.SearchPlace
 import com.google.android.gms.maps.model.LatLngBounds
