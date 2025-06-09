@@ -3,8 +3,8 @@ package com.gasguru
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gasguru.core.common.IoDispatcher
-import com.gasguru.core.domain.GetFuelStationUseCase
-import com.gasguru.core.domain.GetUserDataUseCase
+import com.gasguru.core.domain.fuelstation.GetFuelStationUseCase
+import com.gasguru.core.domain.user.GetUserDataUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.SharingStarted
