@@ -12,7 +12,9 @@ data class RequestRoute(
     @Json(name = "travelMode")
     val travelMode: String,
     @Json(name = "languageCode")
-    val languageCode: String
+    val languageCode: String,
+    @Json(name = "computeAlternativeRoutes")
+    val computeAlternativeRoutes: String
 )
 
 @JsonClass(generateAdapter = true)

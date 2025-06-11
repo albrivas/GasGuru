@@ -18,6 +18,7 @@ import com.gasguru.core.domain.search.InsertRecentSearchQueryUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.model.data.Filter
 import com.gasguru.core.model.data.FilterType
+import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.Route
 import com.gasguru.core.model.data.SearchPlace
 import com.google.android.gms.maps.model.LatLngBounds
@@ -53,7 +54,7 @@ class StationMapViewModel @Inject constructor(
     private val getCurrentLocationUseCase: GetCurrentLocationUseCase,
     getFiltersUseCase: GetFiltersUseCase,
     private val saveFilterUseCase: SaveFilterUseCase,
-    private val getRouteUseCase: GetRouteUseCase,
+    getRouteUseCase: GetRouteUseCase,
 ) : ViewModel() {
 
     val searchQuery = savedStateHandle.getStateFlow(key = SEARCH_QUERY, initialValue = "")
@@ -62,18 +63,12 @@ class StationMapViewModel @Inject constructor(
     val state: StateFlow<StationMapUiState> = _state
 
     init {
-        getStationByCurrentLocation()
+//        getStationByCurrentLocation()
     }
 
     val polyline: StateFlow<Route?> = getRouteUseCase(
-        origin = Location("").apply {
-            latitude = 40.483785
-            longitude = -3.700888
-        },
-        destination = Location("").apply {
-            latitude = 40.480084
-            longitude = -3.704560
-        }
+        origin = LatLng(40.483785, -3.700888),
+        destination = LatLng(39.9633069, -4.8194369)
     ).stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),

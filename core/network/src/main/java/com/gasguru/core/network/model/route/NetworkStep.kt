@@ -12,7 +12,7 @@ data class NetworkStep(
     @Json(name = "localizedValues")
     val localizedValues: NetworkLocalizedValues,
     @Json(name = "navigationInstruction")
-    val navigationInstruction: NetworkNavigationInstruction,
+    val navigationInstruction: NetworkNavigationInstruction?,
     @Json(name = "polyline")
     val polyline: NetworkPolyline,
     @Json(name = "startLocation")
@@ -20,5 +20,5 @@ data class NetworkStep(
     @Json(name = "staticDuration")
     val staticDuration: String,
     @Json(name = "travelMode")
-    val travelMode: String
+    val travelMode: String,
 )
