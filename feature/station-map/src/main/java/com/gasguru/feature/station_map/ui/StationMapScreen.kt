@@ -96,6 +96,8 @@ import com.gasguru.core.uikit.components.loading.GasGuruLoading
 import com.gasguru.core.uikit.components.loading.GasGuruLoadingModel
 import com.gasguru.core.uikit.components.marker.StationMarker
 import com.gasguru.core.uikit.components.marker.StationMarkerModel
+import com.gasguru.core.uikit.components.placeitem.PlaceItem
+import com.gasguru.core.uikit.components.placeitem.PlaceItemModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
@@ -533,6 +535,8 @@ fun SearchPlaces(
 
                     SearchResultUiState.LoadFailed,
                     -> Unit
+                SearchResultUiState.LoadFailed,
+                    -> Unit
 
                     SearchResultUiState.EmptyQuery -> {
                         if (recentSearchQueries is RecentSearchQueriesUiState.Success) {
@@ -593,41 +597,17 @@ fun SearchResultBody(
                 .fillMaxWidth(),
         ) {
             items(places) { place ->
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 16.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .clickable {
-                                onActiveChange(false)
-                                event(StationMapEvent.InsertRecentSearch(place))
-                                event(StationMapEvent.GetStationByPlace(place.id))
-                                event(StationMapEvent.UpdateSearchQuery(place.name))
-                            },
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Image(
-                            painter = painterResource(
-                                id = com.gasguru.core.uikit.R.drawable.ic_default_marker
-                            ),
-                            contentDescription = "location image",
-                            colorFilter = ColorFilter.tint(GasGuruTheme.colors.neutralBlack)
-                        )
-                        Text(
-                            modifier = Modifier,
-                            text = place.name,
-                            style = GasGuruTheme.typography.baseRegular,
-                            color = GasGuruTheme.colors.textSubtle
-                        )
-                    }
-                }
-                GasGuruDivider(
-                    model = GasGuruDividerModel(
-                        color = GasGuruTheme.colors.neutral300,
-                        thickness = DividerThickness.MEDIUM,
-                        length = DividerLength.INSET
+                PlaceItem(
+                    model = PlaceItemModel(
+                        id = place.id,
+                        icon = Icons.Outlined.LocationOn,
+                        name = place.name,
+                        onClickItem = {
+                            onActiveChange(false)
+                            event(StationMapEvent.InsertRecentSearch(place))
+                            event(StationMapEvent.GetStationByPlace(place.id))
+                            event(StationMapEvent.UpdateSearchQuery(place.name))
+                        }
                     )
                 )
             }
@@ -726,13 +706,15 @@ fun RecentSearchQueriesBody(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(recentSearchQueries) { recentSearchQuery ->
-                Text(
-                    text = recentSearchQuery.name,
-                    style = GasGuruTheme.typography.baseRegular,
-                    modifier = Modifier
-                        .clickable { onRecentSearchClicked(recentSearchQuery) }
-                        .fillMaxWidth(),
-                    color = GasGuruTheme.colors.textMain
+                PlaceItem(
+                    model = PlaceItemModel(
+                        id = recentSearchQuery.id,
+                        icon = Icons.Outlined.LocationOn,
+                        name = recentSearchQuery.name,
+                        onClickItem = {
+                            onRecentSearchClicked(recentSearchQuery)
+                        }
+                    )
                 )
             }
         }
