@@ -2,7 +2,6 @@ package com.gasguru.feature.station_map.ui
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -27,11 +26,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -53,15 +52,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -94,25 +90,30 @@ import com.gasguru.core.uikit.components.loading.GasGuruLoading
 import com.gasguru.core.uikit.components.loading.GasGuruLoadingModel
 import com.gasguru.core.uikit.components.marker.StationMarker
 import com.gasguru.core.uikit.components.marker.StationMarkerModel
+import com.gasguru.core.uikit.components.placeitem.PlaceItem
+import com.gasguru.core.uikit.components.placeitem.PlaceItemModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
-import com.gasguru.core.uikit.theme.GrayExtraLight
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.Neutral100
 import com.gasguru.core.uikit.theme.Neutral300
 import com.gasguru.core.uikit.theme.Primary600
 import com.gasguru.core.uikit.theme.Primary800
+import com.gasguru.core.uikit.theme.Primary900
 import com.gasguru.core.uikit.theme.TextSubtle
 import com.gasguru.feature.station_map.BuildConfig
 import com.gasguru.feature.station_map.R
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.JointType
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.PolyUtil
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.MarkerComposable
 import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.launch
 import com.gasguru.core.uikit.R as RUikit
@@ -168,12 +169,12 @@ internal fun StationMapScreen(
         val screenHeightPx = with(density) { configuration.screenHeightDp.dp.toPx() }
         with(density) {
             (
-                screenHeightPx -
-                    filtersHeightPx -
-                    searchBarHeightPx -
-                    bottomBarHeightPx -
-                    peekHeight.toPx()
-                ).toDp()
+                    screenHeightPx -
+                            filtersHeightPx -
+                            searchBarHeightPx -
+                            bottomBarHeightPx -
+                            peekHeight.toPx()
+                    ).toDp()
         }
     }
 
@@ -370,17 +371,17 @@ fun MapView(
             properties = mapProperties,
             contentPadding = PaddingValues(bottom = 60.dp)
         ) {
-//            route?.let {
-//                val legs = it.legs.map(PolyUtil::decode)
-//                legs.forEach { leg ->
-//                    Polyline(
-//                        points = leg,
-//                        width = 20f,
-//                        jointType = JointType.ROUND,
-//                        color = Primary900
-//                    )
-//                }
-//            }
+            route?.let {
+                val legs = it.legs.map(PolyUtil::decode)
+                legs.forEach { leg ->
+                    Polyline(
+                        points = leg,
+                        width = 15f,
+                        jointType = JointType.ROUND,
+                        color = Primary900
+                    )
+                }
+            }
             stations.forEach { station ->
                 val state = remember(station.idServiceStation) {
                     MarkerState(position = station.location.toLatLng())
@@ -533,7 +534,7 @@ fun SearchPlaces(
                 }
 
                 SearchResultUiState.LoadFailed,
-                -> Unit
+                    -> Unit
 
                 SearchResultUiState.EmptyQuery -> {
                     if (recentSearchQueries is RecentSearchQueriesUiState.Success) {
@@ -591,39 +592,18 @@ fun SearchResultBody(
                 .fillMaxWidth(),
         ) {
             items(places) { place ->
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 16.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .clickable {
-                                onActiveChange(false)
-                                event(StationMapEvent.InsertRecentSearch(place))
-                                event(StationMapEvent.GetStationByPlace(place.id))
-                                event(StationMapEvent.UpdateSearchQuery(place.name))
-                            },
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Image(
-                            painter = painterResource(
-                                id = com.gasguru.core.uikit.R.drawable.ic_default_marker
-                            ),
-                            contentDescription = "location image",
-                            colorFilter = ColorFilter.tint(Color.Black)
-                        )
-                        Text(
-                            modifier = Modifier,
-                            text = place.name,
-                            style = GasGuruTheme.typography.baseRegular
-                        )
-                    }
-                }
-                HorizontalDivider(
-                    color = GrayExtraLight,
-                    thickness = 0.5.dp,
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+                PlaceItem(
+                    model = PlaceItemModel(
+                        id = place.id,
+                        icon = Icons.Outlined.LocationOn,
+                        name = place.name,
+                        onClickItem = {
+                            onActiveChange(false)
+                            event(StationMapEvent.InsertRecentSearch(place))
+                            event(StationMapEvent.GetStationByPlace(place.id))
+                            event(StationMapEvent.UpdateSearchQuery(place.name))
+                        }
+                    )
                 )
             }
         }
@@ -713,12 +693,15 @@ fun RecentSearchQueriesBody(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(recentSearchQueries) { recentSearchQuery ->
-                Text(
-                    text = recentSearchQuery.name,
-                    style = GasGuruTheme.typography.baseRegular,
-                    modifier = Modifier
-                        .clickable { onRecentSearchClicked(recentSearchQuery) }
-                        .fillMaxWidth(),
+                PlaceItem(
+                    model = PlaceItemModel(
+                        id = recentSearchQuery.id,
+                        icon = Icons.Outlined.LocationOn,
+                        name = recentSearchQuery.name,
+                        onClickItem = {
+                            onRecentSearchClicked(recentSearchQuery)
+                        }
+                    )
                 )
             }
         }

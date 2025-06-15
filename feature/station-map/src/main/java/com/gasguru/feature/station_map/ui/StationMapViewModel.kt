@@ -63,7 +63,7 @@ class StationMapViewModel @Inject constructor(
     val state: StateFlow<StationMapUiState> = _state
 
     init {
-//        getStationByCurrentLocation()
+        getStationByCurrentLocation()
     }
 
     val polyline: StateFlow<Route?> = getRouteUseCase(
