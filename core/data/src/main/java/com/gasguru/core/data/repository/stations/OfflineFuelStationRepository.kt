@@ -2,6 +2,7 @@ package com.gasguru.core.data.repository.stations
 
 import android.location.Location
 import com.gasguru.core.common.CommonUtils.isStationOpen
+import com.gasguru.core.common.DefaultDispatcher
 import com.gasguru.core.common.IoDispatcher
 import com.gasguru.core.data.mapper.asEntity
 import com.gasguru.core.data.repository.user.OfflineUserDataRepository
@@ -17,9 +18,9 @@ import com.gasguru.core.network.datasource.RemoteDataSource
 import com.gasguru.core.network.model.NetworkPriceFuelStation
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
@@ -33,20 +34,23 @@ const val PRICE_RANGE = 3
 class OfflineFuelStationRepository @Inject constructor(
     private val fuelStationDao: FuelStationDao,
     private val remoteDataSource: RemoteDataSource,
-    @IoDispatcher private val dispatcherIo: CoroutineDispatcher,
+    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val offlineUserDataRepository: OfflineUserDataRepository,
 ) : FuelStationRepository {
 
-    private val ioScope = CoroutineScope(dispatcherIo + SupervisorJob())
+    private val defaultScope = CoroutineScope(defaultDispatcher + SupervisorJob())
 
     override suspend fun addAllStations() {
-        ioScope.launch {
+        defaultScope.launch {
             remoteDataSource.getListFuelStations().fold(ifLeft = {}, ifRight = { data ->
                 fuelStationDao.insertFuelStation(
                     data.listPriceFuelStation.map(NetworkPriceFuelStation::asEntity)
                 )
                 offlineUserDataRepository.updateLastUpdate()
             })
+
+            defaultScope.cancel()
         }
     }
 
@@ -62,8 +66,15 @@ class OfflineFuelStationRepository @Inject constructor(
                 fuelType = user.fuelSelection.name,
                 brands = brands.map { it.uppercase() }
             ).map { items ->
-                val externalModel = items.map(FuelStationEntity::asExternalModel)
-                    .sortedBy { it.location.distanceTo(userLocation) }
+                val externalModel = items
+                    .sortedBy {
+                        Location("").apply {
+                            latitude = it.latitude
+                            longitude = it.longitudeWGS84
+                        }.distanceTo(userLocation)
+                    }
+                    .take(maxStations)
+                    .map(FuelStationEntity::asExternalModel)
                     .filter {
                         when (schedule) {
                             OpeningHours.OPEN_NOW -> it.isStationOpen()
@@ -73,7 +84,6 @@ class OfflineFuelStationRepository @Inject constructor(
                             OpeningHours.NONE -> true
                         }
                     }
-                    .take(maxStations)
 
                 val (minPrice, maxPrice) = externalModel.calculateFuelPrices(user.fuelSelection)
 
@@ -89,7 +99,7 @@ class OfflineFuelStationRepository @Inject constructor(
                     )
                 }
             }
-        }.flowOn(dispatcherIo)
+        }.flowOn(defaultDispatcher)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getFuelStationById(id: Int, userLocation: Location): Flow<FuelStation> =
@@ -105,7 +115,7 @@ class OfflineFuelStationRepository @Inject constructor(
                         )
                     }
             }
-            .flowOn(Dispatchers.IO)
+            .flowOn(ioDispatcher)
 
     private fun List<FuelStation>.calculateFuelPrices(fuelType: FuelType): Pair<Double, Double> {
         val prices = when (fuelType) {
