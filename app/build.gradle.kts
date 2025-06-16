@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.secrets)
+    alias(libs.plugins.gasguru.flavors)
 }
 
 val localProperties = gradleLocalProperties(rootDir, providers)

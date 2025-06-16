@@ -167,3 +167,4 @@ gasguru-hilt = { id = "gasguru.hilt" }
 gasguru-compose-library = { id = "gasguru.android.library.compose" }
 gasguru-room = { id = "gasguru.room" }
 gasguru-firebase = { id = "gasguru.firebase" }
+gasguru-flavors = { id =  "gasguru.flavors" }
