@@ -8,7 +8,7 @@ import com.gasguru.core.network.model.NetworkFuelStation
 import jakarta.inject.Inject
 
 class MockRemoteDataSource @Inject constructor(
-    private val mockWebServerManager: MockWebServerManagerImp,
+    private val mockWebServerManager: MockWebServerManager,
 ) : RemoteDataSource {
     override suspend fun getListFuelStations(): Either<NetworkError, NetworkFuelStation> = tryCall {
         mockWebServerManager.enqueueResponse(
