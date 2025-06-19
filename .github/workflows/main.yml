@@ -66,13 +66,13 @@ jobs:
             ./gradlew connectedCheck
             
             # Assemble APK for Maestro
-            ./gradlew assembleDebug
+            ./gradlew assembleProdDebug
             
             # Wait for emulator to be ready
             adb wait-for-device
             
             # Install APK in the emulator
-            adb install app/build/outputs/apk/debug/app-debug.apk
+            adb install app/build/outputs/apk/prod/debug/app-prod-debug.apk
             
             # Execute test with maestro
             maestro test .maestro/config.yaml

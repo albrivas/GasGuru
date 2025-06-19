@@ -23,7 +23,7 @@ junit = "4.13.2"
 kotlin = "2.1.0"
 kotlinxSerializationJson = "1.8.1"
 ksp = "2.1.0-1.0.29"
-mock-webserver = "4.11.0"
+mock-webserver = "4.12.0"
 mockk = "1.13.5"
 moshi = "1.15.1"
 moshi-converter = "2.11.0"
@@ -167,3 +167,4 @@ gasguru-hilt = { id = "gasguru.hilt" }
 gasguru-compose-library = { id = "gasguru.android.library.compose" }
 gasguru-room = { id = "gasguru.room" }
 gasguru-firebase = { id = "gasguru.firebase" }
+gasguru-flavors = { id =  "gasguru.flavors" }

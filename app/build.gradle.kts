@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.secrets)
+    alias(libs.plugins.gasguru.flavors)
 }
 
 val localProperties = gradleLocalProperties(rootDir, providers)
@@ -90,6 +91,8 @@ dependencies {
     implementation(projects.feature.profile)
     implementation(projects.core.model)
     implementation(projects.auto.common)
+    implementation(projects.core.network)
+    implementation(projects.mocknetwork)
     androidTestImplementation(projects.core.testing)
 
     // Core Android dependencies
