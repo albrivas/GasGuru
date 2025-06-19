@@ -18,8 +18,6 @@ import com.gasguru.core.data.util.ConnectivityManagerNetworkMonitor
 import com.gasguru.core.data.util.NetworkMonitor
 import com.gasguru.core.network.datasource.PlacesDataSource
 import com.gasguru.core.network.datasource.PlacesDataSourceImp
-import com.gasguru.core.network.datasource.RemoteDataSource
-import com.gasguru.core.network.datasource.RemoteDataSourceImp
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -33,11 +31,6 @@ interface DataModule {
     fun bindsFuelStationRepository(
         fuelStationRepository: OfflineFuelStationRepository,
     ): FuelStationRepository
-
-    @Binds
-    fun bindRemoteDataSourceImp(
-        remoteDataSource: RemoteDataSourceImp,
-    ): RemoteDataSource
 
     @Binds
     fun bindUserDataRepository(
