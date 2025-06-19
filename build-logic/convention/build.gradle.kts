@@ -62,5 +62,9 @@ gradlePlugin {
             id = libs.plugins.gasguru.firebase.get().pluginId
             implementationClass = "AndroidApplicationFirebaseConventionPlugin"
         }
+        register("environments") {
+            id = libs.plugins.gasguru.flavors.get().pluginId
+            implementationClass = "FlavorsConventionPlugin"
+        }
     }
 }
