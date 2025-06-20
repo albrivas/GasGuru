@@ -66,5 +66,9 @@ gradlePlugin {
             id = libs.plugins.gasguru.flavors.get().pluginId
             implementationClass = "FlavorsConventionPlugin"
         }
+        register("jacoco") {
+            id = libs.plugins.gasguru.jacoco.get().pluginId
+            implementationClass = "JacocoConventionPlugin"
+        }
     }
 }
