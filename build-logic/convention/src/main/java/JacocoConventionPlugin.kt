@@ -25,7 +25,7 @@ class JacocoConventionPlugin : Plugin<Project> {
                 description = "Generates JaCoCo coverage report."
 
                 val debugClassesDir = layout.buildDirectory.dir("intermediates/classes/debug")
-                val execDataFile = layout.buildDirectory.file("jacoco/testDebugUnitTest.exec")
+                val execDataFile = layout.buildDirectory.file("jacoco/testProdDebugUnitTest.exec")
 
                 dependsOn("testDebugUnitTest")
 
