@@ -222,3 +222,4 @@ google-services.json
 .kotlin/*
 
 .gitconfig
+sonar-project.properties
