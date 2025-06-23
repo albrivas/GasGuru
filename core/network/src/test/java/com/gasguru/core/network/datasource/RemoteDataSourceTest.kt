@@ -2,25 +2,25 @@ package com.gasguru.core.network.datasource
 
 import com.gasguru.core.network.NetworkModuleTest
 import com.gasguru.core.network.stubs.MockApiResponse
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
+import com.gasguru.core.testing.CoroutinesTestExtension
 import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.MockWebServer
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 
-@ExperimentalCoroutinesApi
+@ExtendWith(CoroutinesTestExtension::class)
 class RemoteDataSourceTest {
-
-    private val testDispatcher = StandardTestDispatcher()
 
     private val networkModule: NetworkModuleTest = NetworkModuleTest()
     private lateinit var server: MockWebServer
     private lateinit var sut: RemoteDataSourceImp
     private lateinit var mockApi: MockApiResponse
 
-    @Before
+    @BeforeEach
     fun setUp() {
         server = networkModule.mockWebServer
         server.start()
@@ -28,30 +28,28 @@ class RemoteDataSourceTest {
         mockApi = MockApiResponse()
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         server.shutdown()
     }
 
     @Test
-    fun `get list fuel stations - success`() {
+    @DisplayName("GIVEN server return success, WHEN fetching fuel stations, THEN result is right")
+    fun fuelStationSuccess() = runTest {
         server.enqueue(mockApi.listFuelStationOK())
 
-        runTest(testDispatcher) {
-            val actual = sut.getListFuelStations()
+        val actual = sut.getListFuelStations()
 
-            assert(!actual.isLeft() && actual.isRight())
-        }
+        assertTrue(actual.isRight())
     }
 
     @Test
-    fun `get list fuel stations - error`() {
+    @DisplayName("GIVEN server return error, WHEN fetching fuel stations, THEN result is left")
+    fun fuelStationError() = runTest {
         server.enqueue(mockApi.listFuelStationKO())
 
-        runTest(testDispatcher) {
-            val actual = sut.getListFuelStations()
+        val actual = sut.getListFuelStations()
 
-            assert(actual.isLeft() && !actual.isRight())
-        }
+        assertTrue(actual.isLeft())
     }
 }
