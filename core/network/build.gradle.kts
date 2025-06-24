@@ -30,8 +30,8 @@ dependencies {
     implementation(libs.kotlin.coroutines.play)
     implementation(libs.places)
 
-    testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mock.webserver)
     testImplementation(projects.core.testing)
+    testImplementation(libs.mockk)
 }
