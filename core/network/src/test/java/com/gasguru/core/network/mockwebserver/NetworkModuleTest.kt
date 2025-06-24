@@ -1,4 +1,4 @@
-package com.gasguru.core.network
+package com.gasguru.core.network.mockwebserver
 
 import com.gasguru.core.network.retrofit.ApiService
 import com.squareup.moshi.Moshi

@@ -1,6 +1,6 @@
 package com.gasguru.core.network.datasource
 
-import com.gasguru.core.network.NetworkModuleTest
+import com.gasguru.core.network.mockwebserver.NetworkModuleTest
 import com.gasguru.core.network.stubs.MockApiResponse
 import com.gasguru.core.testing.CoroutinesTestExtension
 import kotlinx.coroutines.test.runTest
