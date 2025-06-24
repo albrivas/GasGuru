@@ -33,4 +33,5 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mock.webserver)
     testImplementation(projects.core.testing)
+    testImplementation(libs.mockk)
 }
