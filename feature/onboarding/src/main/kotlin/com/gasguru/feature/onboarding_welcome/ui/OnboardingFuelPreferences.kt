@@ -87,7 +87,6 @@ internal fun OnboardingFuelPreferences(
                     enabled = selectedFuel != null,
                     text = stringResource(id = R.string.welcome_button),
                     modifier = Modifier
-                        .padding(bottom = 17.dp, top = 16.dp)
                         .systemBarsPadding()
                         .testTag("button_next_onboarding")
                 )
