@@ -7,8 +7,8 @@ import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.FuelStationBrandsType
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.PriceCategory
+import com.gasguru.core.uikit.components.icon.FuelStationIcons
 import com.gasguru.core.uikit.components.price.PriceItemModel
-import com.gasguru.core.uikit.icon.FuelStationIcons
 import com.gasguru.core.uikit.theme.AccentGreen
 import com.gasguru.core.uikit.theme.AccentOrange
 import com.gasguru.core.uikit.theme.AccentRed
