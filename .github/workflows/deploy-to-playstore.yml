@@ -48,7 +48,7 @@ jobs:
           versionName: ${{ env.versionMajor }}.${{ env.versionMinor }}.${{ env.versionPatch }}
 
       - name: Assemble Release Bundle
-        run: ./gradlew bundleRelease
+        run: ./gradlew bundleProdRelease
 
       - name: Sign Release
         uses: r0adkll/sign-android-release@v1

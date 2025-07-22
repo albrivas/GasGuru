@@ -3,12 +3,12 @@ package com.gasguru.feature.detail_station.ui
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gasguru.core.domain.GetAddressFromLocationUseCase
-import com.gasguru.core.domain.GetFuelStationByIdUseCase
-import com.gasguru.core.domain.GetUserDataUseCase
-import com.gasguru.core.domain.RemoveFavoriteStationUseCase
-import com.gasguru.core.domain.SaveFavoriteStationUseCase
+import com.gasguru.core.domain.fuelstation.GetFuelStationByIdUseCase
+import com.gasguru.core.domain.fuelstation.RemoveFavoriteStationUseCase
+import com.gasguru.core.domain.fuelstation.SaveFavoriteStationUseCase
 import com.gasguru.core.domain.location.GetLastKnownLocationUseCase
+import com.gasguru.core.domain.places.GetAddressFromLocationUseCase
+import com.gasguru.core.domain.user.GetUserDataUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
