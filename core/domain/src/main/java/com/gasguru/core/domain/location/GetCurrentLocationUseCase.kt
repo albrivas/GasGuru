@@ -1,7 +1,7 @@
 package com.gasguru.core.domain.location
 
 import android.location.Location
-import com.gasguru.core.data.repository.LocationTracker
+import com.gasguru.core.data.repository.location.LocationTracker
 import javax.inject.Inject
 
 class GetCurrentLocationUseCase @Inject constructor(

@@ -1,6 +1,5 @@
 package com.gasguru.core.network.datasource
 
-import android.util.Log
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.model.AutocompletePrediction
@@ -25,8 +24,7 @@ class PlacesDataSourceImp @Inject constructor(
                     .build()
                 val result = placesClient.findAutocompletePredictions(request).await()
                 emit(result.autocompletePredictions)
-            } catch (e: ApiException) {
-                Log.e("PlacesDataSourceImp", "Error getting places", e)
+            } catch (_: ApiException) {
                 emit(emptyList())
             }
         }
@@ -36,9 +34,8 @@ class PlacesDataSourceImp @Inject constructor(
             val placeFields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG)
             val request = FetchPlaceRequest.newInstance(placeId, placeFields)
             val response = placesClient.fetchPlace(request).await()
-            emit(response.place.latLng)
-        } catch (e: ApiException) {
-            Log.e("PlacesDataSourceImp", "Error getting place location", e)
+            emit(response.place.location?.let { LatLng(it.latitude, it.longitude) })
+        } catch (_: ApiException) {
             emit(null)
         }
     }
