@@ -28,7 +28,6 @@ class GetAddressFromLocationUseCaseTest {
     @Test
     @DisplayName("GIVEN latitude and longitude WHEN call invoke THEN return an address")
     fun getAddressFromLocationSuccess() = runTest {
-
         val response = "Talavera de la Reina, Spain"
 
         coEvery {
