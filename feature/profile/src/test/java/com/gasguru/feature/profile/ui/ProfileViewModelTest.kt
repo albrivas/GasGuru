@@ -69,5 +69,4 @@ class ProfileViewModelTest {
 
         coVerify { saveFuelSelectionUseCase(fuelType = fuelType) }
     }
-
 }
