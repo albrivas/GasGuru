@@ -18,7 +18,7 @@ import javax.inject.Singleton
 class MockWebServerManagerImp @Inject constructor(
     @ApplicationContext private val context: Context,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
-): MockWebServerManager {
+) : MockWebServerManager {
 
     private val mockWebServer: MockWebServer by lazy {
         MockWebServer().apply { start() }
