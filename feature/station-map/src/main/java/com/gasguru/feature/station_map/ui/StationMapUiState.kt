@@ -11,4 +11,5 @@ data class StationMapUiState(
     val showListStations: Boolean = false,
     val loading: Boolean = false,
     val mapBounds: LatLngBounds? = null,
+    val shouldCenterMap: Boolean = false,
 )
