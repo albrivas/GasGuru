@@ -113,6 +113,7 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.MarkerComposable
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.launch
 import com.gasguru.core.uikit.R as RUikit
 
@@ -137,7 +138,7 @@ fun StationMapScreenRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 @Composable
 internal fun StationMapScreen(
     uiState: StationMapUiState,
@@ -173,11 +174,11 @@ internal fun StationMapScreen(
         }
     }
 
-    LaunchedEffect(key1 = mapBounds) {
-        mapBounds?.let {
+    LaunchedEffect(mapBounds, shouldCenterMap) {
+        if (mapBounds != null && shouldCenterMap) {
             cameraState.centerOnMap(bounds = mapBounds, padding = 60)
+            event(StationMapEvent.OnMapCentered)
         }
-        event(StationMapEvent.ResetMapCenter)
     }
 
     val scaffoldState = rememberBottomSheetScaffoldState()
@@ -362,7 +363,7 @@ fun MapView(
             googleMapOptionsFactory = { GoogleMapOptions().mapId(BuildConfig.googleStyleId) },
             uiSettings = uiSettings,
             properties = mapProperties,
-            contentPadding = PaddingValues(bottom = 60.dp)
+            contentPadding = PaddingValues(bottom = 60.dp),
         ) {
             stations.forEach { station ->
                 val state = remember(station.idServiceStation) {
