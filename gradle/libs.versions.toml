@@ -48,7 +48,7 @@ junit5Plugin = "1.11.3.0"
 materialIcons = "1.7.8"
 constraintLayout = "1.1.0"
 androidTools = "31.7.3"
-androidxCarApp = "1.4.0"
+androidxCarApp = "1.7.0"
 
 
 [libraries]
