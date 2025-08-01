@@ -14,12 +14,11 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.uikit)
     implementation(projects.core.common)
-
+    
     implementation(libs.kotlin.coroutines.play)
-    implementation(libs.maps.compose)
-    implementation(libs.play.services.maps)
     implementation(libs.places)
 
+    testImplementation(projects.core.testing)
     androidTestImplementation(projects.core.testing)
     androidTestImplementation(libs.junit5.api)
     androidTestImplementation(libs.junit5.extensions)
