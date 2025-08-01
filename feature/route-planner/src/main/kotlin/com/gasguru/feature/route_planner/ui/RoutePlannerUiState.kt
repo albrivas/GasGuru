@@ -1,5 +1,12 @@
 package com.gasguru.feature.route_planner.ui
 
-sealed interface RoutePlannerUiState {
-    data object Loading: RoutePlannerUiState
+data class RoutePlannerUiState(
+    val startQuery: String = "",
+    val endQuery: String = "",
+    val currentInput: InputField = InputField.START,
+    val currentLocationInput: InputField? = InputField.START
+)
+
+enum class InputField {
+    START, END
 }
