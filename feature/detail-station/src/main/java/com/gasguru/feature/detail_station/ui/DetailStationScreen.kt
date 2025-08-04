@@ -45,7 +45,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.toLowerCase
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -69,6 +68,7 @@ import com.gasguru.core.uikit.components.loading.GasGuruLoadingModel
 import com.gasguru.core.uikit.components.price.PriceItem
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
+import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.detail_station.BuildConfig
 import com.gasguru.feature.detail_station.R
 import com.gasguru.feature.detail_station.formatSchedule
@@ -143,7 +143,8 @@ fun DetailStationContent(station: FuelStation, lastUpdate: Long, address: String
             .verticalScroll(rememberScrollState())
     ) {
         val context = LocalContext.current
-        val isOpen = if (station.isStationOpen()) "Open" else "Closed"
+        val isOpen =
+            if (station.isStationOpen()) stringResource(id = R.string.open) else stringResource(id = R.string.close)
         ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
             val (textGroup, image) = createRefs()
 
@@ -170,7 +171,8 @@ fun DetailStationContent(station: FuelStation, lastUpdate: Long, address: String
                     style = GasGuruTheme.typography.h3,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
-                    modifier = Modifier.testTag("name-station")
+                    modifier = Modifier.testTag("name-station"),
+                    color = GasGuruTheme.colors.textMain
                 )
 
                 Row(
@@ -243,7 +245,8 @@ fun FuelTypes(station: FuelStation, lastUpdate: Long) {
             text = stringResource(id = R.string.fuel_types),
             style = GasGuruTheme.typography.h5,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
+            color = GasGuruTheme.colors.textMain
         )
         val fuelItems = station.getFuelPriceItems()
         val height = calculateHeight(fuelItems.size)
@@ -263,7 +266,8 @@ fun FuelTypes(station: FuelStation, lastUpdate: Long) {
             text = getTimeElapsedString(lastUpdate),
             style = GasGuruTheme.typography.captionRegular,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
+            color = GasGuruTheme.colors.textMain
         )
     }
 }
@@ -275,9 +279,14 @@ fun calculateHeight(size: Int): Dp {
 
 @Composable
 fun InformationStation(station: FuelStation, address: String?, navigateToGoogleMaps: () -> Unit) {
-    Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
         Text(
             text = stringResource(id = R.string.station_detail),
+            color = GasGuruTheme.colors.neutralBlack,
             style = GasGuruTheme.typography.h5,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
@@ -296,7 +305,7 @@ fun InformationStation(station: FuelStation, address: String?, navigateToGoogleM
                 subtitle = textOpenClose,
                 description = formatSchedule(station.schedule),
                 type = InformationCardModel.InformationCardType.EXPANDABLE,
-                subtitleColor = if (station.isStationOpen()) GasGuruTheme.colors.primary500 else GasGuruTheme.colors.accentRed
+                subtitleColor = if (station.isStationOpen()) GasGuruTheme.colors.textMain else GasGuruTheme.colors.accentRed
             )
         )
         InformationCard(
@@ -305,7 +314,8 @@ fun InformationStation(station: FuelStation, address: String?, navigateToGoogleM
                 subtitle = address ?: station.formatDirection(),
                 icon = com.gasguru.core.uikit.R.drawable.ic_direction,
                 onClick = navigateToGoogleMaps,
-                type = InformationCardModel.InformationCardType.NONE
+                type = InformationCardModel.InformationCardType.NONE,
+                subtitleColor = GasGuruTheme.colors.textMain
             )
         )
     }
@@ -337,12 +347,12 @@ fun HeaderStation(station: FuelStation, onBack: () -> Unit, onFavoriteClick: (Bo
                 .padding(start = 16.dp)
                 .clip(CircleShape),
             onClick = onBack,
-            colors = IconButtonDefaults.iconButtonColors(containerColor = Color.White)
+            colors = IconButtonDefaults.iconButtonColors(containerColor = GasGuruTheme.colors.neutralWhite)
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Default.ArrowBack,
                 contentDescription = "Back to map",
-                tint = Color.Black,
+                tint = GasGuruTheme.colors.neutralBlack,
             )
         }
         IconButton(
@@ -353,25 +363,26 @@ fun HeaderStation(station: FuelStation, onBack: () -> Unit, onFavoriteClick: (Bo
                 .clip(CircleShape)
                 .testTag("button_favorite"),
             onClick = { onFavoriteClick(!station.isFavorite) },
-            colors = IconButtonDefaults.iconButtonColors(containerColor = Color.White)
+            colors = IconButtonDefaults.iconButtonColors(containerColor = GasGuruTheme.colors.neutralWhite)
         ) {
             val accentRed = GasGuruTheme.colors.accentRed
+            val black = GasGuruTheme.colors.neutralBlack
             Icon(
                 modifier = Modifier
                     .testTag("icon_favorite")
                     .semantics {
-                        iconTint = if (station.isFavorite) accentRed else Color.Black
+                        iconTint = if (station.isFavorite) accentRed else black
                     },
                 imageVector = if (station.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                 contentDescription = "Favorite icon",
-                tint = if (station.isFavorite) accentRed else Color.Black,
+                tint = if (station.isFavorite) accentRed else black,
             )
         }
     }
 }
 
-@Preview(showBackground = true)
 @Composable
+@ThemePreviews
 private fun DetailStationPreview() {
     MyApplicationTheme {
         DetailStationScreen(

@@ -24,10 +24,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -36,8 +34,7 @@ import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.Neutral300
 import com.gasguru.core.uikit.theme.Neutral500
-import com.gasguru.core.uikit.theme.TextMain
-import com.gasguru.core.uikit.theme.TextSubtle
+import com.gasguru.core.uikit.theme.ThemePreviews
 
 @Composable
 fun InformationCard(model: InformationCardModel) = with(model) {
@@ -46,7 +43,7 @@ fun InformationCard(model: InformationCardModel) = with(model) {
     Column(
         modifier = Modifier
             .clip(RoundedCornerShape(8.dp))
-            .background(color = Color.White)
+            .background(color = GasGuruTheme.colors.neutralWhite)
             .border(1.dp, Neutral300, RoundedCornerShape(8.dp))
             .clickable {
                 if (type == InformationCardModel.InformationCardType.EXPANDABLE) {
@@ -77,7 +74,7 @@ fun InformationCard(model: InformationCardModel) = with(model) {
                     style = GasGuruTheme.typography.smallRegular,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
-                    color = TextSubtle
+                    color = GasGuruTheme.colors.textSubtle
                 )
                 Text(
                     text = subtitle,
@@ -133,15 +130,15 @@ fun InformationCard(model: InformationCardModel) = with(model) {
                     style = GasGuruTheme.typography.smallRegular,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.padding(top = 4.dp),
-                    color = TextMain
+                    color = GasGuruTheme.colors.textMain
                 )
             }
         }
     }
 }
 
-@Preview
 @Composable
+@ThemePreviews
 private fun InformationCardDefaultPreview() {
     MyApplicationTheme {
         InformationCard(
@@ -150,14 +147,15 @@ private fun InformationCardDefaultPreview() {
                 subtitle = "Avenida de la constitucion 1, 10D",
                 icon = R.drawable.ic_direction,
                 onClick = {},
-                type = InformationCardModel.InformationCardType.NONE
+                type = InformationCardModel.InformationCardType.NONE,
+                subtitleColor = GasGuruTheme.colors.textMain
             )
         )
     }
 }
 
-@Preview
 @Composable
+@ThemePreviews
 private fun InformationCardExpandablePreview() {
     MyApplicationTheme {
         InformationCard(
@@ -165,7 +163,8 @@ private fun InformationCardExpandablePreview() {
                 title = "Opening hours",
                 subtitle = "open 24 hours",
                 description = "L-D 24 hours",
-                type = InformationCardModel.InformationCardType.EXPANDABLE
+                type = InformationCardModel.InformationCardType.EXPANDABLE,
+                subtitleColor = GasGuruTheme.colors.textMain
             )
         )
     }
