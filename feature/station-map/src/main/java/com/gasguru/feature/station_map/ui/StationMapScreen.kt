@@ -54,7 +54,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -95,11 +94,6 @@ import com.gasguru.core.uikit.components.marker.StationMarker
 import com.gasguru.core.uikit.components.marker.StationMarkerModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
-import com.gasguru.core.uikit.theme.Neutral100
-import com.gasguru.core.uikit.theme.Neutral300
-import com.gasguru.core.uikit.theme.Primary600
-import com.gasguru.core.uikit.theme.Primary800
-import com.gasguru.core.uikit.theme.TextSubtle
 import com.gasguru.feature.station_map.BuildConfig
 import com.gasguru.feature.station_map.R
 import com.google.android.gms.maps.GoogleMapOptions
@@ -183,8 +177,8 @@ internal fun StationMapScreen(
     val scaffoldState = rememberBottomSheetScaffoldState()
     val coroutine = rememberCoroutineScope()
     BottomSheetScaffold(
-        sheetContainerColor = Neutral100,
-        sheetContentColor = Neutral100,
+        sheetContainerColor = GasGuruTheme.colors.neutral100,
+        sheetContentColor = GasGuruTheme.colors.neutral100,
         scaffoldState = scaffoldState,
         sheetShadowElevation = 32.dp,
         sheetPeekHeight = peekHeight,
@@ -192,7 +186,7 @@ internal fun StationMapScreen(
         sheetDragHandle = {
             Surface(
                 modifier = Modifier.padding(vertical = 8.dp),
-                color = Color.LightGray,
+                color = GasGuruTheme.colors.neutral700,
                 shape = MaterialTheme.shapes.extraLarge
             ) {
                 Box(
@@ -221,7 +215,7 @@ internal fun StationMapScreen(
                     Text(
                         text = stringResource(id = R.string.sheet_title),
                         style = GasGuruTheme.typography.baseBold,
-                        color = TextSubtle
+                        color = GasGuruTheme.colors.textSubtle
                     )
                     Text(
                         modifier = Modifier.clickable {
@@ -231,7 +225,7 @@ internal fun StationMapScreen(
                         },
                         text = stringResource(id = R.string.sheet_button),
                         style = GasGuruTheme.typography.baseRegular,
-                        color = Primary600
+                        color = GasGuruTheme.colors.primary600
                     )
                 }
                 ListFuelStations(
@@ -293,9 +287,9 @@ fun ListFuelStations(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(color = Color.White)
+            .background(color = GasGuruTheme.colors.neutralWhite)
             .verticalScroll(rememberScrollState())
-            .border(1.dp, Neutral300, RoundedCornerShape(8.dp))
+            .border(1.dp, GasGuruTheme.colors.neutral300, RoundedCornerShape(8.dp))
     ) {
         stations.forEachIndexed { index, item ->
             FuelStationItem(
@@ -350,9 +344,9 @@ fun MapView(
             GasGuruLoading(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.5f))
+                    .background(GasGuruTheme.colors.neutralBlack.copy(alpha = 0.5f))
                     .zIndex(1f),
-                model = GasGuruLoadingModel(color = Primary800)
+                model = GasGuruLoadingModel(color = GasGuruTheme.colors.primary800)
             )
         }
 
@@ -417,12 +411,12 @@ fun FABLocation(
             },
             modifier = modifier,
             shape = CircleShape,
-            containerColor = Color.White,
-            contentColor = Color.Black,
+            containerColor = GasGuruTheme.colors.neutralWhite,
+            contentColor = GasGuruTheme.colors.neutralBlack,
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(id = RUikit.drawable.ic_my_location),
-                tint = TextSubtle,
+                tint = GasGuruTheme.colors.textSubtle,
                 contentDescription = "User location",
             )
         }
@@ -469,7 +463,7 @@ fun SearchPlaces(
                 Text(
                     text = stringResource(id = R.string.hint_search_bar),
                     style = GasGuruTheme.typography.baseRegular,
-                    color = TextSubtle
+                    color = GasGuruTheme.colors.textSubtle
                 )
             },
             leadingIcon = {
@@ -503,7 +497,7 @@ fun SearchPlaces(
             active = active,
             onActiveChange = { active = it },
             shadowElevation = 2.dp,
-            colors = SearchBarDefaults.colors(containerColor = Color.White)
+            colors = SearchBarDefaults.colors(containerColor = GasGuruTheme.colors.neutralWhite)
         ) {
             when (searchResultUiState) {
                 SearchResultUiState.Loading -> {
@@ -595,7 +589,7 @@ fun SearchResultBody(
                                 id = com.gasguru.core.uikit.R.drawable.ic_default_marker
                             ),
                             contentDescription = "location image",
-                            colorFilter = ColorFilter.tint(Color.Black)
+                            colorFilter = ColorFilter.tint(GasGuruTheme.colors.neutralBlack)
                         )
                         Text(
                             modifier = Modifier,
@@ -605,7 +599,7 @@ fun SearchResultBody(
                     }
                 }
                 HorizontalDivider(
-                    color = Neutral300,
+                    color = GasGuruTheme.colors.neutral300,
                     thickness = 0.5.dp,
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp)
                 )
@@ -684,7 +678,7 @@ fun RecentSearchQueriesBody(
                 Icon(
                     imageVector = Icons.Rounded.Close,
                     contentDescription = "Clear recent searches",
-                    tint = Color.Black,
+                    tint = GasGuruTheme.colors.neutralBlack,
                     modifier = Modifier
                         .align(Alignment.Top)
                         .clickable { event(StationMapEvent.ClearRecentSearches) }
