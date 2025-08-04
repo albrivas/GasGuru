@@ -365,6 +365,7 @@ fun MapView(
             contentPadding = PaddingValues(bottom = 60.dp),
         ) {
             stations.forEach { station ->
+                val priceCategoryColor = station.priceCategory.toColor()
                 val state = remember(station.idServiceStation) {
                     MarkerState(position = station.location.toLatLng())
                 }
@@ -374,7 +375,7 @@ fun MapView(
                     derivedStateOf { userSelectedFuelType.getPrice(context, station) }
                 }
                 val color by remember(station) {
-                    derivedStateOf { station.priceCategory.toColor() }
+                    derivedStateOf { priceCategoryColor }
                 }
 
                 MarkerComposable(

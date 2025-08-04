@@ -19,7 +19,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -27,12 +26,12 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.FuelType
+import com.gasguru.core.model.data.previewFuelStationDomain
 import com.gasguru.core.ui.getPrice
 import com.gasguru.core.ui.toBrandStationIcon
 import com.gasguru.core.ui.toColor
@@ -45,10 +44,7 @@ import com.gasguru.core.uikit.components.loading.GasGuruLoadingModel
 import com.gasguru.core.uikit.components.swipe.SwipeItem
 import com.gasguru.core.uikit.components.swipe.SwipeItemModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
-import com.gasguru.core.uikit.theme.Neutral100
-import com.gasguru.core.uikit.theme.Neutral300
-import com.gasguru.core.uikit.theme.Primary800
-import com.gasguru.core.uikit.theme.Red500
+import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.favorite_list_station.R
 
 @Composable
@@ -73,7 +69,7 @@ internal fun FavoriteListStationScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Neutral100)
+            .background(color = GasGuruTheme.colors.neutral100)
             .padding(horizontal = 16.dp)
             .statusBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -85,7 +81,7 @@ internal fun FavoriteListStationScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .statusBarsPadding(),
-                    model = GasGuruLoadingModel(color = Primary800)
+                    model = GasGuruLoadingModel(color = GasGuruTheme.colors.primary800)
                 )
             }
 
@@ -121,7 +117,8 @@ internal fun FavoriteListStationScreen(
                         modifier = Modifier,
                         text = stringResource(id = R.string.empty_favorites),
                         style = GasGuruTheme.typography.h4,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        color = GasGuruTheme.colors.textMain
                     )
                 }
             }
@@ -147,13 +144,14 @@ fun ListFuelStations(
         Text(
             modifier = Modifier,
             text = stringResource(id = R.string.favorites),
-            style = GasGuruTheme.typography.h5
+            style = GasGuruTheme.typography.h5,
+            color = GasGuruTheme.colors.textMain
         )
         LazyColumn(
             modifier = modifier
                 .clip(RoundedCornerShape(8.dp))
-                .border(1.dp, Neutral300, RoundedCornerShape(8.dp))
-                .background(color = Color.White)
+                .border(1.dp, GasGuruTheme.colors.neutral300, RoundedCornerShape(8.dp))
+                .background(color = GasGuruTheme.colors.neutralWhite)
                 .wrapContentHeight()
                 .testTag("favorite_list"),
         ) {
@@ -167,7 +165,7 @@ fun ListFuelStations(
                         enableDismissFromEndToStart = true,
                         enableDismissFromStartToEnd = true,
                         iconAnimated = com.gasguru.core.ui.R.raw.trash_animated,
-                        backgroundColor = Red500,
+                        backgroundColor = GasGuruTheme.colors.red500,
                         onClick = {
                             event(FavoriteStationEvent.RemoveFavoriteStation(item.idServiceStation))
                         },
@@ -192,11 +190,25 @@ fun ListFuelStations(
     }
 }
 
-@Preview
+
 @Composable
+@ThemePreviews
 fun EmptyFavoritesPreview() {
     FavoriteListStationScreen(
         uiState = FavoriteStationListUiState.EmptyFavorites,
+        navigateToDetail = {},
+        event = {}
+    )
+}
+
+@Composable
+@ThemePreviews
+fun FavoriteFuelStationsPreview() {
+    FavoriteListStationScreen(
+        uiState = FavoriteStationListUiState.Favorites(
+            favoriteStations = listOf(previewFuelStationDomain()),
+            userSelectedFuelType = FuelType.GASOLINE_95_E10
+        ),
         navigateToDetail = {},
         event = {}
     )

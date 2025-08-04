@@ -30,6 +30,7 @@ val LightGasGuruColors = GasGuruColors(
     neutral900 = Neutral900,
     neutralBlack = NeutralBlack,
     red500 = Red500,
+    secondaryLight = secondaryLight,
     isDark = false
 )
 
@@ -61,6 +62,7 @@ val DarkGasGuruColors = GasGuruColors(
     neutral900 = Neutral100,
     neutralBlack = NeutralWhite,
     red500 = Red500,
+    secondaryLight = secondaryLightDark,
     isDark = true
 )
 

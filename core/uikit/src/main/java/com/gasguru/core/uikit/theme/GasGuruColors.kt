@@ -32,5 +32,6 @@ data class GasGuruColors(
     val neutral900: Color,
     val neutralBlack: Color,
     val red500: Color,
+    val secondaryLight: Color,
     val isDark: Boolean
 )
