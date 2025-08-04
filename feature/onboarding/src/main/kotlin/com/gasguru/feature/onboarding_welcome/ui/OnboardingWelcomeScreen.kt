@@ -26,7 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.gasguru.core.ui.ThemePreviews
+import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.core.uikit.components.GasGuruButton
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme

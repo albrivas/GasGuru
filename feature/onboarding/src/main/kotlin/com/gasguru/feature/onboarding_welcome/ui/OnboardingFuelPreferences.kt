@@ -21,7 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.gasguru.core.model.data.FuelType
-import com.gasguru.core.ui.ThemePreviews
+import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.core.ui.getIcon
 import com.gasguru.core.ui.toFuelType
 import com.gasguru.core.ui.translation
