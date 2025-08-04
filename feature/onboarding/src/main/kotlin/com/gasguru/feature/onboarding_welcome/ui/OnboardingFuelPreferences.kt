@@ -1,6 +1,5 @@
 package com.gasguru.feature.onboarding_welcome.ui
 
-import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -19,10 +18,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.gasguru.core.model.data.FuelType
+import com.gasguru.core.ui.ThemePreviews
 import com.gasguru.core.ui.getIcon
 import com.gasguru.core.ui.toFuelType
 import com.gasguru.core.ui.translation
@@ -100,24 +99,8 @@ internal fun OnboardingFuelPreferences(
 }
 
 @Composable
-@Preview(name = "Onboarding - Fuel preferences preview", showBackground = true)
+@ThemePreviews
 private fun PreviewOnboardingFuelPreferences() {
-    MyApplicationTheme {
-        OnboardingFuelPreferences(
-            navigateToHome = {},
-            saveSelection = {},
-            uiState = OnboardingUiState.ListFuelPreferences(FuelType.entries)
-        )
-    }
-}
-
-@Composable
-@Preview(
-    name = "Onboarding - Fuel preferences preview dark mode",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-private fun PreviewOnboardingFuelPreferencesDarkMode() {
     MyApplicationTheme {
         OnboardingFuelPreferences(
             navigateToHome = {},
