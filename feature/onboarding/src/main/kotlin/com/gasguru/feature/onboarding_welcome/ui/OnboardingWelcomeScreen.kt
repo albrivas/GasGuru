@@ -64,7 +64,7 @@ internal fun OnboardingWelcomeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(GasGuruTheme.colors.neutralWhite)
+            .background(GasGuruTheme.colors.neutral100)
             .padding(start = 16.dp, top = 24.dp, end = 16.dp, bottom = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {

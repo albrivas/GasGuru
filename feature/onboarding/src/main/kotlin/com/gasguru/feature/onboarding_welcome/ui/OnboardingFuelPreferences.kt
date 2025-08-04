@@ -1,5 +1,7 @@
 package com.gasguru.feature.onboarding_welcome.ui
 
+import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -58,12 +60,14 @@ internal fun OnboardingFuelPreferences(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(GasGuruTheme.colors.neutral100)
                     .padding(start = 16.dp, top = 24.dp, end = 16.dp, bottom = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
                     text = stringResource(id = R.string.welcome_title_fuel_preferences),
                     style = GasGuruTheme.typography.h2,
+                    color = GasGuruTheme.colors.neutralBlack,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(0.dp, 30.dp, 0.dp, 0.dp)
                 )
@@ -98,6 +102,22 @@ internal fun OnboardingFuelPreferences(
 @Composable
 @Preview(name = "Onboarding - Fuel preferences preview", showBackground = true)
 private fun PreviewOnboardingFuelPreferences() {
+    MyApplicationTheme {
+        OnboardingFuelPreferences(
+            navigateToHome = {},
+            saveSelection = {},
+            uiState = OnboardingUiState.ListFuelPreferences(FuelType.entries)
+        )
+    }
+}
+
+@Composable
+@Preview(
+    name = "Onboarding - Fuel preferences preview dark mode",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
+private fun PreviewOnboardingFuelPreferencesDarkMode() {
     MyApplicationTheme {
         OnboardingFuelPreferences(
             navigateToHome = {},
