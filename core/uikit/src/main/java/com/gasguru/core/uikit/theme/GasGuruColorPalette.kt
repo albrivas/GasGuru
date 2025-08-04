@@ -59,7 +59,7 @@ val DarkGasGuruColors = GasGuruColors(
     neutral700 = Neutral200,
     neutral800 = Neutral100,
     neutral900 = Neutral100,
-    neutralBlack = NeutralBlack,
+    neutralBlack = NeutralWhite,
     red500 = Red500,
     isDark = true
 )

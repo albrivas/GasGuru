@@ -20,9 +20,9 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.gasguru.core.uikit.R
 import com.gasguru.core.uikit.theme.GasGuruTheme
-import com.gasguru.core.uikit.theme.GrayLight
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.Neutral100
+import com.gasguru.core.uikit.theme.TextSubtle
 
 @Composable
 fun AlertTemplate(model: AlertTemplateModel) {
@@ -45,7 +45,7 @@ fun AlertTemplate(model: AlertTemplateModel) {
             )
             Text(
                 text = description,
-                color = GrayLight,
+                color = TextSubtle,
                 textAlign = TextAlign.Center,
                 style = GasGuruTheme.typography.baseRegular
             )

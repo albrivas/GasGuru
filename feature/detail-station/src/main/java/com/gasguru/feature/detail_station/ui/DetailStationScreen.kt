@@ -67,14 +67,8 @@ import com.gasguru.core.uikit.components.information_card.InformationCardModel
 import com.gasguru.core.uikit.components.loading.GasGuruLoading
 import com.gasguru.core.uikit.components.loading.GasGuruLoadingModel
 import com.gasguru.core.uikit.components.price.PriceItem
-import com.gasguru.core.uikit.theme.AccentRed
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
-import com.gasguru.core.uikit.theme.Neutral100
-import com.gasguru.core.uikit.theme.Neutral300
-import com.gasguru.core.uikit.theme.Primary500
-import com.gasguru.core.uikit.theme.Primary800
-import com.gasguru.core.uikit.theme.TextSubtle
 import com.gasguru.feature.detail_station.BuildConfig
 import com.gasguru.feature.detail_station.R
 import com.gasguru.feature.detail_station.formatSchedule
@@ -109,7 +103,7 @@ internal fun DetailStationScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .statusBarsPadding(),
-                model = GasGuruLoadingModel(color = Primary800)
+                model = GasGuruLoadingModel(color = GasGuruTheme.colors.primary800)
             )
         }
 
@@ -126,7 +120,7 @@ internal fun DetailStationScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(color = Neutral100)
+                        .background(color = GasGuruTheme.colors.neutral100)
                         .padding(padding)
                 ) {
                     DetailStationContent(
@@ -186,7 +180,7 @@ fun DetailStationContent(station: FuelStation, lastUpdate: Long, address: String
                     Text(
                         text = station.formatDistance(),
                         style = GasGuruTheme.typography.baseRegular,
-                        color = TextSubtle,
+                        color = GasGuruTheme.colors.textSubtle,
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 1,
                         modifier = Modifier.testTag("distance")
@@ -194,12 +188,12 @@ fun DetailStationContent(station: FuelStation, lastUpdate: Long, address: String
                     Text(
                         text = " · ",
                         style = GasGuruTheme.typography.baseRegular,
-                        color = TextSubtle
+                        color = GasGuruTheme.colors.textSubtle
                     )
                     Text(
                         text = isOpen,
                         style = GasGuruTheme.typography.baseRegular,
-                        color = if (station.isStationOpen()) Primary500 else AccentRed,
+                        color = if (station.isStationOpen()) GasGuruTheme.colors.primary500 else GasGuruTheme.colors.accentRed,
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 1
                     )
@@ -212,7 +206,7 @@ fun DetailStationContent(station: FuelStation, lastUpdate: Long, address: String
                     .clip(CircleShape)
                     .border(
                         width = 2.dp,
-                        color = Neutral300,
+                        color = GasGuruTheme.colors.neutral300,
                         shape = CircleShape
                     )
                     .constrainAs(image) {
@@ -302,7 +296,7 @@ fun InformationStation(station: FuelStation, address: String?, navigateToGoogleM
                 subtitle = textOpenClose,
                 description = formatSchedule(station.schedule),
                 type = InformationCardModel.InformationCardType.EXPANDABLE,
-                subtitleColor = if (station.isStationOpen()) Primary500 else AccentRed
+                subtitleColor = if (station.isStationOpen()) GasGuruTheme.colors.primary500 else GasGuruTheme.colors.accentRed
             )
         )
         InformationCard(
@@ -361,15 +355,16 @@ fun HeaderStation(station: FuelStation, onBack: () -> Unit, onFavoriteClick: (Bo
             onClick = { onFavoriteClick(!station.isFavorite) },
             colors = IconButtonDefaults.iconButtonColors(containerColor = Color.White)
         ) {
+            val accentRed = GasGuruTheme.colors.accentRed
             Icon(
                 modifier = Modifier
                     .testTag("icon_favorite")
                     .semantics {
-                        iconTint = if (station.isFavorite) AccentRed else Color.Black
+                        iconTint = if (station.isFavorite) accentRed else Color.Black
                     },
                 imageVector = if (station.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                 contentDescription = "Favorite icon",
-                tint = if (station.isFavorite) AccentRed else Color.Black,
+                tint = if (station.isFavorite) accentRed else Color.Black,
             )
         }
     }

@@ -20,8 +20,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.R
-import com.gasguru.core.uikit.theme.GrayLight
 import com.gasguru.core.uikit.theme.MyApplicationTheme
+import com.gasguru.core.uikit.theme.TextSubtle
 
 @Composable
 fun InformationText(modifier: Modifier = Modifier, model: InformationTextModel) = with(model) {
@@ -53,14 +53,14 @@ fun InformationText(modifier: Modifier = Modifier, model: InformationTextModel) 
             )
             Text(
                 text = description,
-                color = GrayLight,
+                color = TextSubtle,
                 style = typography.displaySmall
             )
         }
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun InformationTextPreview() {
     MyApplicationTheme {

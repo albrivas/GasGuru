@@ -13,7 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.gasguru.core.uikit.theme.primaryContainerLight
+import com.gasguru.core.uikit.theme.GasGuruTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,7 +27,7 @@ fun HeaderSegmentedTabs(
         tabs.forEachIndexed { index, label ->
             SegmentedButton(
                 shape = SegmentedButtonDefaults.itemShape(index = index, count = tabs.size),
-                colors = SegmentedButtonDefaults.colors(activeContainerColor = primaryContainerLight),
+                colors = SegmentedButtonDefaults.colors(activeContainerColor = GasGuruTheme.colors.primary200),
                 onClick = {
                     selectedIndex = index
                 },

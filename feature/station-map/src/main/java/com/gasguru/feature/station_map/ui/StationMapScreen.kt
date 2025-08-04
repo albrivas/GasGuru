@@ -94,7 +94,6 @@ import com.gasguru.core.uikit.components.loading.GasGuruLoadingModel
 import com.gasguru.core.uikit.components.marker.StationMarker
 import com.gasguru.core.uikit.components.marker.StationMarkerModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
-import com.gasguru.core.uikit.theme.GrayExtraLight
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.Neutral100
 import com.gasguru.core.uikit.theme.Neutral300
@@ -605,7 +604,7 @@ fun SearchResultBody(
                     }
                 }
                 HorizontalDivider(
-                    color = GrayExtraLight,
+                    color = Neutral300,
                     thickness = 0.5.dp,
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp)
                 )

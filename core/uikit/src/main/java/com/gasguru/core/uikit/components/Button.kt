@@ -1,5 +1,6 @@
 package com.gasguru.core.uikit.components
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -12,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.theme.GasGuruTheme
-import com.gasguru.core.uikit.theme.Primary500
 
 @Composable
 fun GasGuruButton(
@@ -31,7 +31,9 @@ fun GasGuruButton(
         enabled = enabled,
         contentPadding = contentPadding,
         colors = ButtonDefaults.buttonColors(
-            containerColor = Primary500
+            containerColor = GasGuruTheme.colors.primary500,
+            disabledContentColor = GasGuruTheme.colors.neutral700,
+            disabledContainerColor = GasGuruTheme.colors.neutral400
         )
     ) {
         Text(
@@ -41,8 +43,14 @@ fun GasGuruButton(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun GasGuruButtonPreview() {
-    GasGuruButton(onClick = {}, text = "Siguiente")
+    GasGuruButton(onClick = {}, text = "Siguiente", enabled = false)
+}
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun GasGuruButtonPreviewDarkMode() {
+    GasGuruButton(onClick = {}, text = "Siguiente", enabled = false)
 }
