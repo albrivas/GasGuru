@@ -14,8 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import com.gasguru.core.uikit.theme.Neutral100
-import com.gasguru.core.uikit.theme.Neutral400
+import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.feature.favorite_list_station.navigation.stationListGraph
 import com.gasguru.feature.profile.navigation.profileScreen
 import com.gasguru.feature.station_map.navigation.route.StationMapGraph
@@ -36,7 +35,7 @@ internal fun NavigationBarScreen(
         modifier = Modifier,
         bottomBar = {
             Column {
-                HorizontalDivider(thickness = 1.dp, color = Neutral400)
+                HorizontalDivider(thickness = 1.dp, color = GasGuruTheme.colors.neutral400)
                 NavigationBottomBar(navController = navController)
             }
         },
@@ -46,7 +45,7 @@ internal fun NavigationBarScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(color = Neutral100)
+                .background(color = GasGuruTheme.colors.neutral100)
         ) {
             NavHost(
                 navController = navController,

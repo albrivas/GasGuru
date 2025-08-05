@@ -12,10 +12,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
+import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.core.uikit.utils.borderWithoutTopBorder
 
 @Composable
@@ -91,8 +91,8 @@ private fun TableItem(row: List<Pair<String, Double>>) {
     }
 }
 
-@Preview(showBackground = true)
 @Composable
+@ThemePreviews
 private fun FuelPriceTablePreview() {
     MyApplicationTheme {
         FuelPriceTable(
@@ -104,16 +104,17 @@ private fun FuelPriceTablePreview() {
     }
 }
 
-@Preview(showBackground = true)
 @Composable
+@ThemePreviews
 private fun TableItemPreview() {
     MyApplicationTheme {
         TableItem(listOf("Gasoline 95" to 1.876))
     }
 }
 
-@Preview(showBackground = true)
+
 @Composable
+@ThemePreviews
 private fun TableHeaderPreview() {
     MyApplicationTheme {
         TableHeader("Fuel" to "Price")

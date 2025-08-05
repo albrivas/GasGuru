@@ -30,7 +30,7 @@ import com.gasguru.core.uikit.theme.ThemePreviews
 @Composable
 fun SettingItem(
     model: SettingItemModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) = with(model) {
     Row(
         modifier = modifier

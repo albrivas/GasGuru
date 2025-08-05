@@ -32,8 +32,6 @@ import androidx.constraintlayout.compose.Dimension
 import com.gasguru.core.uikit.R
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
-import com.gasguru.core.uikit.theme.Neutral300
-import com.gasguru.core.uikit.theme.Neutral500
 import com.gasguru.core.uikit.theme.ThemePreviews
 
 @Composable
@@ -44,7 +42,7 @@ fun InformationCard(model: InformationCardModel) = with(model) {
         modifier = Modifier
             .clip(RoundedCornerShape(8.dp))
             .background(color = GasGuruTheme.colors.neutralWhite)
-            .border(1.dp, Neutral300, RoundedCornerShape(8.dp))
+            .border(1.dp, GasGuruTheme.colors.neutral300, RoundedCornerShape(8.dp))
             .clickable {
                 if (type == InformationCardModel.InformationCardType.EXPANDABLE) {
                     open = !open
@@ -117,7 +115,7 @@ fun InformationCard(model: InformationCardModel) = with(model) {
                             },
                         imageVector = if (open) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
                         contentDescription = null,
-                        tint = Neutral500
+                        tint = GasGuruTheme.colors.neutral500
                     )
                 }
             }
