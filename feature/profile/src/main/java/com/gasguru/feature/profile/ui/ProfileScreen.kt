@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -30,10 +29,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -48,9 +45,7 @@ import com.gasguru.core.uikit.components.fuel_list.FuelListSelectionModel
 import com.gasguru.core.uikit.components.settings.SettingItem
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
-import com.gasguru.core.uikit.theme.Neutral100
-import com.gasguru.core.uikit.theme.TextMain
-import com.gasguru.core.uikit.theme.TextSubtle
+import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.profile.R
 import kotlinx.coroutines.launch
 import com.gasguru.core.ui.R as RUi
@@ -75,7 +70,7 @@ internal fun ProfileScreen(uiState: ProfileUiState, event: (ProfileEvents) -> Un
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.White)
+                    .background(GasGuruTheme.colors.neutralWhite)
                     .statusBarsPadding()
                     .testTag("loading"),
                 contentAlignment = Alignment.Center
@@ -102,7 +97,6 @@ internal fun ProfileScreen(uiState: ProfileUiState, event: (ProfileEvents) -> Un
     if (showSheet) {
         ModalBottomSheet(
             modifier = Modifier
-                .navigationBarsPadding()
                 .testTag("bottom_sheet_fuel"),
             onDismissRequest = {
                 showSheet = false
@@ -110,7 +104,7 @@ internal fun ProfileScreen(uiState: ProfileUiState, event: (ProfileEvents) -> Un
             dragHandle = {
                 Surface(
                     modifier = Modifier.padding(vertical = 8.dp),
-                    color = Color.LightGray,
+                    color = GasGuruTheme.colors.neutral700,
                     shape = MaterialTheme.shapes.extraLarge
                 ) {
                     Box(
@@ -123,20 +117,20 @@ internal fun ProfileScreen(uiState: ProfileUiState, event: (ProfileEvents) -> Un
             },
             shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
             sheetState = sheetState,
-            containerColor = Neutral100,
-            contentColor = Neutral100,
+            containerColor = GasGuruTheme.colors.neutral100,
+            contentColor = GasGuruTheme.colors.neutral100,
             contentWindowInsets = { WindowInsets.navigationBars }
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
                     text = stringResource(id = RUi.string.select_fuel_preference),
                     style = GasGuruTheme.typography.baseBold,
-                    color = TextMain
+                    color = GasGuruTheme.colors.textMain
                 )
                 val list = FuelType.entries.map { Pair(it.getIcon(), it.translation()) }
                 FuelListSelection(
@@ -163,7 +157,7 @@ internal fun ProfileScreen(uiState: ProfileUiState, event: (ProfileEvents) -> Un
 fun SuccessContent(userData: UserData, showSheet: () -> Unit) {
     Column(
         modifier = Modifier
-            .background(color = Neutral100)
+            .background(color = GasGuruTheme.colors.neutral100)
             .fillMaxSize()
             .statusBarsPadding()
             .padding(start = 16.dp, end = 16.dp, top = 32.dp),
@@ -172,7 +166,8 @@ fun SuccessContent(userData: UserData, showSheet: () -> Unit) {
         Text(
             modifier = Modifier,
             text = stringResource(id = R.string.profile),
-            style = GasGuruTheme.typography.h5
+            style = GasGuruTheme.typography.h5,
+            color = GasGuruTheme.colors.textMain
         )
         SettingItem(
             model = com.gasguru.core.uikit.components.settings.SettingItemModel(
@@ -198,13 +193,13 @@ fun VersionAppInfo(modifier: Modifier = Modifier) {
                 getAppVersion()
             ),
             style = GasGuruTheme.typography.captionRegular,
-            color = TextSubtle
+            color = GasGuruTheme.colors.textSubtle
         )
     }
 }
 
-@Preview
 @Composable
+@ThemePreviews
 private fun ProfileScreenPreview() {
     MyApplicationTheme {
         ProfileScreen(
@@ -219,8 +214,8 @@ private fun ProfileScreenPreview() {
     }
 }
 
-@Preview
 @Composable
+@ThemePreviews
 private fun ProfileScreenLoadingPreview() {
     MyApplicationTheme {
         ProfileScreen(uiState = ProfileUiState.Loading, event = {})
