@@ -12,9 +12,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.utils.borderWithoutTopBorder
 
@@ -34,7 +34,7 @@ private fun TableHeader(header: Pair<String, String>) {
     Row(
         modifier = Modifier
             .height(35.dp)
-            .border(1.dp, Color.Black),
+            .border(1.dp, GasGuruTheme.colors.neutralBlack),
         verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
     ) {
         Text(
@@ -47,7 +47,7 @@ private fun TableHeader(header: Pair<String, String>) {
         VerticalDivider(
             modifier = Modifier
                 .width(1.dp),
-            color = Color.Black
+            color = GasGuruTheme.colors.neutralBlack
         )
         Text(
             text = header.second,
@@ -78,7 +78,7 @@ private fun TableItem(row: List<Pair<String, Double>>) {
             VerticalDivider(
                 modifier = Modifier
                     .width(1.dp),
-                color = Color.Black
+                color = GasGuruTheme.colors.neutralBlack
             )
             Text(
                 text = "${item.second}€",

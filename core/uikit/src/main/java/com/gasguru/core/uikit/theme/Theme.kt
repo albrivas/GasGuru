@@ -20,7 +20,6 @@ fun MyApplicationTheme(
     typography: GasGuruTypography = GasGuruTheme.typography,
     content: @Composable () -> Unit,
 ) {
-
     val colors = if (darkTheme) DarkGasGuruColors else LightGasGuruColors
 
     val view = LocalView.current

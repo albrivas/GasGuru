@@ -12,6 +12,7 @@ import com.gasguru.core.model.data.previewFuelStationDomain
 import com.gasguru.core.testing.BaseTest
 import com.gasguru.core.ui.IconTintKey
 import com.gasguru.core.uikit.theme.AccentRed
+import com.gasguru.core.uikit.theme.GasGuruTheme
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
@@ -23,9 +24,11 @@ class DetailStationScreenTest : BaseTest() {
     fun markFavoriteStation() {
         val initialStation = previewFuelStationDomain()
         var station by mutableStateOf(initialStation)
+        var black = Color.Unspecified
 
         extension.use {
             setContent {
+                black = GasGuruTheme.colors.neutralBlack
                 DetailStationScreen(
                     uiState = DetailStationUiState.Success(station = station, address = null),
                     onFavoriteClick = { isFavorite ->
@@ -35,8 +38,9 @@ class DetailStationScreenTest : BaseTest() {
                 )
             }
 
+
             onNodeWithTag("icon_favorite", useUnmergedTree = true)
-                .assert(hasIconTint(Color.Black))
+                .assert(hasIconTint(black))
 
             onNodeWithTag("button_favorite").performClick()
             waitForIdle()
@@ -45,7 +49,6 @@ class DetailStationScreenTest : BaseTest() {
                 .assert(hasIconTint(AccentRed))
         }
     }
-
 
     private fun hasIconTint(expectedColor: Color) =
         SemanticsMatcher.expectValue(IconTintKey, expectedColor)

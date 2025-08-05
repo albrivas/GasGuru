@@ -19,12 +19,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.R
 import com.gasguru.core.uikit.components.shape.CircleArrowShape
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
+import com.gasguru.core.uikit.theme.ThemePreviews
 
 @Composable
 fun StationMarker(model: StationMarkerModel) {
@@ -67,8 +67,8 @@ fun StationMarker(model: StationMarkerModel) {
     }
 }
 
-@Preview(backgroundColor = 0xFFFFFFFF, showBackground = true)
 @Composable
+@ThemePreviews
 private fun StationMarkerPreview() {
     MyApplicationTheme {
         StationMarker(

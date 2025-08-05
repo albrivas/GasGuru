@@ -190,7 +190,6 @@ fun ListFuelStations(
     }
 }
 
-
 @Composable
 @ThemePreviews
 fun EmptyFavoritesPreview() {

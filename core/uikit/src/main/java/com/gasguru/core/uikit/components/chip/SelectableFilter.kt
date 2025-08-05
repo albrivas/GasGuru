@@ -10,6 +10,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -45,8 +46,8 @@ fun SelectableFilter(
             disabledTrailingIconColor = GasGuruTheme.colors.textMain,
             labelColor = GasGuruTheme.colors.textMain,
             iconColor = GasGuruTheme.colors.textMain,
-            selectedLabelColor = GasGuruTheme.colors.neutralWhite,
-            selectedTrailingIconColor = GasGuruTheme.colors.neutralWhite,
+            selectedLabelColor = Color.White,
+            selectedTrailingIconColor = Color.White,
         ),
         trailingIcon = {
             Icon(

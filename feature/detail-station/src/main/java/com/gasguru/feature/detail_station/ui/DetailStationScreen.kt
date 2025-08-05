@@ -35,7 +35,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -335,7 +334,7 @@ fun HeaderStation(station: FuelStation, onBack: () -> Unit, onFavoriteClick: (Bo
             modifier = Modifier
                 .fillMaxWidth()
                 .height(240.dp)
-                .background(Color.Gray),
+                .background(GasGuruTheme.colors.neutral300),
             model = staticMapUrl,
             contentDescription = "Detail station map",
             contentScale = ContentScale.FillBounds

@@ -21,7 +21,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.gasguru.core.model.data.FuelType
-import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.core.ui.getIcon
 import com.gasguru.core.ui.toFuelType
 import com.gasguru.core.ui.translation
@@ -30,6 +29,7 @@ import com.gasguru.core.uikit.components.fuel_list.FuelListSelection
 import com.gasguru.core.uikit.components.fuel_list.FuelListSelectionModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
+import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.onboarding.R
 import com.gasguru.feature.onboarding_welcome.viewmodel.OnboardingUiState
 import com.gasguru.feature.onboarding_welcome.viewmodel.OnboardingViewModel

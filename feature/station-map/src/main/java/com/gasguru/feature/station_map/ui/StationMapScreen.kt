@@ -35,6 +35,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.SearchBar
@@ -43,6 +44,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -100,6 +102,7 @@ import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
+import com.google.maps.android.compose.ComposeMapColorScheme
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
@@ -357,6 +360,7 @@ fun MapView(
             uiSettings = uiSettings,
             properties = mapProperties,
             contentPadding = PaddingValues(bottom = 60.dp),
+            mapColorScheme = if (GasGuruTheme.colors.isDark) ComposeMapColorScheme.DARK else ComposeMapColorScheme.LIGHT
         ) {
             stations.forEach { station ->
                 val priceCategoryColor = station.priceCategory.toColor()
@@ -446,101 +450,112 @@ fun SearchPlaces(
         label = ""
     )
 
-    ProvideTextStyle(value = GasGuruTheme.typography.baseRegular) {
-        SearchBar(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    top = statusBarPaddingAnimation,
-                    start = paddingAnimation,
-                    end = paddingAnimation
-                )
-                .onGloballyPositioned { onHeight(it.size.height) },
-            query = searchQuery,
-            onQueryChange = { event(StationMapEvent.UpdateSearchQuery(it)) },
-            onSearch = {},
-            placeholder = {
-                Text(
-                    text = stringResource(id = R.string.hint_search_bar),
-                    style = GasGuruTheme.typography.baseRegular,
-                    color = GasGuruTheme.colors.textSubtle
-                )
-            },
-            leadingIcon = {
-                if (active) {
-                    IconButton(onClick = { active = false }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            tint = MaterialTheme.colorScheme.onSurface,
-                            contentDescription = "Icon back to map"
-                        )
-                    }
-                } else {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        tint = MaterialTheme.colorScheme.onSurface,
-                        contentDescription = "Icon search"
-                    )
-                }
-            },
-            trailingIcon = {
-                if (searchQuery.isNotEmpty()) {
-                    IconButton(onClick = { event(StationMapEvent.UpdateSearchQuery("")) }) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            tint = MaterialTheme.colorScheme.onSurface,
-                            contentDescription = "Icon search",
-                        )
-                    }
-                }
-            },
-            active = active,
-            onActiveChange = { active = it },
-            shadowElevation = 2.dp,
-            colors = SearchBarDefaults.colors(containerColor = GasGuruTheme.colors.neutralWhite)
+    CompositionLocalProvider(
+        LocalContentColor provides GasGuruTheme.colors.textMain,
+    ) {
+        ProvideTextStyle(
+            value = GasGuruTheme.typography.baseRegular.copy(
+                color = GasGuruTheme.colors.textMain
+            )
         ) {
-            when (searchResultUiState) {
-                SearchResultUiState.Loading -> {
-                    Box(modifier = Modifier.fillMaxWidth()) {
-                        LinearProgressIndicator(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .align(Alignment.TopCenter)
+            SearchBar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        top = statusBarPaddingAnimation,
+                        start = paddingAnimation,
+                        end = paddingAnimation
+                    )
+                    .onGloballyPositioned { onHeight(it.size.height) },
+                query = searchQuery,
+                onQueryChange = { event(StationMapEvent.UpdateSearchQuery(it)) },
+                onSearch = {},
+                placeholder = {
+                    Text(
+                        text = stringResource(id = R.string.hint_search_bar),
+                        style = GasGuruTheme.typography.baseRegular,
+                        color = GasGuruTheme.colors.textSubtle
+                    )
+                },
+                leadingIcon = {
+                    if (active) {
+                        IconButton(onClick = { active = false }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                tint = GasGuruTheme.colors.neutralBlack,
+                                contentDescription = "Icon back to map"
+                            )
+                        }
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            tint = GasGuruTheme.colors.neutralBlack,
+                            contentDescription = "Icon search"
                         )
                     }
-                }
-
-                SearchResultUiState.LoadFailed,
-                -> Unit
-
-                SearchResultUiState.EmptyQuery -> {
-                    if (recentSearchQueries is RecentSearchQueriesUiState.Success) {
-                        if (recentSearchQueries.recentQueries.isEmpty()) {
-                            EmptyRecentSearchesBody()
-                        } else {
-                            RecentSearchQueriesBody(
-                                recentSearchQueries = recentSearchQueries.recentQueries,
-                                onRecentSearchClicked = {
-                                    event(StationMapEvent.UpdateSearchQuery(it.name))
-                                    event(StationMapEvent.GetStationByPlace(it.id))
-                                    active = false
-                                },
-                                event = event,
+                },
+                trailingIcon = {
+                    if (searchQuery.isNotEmpty()) {
+                        IconButton(onClick = { event(StationMapEvent.UpdateSearchQuery("")) }) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                tint = GasGuruTheme.colors.neutralBlack,
+                                contentDescription = "Icon search",
                             )
                         }
                     }
-                }
+                },
+                active = active,
+                onActiveChange = { active = it },
+                shadowElevation = 2.dp,
+                colors = SearchBarDefaults.colors(
+                    containerColor = GasGuruTheme.colors.neutralWhite,
+                    dividerColor = GasGuruTheme.colors.neutralWhite
+                )
+            ) {
+                when (searchResultUiState) {
+                    SearchResultUiState.Loading -> {
+                        Box(modifier = Modifier.fillMaxWidth()) {
+                            LinearProgressIndicator(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .align(Alignment.TopCenter)
+                            )
+                        }
+                    }
 
-                SearchResultUiState.EmptySearchResult -> {
-                    EmptyResultBody()
-                }
+                    SearchResultUiState.LoadFailed,
+                    -> Unit
 
-                is SearchResultUiState.Success -> {
-                    SearchResultBody(
-                        places = searchResultUiState.places,
-                        onActiveChange = { active = it },
-                        event = event,
-                    )
+                    SearchResultUiState.EmptyQuery -> {
+                        if (recentSearchQueries is RecentSearchQueriesUiState.Success) {
+                            if (recentSearchQueries.recentQueries.isEmpty()) {
+                                EmptyRecentSearchesBody()
+                            } else {
+                                RecentSearchQueriesBody(
+                                    recentSearchQueries = recentSearchQueries.recentQueries,
+                                    onRecentSearchClicked = {
+                                        event(StationMapEvent.UpdateSearchQuery(it.name))
+                                        event(StationMapEvent.GetStationByPlace(it.id))
+                                        active = false
+                                    },
+                                    event = event,
+                                )
+                            }
+                        }
+                    }
+
+                    SearchResultUiState.EmptySearchResult -> {
+                        EmptyResultBody()
+                    }
+
+                    is SearchResultUiState.Success -> {
+                        SearchResultBody(
+                            places = searchResultUiState.places,
+                            onActiveChange = { active = it },
+                            event = event,
+                        )
+                    }
                 }
             }
         }
@@ -562,7 +577,8 @@ fun SearchResultBody(
             text = stringResource(id = R.string.label_suggestion),
             modifier = Modifier
                 .align(Alignment.Start),
-            style = GasGuruTheme.typography.baseBold
+            style = GasGuruTheme.typography.baseBold,
+            color = GasGuruTheme.colors.textMain
         )
         LazyColumn(
             modifier = Modifier
@@ -594,7 +610,8 @@ fun SearchResultBody(
                         Text(
                             modifier = Modifier,
                             text = place.name,
-                            style = GasGuruTheme.typography.baseRegular
+                            style = GasGuruTheme.typography.baseRegular,
+                            color = GasGuruTheme.colors.textSubtle
                         )
                     }
                 }
@@ -620,12 +637,14 @@ fun EmptyResultBody() {
             modifier = Modifier
                 .align(Alignment.Start)
                 .padding(bottom = 8.dp),
-            style = GasGuruTheme.typography.h6
+            style = GasGuruTheme.typography.h6,
+            color = GasGuruTheme.colors.textMain
         )
         Text(
             text = stringResource(id = R.string.label_empty_suggestions),
             modifier = Modifier.align(Alignment.Start),
-            style = GasGuruTheme.typography.baseRegular
+            style = GasGuruTheme.typography.baseRegular,
+            color = GasGuruTheme.colors.textSubtle
         )
     }
 }
@@ -642,12 +661,14 @@ fun EmptyRecentSearchesBody() {
             modifier = Modifier
                 .align(Alignment.Start)
                 .padding(bottom = 8.dp),
-            style = GasGuruTheme.typography.h6
+            style = GasGuruTheme.typography.h6,
+            color = GasGuruTheme.colors.textMain
         )
         Text(
             text = stringResource(id = R.string.label_empty_recents),
             modifier = Modifier.align(Alignment.Start),
-            style = GasGuruTheme.typography.baseRegular
+            style = GasGuruTheme.typography.baseRegular,
+            color = GasGuruTheme.colors.textSubtle
         )
     }
 }
@@ -672,7 +693,8 @@ fun RecentSearchQueriesBody(
         ) {
             Text(
                 text = stringResource(id = R.string.label_recent),
-                style = GasGuruTheme.typography.h6
+                style = GasGuruTheme.typography.h6,
+                color = GasGuruTheme.colors.textMain
             )
             if (recentSearchQueries.isNotEmpty()) {
                 Icon(
@@ -697,6 +719,7 @@ fun RecentSearchQueriesBody(
                     modifier = Modifier
                         .clickable { onRecentSearchClicked(recentSearchQuery) }
                         .fillMaxWidth(),
+                    color = GasGuruTheme.colors.textMain
                 )
             }
         }
