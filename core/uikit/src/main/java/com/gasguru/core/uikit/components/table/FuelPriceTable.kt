@@ -112,7 +112,6 @@ private fun TableItemPreview() {
     }
 }
 
-
 @Composable
 @ThemePreviews
 private fun TableHeaderPreview() {

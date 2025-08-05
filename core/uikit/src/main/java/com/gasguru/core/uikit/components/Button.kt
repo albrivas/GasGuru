@@ -53,4 +53,3 @@ private fun GasGuruButtonPreview() {
 private fun GasGuruButtonEnabledPreview() {
     GasGuruButton(onClick = {}, text = "Siguiente", enabled = true)
 }
-

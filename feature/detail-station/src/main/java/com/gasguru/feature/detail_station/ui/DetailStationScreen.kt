@@ -35,6 +35,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -96,7 +97,10 @@ internal fun DetailStationScreen(
     onFavoriteClick: (Boolean) -> Unit = {},
 ) {
     when (uiState) {
-        DetailStationUiState.Error -> Unit
+        DetailStationUiState.Error -> {
+            Unit
+        }
+
         DetailStationUiState.Loading -> {
             GasGuruLoading(
                 modifier = Modifier
@@ -107,6 +111,11 @@ internal fun DetailStationScreen(
         }
 
         is DetailStationUiState.Success -> {
+            val colorStationOpen = when (uiState.station.isStationOpen()) {
+                true -> GasGuruTheme.colors.primary500
+                else -> GasGuruTheme.colors.accentRed
+            }
+
             Scaffold(
                 topBar = {
                     HeaderStation(
@@ -125,7 +134,8 @@ internal fun DetailStationScreen(
                     DetailStationContent(
                         station = uiState.station,
                         lastUpdate = lastUpdate,
-                        address = uiState.address
+                        address = uiState.address,
+                        colorStationOpen = colorStationOpen,
                     )
                 }
             }
@@ -134,7 +144,12 @@ internal fun DetailStationScreen(
 }
 
 @Composable
-fun DetailStationContent(station: FuelStation, lastUpdate: Long, address: String?) {
+fun DetailStationContent(
+    station: FuelStation,
+    lastUpdate: Long,
+    address: String?,
+    colorStationOpen: Color,
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -194,7 +209,7 @@ fun DetailStationContent(station: FuelStation, lastUpdate: Long, address: String
                     Text(
                         text = isOpen,
                         style = GasGuruTheme.typography.baseRegular,
-                        color = if (station.isStationOpen()) GasGuruTheme.colors.primary500 else GasGuruTheme.colors.accentRed,
+                        color = colorStationOpen,
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 1
                     )
@@ -232,6 +247,7 @@ fun DetailStationContent(station: FuelStation, lastUpdate: Long, address: String
         InformationStation(
             station = station,
             address = address,
+            colorStationOpen = colorStationOpen,
             navigateToGoogleMaps = { startRoute(context = context, location = station.location) }
         )
     }
@@ -277,7 +293,12 @@ fun calculateHeight(size: Int): Dp {
 }
 
 @Composable
-fun InformationStation(station: FuelStation, address: String?, navigateToGoogleMaps: () -> Unit) {
+fun InformationStation(
+    station: FuelStation,
+    address: String?,
+    colorStationOpen: Color,
+    navigateToGoogleMaps: () -> Unit,
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth(),
@@ -304,7 +325,7 @@ fun InformationStation(station: FuelStation, address: String?, navigateToGoogleM
                 subtitle = textOpenClose,
                 description = formatSchedule(station.schedule),
                 type = InformationCardModel.InformationCardType.EXPANDABLE,
-                subtitleColor = if (station.isStationOpen()) GasGuruTheme.colors.textMain else GasGuruTheme.colors.accentRed
+                subtitleColor = colorStationOpen
             )
         )
         InformationCard(
