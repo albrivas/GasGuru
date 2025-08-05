@@ -11,12 +11,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.R
 import com.gasguru.core.uikit.components.selectedItem.BasicSelectedItem
 import com.gasguru.core.uikit.components.selectedItem.BasicSelectedItemModel
 import com.gasguru.core.uikit.theme.MyApplicationTheme
+import com.gasguru.core.uikit.theme.ThemePreviews
 
 @Composable
 fun FuelListSelection(model: FuelListSelectionModel, modifier: Modifier = Modifier) = with(model) {
@@ -44,8 +44,8 @@ fun FuelListSelection(model: FuelListSelectionModel, modifier: Modifier = Modifi
     }
 }
 
-@Preview
 @Composable
+@ThemePreviews
 private fun FuelListSelectionPreview() {
     MyApplicationTheme {
         FuelListSelection(

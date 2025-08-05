@@ -74,7 +74,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val appState = rememberGasGuruAppState(networkMonitor)
 
-            MyApplicationTheme(darkTheme = false) {
+            MyApplicationTheme {
                 when (val state = uiState) {
                     is SplashUiState.Success -> GasGuruApp(
                         appState = appState,

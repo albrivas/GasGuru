@@ -97,13 +97,17 @@ class StationMapViewModel @Inject constructor(
             is StationMapEvent.ClearRecentSearches -> clearRecentSearches()
             is StationMapEvent.InsertRecentSearch -> insertRecentSearch(event.searchQuery)
             is StationMapEvent.GetStationByPlace -> getStationByPlace(event.placeId)
-            is StationMapEvent.ResetMapCenter -> resetMapCenter()
             is StationMapEvent.UpdateSearchQuery -> onSearchQueryChanged(event.query)
             is StationMapEvent.ShowListStations -> showListStation(event.show)
             is StationMapEvent.UpdateBrandFilter -> updateFilterBrand(event.selected)
             is StationMapEvent.UpdateNearbyFilter -> updateFilterNearby(event.number)
             is StationMapEvent.UpdateScheduleFilter -> updateFilterSchedule(event.schedule)
+            is StationMapEvent.OnMapCentered -> markMapAsCentered()
         }
+    }
+
+    private fun markMapAsCentered() {
+        _state.update { it.copy(shouldCenterMap = false) }
     }
 
     private fun onSearchQueryChanged(query: String) {
@@ -137,8 +141,6 @@ class StationMapViewModel @Inject constructor(
                 }
         }
 
-    private fun resetMapCenter() = _state.update { it.copy(mapBounds = null) }
-
     private fun getStationByLocation(location: Location) {
         viewModelScope.launch {
             combine(
@@ -161,7 +163,8 @@ class StationMapViewModel @Inject constructor(
                             fuelStations = fuelStations,
                             loading = false,
                             selectedType = userData.fuelSelection,
-                            mapBounds = bounds
+                            mapBounds = bounds,
+                            shouldCenterMap = true,
                         )
                     }
                 }

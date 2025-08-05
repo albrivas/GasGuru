@@ -1,5 +1,6 @@
 package com.gasguru.feature.onboarding_welcome.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.gasguru.core.model.data.FuelType
@@ -29,6 +29,7 @@ import com.gasguru.core.uikit.components.fuel_list.FuelListSelection
 import com.gasguru.core.uikit.components.fuel_list.FuelListSelectionModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
+import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.onboarding.R
 import com.gasguru.feature.onboarding_welcome.viewmodel.OnboardingUiState
 import com.gasguru.feature.onboarding_welcome.viewmodel.OnboardingViewModel
@@ -58,12 +59,14 @@ internal fun OnboardingFuelPreferences(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(GasGuruTheme.colors.neutral100)
                     .padding(start = 16.dp, top = 24.dp, end = 16.dp, bottom = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
                     text = stringResource(id = R.string.welcome_title_fuel_preferences),
                     style = GasGuruTheme.typography.h2,
+                    color = GasGuruTheme.colors.neutralBlack,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(0.dp, 30.dp, 0.dp, 0.dp)
                 )
@@ -96,7 +99,7 @@ internal fun OnboardingFuelPreferences(
 }
 
 @Composable
-@Preview(name = "Onboarding - Fuel preferences preview", showBackground = true)
+@ThemePreviews
 private fun PreviewOnboardingFuelPreferences() {
     MyApplicationTheme {
         OnboardingFuelPreferences(

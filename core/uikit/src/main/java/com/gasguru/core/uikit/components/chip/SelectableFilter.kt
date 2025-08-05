@@ -14,12 +14,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.tooling.preview.Preview
 import com.gasguru.core.uikit.R
 import com.gasguru.core.uikit.theme.GasGuruTheme
-import com.gasguru.core.uikit.theme.Neutral400
-import com.gasguru.core.uikit.theme.Primary800
-import com.gasguru.core.uikit.theme.TextMain
+import com.gasguru.core.uikit.theme.ThemePreviews
 
 @Composable
 fun SelectableFilter(
@@ -37,18 +34,18 @@ fun SelectableFilter(
         label = { Text(text = label, style = GasGuruTheme.typography.smallRegular) },
         shape = CircleShape,
         border = FilterChipDefaults.filterChipBorder(
-            borderColor = Neutral400,
+            borderColor = GasGuruTheme.colors.neutral400,
             selected = isSelected,
             enabled = isSelected
         ),
         colors = FilterChipDefaults.filterChipColors(
-            selectedContainerColor = Primary800,
-            containerColor = Color.White,
-            disabledLabelColor = TextMain,
-            disabledContainerColor = Color.White,
-            disabledTrailingIconColor = TextMain,
-            labelColor = TextMain,
-            iconColor = TextMain,
+            selectedContainerColor = GasGuruTheme.colors.primary800,
+            containerColor = GasGuruTheme.colors.neutralWhite,
+            disabledLabelColor = GasGuruTheme.colors.textMain,
+            disabledContainerColor = GasGuruTheme.colors.neutralWhite,
+            disabledTrailingIconColor = GasGuruTheme.colors.textMain,
+            labelColor = GasGuruTheme.colors.textMain,
+            iconColor = GasGuruTheme.colors.textMain,
             selectedLabelColor = Color.White,
             selectedTrailingIconColor = Color.White,
         ),
@@ -63,8 +60,8 @@ fun SelectableFilter(
     )
 }
 
-@Preview(showBackground = true)
 @Composable
+@ThemePreviews
 private fun SelectableFilterMultiSelectionPreview() {
     SelectableFilter(
         model = SelectableFilterModel(
@@ -77,8 +74,8 @@ private fun SelectableFilterMultiSelectionPreview() {
     )
 }
 
-@Preview(showBackground = true)
 @Composable
+@ThemePreviews
 private fun SelectableFilterUnselectedPreview() {
     SelectableFilter(
         model = SelectableFilterModel(
