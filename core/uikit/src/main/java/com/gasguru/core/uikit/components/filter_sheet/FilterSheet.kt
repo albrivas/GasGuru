@@ -69,7 +69,7 @@ fun FilterSheet(model: FilterSheetModel, modifier: Modifier = Modifier) {
                 )
             }
         },
-        modifier = modifier.padding(top = 140.dp)
+        modifier = modifier
     ) {
         FilterSheetContent(model = model, onDismiss = {
             coroutineScope.launch { state.hide() }.invokeOnCompletion {
