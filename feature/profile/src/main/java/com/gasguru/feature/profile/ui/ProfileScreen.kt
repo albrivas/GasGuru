@@ -46,8 +46,6 @@ import com.gasguru.core.uikit.components.fuel_list.FuelListSelectionModel
 import com.gasguru.core.uikit.components.settings.SettingItem
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
-import com.gasguru.core.uikit.theme.TextMain
-import com.gasguru.core.uikit.theme.TextSubtle
 import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.profile.R
 import kotlinx.coroutines.launch
@@ -134,7 +132,7 @@ internal fun ProfileScreen(uiState: ProfileUiState, event: (ProfileEvents) -> Un
                 Text(
                     text = stringResource(id = RUi.string.select_fuel_preference),
                     style = GasGuruTheme.typography.baseBold,
-                    color = TextMain
+                    color = GasGuruTheme.colors.textMain
                 )
                 val list = FuelType.entries.map { Pair(it.getIcon(), it.translation()) }
                 FuelListSelection(
@@ -197,7 +195,7 @@ fun VersionAppInfo(modifier: Modifier = Modifier) {
                 getAppVersion()
             ),
             style = GasGuruTheme.typography.captionRegular,
-            color = TextSubtle
+            color = GasGuruTheme.colors.textSubtle
         )
     }
 }

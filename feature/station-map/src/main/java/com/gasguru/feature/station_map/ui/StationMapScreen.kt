@@ -65,7 +65,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -96,6 +95,7 @@ import com.gasguru.core.uikit.components.marker.StationMarker
 import com.gasguru.core.uikit.components.marker.StationMarkerModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
+import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.station_map.BuildConfig
 import com.gasguru.feature.station_map.R
 import com.google.android.gms.maps.GoogleMapOptions
@@ -571,6 +571,7 @@ fun SearchResultBody(
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .background(color = GasGuruTheme.colors.neutralWhite)
             .padding(16.dp)
     ) {
         Text(
@@ -630,6 +631,7 @@ fun EmptyResultBody() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .background(color = GasGuruTheme.colors.neutralWhite)
             .padding(16.dp)
     ) {
         Text(
@@ -654,6 +656,7 @@ fun EmptyRecentSearchesBody() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .background(color = GasGuruTheme.colors.neutralWhite)
             .padding(16.dp)
     ) {
         Text(
@@ -682,6 +685,7 @@ fun RecentSearchQueriesBody(
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .background(color = GasGuruTheme.colors.neutralWhite)
             .padding(16.dp)
     ) {
         Row(
@@ -868,8 +872,8 @@ fun ShowFilterSheet(
     }
 }
 
-@Preview(showBackground = true)
 @Composable
+@ThemePreviews
 private fun StationMapScreenPreview() {
     MyApplicationTheme {
         StationMapScreen(
@@ -883,8 +887,8 @@ private fun StationMapScreenPreview() {
     }
 }
 
-@Preview(showBackground = true)
 @Composable
+@ThemePreviews
 private fun RecentSearchQueryBodyPreview() {
     MyApplicationTheme {
         RecentSearchQueriesBody(
@@ -897,16 +901,16 @@ private fun RecentSearchQueryBodyPreview() {
     }
 }
 
-@Preview(showBackground = true)
 @Composable
+@ThemePreviews
 private fun EmptyRecentSearchQueryBodyPreview() {
     MyApplicationTheme {
         EmptyRecentSearchesBody()
     }
 }
 
-@Preview(showBackground = true)
 @Composable
+@ThemePreviews
 private fun SearchResultBodyPreview() {
     MyApplicationTheme {
         SearchResultBody(
@@ -920,8 +924,8 @@ private fun SearchResultBodyPreview() {
     }
 }
 
-@Preview(showBackground = true)
 @Composable
+@ThemePreviews
 private fun EmptySearchResultBodyPreview() {
     MyApplicationTheme {
         EmptyResultBody()

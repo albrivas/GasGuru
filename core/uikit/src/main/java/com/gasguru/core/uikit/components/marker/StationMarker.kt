@@ -75,7 +75,7 @@ private fun StationMarkerPreview() {
             model = StationMarkerModel(
                 icon = R.drawable.ic_logo_azul_oil,
                 price = "1.235",
-                color = Color.Red,
+                color = GasGuruTheme.colors.red500,
                 isSelected = false,
             )
         )
