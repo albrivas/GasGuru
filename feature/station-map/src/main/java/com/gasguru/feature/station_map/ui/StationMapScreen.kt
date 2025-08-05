@@ -242,6 +242,7 @@ internal fun StationMapScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(color = GasGuruTheme.colors.neutral300)
             ) {
                 MapView(
                     stations = fuelStations,
@@ -290,9 +291,11 @@ fun ListFuelStations(
     Column(
         modifier = modifier
             .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .border(1.dp, GasGuruTheme.colors.neutral300, RoundedCornerShape(8.dp))
             .background(color = GasGuruTheme.colors.neutralWhite)
             .verticalScroll(rememberScrollState())
-            .border(1.dp, GasGuruTheme.colors.neutral300, RoundedCornerShape(8.dp))
+
     ) {
         stations.forEachIndexed { index, item ->
             FuelStationItem(

@@ -32,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.text.style.TextAlign
@@ -120,8 +121,9 @@ private fun FilterSheetContent(model: FilterSheetModel, onDismiss: () -> Unit) =
                 .verticalScroll(rememberScrollState())
                 .weight(1f, fill = false)
                 .padding(start = 16.dp, end = 16.dp)
-                .background(GasGuruTheme.colors.neutralWhite)
+                .clip(RoundedCornerShape(8.dp))
                 .border(1.dp, GasGuruTheme.colors.neutral300, RoundedCornerShape(8.dp))
+                .background(GasGuruTheme.colors.neutralWhite)
         ) {
             val neutral300 = GasGuruTheme.colors.neutral300
             options.forEach { item ->
@@ -138,7 +140,8 @@ private fun FilterSheetContent(model: FilterSheetModel, onDismiss: () -> Unit) =
                                 isMultiOption,
                                 isMustSelection
                             )
-                        }.drawBehind {
+                        }
+                        .drawBehind {
                             if (item != options.last()) {
                                 val lineY = size.height - 1.dp.toPx()
                                 drawLine(
