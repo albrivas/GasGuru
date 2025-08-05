@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -69,7 +70,7 @@ fun FilterSheet(model: FilterSheetModel, modifier: Modifier = Modifier) {
                 )
             }
         },
-        modifier = modifier
+        modifier = modifier.statusBarsPadding()
     ) {
         FilterSheetContent(model = model, onDismiss = {
             coroutineScope.launch { state.hide() }.invokeOnCompletion {
