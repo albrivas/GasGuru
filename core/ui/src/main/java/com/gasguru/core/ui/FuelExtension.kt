@@ -9,10 +9,7 @@ import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.PriceCategory
 import com.gasguru.core.uikit.components.icon.FuelStationIcons
 import com.gasguru.core.uikit.components.price.PriceItemModel
-import com.gasguru.core.uikit.theme.AccentGreen
-import com.gasguru.core.uikit.theme.AccentOrange
-import com.gasguru.core.uikit.theme.AccentRed
-import com.gasguru.core.uikit.theme.secondaryLight
+import com.gasguru.core.uikit.theme.GasGuruTheme
 import java.text.DecimalFormat
 import com.gasguru.core.uikit.R as RUikit
 
@@ -79,11 +76,12 @@ fun FuelStationBrandsType.toBrandStationIcon() = when (this) {
     FuelStationBrandsType.VALCARCE -> FuelStationIcons.Valcarce
 }
 
+@Composable
 fun PriceCategory.toColor() = when (this) {
-    PriceCategory.NONE -> secondaryLight
-    PriceCategory.CHEAP -> AccentGreen
-    PriceCategory.NORMAL -> AccentOrange
-    PriceCategory.EXPENSIVE -> AccentRed
+    PriceCategory.NONE -> GasGuruTheme.colors.secondaryLight
+    PriceCategory.CHEAP -> GasGuruTheme.colors.accentGreen
+    PriceCategory.NORMAL -> GasGuruTheme.colors.accentOrange
+    PriceCategory.EXPENSIVE -> GasGuruTheme.colors.accentRed
 }
 
 fun FuelType?.getPrice(context: Context, fuelStation: FuelStation): String {

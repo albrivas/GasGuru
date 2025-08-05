@@ -15,8 +15,8 @@ import androidx.car.app.model.PlaceListMapTemplate
 import androidx.car.app.model.PlaceMarker
 import androidx.car.app.model.Row
 import androidx.car.app.model.Template
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import com.gasguru.auto.common.getAutomotiveThemeColor
 import com.gasguru.auto.di.CarScreenEntryPoint
 import com.gasguru.core.domain.fuelstation.FuelStationByLocationUseCase
 import com.gasguru.core.domain.location.GetCurrentLocationUseCase
@@ -25,7 +25,7 @@ import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.OpeningHours
 import com.gasguru.core.ui.getPrice
-import com.gasguru.core.uikit.theme.Primary600
+import com.gasguru.core.uikit.theme.GasGuruColors
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -103,7 +103,7 @@ class MapAutomotiveScreen(carContext: CarContext) : Screen(carContext) {
         }
     }
 
-    private fun cafeRow(station: FuelStation, selectedFuel: FuelType?): Row {
+    private fun cafeRow(station: FuelStation, selectedFuel: FuelType?, theme: GasGuruColors): Row {
         return Row.Builder()
             .setTitle(
                 "${station.formatName()} - ${
@@ -124,8 +124,8 @@ class MapAutomotiveScreen(carContext: CarContext) : Screen(carContext) {
                         ).setMarker(
                             PlaceMarker.Builder().setColor(
                                 CarColor.createCustom(
-                                    Color.White.toArgb(),
-                                    Primary600.toArgb(),
+                                    theme.neutralWhite.toArgb(),
+                                    theme.primary600.toArgb(),
                                 )
                             ).build()
                         )
@@ -157,13 +157,14 @@ class MapAutomotiveScreen(carContext: CarContext) : Screen(carContext) {
             .setHeaderAction(Action.APP_ICON)
 
         builder.setLoading(carUiState.loading)
+        val theme = carContext.getAutomotiveThemeColor()
 
         if (!carUiState.loading) {
             builder.setLoading(false)
             val items = ItemList.Builder()
 
             carUiState.stations.forEach { station ->
-                items.addItem(cafeRow(station, carUiState.selectedFuel))
+                items.addItem(cafeRow(station, carUiState.selectedFuel, theme))
             }
 
             builder.setItemList(items.build())
