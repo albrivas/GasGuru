@@ -26,7 +26,8 @@ class FuelStationItemTest : BaseTest() {
                         index = 1,
                         categoryColor = GasGuruTheme.colors.primary500,
                         onItemClick = {}
-                    )
+                    ),
+                    isLastItem = true
                 )
             }
         }
