@@ -7,13 +7,15 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.captionBar
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import com.gasguru.core.uikit.components.divider.DividerLength
+import com.gasguru.core.uikit.components.divider.DividerThickness
+import com.gasguru.core.uikit.components.divider.GasGuruDivider
+import com.gasguru.core.uikit.components.divider.GasGuruDividerModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.feature.favorite_list_station.navigation.stationListGraph
 import com.gasguru.feature.profile.navigation.profileScreen
@@ -35,7 +37,13 @@ internal fun NavigationBarScreen(
         modifier = Modifier,
         bottomBar = {
             Column {
-                HorizontalDivider(thickness = 1.dp, color = GasGuruTheme.colors.neutral400)
+                GasGuruDivider(
+                    model = GasGuruDividerModel(
+                        color = GasGuruTheme.colors.neutral400,
+                        thickness = DividerThickness.THICK,
+                        length = DividerLength.FULL
+                    )
+                )
                 NavigationBottomBar(navController = navController)
             }
         },

@@ -15,6 +15,7 @@ This project follows a **structured Git workflow** tailored to our development, 
 | Bug fix          | `bugfix/`  | Fixes for issues found during development                                |
 | Hotfix           | `hotfix/`  | Critical fixes in production                                             |
 | Release          | `release/` | Prepares a new version (version bump, final tweaks)                      |
+| Docs             | `docs/`    | Only for documentation                                                   |
 | Sync (if needed) | `sync/`    | Cherry-picks from `main` to `develop` when a direct merge isn't possible |
 
 ### Typical workflow
