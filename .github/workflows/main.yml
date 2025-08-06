@@ -6,8 +6,7 @@ on:
 
 jobs:
   build:
-    if: ${{ github.actor != 'dependabot[bot]' && !startsWith(github.head_ref, 'sync/') }}
-
+    if: ${{ github.actor != 'dependabot[bot]' && !startsWith(github.head_ref, 'sync/') && !startsWith(github.head_ref, 'docs/')}}
     name: Build
     runs-on: ubuntu-22.04
     steps:
