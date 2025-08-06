@@ -48,4 +48,3 @@ fun Modifier.horizontalDivider(color: Color, isLastItem: Boolean): Modifier =
             )
         }
     }
-
