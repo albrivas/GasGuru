@@ -19,8 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -34,11 +32,13 @@ import com.gasguru.core.uikit.components.chip.StatusChipModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
+import com.gasguru.core.uikit.utils.horizontalDivider
 
 @Composable
 fun FuelStationItem(
     modifier: Modifier = Modifier,
     model: FuelStationItemModel,
+    isLastItem: Boolean,
 ) = with(model) {
     val contentDescription = stringResource(id = R.string.content_description_fuel_item, index)
     val neutral300 = GasGuruTheme.colors.neutral300
@@ -49,15 +49,7 @@ fun FuelStationItem(
             .clickable { onItemClick(idServiceStation) }
             .semantics { this.contentDescription = contentDescription }
             .padding(horizontal = 12.dp)
-            .drawBehind {
-                val lineY = size.height - 1.dp.toPx()
-                drawLine(
-                    color = neutral300,
-                    start = Offset(0f, lineY),
-                    end = Offset(size.width, lineY),
-                    strokeWidth = 1.dp.toPx()
-                )
-            },
+            .horizontalDivider(color = neutral300, isLastItem = isLastItem),
     ) {
         Column(
             modifier = Modifier
@@ -145,7 +137,8 @@ fun PreviewFuelItem() {
                 index = 3686,
                 categoryColor = GasGuruTheme.colors.secondaryLight,
                 onItemClick = {}
-            )
+            ),
+            isLastItem = false
         )
     }
 }

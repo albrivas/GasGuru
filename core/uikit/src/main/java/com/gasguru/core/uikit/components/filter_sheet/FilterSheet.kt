@@ -33,8 +33,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.components.GasGuruButton
@@ -43,6 +41,7 @@ import com.gasguru.core.uikit.components.icon.CircleIconModel
 import com.gasguru.core.uikit.components.icon.FuelStationIcons
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
+import com.gasguru.core.uikit.utils.horizontalDivider
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -141,17 +140,7 @@ private fun FilterSheetContent(model: FilterSheetModel, onDismiss: () -> Unit) =
                                 isMustSelection
                             )
                         }
-                        .drawBehind {
-                            if (item != options.last()) {
-                                val lineY = size.height - 1.dp.toPx()
-                                drawLine(
-                                    color = neutral300,
-                                    start = Offset(0f, lineY),
-                                    end = Offset(size.width, lineY),
-                                    strokeWidth = 1.dp.toPx()
-                                )
-                            }
-                        },
+                        .horizontalDivider(color = neutral300, isLastItem = item == options.last()),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     iconMap?.get(item)?.let { iconResId ->
