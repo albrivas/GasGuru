@@ -181,7 +181,8 @@ fun ListFuelStations(
                                 index = index,
                                 categoryColor = item.priceCategory.toColor(),
                                 onItemClick = navigateToDetail
-                            )
+                            ),
+                            isLastItem = false
                         )
                     }
                 )

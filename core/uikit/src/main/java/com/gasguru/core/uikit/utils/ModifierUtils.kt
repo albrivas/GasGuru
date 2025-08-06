@@ -4,6 +4,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 
 fun Modifier.borderWithoutTopBorder(strokeWidth: Float = 3f, color: Color = Color.Black): Modifier =
     this.drawBehind {
@@ -33,4 +34,17 @@ fun Modifier.borderWithoutTopBorder(strokeWidth: Float = 3f, color: Color = Colo
             end = Offset(rightX, size.height),
             strokeWidth = strokeWidth
         )
+    }
+
+fun Modifier.horizontalDivider(color: Color, isLastItem: Boolean): Modifier =
+    this.drawBehind {
+        if (!isLastItem) {
+            val lineY = size.height - 1.dp.toPx()
+            drawLine(
+                color = color,
+                start = Offset(0f, lineY),
+                end = Offset(size.width, lineY),
+                strokeWidth = 1.dp.toPx()
+            )
+        }
     }

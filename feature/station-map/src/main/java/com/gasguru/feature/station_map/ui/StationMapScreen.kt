@@ -31,7 +31,6 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -84,6 +83,10 @@ import com.gasguru.core.ui.toColor
 import com.gasguru.core.uikit.components.chip.FilterType
 import com.gasguru.core.uikit.components.chip.SelectableFilter
 import com.gasguru.core.uikit.components.chip.SelectableFilterModel
+import com.gasguru.core.uikit.components.divider.DividerLength
+import com.gasguru.core.uikit.components.divider.DividerThickness
+import com.gasguru.core.uikit.components.divider.GasGuruDivider
+import com.gasguru.core.uikit.components.divider.GasGuruDividerModel
 import com.gasguru.core.uikit.components.filter_sheet.FilterSheet
 import com.gasguru.core.uikit.components.filter_sheet.FilterSheetModel
 import com.gasguru.core.uikit.components.filter_sheet.FilterSheetType
@@ -308,7 +311,8 @@ fun ListFuelStations(
                     index = index,
                     categoryColor = item.priceCategory.toColor(),
                     onItemClick = navigateToDetail
-                )
+                ),
+                isLastItem = item.idServiceStation == stations.last().idServiceStation
             )
         }
     }
@@ -619,10 +623,12 @@ fun SearchResultBody(
                         )
                     }
                 }
-                HorizontalDivider(
-                    color = GasGuruTheme.colors.neutral300,
-                    thickness = 0.5.dp,
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+                GasGuruDivider(
+                    model = GasGuruDividerModel(
+                        color = GasGuruTheme.colors.neutral300,
+                        thickness = DividerThickness.MEDIUM,
+                        length = DividerLength.INSET
+                    )
                 )
             }
         }
