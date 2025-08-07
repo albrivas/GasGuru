@@ -9,7 +9,6 @@ plugins {
 android {
     namespace = "com.gasguru.core.network"
 
-    @Suppress("UnstableApiUsage")
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
