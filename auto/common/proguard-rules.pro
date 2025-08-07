@@ -18,17 +18,12 @@
 -dontwarn androidx.car.app.model.**
 -dontwarn androidx.car.app.navigation.**
 
-# Kotlinx Serialization
--keep class kotlinx.serialization.** { *; }
--dontwarn kotlinx.serialization.**
-
-# Keep serializable classes
--keepclassmembers class * implements kotlinx.serialization.KSerializer {
-    *;
-}
--keepclassmembers class * {
-    *** kotlinx.serialization.KSerializer serializer(...);
-}
+# Kotlinx Serialization (R8 compatible rules)
+-keepattributes *Annotation*, InnerClasses
+-dontnote kotlinx.serialization.AnnotationsKt
+-keep class kotlinx.serialization.json.** { *; }
 -keepclassmembers @kotlinx.serialization.Serializable class * {
-    *;
+    public static final ** Companion;
+    kotlinx.serialization.KSerializer serializer(...);
+    public static ** INSTANCE;
 }

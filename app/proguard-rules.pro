@@ -8,14 +8,14 @@
 # Keep line numbers for debugging
 -keepattributes SourceFile,LineNumberTable
 
-# Kotlinx Serialization
+# Kotlinx Serialization (R8 compatible rules)
 -keepattributes *Annotation*, InnerClasses
 -dontnote kotlinx.serialization.AnnotationsKt
--keepclassmembers class kotlinx.serialization.json.** {
-    *** Companion;
-}
--keepclasseswithmembers class kotlinx.serialization.json.** {
+-keep class kotlinx.serialization.json.** { *; }
+-keepclassmembers @kotlinx.serialization.Serializable class * {
+    public static final ** Companion;
     kotlinx.serialization.KSerializer serializer(...);
+    public static ** INSTANCE;
 }
 
 # Hilt
@@ -53,3 +53,19 @@
 # Material Icons Extended
 -keep class androidx.compose.material.icons.** { *; }
 -dontwarn androidx.compose.material.icons.**
+
+# Google Places API - suppress warnings about missing companion objects
+-dontwarn com.google.android.libraries.places.internal.**
+
+# Missing annotation classes (used only at compile time)
+-dontwarn com.google.j2objc.annotations.**
+-dontwarn edu.umd.cs.findbugs.annotations.**
+
+# MockK (testing library) - suppress warnings
+-dontwarn java.lang.instrument.**
+-dontwarn net.bytebuddy.**
+-dontwarn io.mockk.**
+
+# Guava - suppress j2objc warnings
+-dontwarn com.google.common.util.concurrent.**
+-dontwarn com.google.common.collect.**

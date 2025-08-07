@@ -36,14 +36,14 @@
     @com.squareup.moshi.ToJson <methods>;
 }
 
-# Kotlinx Serialization
+# Kotlinx Serialization (R8 compatible rules)
 -keepattributes *Annotation*, InnerClasses
 -dontnote kotlinx.serialization.AnnotationsKt
--keepclassmembers class kotlinx.serialization.json.** {
-    *** Companion;
-}
--keepclasseswithmembers class kotlinx.serialization.json.** {
+-keep class kotlinx.serialization.json.** { *; }
+-keepclassmembers @kotlinx.serialization.Serializable class * {
+    public static final ** Companion;
     kotlinx.serialization.KSerializer serializer(...);
+    public static ** INSTANCE;
 }
 
 # Arrow (Functional Programming)
