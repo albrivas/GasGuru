@@ -19,10 +19,6 @@
 -dontwarn okio.**
 -dontwarn javax.annotation.**
 
-# MockWebServer (for testing)
--keep class okhttp3.mockwebserver.** { *; }
--dontwarn okhttp3.mockwebserver.**
-
 # Moshi
 -keepclasseswithmembers class * {
     @com.squareup.moshi.* <methods>;
@@ -45,10 +41,6 @@
     kotlinx.serialization.KSerializer serializer(...);
     public static ** INSTANCE;
 }
-
-# Arrow (Functional Programming)
--keep class arrow.core.** { *; }
--dontwarn arrow.core.**
 
 # Coroutines
 -keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}

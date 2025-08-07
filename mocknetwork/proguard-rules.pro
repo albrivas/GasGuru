@@ -14,11 +14,10 @@
 -if interface * { @retrofit2.http.* <methods>; }
 -keep,allowobfuscation interface <1>
 
-# OkHttp & MockWebServer
+# OkHttp
 -dontwarn okhttp3.**
 -dontwarn okio.**
 -dontwarn javax.annotation.**
--keep class okhttp3.mockwebserver.** { *; }
 
 # Moshi
 -keepclasseswithmembers class * {
@@ -32,10 +31,6 @@
     @com.squareup.moshi.FromJson <methods>;
     @com.squareup.moshi.ToJson <methods>;
 }
-
-# Arrow (Functional Programming)
--keep class arrow.core.** { *; }
--dontwarn arrow.core.**
 
 # Hilt
 -keep class dagger.hilt.** { *; }

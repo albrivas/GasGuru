@@ -10,17 +10,3 @@
 # Hilt
 -keep class dagger.hilt.** { *; }
 -keep class javax.inject.** { *; }
-
-# Compose
--keep class androidx.compose.** { *; }
--dontwarn androidx.compose.**
-
-# JUnit5 Testing
--keep class org.junit.jupiter.** { *; }
--keep class org.junit.platform.** { *; }
--dontwarn org.junit.jupiter.**
--dontwarn org.junit.platform.**
-
-# JUnit5 Extensions
--keep class de.mannodermaus.junit5.** { *; }
--dontwarn de.mannodermaus.junit5.**

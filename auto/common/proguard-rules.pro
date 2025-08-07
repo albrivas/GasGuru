@@ -4,10 +4,6 @@
 -keep class dagger.hilt.** { *; }
 -keep class javax.inject.** { *; }
 
-# Compose
--keep class androidx.compose.** { *; }
--dontwarn androidx.compose.**
-
 # AndroidX Auto
 -keep class androidx.car.app.** { *; }
 -dontwarn androidx.car.app.**

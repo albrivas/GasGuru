@@ -27,16 +27,6 @@
 -keep class com.google.firebase.** { *; }
 -dontwarn com.google.firebase.**
 
-# Compose
--keep class androidx.compose.** { *; }
--dontwarn androidx.compose.**
-
-# AndroidX Core
--keep class androidx.core.** { *; }
--keep class androidx.lifecycle.** { *; }
--keep class androidx.activity.** { *; }
--keep class androidx.navigation.** { *; }
-
 # Navigation Routes - Keep class names for route identification
 -keepnames class com.gasguru.navigation.navigationbar.route.TopLevelRoutes** { *; }
 -keepnames class com.gasguru.feature.**.navigation.route.** { *; }
@@ -59,11 +49,6 @@
 # Missing annotation classes (used only at compile time)
 -dontwarn com.google.j2objc.annotations.**
 -dontwarn edu.umd.cs.findbugs.annotations.**
-
-# MockK (testing library) - suppress warnings
--dontwarn java.lang.instrument.**
--dontwarn net.bytebuddy.**
--dontwarn io.mockk.**
 
 # Guava - suppress j2objc warnings
 -dontwarn com.google.common.util.concurrent.**

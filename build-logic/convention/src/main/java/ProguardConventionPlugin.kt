@@ -8,7 +8,6 @@ class ProguardConventionPlugin : Plugin<Project> {
         with(target) {
             pluginManager.withPlugin("com.android.library") {
                 extensions.configure<LibraryExtension> {
-                    // Solo configurar si el archivo proguard-rules.pro existe
                     val proguardFile = file("proguard-rules.pro")
                     if (proguardFile.exists()) {
                         defaultConfig {

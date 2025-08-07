@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.gasguru.android.library)
     alias(libs.plugins.junit5)
-    alias(libs.plugins.gasguru.proguard)
 }
 
 android {
