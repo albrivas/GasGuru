@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.gasguru.android.library)
     alias(libs.plugins.gasguru.hilt)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.secrets)
+    alias(libs.plugins.gasguru.secrets.google)
     alias(libs.plugins.gasguru.proguard)
 }
 
