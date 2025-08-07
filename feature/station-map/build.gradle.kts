@@ -8,7 +8,6 @@ plugins {
 
 android {
     namespace = "com.gasguru.feature.station_map"
-
 }
 
 dependencies {
