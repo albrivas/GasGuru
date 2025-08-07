@@ -168,3 +168,4 @@ gasguru-room = { id = "gasguru.room" }
 gasguru-firebase = { id = "gasguru.firebase" }
 gasguru-flavors = { id =  "gasguru.flavors" }
 gasguru-jacoco = { id = "gasguru.jacoco" }
+gasguru-secrets-google = { id = "gasguru.secrets.google" }

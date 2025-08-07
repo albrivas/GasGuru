@@ -70,5 +70,9 @@ gradlePlugin {
             id = libs.plugins.gasguru.jacoco.get().pluginId
             implementationClass = "JacocoConventionPlugin"
         }
+        register("secrets") {
+            id = libs.plugins.gasguru.secrets.google.get().pluginId
+            implementationClass = "SecretsConventionPlugin"
+        }
     }
 }
