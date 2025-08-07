@@ -169,3 +169,4 @@ gasguru-firebase = { id = "gasguru.firebase" }
 gasguru-flavors = { id =  "gasguru.flavors" }
 gasguru-jacoco = { id = "gasguru.jacoco" }
 gasguru-secrets-google = { id = "gasguru.secrets.google" }
+gasguru-proguard = { id = "gasguru.proguard" }
