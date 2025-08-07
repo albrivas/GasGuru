@@ -50,10 +50,6 @@
 -keep class arrow.core.** { *; }
 -dontwarn arrow.core.**
 
-# Google Places
--keep class com.google.android.libraries.places.** { *; }
--dontwarn com.google.android.libraries.places.**
-
 # Coroutines
 -keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
 -keepnames class kotlinx.coroutines.CoroutineExceptionHandler {}

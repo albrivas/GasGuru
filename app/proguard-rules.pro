@@ -37,8 +37,10 @@
 -keep class androidx.activity.** { *; }
 -keep class androidx.navigation.** { *; }
 
-# Allow internal modules to be obfuscated
-# (Removed -keep rules for internal modules to enable obfuscation)
+# Navigation Routes - Keep class names for route identification
+-keepnames class com.gasguru.navigation.navigationbar.route.TopLevelRoutes** { *; }
+-keepnames class com.gasguru.feature.**.navigation.route.** { *; }
+-keepnames class com.gasguru.feature.**.navigation.** { *; }
 
 # Coroutines
 -keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
@@ -53,9 +55,6 @@
 # Material Icons Extended
 -keep class androidx.compose.material.icons.** { *; }
 -dontwarn androidx.compose.material.icons.**
-
-# Google Places API - suppress warnings about missing companion objects
--dontwarn com.google.android.libraries.places.internal.**
 
 # Missing annotation classes (used only at compile time)
 -dontwarn com.google.j2objc.annotations.**
