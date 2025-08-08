@@ -74,5 +74,9 @@ gradlePlugin {
             id = libs.plugins.gasguru.secrets.google.get().pluginId
             implementationClass = "SecretsConventionPlugin"
         }
+        register("proguard") {
+            id = libs.plugins.gasguru.proguard.get().pluginId
+            implementationClass = "ProguardConventionPlugin"
+        }
     }
 }

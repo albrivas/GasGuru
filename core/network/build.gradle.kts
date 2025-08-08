@@ -3,12 +3,12 @@ plugins {
     alias(libs.plugins.gasguru.hilt)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.gasguru.secrets.google)
+    alias(libs.plugins.gasguru.proguard)
 }
 
 android {
     namespace = "com.gasguru.core.network"
 
-    @Suppress("UnstableApiUsage")
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
