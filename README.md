@@ -63,3 +63,8 @@ maestro test .maestro/config.yaml
 # Record test in local
 maestro record --local config.yaml
 ```
+
+## GitFlow followed
+
+📄 [docs/GITFLOW.md](docs/GITFLOW.md)
+

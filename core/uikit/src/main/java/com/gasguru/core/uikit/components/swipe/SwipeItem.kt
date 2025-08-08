@@ -112,7 +112,8 @@ private fun SwipeItemPreview() {
                             index = 3686,
                             categoryColor = GasGuruTheme.colors.red500,
                             onItemClick = {}
-                        )
+                        ),
+                        isLastItem = false
                     )
                 }
             )

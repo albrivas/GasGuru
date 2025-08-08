@@ -2,15 +2,12 @@ plugins {
     alias(libs.plugins.gasguru.android.library)
     alias(libs.plugins.gasguru.hilt)
     alias(libs.plugins.gasguru.compose.library)
-    alias(libs.plugins.secrets)
+    alias(libs.plugins.gasguru.secrets.google)
+    alias(libs.plugins.gasguru.proguard)
 }
 
 android {
     namespace = "com.gasguru.feature.detail_station"
-
-    buildFeatures {
-        buildConfig = true
-    }
 }
 
 dependencies {
