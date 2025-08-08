@@ -13,7 +13,7 @@ import com.gasguru.core.uikit.theme.ThemePreviews
 fun GasGuruDivider(model: GasGuruDividerModel, modifier: Modifier = Modifier) = with(model) {
     val internalModifier = when (length) {
         DividerLength.FULL -> Modifier
-        DividerLength.INSET -> Modifier.padding(16.dp)
+        DividerLength.INSET -> Modifier.padding(horizontal = 16.dp)
     }
     HorizontalDivider(
         thickness = thickness.value,

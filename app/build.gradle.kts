@@ -43,7 +43,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             isDebuggable = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -89,7 +90,7 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.auto.common)
     implementation(projects.core.network)
-    implementation(projects.mocknetwork)
+    mockImplementation(projects.mocknetwork)
     androidTestImplementation(projects.core.testing)
 
     // Core Android dependencies

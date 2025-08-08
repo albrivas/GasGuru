@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.gasguru.hilt)
     alias(libs.plugins.gasguru.compose.library)
     alias(libs.plugins.gasguru.secrets.google)
+    alias(libs.plugins.gasguru.proguard)
 }
 
 android {
@@ -19,7 +20,6 @@ dependencies {
     implementation(libs.kotlin.coroutines.play)
     implementation(libs.maps.compose)
     implementation(libs.play.services.maps)
-    implementation(libs.places)
 
     androidTestImplementation(projects.core.testing)
     androidTestImplementation(projects.core.testing)

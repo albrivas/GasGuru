@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.gasguru.hilt)
     alias(libs.plugins.gasguru.room)
     alias(libs.plugins.junit5)
+    alias(libs.plugins.gasguru.proguard)
 }
 
 android {

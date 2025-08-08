@@ -182,7 +182,7 @@ fun ListFuelStations(
                                 categoryColor = item.priceCategory.toColor(),
                                 onItemClick = navigateToDetail
                             ),
-                            isLastItem = false
+                            isLastItem = item.idServiceStation == stations.last().idServiceStation
                         )
                     }
                 )
