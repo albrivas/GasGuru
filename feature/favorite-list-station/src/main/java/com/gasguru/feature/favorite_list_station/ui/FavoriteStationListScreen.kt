@@ -5,8 +5,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -44,6 +46,7 @@ import com.gasguru.core.uikit.components.loading.GasGuruLoadingModel
 import com.gasguru.core.uikit.components.swipe.SwipeItem
 import com.gasguru.core.uikit.components.swipe.SwipeItemModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
+import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.favorite_list_station.R
 
@@ -109,16 +112,27 @@ internal fun FavoriteListStationScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Image(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_empty_favorites),
-                        contentDescription = "",
-                        contentScale = ContentScale.None
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_file_search),
+                        contentDescription = null,
+                        contentScale = ContentScale.Inside,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(224.dp)
                     )
+                    Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         modifier = Modifier,
-                        text = stringResource(id = R.string.empty_favorites),
+                        text = stringResource(id = R.string.empty_favorites_title),
                         style = GasGuruTheme.typography.h4,
                         textAlign = TextAlign.Center,
                         color = GasGuruTheme.colors.textMain
+                    )
+                    Text(
+                        modifier = Modifier,
+                        text = stringResource(id = R.string.empty_favorites_subtitle),
+                        style = GasGuruTheme.typography.baseRegular,
+                        textAlign = TextAlign.Center,
+                        color = GasGuruTheme.colors.textSubtle
                     )
                 }
             }
@@ -194,22 +208,26 @@ fun ListFuelStations(
 @Composable
 @ThemePreviews
 fun EmptyFavoritesPreview() {
-    FavoriteListStationScreen(
-        uiState = FavoriteStationListUiState.EmptyFavorites,
-        navigateToDetail = {},
-        event = {}
-    )
+    MyApplicationTheme {
+        FavoriteListStationScreen(
+            uiState = FavoriteStationListUiState.EmptyFavorites,
+            navigateToDetail = {},
+            event = {}
+        )
+    }
 }
 
 @Composable
 @ThemePreviews
 fun FavoriteFuelStationsPreview() {
-    FavoriteListStationScreen(
-        uiState = FavoriteStationListUiState.Favorites(
-            favoriteStations = listOf(previewFuelStationDomain()),
-            userSelectedFuelType = FuelType.GASOLINE_95_E10
-        ),
-        navigateToDetail = {},
-        event = {}
-    )
+    MyApplicationTheme {
+        FavoriteListStationScreen(
+            uiState = FavoriteStationListUiState.Favorites(
+                favoriteStations = listOf(previewFuelStationDomain()),
+                userSelectedFuelType = FuelType.GASOLINE_95_E10
+            ),
+            navigateToDetail = {},
+            event = {}
+        )
+    }
 }
