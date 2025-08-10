@@ -29,7 +29,8 @@ class FavoriteListScreenTest : BaseTest() {
             )
         }
 
-        onNodeWithText(text = getStringResource(R.string.empty_favorites)).assertIsDisplayed()
+        onNodeWithText(text = getStringResource(R.string.empty_favorites_title)).assertIsDisplayed()
+        onNodeWithText(text = getStringResource(R.string.empty_favorites_subtitle)).assertIsDisplayed()
     }
 
     @Test
