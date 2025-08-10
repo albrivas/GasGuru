@@ -14,6 +14,8 @@ import com.gasguru.core.data.repository.stations.FuelStationRepository
 import com.gasguru.core.data.repository.stations.OfflineFuelStationRepository
 import com.gasguru.core.data.repository.user.OfflineUserDataRepository
 import com.gasguru.core.data.repository.user.UserDataRepository
+import com.gasguru.core.data.repository.maps.StaticMapRepository
+import com.gasguru.core.data.repository.maps.GoogleStaticMapRepository
 import com.gasguru.core.data.util.ConnectivityManagerNetworkMonitor
 import com.gasguru.core.data.util.NetworkMonitor
 import com.gasguru.core.network.datasource.PlacesDataSource
@@ -71,4 +73,9 @@ interface DataModule {
     fun bindConnectivityManager(
         connectivityManagerNetworkMonitor: ConnectivityManagerNetworkMonitor,
     ): NetworkMonitor
+
+    @Binds
+    fun bindStaticMapRepository(
+        googleStaticMapRepository: GoogleStaticMapRepository,
+    ): StaticMapRepository
 }
