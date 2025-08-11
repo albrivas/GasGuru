@@ -26,19 +26,19 @@ class NavigationBarState(
 ) {
 
     val topLevelRoutes = listOf(
-        TopLevelRoutes.Map(),
-        TopLevelRoutes.Favorite(),
-        TopLevelRoutes.Profile()
+        TopLevelRoutes,
+        TopLevelRoutes,
+        TopLevelRoutes
     )
     val currentDestination: NavDestination?
         @Composable get() = navController.currentBackStackEntryAsState().value?.destination
 
     val isMapRoute: Boolean
         @Composable get() = currentDestination?.hasRoute<StationMapGraph.StationMapRoute>() == true
-    
+
     val isFavoriteRoute: Boolean
         @Composable get() = currentDestination?.hasRoute<StationListGraph.StationListRoute>() == true
-        
+
     val isProfileRoute: Boolean
         @Composable get() = currentDestination?.hasRoute<ProfileRoute>() == true
 
