@@ -27,11 +27,6 @@
 -keep class com.google.firebase.** { *; }
 -dontwarn com.google.firebase.**
 
-# Navigation Routes - Keep class names for route identification
--keepnames class com.gasguru.navigation.navigationbar.route.TopLevelRoutes** { *; }
--keepnames class com.gasguru.feature.**.navigation.route.** { *; }
--keepnames class com.gasguru.feature.**.navigation.** { *; }
-
 # Coroutines
 -keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
 -keepnames class kotlinx.coroutines.CoroutineExceptionHandler {}
