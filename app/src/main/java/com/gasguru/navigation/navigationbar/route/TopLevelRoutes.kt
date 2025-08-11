@@ -21,14 +21,4 @@ sealed class TopLevelRoutes {
         val route: String = "profile_route"
     ) : TopLevelRoutes()
 
-    companion object {
-        fun fromRoute(route: String?): String? {
-            return when {
-                route?.contains("${StationMapGraph.StationMapRoute::class.simpleName}") == true -> Map().route
-                route?.contains("${StationListGraph.StationListRoute::class.simpleName}") == true -> Favorite().route
-                route?.contains("ProfileRoute") == true -> Profile().route
-                else -> null
-            }
-        }
-    }
 }

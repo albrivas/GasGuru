@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -31,6 +32,15 @@ class NavigationBarState(
     )
     val currentDestination: NavDestination?
         @Composable get() = navController.currentBackStackEntryAsState().value?.destination
+
+    val isMapRoute: Boolean
+        @Composable get() = currentDestination?.hasRoute<StationMapGraph.StationMapRoute>() == true
+    
+    val isFavoriteRoute: Boolean
+        @Composable get() = currentDestination?.hasRoute<StationListGraph.StationListRoute>() == true
+        
+    val isProfileRoute: Boolean
+        @Composable get() = currentDestination?.hasRoute<ProfileRoute>() == true
 
     fun onNavItemClick(route: TopLevelRoutes) =
         navController.navigatePoppingUpToStartDestination(route)

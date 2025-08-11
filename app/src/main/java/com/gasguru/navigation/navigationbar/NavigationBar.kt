@@ -35,7 +35,7 @@ internal fun NavigationBottomBar(navController: NavHostController) {
                     BarItem(
                         icon = Icons.Outlined.FavoriteBorder,
                         label = stringResource(id = R.string.list_nav),
-                        isSelected = destination.route == TopLevelRoutes.fromRoute(state.currentDestination?.route),
+                        isSelected = state.isFavoriteRoute,
                         onNavigateToDestination = { state.onNavItemClick(it) },
                         destination = destination
                     )
@@ -44,7 +44,7 @@ internal fun NavigationBottomBar(navController: NavHostController) {
                     BarItem(
                         icon = Icons.Outlined.LocationOn,
                         label = stringResource(id = R.string.map_nav),
-                        isSelected = destination.route == TopLevelRoutes.fromRoute(state.currentDestination?.route),
+                        isSelected = state.isMapRoute,
                         onNavigateToDestination = { state.onNavItemClick(it) },
                         destination = destination
                     )
@@ -53,7 +53,7 @@ internal fun NavigationBottomBar(navController: NavHostController) {
                     BarItem(
                         icon = Icons.Outlined.AccountCircle,
                         label = stringResource(id = R.string.profile_nav),
-                        isSelected = destination.route == TopLevelRoutes.fromRoute(state.currentDestination?.route),
+                        isSelected = state.isProfileRoute,
                         onNavigateToDestination = { state.onNavItemClick(it) },
                         destination = destination
                     )
