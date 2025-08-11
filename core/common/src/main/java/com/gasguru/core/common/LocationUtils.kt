@@ -63,19 +63,3 @@ fun startRoute(context: Context, location: Location) {
     }
     context.startActivity(intent, null)
 }
-
-fun generateStaticMapUrl(
-    location: Location,
-    zoom: Int,
-    width: Int,
-    height: Int,
-    apiKey: String,
-): String {
-    val center = "${location.latitude},${location.longitude}"
-    return "https://maps.googleapis.com/maps/api/staticmap?" +
-        "center=$center" +
-        "&zoom=$zoom" +
-        "&size=${width}x$height" +
-        "&markers=color:red%7Clabel:C%7C$center" +
-        "&key=$apiKey"
-}
