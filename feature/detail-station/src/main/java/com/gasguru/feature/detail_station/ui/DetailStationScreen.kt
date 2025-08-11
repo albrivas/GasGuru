@@ -76,7 +76,7 @@ internal fun DetailStationScreenRoute(
     val uiState by viewModel.fuelStation.collectAsStateWithLifecycle()
     val staticMapUrl by viewModel.staticMapUrl.collectAsStateWithLifecycle()
     val lastUpdate by viewModel.lastUpdate.collectAsStateWithLifecycle()
-    
+
     DetailStationScreen(
         uiState = uiState,
         staticMapUrl = staticMapUrl,
@@ -99,12 +99,12 @@ internal fun DetailStationScreen(
             // Handle error state
         }
         DetailStationUiState.Loading -> {
-        GasGuruLoading(
-            modifier = Modifier
-                .fillMaxSize()
-                .statusBarsPadding(),
-            model = GasGuruLoadingModel(color = GasGuruTheme.colors.primary800)
-        )
+            GasGuruLoading(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .statusBarsPadding(),
+                model = GasGuruLoadingModel(color = GasGuruTheme.colors.primary800)
+            )
         }
         is DetailStationUiState.Success -> {
             val stationState = rememberDetailStationState(uiState.station)
@@ -151,7 +151,7 @@ fun DetailStationContent(
             .verticalScroll(rememberScrollState())
     ) {
         val context = LocalContext.current
-        
+
         ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
             val (textGroup, image) = createRefs()
 
@@ -225,7 +225,7 @@ fun DetailStationContent(
                 )
             }
         }
-        
+
         Spacer(modifier = Modifier.height(24.dp))
         FuelTypes(fuelItems = stationState.fuelItems, lastUpdate = lastUpdate)
         Spacer(modifier = Modifier.height(24.dp))

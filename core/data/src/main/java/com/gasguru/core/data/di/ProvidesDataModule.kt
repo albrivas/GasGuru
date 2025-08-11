@@ -1,9 +1,9 @@
 package com.gasguru.core.data.di
 
 import android.content.Context
+import com.gasguru.core.data.BuildConfig
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.gasguru.core.data.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

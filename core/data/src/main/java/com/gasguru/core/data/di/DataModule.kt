@@ -6,6 +6,8 @@ import com.gasguru.core.data.repository.geocoder.GeocoderAddress
 import com.gasguru.core.data.repository.geocoder.GeocoderAddressImpl
 import com.gasguru.core.data.repository.location.LocationTracker
 import com.gasguru.core.data.repository.location.LocationTrackerRepository
+import com.gasguru.core.data.repository.maps.GoogleStaticMapRepository
+import com.gasguru.core.data.repository.maps.StaticMapRepository
 import com.gasguru.core.data.repository.places.PlacesRepository
 import com.gasguru.core.data.repository.places.PlacesRepositoryImp
 import com.gasguru.core.data.repository.search.OfflineRecentSearchRepository
@@ -14,8 +16,6 @@ import com.gasguru.core.data.repository.stations.FuelStationRepository
 import com.gasguru.core.data.repository.stations.OfflineFuelStationRepository
 import com.gasguru.core.data.repository.user.OfflineUserDataRepository
 import com.gasguru.core.data.repository.user.UserDataRepository
-import com.gasguru.core.data.repository.maps.StaticMapRepository
-import com.gasguru.core.data.repository.maps.GoogleStaticMapRepository
 import com.gasguru.core.data.util.ConnectivityManagerNetworkMonitor
 import com.gasguru.core.data.util.NetworkMonitor
 import com.gasguru.core.network.datasource.PlacesDataSource

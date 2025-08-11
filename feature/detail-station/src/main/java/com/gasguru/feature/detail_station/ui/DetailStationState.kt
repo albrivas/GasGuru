@@ -15,8 +15,8 @@ import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.feature.detail_station.R
 
 @Composable
-fun rememberDetailStationState(station: FuelStation) = remember(station) { 
-    DetailStationState(station) 
+fun rememberDetailStationState(station: FuelStation) = remember(station) {
+    DetailStationState(station)
 }
 
 @Stable
@@ -24,23 +24,23 @@ class DetailStationState(private val station: FuelStation) {
 
     internal val fuelItems: List<PriceItemModel>
         @Composable get() = station.getFuelPriceItems()
-    
+
     internal val formattedDistance: String
         get() = station.formatDistance()
-    
+
     internal val isOpen: Boolean
         get() = station.isStationOpen()
-    
+
     internal val openCloseText: String
         @Composable get() = if (isOpen) {
             stringResource(id = R.string.open)
         } else {
             stringResource(id = R.string.close)
         }
-    
+
     internal val formattedName: String
         get() = station.brandStationName.toLowerCase(Locale.current)
-            .replaceFirstChar { 
+            .replaceFirstChar {
                 if (it.isLowerCase()) {
                     it.titlecase(java.util.Locale.getDefault())
                 } else {

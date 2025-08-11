@@ -83,7 +83,7 @@ class DetailStationViewModel @Inject constructor(
     }
 
     private fun onFavoriteClick(isFavorite: Boolean) = viewModelScope.launch {
-        when(isFavorite) {
+        when (isFavorite) {
             true -> saveFavoriteStationUseCase(stationId = id)
             false -> removeFavoriteStationUseCase(stationId = id)
         }
