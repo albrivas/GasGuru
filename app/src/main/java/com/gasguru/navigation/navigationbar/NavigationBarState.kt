@@ -49,8 +49,9 @@ class NavigationBarState(
         TopLevelRoutes.Profile -> isProfileRoute
     }
 
-    fun onNavItemClick(route: TopLevelRoutes) =
+    fun onNavItemClick(route: TopLevelRoutes) {
         navController.navigatePoppingUpToStartDestination(route)
+    }
 
     @Suppress("IMPLICIT_CAST_TO_ANY")
     private fun NavHostController.navigatePoppingUpToStartDestination(route: TopLevelRoutes) {

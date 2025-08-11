@@ -30,14 +30,22 @@ import com.gasguru.feature.station_map.ui.StationMapScreenRoute
 import com.gasguru.navigation.navigationbar.NavigationBottomBar
 
 @Composable
-fun NavigationBarScreenRoute(navigateToDetail: (Int) -> Unit) {
-    NavigationBarScreen(navController = rememberNavController(), navigateToDetail = navigateToDetail)
+fun NavigationBarScreenRoute(
+    navigateToDetail: (Int) -> Unit,
+    navigateToDetailAsDialog: (Int) -> Unit = navigateToDetail
+) {
+    NavigationBarScreen(
+        navController = rememberNavController(),
+        navigateToDetail = navigateToDetail,
+        navigateToDetailAsDialog = navigateToDetailAsDialog
+    )
 }
 
 @Composable
 internal fun NavigationBarScreen(
     navController: NavHostController,
     navigateToDetail: (Int) -> Unit,
+    navigateToDetailAsDialog: (Int) -> Unit = navigateToDetail,
 ) {
     val backStack by navController.currentBackStackEntryAsState()
     val onMap = backStack?.destination?.hasRoute<StationMapGraph.StationMapRoute>() == true
@@ -63,9 +71,17 @@ internal fun NavigationBarScreen(
                 .padding(innerPadding)
                 .background(GasGuruTheme.colors.neutral100)
         ) {
-            StationMapScreenRoute(navigateToDetail = navigateToDetail)
+            StationMapScreenRoute(navigateToDetail = navigateToDetailAsDialog)
 
             if (!onMap) {
+                // Overlay to hide map
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(GasGuruTheme.colors.neutral100)
+                        .zIndex(0.5f)
+                )
+
                 NavHost(
                     modifier = Modifier
                         .fillMaxSize()
@@ -81,4 +97,3 @@ internal fun NavigationBarScreen(
         }
     }
 }
-

@@ -5,7 +5,8 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.gasguru.feature.detail_station.navigation.detailStationScreen
-import com.gasguru.feature.detail_station.navigation.navigateToDetailStation
+import com.gasguru.feature.detail_station.navigation.detailStationScreenDialog
+import com.gasguru.feature.detail_station.navigation.navigateToDetailStationAsDialog
 import com.gasguru.feature.onboarding_welcome.navigation.OnboardingRoutes
 import com.gasguru.feature.onboarding_welcome.navigation.navigateToOnboardingFuelPreferencesRoute
 import com.gasguru.feature.onboarding_welcome.navigation.onboardingFuelPreferencesScreen
@@ -34,9 +35,13 @@ fun GasGuruNavHost(startDestination: Any = OnboardingRoutes.OnboardingWelcomeRou
         )
         navigationBarHost(
             navigateToDetail = { id ->
-                navController.navigateToDetailStation(id)
+                navController.navigateToDetailStationAsDialog(id)
+            },
+            navigateToDetailAsDialog = { id ->
+                navController.navigateToDetailStationAsDialog(id)
             }
         )
         detailStationScreen(onBack = navController::popBackStack)
+        detailStationScreenDialog(onBack = navController::popBackStack)
     }
 }

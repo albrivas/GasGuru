@@ -12,9 +12,13 @@ fun NavController.navigateToNavigationBar(navOptions: NavOptions? = null) {
 }
 
 internal fun NavGraphBuilder.navigationBarHost(
-    navigateToDetail: (Int) -> Unit
+    navigateToDetail: (Int) -> Unit,
+    navigateToDetailAsDialog: (Int) -> Unit = navigateToDetail
 ) {
     composable<NavigationBarRoute> {
-        NavigationBarScreenRoute(navigateToDetail = navigateToDetail)
+        NavigationBarScreenRoute(
+            navigateToDetail = navigateToDetail,
+            navigateToDetailAsDialog = navigateToDetailAsDialog
+        )
     }
 }

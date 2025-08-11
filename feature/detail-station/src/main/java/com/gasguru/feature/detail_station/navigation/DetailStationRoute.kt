@@ -4,3 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class DetailStationRoute(val idServiceStation: Int)
+
+@Serializable
+data class DetailStationDialogRoute(val idServiceStation: Int)
