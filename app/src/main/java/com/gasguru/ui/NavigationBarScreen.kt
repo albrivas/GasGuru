@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
 import com.gasguru.core.uikit.components.divider.DividerLength
 import com.gasguru.core.uikit.components.divider.DividerThickness
 import com.gasguru.core.uikit.components.divider.GasGuruDivider
@@ -24,8 +25,8 @@ import com.gasguru.feature.station_map.navigation.stationMapGraph
 import com.gasguru.navigation.navigationbar.NavigationBottomBar
 
 @Composable
-fun NavigationBarScreenRoute(navController: NavHostController, navigateToDetail: (Int) -> Unit) {
-    NavigationBarScreen(navController = navController, navigateToDetail = navigateToDetail)
+fun NavigationBarScreenRoute(navigateToDetail: (Int) -> Unit) {
+    NavigationBarScreen(navController = rememberNavController(), navigateToDetail = navigateToDetail)
 }
 
 @Composable
