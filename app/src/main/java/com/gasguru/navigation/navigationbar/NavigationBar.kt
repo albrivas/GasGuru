@@ -29,7 +29,7 @@ internal fun NavigationBottomBar(navController: NavHostController) {
                 icon = destination.icon,
                 label = stringResource(id = destination.labelRes),
                 isSelected = isSelected,
-                onNavigateToDestination = { 
+                onNavigateToDestination = {
                     if (!isSelected) {
                         state.onNavItemClick(destination)
                     }

@@ -81,7 +81,7 @@ internal fun NavigationBarScreen(
                         .background(GasGuruTheme.colors.neutral100)
                         .zIndex(0.5f)
                 )
-                
+
                 NavHost(
                     modifier = Modifier
                         .fillMaxSize()
