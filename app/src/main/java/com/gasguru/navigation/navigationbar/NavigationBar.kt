@@ -24,11 +24,16 @@ internal fun NavigationBottomBar(navController: NavHostController) {
         containerColor = GasGuruTheme.colors.neutralWhite,
     ) {
         state.topLevelRoutes.forEach { destination ->
+            val isSelected = state.isSelected(destination)
             BarItem(
                 icon = destination.icon,
                 label = stringResource(id = destination.labelRes),
-                isSelected = state.isSelected(destination),
-                onNavigateToDestination = { state.onNavItemClick(destination) },
+                isSelected = isSelected,
+                onNavigateToDestination = { 
+                    if (!isSelected) {
+                        state.onNavItemClick(destination)
+                    }
+                },
             )
         }
     }
@@ -67,9 +72,7 @@ private fun RowScope.BarItem(
             unselectedIconColor = GasGuruTheme.colors.neutral600,
             unselectedTextColor = GasGuruTheme.colors.textSubtle
         ),
-        onClick = {
-            onNavigateToDestination()
-        }
+        onClick = onNavigateToDestination
     )
 }
 
