@@ -74,6 +74,14 @@ internal fun NavigationBarScreen(
             StationMapScreenRoute(navigateToDetail = navigateToDetailAsDialog)
 
             if (!onMap) {
+                // Overlay to hide map
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(GasGuruTheme.colors.neutral100)
+                        .zIndex(0.5f)
+                )
+                
                 NavHost(
                     modifier = Modifier
                         .fillMaxSize()
