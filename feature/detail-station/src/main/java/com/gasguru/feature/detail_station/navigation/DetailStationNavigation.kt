@@ -19,10 +19,10 @@ fun NavController.navigateToDetailStationAsDialog(idServiceStation: Int, navOpti
 fun NavGraphBuilder.detailStationScreen(onBack: () -> Unit) {
     composable<DetailStationRoute>(
         enterTransition = {
-           null
+            null
         },
         popExitTransition = {
-           null
+            null
         },
     ) {
         DetailStationScreenRoute(onBack = onBack)
