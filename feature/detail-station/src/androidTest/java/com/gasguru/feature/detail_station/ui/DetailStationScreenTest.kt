@@ -32,10 +32,12 @@ class DetailStationScreenTest : BaseTest() {
                 red = GasGuruTheme.colors.accentRed
                 DetailStationScreen(
                     uiState = DetailStationUiState.Success(station = station, address = null),
-                    onFavoriteClick = { isFavorite ->
-                        station = station.copy(isFavorite = isFavorite)
+                    lastUpdate = 0,
+                    staticMapUrl = "",
+                    onEvent = {
+                        station = station.copy(isFavorite = true)
                     },
-                    lastUpdate = 0
+                    onBack = {},
                 )
             }
 
