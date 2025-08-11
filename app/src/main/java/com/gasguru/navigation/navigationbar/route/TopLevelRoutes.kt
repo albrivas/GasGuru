@@ -1,34 +1,33 @@
 package com.gasguru.navigation.navigationbar.route
 
-import com.gasguru.feature.favorite_list_station.navigation.route.StationListGraph
-import com.gasguru.feature.station_map.navigation.route.StationMapGraph
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.ui.graphics.vector.ImageVector
+import com.gasguru.R
 import kotlinx.serialization.Serializable
 
 @Serializable
 sealed class TopLevelRoutes {
-    @Serializable
-    data class Map(
-        val route: String = "map_route"
-    ) : TopLevelRoutes()
+    abstract val icon: ImageVector
+    abstract val labelRes: Int
 
     @Serializable
-    data class Favorite(
-        val route: String = "favorite_route"
-    ) : TopLevelRoutes()
+    data object Map : TopLevelRoutes() {
+        override val icon = Icons.Outlined.LocationOn
+        override val labelRes = R.string.map_nav
+    }
 
     @Serializable
-    data class Profile(
-        val route: String = "profile_route"
-    ) : TopLevelRoutes()
+    data object Favorite : TopLevelRoutes() {
+        override val icon = Icons.Outlined.FavoriteBorder
+        override val labelRes = R.string.list_nav
+    }
 
-    companion object {
-        fun fromRoute(route: String?): String? {
-            return when {
-                route?.contains("${StationMapGraph.StationMapRoute::class.simpleName}") == true -> Map().route
-                route?.contains("${StationListGraph.StationListRoute::class.simpleName}") == true -> Favorite().route
-                route?.contains("ProfileRoute") == true -> Profile().route
-                else -> null
-            }
-        }
+    @Serializable
+    data object Profile : TopLevelRoutes() {
+        override val icon = Icons.Outlined.AccountCircle
+        override val labelRes = R.string.profile_nav
     }
 }
