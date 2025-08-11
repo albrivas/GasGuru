@@ -7,4 +7,7 @@ data class CarUiState(
     val loading: Boolean = false,
     val stations: List<FuelStation> = emptyList(),
     val selectedFuel: FuelType? = null,
+    val permissionDenied: Boolean = true,
+    val needsOnboarding: Boolean = false,
+    val locationDisabled: Boolean = false,
 )

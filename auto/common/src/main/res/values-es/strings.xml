@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="permission_required_title">Permisos de ubicación</string>
+    <string name="permission_required_message">Acepta los permisos de ubicación dentro de la app</string>
+    <string name="grant_permissions">Intentar de nuevo</string>
+    <string name="onboarding_required_title">Configuración requerida</string>
+    <string name="onboarding_required_message">Selecciona tu combustible preferido en la app del teléfono para continuar</string>
+    <string name="complete_onboarding">Actualizar</string>
+    <string name="location_disabled_title">Ubicación desactivada</string>
+    <string name="location_disabled_message">Activa la ubicación del móvil para encontrar gasolineras</string>
+    <string name="enable_location">Actualizar</string>
+    <string name="app_title">GasGuru Finder</string>
+</resources>
