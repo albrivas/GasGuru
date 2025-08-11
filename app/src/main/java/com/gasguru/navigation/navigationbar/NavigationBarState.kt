@@ -15,7 +15,7 @@ import com.gasguru.navigation.navigationbar.route.TopLevelRoutes
 
 @Composable
 fun rememberNavigationBarState(
-    navController: NavHostController
+    navController: NavHostController,
 ) = remember(navController) {
     NavigationBarState(navController = navController)
 }
@@ -26,21 +26,28 @@ class NavigationBarState(
 ) {
 
     val topLevelRoutes = listOf(
-        TopLevelRoutes,
-        TopLevelRoutes,
-        TopLevelRoutes
+        TopLevelRoutes.Map,
+        TopLevelRoutes.Favorite,
+        TopLevelRoutes.Profile
     )
     val currentDestination: NavDestination?
         @Composable get() = navController.currentBackStackEntryAsState().value?.destination
 
-    val isMapRoute: Boolean
+    private val isMapRoute: Boolean
         @Composable get() = currentDestination?.hasRoute<StationMapGraph.StationMapRoute>() == true
 
-    val isFavoriteRoute: Boolean
+    private val isFavoriteRoute: Boolean
         @Composable get() = currentDestination?.hasRoute<StationListGraph.StationListRoute>() == true
 
-    val isProfileRoute: Boolean
+    private val isProfileRoute: Boolean
         @Composable get() = currentDestination?.hasRoute<ProfileRoute>() == true
+
+    @Composable
+    fun isSelected(route: TopLevelRoutes): Boolean = when (route) {
+        TopLevelRoutes.Map -> isMapRoute
+        TopLevelRoutes.Favorite -> isFavoriteRoute
+        TopLevelRoutes.Profile -> isProfileRoute
+    }
 
     fun onNavItemClick(route: TopLevelRoutes) =
         navController.navigatePoppingUpToStartDestination(route)
@@ -48,9 +55,9 @@ class NavigationBarState(
     @Suppress("IMPLICIT_CAST_TO_ANY")
     private fun NavHostController.navigatePoppingUpToStartDestination(route: TopLevelRoutes) {
         val topLevel = when (route) {
-            is TopLevelRoutes.Map -> StationMapGraph.StationMapRoute
-            is TopLevelRoutes.Favorite -> StationListGraph.StationListRoute
-            is TopLevelRoutes.Profile -> ProfileRoute
+            TopLevelRoutes.Map -> StationMapGraph.StationMapRoute
+            TopLevelRoutes.Favorite -> StationListGraph.StationListRoute
+            TopLevelRoutes.Profile -> ProfileRoute
         }
         navigate(topLevel) {
             popUpTo(graph.findStartDestination().id) {

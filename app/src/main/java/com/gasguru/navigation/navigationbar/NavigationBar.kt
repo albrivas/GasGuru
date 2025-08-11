@@ -2,10 +2,6 @@ package com.gasguru.navigation.navigationbar
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -18,10 +14,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.gasguru.R
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
-import com.gasguru.navigation.navigationbar.route.TopLevelRoutes
 
 @Composable
 internal fun NavigationBottomBar(navController: NavHostController) {
@@ -30,34 +24,12 @@ internal fun NavigationBottomBar(navController: NavHostController) {
         containerColor = GasGuruTheme.colors.neutralWhite,
     ) {
         state.topLevelRoutes.forEach { destination ->
-            when (destination) {
-                is TopLevelRoutes.Favorite ->
-                    BarItem(
-                        icon = Icons.Outlined.FavoriteBorder,
-                        label = stringResource(id = R.string.list_nav),
-                        isSelected = state.isFavoriteRoute,
-                        onNavigateToDestination = { state.onNavItemClick(it) },
-                        destination = destination
-                    )
-
-                is TopLevelRoutes.Map ->
-                    BarItem(
-                        icon = Icons.Outlined.LocationOn,
-                        label = stringResource(id = R.string.map_nav),
-                        isSelected = state.isMapRoute,
-                        onNavigateToDestination = { state.onNavItemClick(it) },
-                        destination = destination
-                    )
-
-                is TopLevelRoutes.Profile ->
-                    BarItem(
-                        icon = Icons.Outlined.AccountCircle,
-                        label = stringResource(id = R.string.profile_nav),
-                        isSelected = state.isProfileRoute,
-                        onNavigateToDestination = { state.onNavItemClick(it) },
-                        destination = destination
-                    )
-            }
+            BarItem(
+                icon = destination.icon,
+                label = stringResource(id = destination.labelRes),
+                isSelected = state.isSelected(destination),
+                onNavigateToDestination = { state.onNavItemClick(destination) },
+            )
         }
     }
 }
@@ -67,8 +39,7 @@ private fun RowScope.BarItem(
     icon: ImageVector,
     label: String,
     isSelected: Boolean,
-    onNavigateToDestination: (TopLevelRoutes) -> Unit,
-    destination: TopLevelRoutes,
+    onNavigateToDestination: () -> Unit,
 ) {
     NavigationBarItem(
         selected = isSelected,
@@ -97,7 +68,7 @@ private fun RowScope.BarItem(
             unselectedTextColor = GasGuruTheme.colors.textSubtle
         ),
         onClick = {
-            onNavigateToDestination(destination)
+            onNavigateToDestination()
         }
     )
 }
