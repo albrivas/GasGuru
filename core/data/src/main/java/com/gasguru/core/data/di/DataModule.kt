@@ -6,6 +6,8 @@ import com.gasguru.core.data.repository.geocoder.GeocoderAddress
 import com.gasguru.core.data.repository.geocoder.GeocoderAddressImpl
 import com.gasguru.core.data.repository.location.LocationTracker
 import com.gasguru.core.data.repository.location.LocationTrackerRepository
+import com.gasguru.core.data.repository.maps.GoogleStaticMapRepository
+import com.gasguru.core.data.repository.maps.StaticMapRepository
 import com.gasguru.core.data.repository.places.PlacesRepository
 import com.gasguru.core.data.repository.places.PlacesRepositoryImp
 import com.gasguru.core.data.repository.search.OfflineRecentSearchRepository
@@ -71,4 +73,9 @@ interface DataModule {
     fun bindConnectivityManager(
         connectivityManagerNetworkMonitor: ConnectivityManagerNetworkMonitor,
     ): NetworkMonitor
+
+    @Binds
+    fun bindStaticMapRepository(
+        googleStaticMapRepository: GoogleStaticMapRepository,
+    ): StaticMapRepository
 }

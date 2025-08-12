@@ -9,9 +9,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.zIndex
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.gasguru.core.uikit.components.divider.DividerLength
 import com.gasguru.core.uikit.components.divider.DividerThickness
 import com.gasguru.core.uikit.components.divider.GasGuruDivider
@@ -20,21 +26,31 @@ import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.feature.favorite_list_station.navigation.stationListGraph
 import com.gasguru.feature.profile.navigation.profileScreen
 import com.gasguru.feature.station_map.navigation.route.StationMapGraph
-import com.gasguru.feature.station_map.navigation.stationMapGraph
+import com.gasguru.feature.station_map.ui.StationMapScreenRoute
 import com.gasguru.navigation.navigationbar.NavigationBottomBar
 
 @Composable
-fun NavigationBarScreenRoute(navController: NavHostController, navigateToDetail: (Int) -> Unit) {
-    NavigationBarScreen(navController = navController, navigateToDetail = navigateToDetail)
+fun NavigationBarScreenRoute(
+    navigateToDetail: (Int) -> Unit,
+    navigateToDetailAsDialog: (Int) -> Unit = navigateToDetail
+) {
+    NavigationBarScreen(
+        navController = rememberNavController(),
+        navigateToDetail = navigateToDetail,
+        navigateToDetailAsDialog = navigateToDetailAsDialog
+    )
 }
 
 @Composable
 internal fun NavigationBarScreen(
     navController: NavHostController,
     navigateToDetail: (Int) -> Unit,
+    navigateToDetailAsDialog: (Int) -> Unit = navigateToDetail,
 ) {
+    val backStack by navController.currentBackStackEntryAsState()
+    val onMap = backStack?.destination?.hasRoute<StationMapGraph.StationMapRoute>() == true
+
     Scaffold(
-        modifier = Modifier,
         bottomBar = {
             Column {
                 GasGuruDivider(
@@ -50,18 +66,33 @@ internal fun NavigationBarScreen(
         contentWindowInsets = WindowInsets.captionBar
     ) { innerPadding ->
         Box(
-            modifier = Modifier
+            Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(color = GasGuruTheme.colors.neutral100)
+                .background(GasGuruTheme.colors.neutral100)
         ) {
-            NavHost(
-                navController = navController,
-                startDestination = StationMapGraph.StationMapGraphRoute
-            ) {
-                stationMapGraph(navigateToDetail = navigateToDetail)
-                stationListGraph(navigateToDetail = navigateToDetail)
-                profileScreen()
+            StationMapScreenRoute(navigateToDetail = navigateToDetailAsDialog)
+
+            if (!onMap) {
+                // Overlay to hide map
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(GasGuruTheme.colors.neutral100)
+                        .zIndex(0.5f)
+                )
+
+                NavHost(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .zIndex(1f),
+                    navController = navController,
+                    startDestination = StationMapGraph.StationMapRoute
+                ) {
+                    composable<StationMapGraph.StationMapRoute> { /* no-op */ }
+                    stationListGraph(navigateToDetail = navigateToDetail)
+                    profileScreen()
+                }
             }
         }
     }
