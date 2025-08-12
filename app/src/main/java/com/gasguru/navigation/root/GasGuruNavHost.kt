@@ -5,7 +5,8 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.gasguru.feature.detail_station.navigation.detailStationScreen
-import com.gasguru.feature.detail_station.navigation.navigateToDetailStation
+import com.gasguru.feature.detail_station.navigation.detailStationScreenDialog
+import com.gasguru.feature.detail_station.navigation.navigateToDetailStationAsDialog
 import com.gasguru.feature.onboarding_welcome.navigation.OnboardingRoutes
 import com.gasguru.feature.onboarding_welcome.navigation.navigateToOnboardingFuelPreferencesRoute
 import com.gasguru.feature.onboarding_welcome.navigation.onboardingFuelPreferencesScreen
@@ -16,7 +17,6 @@ import com.gasguru.navigation.navigationbar.navigationBarHost
 @Composable
 fun GasGuruNavHost(startDestination: Any = OnboardingRoutes.OnboardingWelcomeRoute) {
     val navController = rememberNavController()
-    val navigationBarController = rememberNavController()
 
     NavHost(
         navController = navController,
@@ -34,11 +34,14 @@ fun GasGuruNavHost(startDestination: Any = OnboardingRoutes.OnboardingWelcomeRou
             navigateToHome = { navController.navigateToNavigationBar(navOptions) }
         )
         navigationBarHost(
-            navController = navigationBarController,
             navigateToDetail = { id ->
-                navController.navigateToDetailStation(id)
+                navController.navigateToDetailStationAsDialog(id)
+            },
+            navigateToDetailAsDialog = { id ->
+                navController.navigateToDetailStationAsDialog(id)
             }
         )
         detailStationScreen(onBack = navController::popBackStack)
+        detailStationScreenDialog(onBack = navController::popBackStack)
     }
 }
