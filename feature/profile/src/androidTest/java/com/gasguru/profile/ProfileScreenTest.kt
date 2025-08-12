@@ -5,9 +5,11 @@ import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import com.gasguru.core.model.data.UserData
+import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.testing.BaseTest
+import com.gasguru.core.ui.toUi
 import com.gasguru.feature.profile.R
+import com.gasguru.feature.profile.ui.ProfileContentUi
 import com.gasguru.feature.profile.ui.ProfileScreen
 import com.gasguru.feature.profile.ui.ProfileUiState
 import org.junit.jupiter.api.DisplayName
@@ -30,7 +32,13 @@ class ProfileScreenTest : BaseTest() {
     fun showDialog(): Unit = extension.use {
         setContent {
             ProfileScreen(
-                uiState = ProfileUiState.Success(UserData()),
+                uiState = ProfileUiState.Success(
+                    ProfileContentUi(
+                        fuelTranslation = com.gasguru.core.ui.R.string.gasoline_95,
+                        themeUi = ThemeMode.SYSTEM.toUi(),
+                        allThemesUi = ThemeMode.entries.map { it.toUi() }
+                    )
+                ),
                 event = {})
         }
 
@@ -43,7 +51,12 @@ class ProfileScreenTest : BaseTest() {
     fun showAppVersionInfo(): Unit = extension.use {
         setContent {
             ProfileScreen(
-                uiState = ProfileUiState.Success(UserData()),
+                uiState = ProfileUiState.Success(
+                    ProfileContentUi(
+                        fuelTranslation = com.gasguru.core.ui.R.string.gasoline_95,
+                        themeUi = ThemeMode.SYSTEM.toUi(),
+                        allThemesUi = ThemeMode.entries.map { it.toUi() }
+                    )),
                 event = {})
         }
 
