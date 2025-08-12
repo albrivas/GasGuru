@@ -4,4 +4,9 @@ data class UserData(
     val isOnboardingSuccess: Boolean = false,
     val fuelSelection: FuelType = FuelType.GASOLINE_95,
     val lastUpdate: Long = System.currentTimeMillis(),
+    val themeMode: ThemeMode = ThemeMode.SYSTEM
 )
+
+enum class ThemeMode {
+    DARK, LIGHT, SYSTEM
+}

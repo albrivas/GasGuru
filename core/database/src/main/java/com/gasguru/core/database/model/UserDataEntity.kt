@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.gasguru.core.model.data.FuelType
+import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.model.data.UserData
 
 @Entity(
@@ -16,11 +17,14 @@ data class UserDataEntity(
     @ColumnInfo(defaultValue = "0")
     val lastUpdate: Long,
     @ColumnInfo(defaultValue = "0")
-    val isOnboardingSuccess: Boolean
+    val isOnboardingSuccess: Boolean,
+    @ColumnInfo(defaultValue = "SYSTEM")
+    val themeMode: ThemeMode = ThemeMode.SYSTEM
 )
 
 fun UserDataEntity.asExternalModel() = UserData(
     fuelSelection = fuelSelection,
     lastUpdate = lastUpdate,
-    isOnboardingSuccess = isOnboardingSuccess
+    isOnboardingSuccess = isOnboardingSuccess,
+    themeMode = themeMode
 )
