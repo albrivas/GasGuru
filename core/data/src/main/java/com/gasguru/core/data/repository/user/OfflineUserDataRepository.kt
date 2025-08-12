@@ -6,6 +6,7 @@ import com.gasguru.core.database.dao.UserDataDao
 import com.gasguru.core.database.model.FavoriteStationCrossRef
 import com.gasguru.core.database.model.asExternalModel
 import com.gasguru.core.model.data.FuelType
+import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.model.data.UserData
 import com.gasguru.core.model.data.UserWithFavoriteStations
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -26,6 +27,11 @@ class OfflineUserDataRepository @Inject constructor(
     override suspend fun updateSelectionFuel(fuelType: FuelType) {
         val user = userDataDao.getUserData().firstOrNull()?.asExternalModel() ?: UserData()
         saveUserData(user.copy(fuelSelection = fuelType, isOnboardingSuccess = true))
+    }
+
+    override suspend fun updateThemeMode(themeMode: ThemeMode) {
+        val user = userDataDao.getUserData().firstOrNull()?.asExternalModel() ?: UserData()
+        saveUserData(user.copy(themeMode = themeMode))
     }
 
     override suspend fun updateLastUpdate() {

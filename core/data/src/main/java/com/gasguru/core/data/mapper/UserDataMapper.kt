@@ -6,5 +6,6 @@ import com.gasguru.core.model.data.UserData
 fun UserData.asEntity() = UserDataEntity(
     fuelSelection = fuelSelection,
     lastUpdate = lastUpdate,
-    isOnboardingSuccess = isOnboardingSuccess
+    isOnboardingSuccess = isOnboardingSuccess,
+    themeMode = themeMode
 )

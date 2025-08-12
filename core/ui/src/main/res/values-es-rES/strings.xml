@@ -18,4 +18,7 @@
     <string name="sin_sp95_e10">Sin SP 95 E10</string>
     <string name="sin_sp98_premium">Sin SP 98 Premium</string>
     <string name="sin_gasoleo_b">Sin Gasóleo B</string>
+    <string name="theme_mode_light">Claro</string>
+    <string name="theme_mode_dark">Oscuro</string>
+    <string name="theme_mode_system">Predeterminado del sistema</string>
 </resources>
