@@ -66,6 +66,6 @@ internal val MIGRATION_7_8 = object : Migration(DB_VERSION_7, DB_VERSION_8) {
 
 internal val MIGRATION_8_9 = object : Migration(DB_VERSION_8, DB_VERSION_9) {
     override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL("ALTER TABLE 'user-data' ADD COLUMN 'themeMode' TEXT NOT NULL DEFAULT 'SYSTEM'")
+        db.execSQL("ALTER TABLE 'user-data' ADD COLUMN 'themeModeId' INTEGER NOT NULL DEFAULT 3")
     }
 }
