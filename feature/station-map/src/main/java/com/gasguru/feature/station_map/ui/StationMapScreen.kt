@@ -153,6 +153,7 @@ internal fun StationMapScreen(
     var searchBarHeightPx by remember { mutableIntStateOf(0) }
     val bottomBarHeightPx = 90.dpToPx()
     val peekHeight = 60.dp
+    var isSearchActive by remember { mutableStateOf(false) }
 
     val density = LocalDensity.current
     val configuration = LocalConfiguration.current
@@ -184,7 +185,7 @@ internal fun StationMapScreen(
         sheetContentColor = GasGuruTheme.colors.neutral100,
         scaffoldState = scaffoldState,
         sheetShadowElevation = 32.dp,
-        sheetPeekHeight = peekHeight,
+        sheetPeekHeight = if (isSearchActive) 0.dp else peekHeight,
         sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
         sheetDragHandle = {
             Surface(
@@ -262,6 +263,7 @@ internal fun StationMapScreen(
                         searchResultUiState = searchResultUiState,
                         recentSearchQueries = recentSearchQueries,
                         onHeight = { searchBarHeightPx = it },
+                        onActiveChange = { isSearchActive = it },
                         event = event,
                     )
                     FilterGroup(
@@ -273,6 +275,7 @@ internal fun StationMapScreen(
                 }
                 FABLocation(
                     modifier = Modifier.align(Alignment.BottomEnd),
+                    isVisible = !isSearchActive,
                     event = event,
                 )
             }
@@ -407,26 +410,29 @@ fun MapView(
 @Composable
 fun FABLocation(
     modifier: Modifier,
+    isVisible: Boolean = true,
     event: (StationMapEvent) -> Unit = {},
 ) {
-    Column(
-        modifier = modifier.padding(horizontal = 16.dp, vertical = 76.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        FloatingActionButton(
-            onClick = {
-                event(StationMapEvent.GetStationByCurrentLocation)
-            },
-            modifier = modifier,
-            shape = CircleShape,
-            containerColor = GasGuruTheme.colors.neutralWhite,
-            contentColor = GasGuruTheme.colors.neutralBlack,
+    if (isVisible) {
+        Column(
+            modifier = modifier.padding(horizontal = 16.dp, vertical = 76.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Icon(
-                imageVector = ImageVector.vectorResource(id = RUikit.drawable.ic_my_location),
-                tint = GasGuruTheme.colors.textSubtle,
-                contentDescription = "User location",
-            )
+            FloatingActionButton(
+                onClick = {
+                    event(StationMapEvent.GetStationByCurrentLocation)
+                },
+                modifier = modifier,
+                shape = CircleShape,
+                containerColor = GasGuruTheme.colors.neutralWhite,
+                contentColor = GasGuruTheme.colors.neutralBlack,
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = RUikit.drawable.ic_my_location),
+                    tint = GasGuruTheme.colors.textSubtle,
+                    contentDescription = "User location",
+                )
+            }
         }
     }
 }
@@ -438,6 +444,7 @@ fun SearchPlaces(
     searchResultUiState: SearchResultUiState,
     recentSearchQueries: RecentSearchQueriesUiState,
     onHeight: (Int) -> Unit,
+    onActiveChange: (Boolean) -> Unit = {},
     event: (StationMapEvent) -> Unit = {},
 ) {
     var active by remember { mutableStateOf(false) }
@@ -483,7 +490,10 @@ fun SearchPlaces(
                 },
                 leadingIcon = {
                     if (active) {
-                        IconButton(onClick = { active = false }) {
+                        IconButton(onClick = {
+                            active = false
+                            onActiveChange(false)
+                        }) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 tint = GasGuruTheme.colors.neutralBlack,
@@ -510,7 +520,10 @@ fun SearchPlaces(
                     }
                 },
                 active = active,
-                onActiveChange = { active = it },
+                onActiveChange = {
+                    active = it
+                    onActiveChange(it)
+                },
                 shadowElevation = 2.dp,
                 colors = SearchBarDefaults.colors(
                     containerColor = GasGuruTheme.colors.neutralWhite,
