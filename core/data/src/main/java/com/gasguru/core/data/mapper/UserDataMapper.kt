@@ -7,5 +7,5 @@ fun UserData.asEntity() = UserDataEntity(
     fuelSelection = fuelSelection,
     lastUpdate = lastUpdate,
     isOnboardingSuccess = isOnboardingSuccess,
-    themeMode = themeMode
+    themeModeId = themeMode.id
 )

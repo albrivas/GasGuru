@@ -18,13 +18,13 @@ data class UserDataEntity(
     val lastUpdate: Long,
     @ColumnInfo(defaultValue = "0")
     val isOnboardingSuccess: Boolean,
-    @ColumnInfo(defaultValue = "SYSTEM")
-    val themeMode: ThemeMode = ThemeMode.SYSTEM
+    @ColumnInfo(defaultValue = "3")
+    val themeModeId: Int = ThemeMode.SYSTEM.id
 )
 
 fun UserDataEntity.asExternalModel() = UserData(
     fuelSelection = fuelSelection,
     lastUpdate = lastUpdate,
     isOnboardingSuccess = isOnboardingSuccess,
-    themeMode = themeMode
+    themeMode = ThemeMode.fromId(themeModeId)
 )
