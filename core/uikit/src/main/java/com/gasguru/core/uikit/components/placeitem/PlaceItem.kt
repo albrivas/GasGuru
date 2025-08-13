@@ -61,6 +61,7 @@ fun PlaceItem(model: PlaceItemModel, isLastItem: Boolean) = with(model) {
             Text(
                 modifier = Modifier,
                 text = name,
+                color = GasGuruTheme.colors.textSubtle,
                 style = GasGuruTheme.typography.baseRegular
             )
         }
