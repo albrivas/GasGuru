@@ -6,3 +6,7 @@ data class UserData(
     val lastUpdate: Long = System.currentTimeMillis(),
     val themeMode: ThemeMode = ThemeMode.SYSTEM
 )
+
+enum class ThemeMode {
+    DARK, LIGHT, SYSTEM
+}
