@@ -58,12 +58,6 @@ import kotlinx.coroutines.launch
 import com.gasguru.core.ui.R as RUi
 import com.gasguru.core.uikit.R as RUikit
 
-sealed class ProfileSheet {
-    object None : ProfileSheet()
-    object Fuel : ProfileSheet()
-    object Theme : ProfileSheet()
-}
-
 @Composable
 internal fun ProfileScreenRoute(viewModel: ProfileViewModel = hiltViewModel()) {
     val state by viewModel.userData.collectAsStateWithLifecycle()
@@ -126,10 +120,10 @@ private fun ProfileSheetHandler(
     scope: CoroutineScope
 ) {
     when (activeSheet) {
-        ProfileSheet.None -> {}
+        ProfileSheet.None -> { Unit }
         ProfileSheet.Theme -> {
             ThemeModeSheet(
-                selectedOption = stringResource(content.themeUi.titleRes),
+                selectedTheme = content.themeUi,
                 allThemesUi = content.allThemesUi,
                 onDismiss = onDismiss,
                 onThemeSelected = { theme ->
@@ -252,29 +246,26 @@ fun FuelSelectionSheet(
 
 @Composable
 fun ThemeModeSheet(
-    selectedOption: String,
+    selectedTheme: ThemeModeUi,
     allThemesUi: List<ThemeModeUi>,
     onDismiss: () -> Unit,
     onThemeSelected: (ThemeModeUi) -> Unit
 ) {
     val themeOptions = allThemesUi.map { stringResource(it.titleRes) }
+    val selectedOption = stringResource(selectedTheme.titleRes)
 
     FilterSheet(
         model = FilterSheetModel(
             title = stringResource(R.string.theme_mode),
             buttonText = "Save",
             isMultiOption = false,
-            isMustSelection = false,
+            isMustSelection = true,
             options = themeOptions,
             optionsSelected = listOf(selectedOption),
             onDismiss = onDismiss,
             onSaveButton = { selectedOptions ->
-                if (selectedOptions.isNotEmpty()) {
-                    val selectedIndex = themeOptions.indexOf(selectedOptions.first())
-                    if (selectedIndex >= 0) {
-                        onThemeSelected(allThemesUi[selectedIndex])
-                    }
-                }
+                val selectedIndex = themeOptions.indexOf(selectedOptions.first())
+                onThemeSelected(allThemesUi[selectedIndex])
             },
             type = FilterSheetType.NORMAL,
         )

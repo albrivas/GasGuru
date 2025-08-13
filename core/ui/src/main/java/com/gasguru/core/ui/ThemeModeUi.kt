@@ -3,7 +3,6 @@ package com.gasguru.core.ui
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.uikit.R as RUikit
 
@@ -12,14 +11,8 @@ data class ThemeModeUi(
     val mode: ThemeMode,
     @StringRes val titleRes: Int,
     @DrawableRes val iconRes: Int
-)
-
-class ThemeModeUiPreviewParameterProvider : PreviewParameterProvider<ThemeModeUi> {
-    override val values = sequenceOf(
-        ThemeMode.SYSTEM.toUi(),
-        ThemeMode.LIGHT.toUi(),
-        ThemeMode.DARK.toUi()
-    )
+) {
+    val id: Int get() = mode.id
 }
 
 fun ThemeMode.toUi(): ThemeModeUi = when (this) {
