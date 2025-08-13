@@ -14,6 +14,12 @@ data class ProfileContentUi(
     val allThemesUi: List<ThemeModeUi>
 )
 
+sealed class ProfileSheet {
+    object None : ProfileSheet()
+    object Fuel : ProfileSheet()
+    object Theme : ProfileSheet()
+}
+
 sealed interface ProfileUiState {
     data object Loading : ProfileUiState
     data class Success(val content: ProfileContentUi) : ProfileUiState
