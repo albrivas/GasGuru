@@ -4,9 +4,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.gasguru.core.uikit.theme.Neutral300
 
 fun Modifier.borderWithoutTopBorder(strokeWidth: Float = 3f, color: Color = Color.Black): Modifier =
     this.drawBehind {
@@ -50,18 +48,3 @@ fun Modifier.horizontalDivider(color: Color, isLastItem: Boolean): Modifier =
             )
         }
     }
-
-fun Modifier.drawBottomDivider(
-    color: Color = Neutral300,
-    thickness: Dp = 1.dp
-): Modifier = this.then(
-    Modifier.drawBehind {
-        val y = size.height - thickness.toPx()
-        drawLine(
-            color = color,
-            start = Offset(x = 0f, y = y),
-            end = Offset(x = size.width, y = y),
-            strokeWidth = thickness.toPx()
-        )
-    }
-)

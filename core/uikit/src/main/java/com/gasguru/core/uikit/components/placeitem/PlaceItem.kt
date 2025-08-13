@@ -18,25 +18,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
-import com.gasguru.core.uikit.theme.Neutral300
-import com.gasguru.core.uikit.utils.drawBottomDivider
+import com.gasguru.core.uikit.utils.horizontalDivider
 
 @Composable
-fun PlaceItem(model: PlaceItemModel) = with(model) {
+fun PlaceItem(model: PlaceItemModel, isLastItem: Boolean) = with(model) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RectangleShape)
             .clickable { onClickItem() }
             .padding(horizontal = 12.dp)
-            .drawBottomDivider()
+            .horizontalDivider(color = GasGuruTheme.colors.neutral300, isLastItem = isLastItem)
     ) {
         Row(
             modifier = Modifier
@@ -49,12 +47,12 @@ fun PlaceItem(model: PlaceItemModel) = with(model) {
                 modifier = Modifier
                     .size(32.dp)
                     .clip(CircleShape)
-                    .background(color = Neutral300)
+                    .background(color = GasGuruTheme.colors.neutral300)
             ) {
                 Image(
                     imageVector = icon,
                     contentDescription = "recent item",
-                    colorFilter = ColorFilter.tint(Color.Black),
+                    colorFilter = ColorFilter.tint(GasGuruTheme.colors.neutralBlack),
                     modifier = Modifier
                         .size(16.dp)
                         .align(Alignment.Center)
@@ -78,7 +76,9 @@ private fun PlaceItemPreview() {
                 id = "1",
                 icon = Icons.Outlined.Schedule,
                 name = "Talavera de la Reina, Spain",
-                onClickItem = { })
+                onClickItem = { }
+            ),
+            isLastItem = false
         )
     }
 }

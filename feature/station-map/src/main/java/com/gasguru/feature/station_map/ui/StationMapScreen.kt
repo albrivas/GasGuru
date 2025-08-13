@@ -2,7 +2,6 @@ package com.gasguru.feature.station_map.ui
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -27,6 +26,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.AccessTime
+import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -55,13 +56,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.Dp
@@ -83,10 +82,6 @@ import com.gasguru.core.ui.toColor
 import com.gasguru.core.uikit.components.chip.FilterType
 import com.gasguru.core.uikit.components.chip.SelectableFilter
 import com.gasguru.core.uikit.components.chip.SelectableFilterModel
-import com.gasguru.core.uikit.components.divider.DividerLength
-import com.gasguru.core.uikit.components.divider.DividerThickness
-import com.gasguru.core.uikit.components.divider.GasGuruDivider
-import com.gasguru.core.uikit.components.divider.GasGuruDividerModel
 import com.gasguru.core.uikit.components.filter_sheet.FilterSheet
 import com.gasguru.core.uikit.components.filter_sheet.FilterSheetModel
 import com.gasguru.core.uikit.components.filter_sheet.FilterSheetType
@@ -166,12 +161,12 @@ internal fun StationMapScreen(
         val screenHeightPx = with(density) { configuration.screenHeightDp.dp.toPx() }
         with(density) {
             (
-                screenHeightPx -
-                    filtersHeightPx -
-                    searchBarHeightPx -
-                    bottomBarHeightPx -
-                    peekHeight.toPx()
-                ).toDp()
+                    screenHeightPx -
+                            filtersHeightPx -
+                            searchBarHeightPx -
+                            bottomBarHeightPx -
+                            peekHeight.toPx()
+                    ).toDp()
         }
     }
 
@@ -314,7 +309,7 @@ fun ListFuelStations(
                     categoryColor = item.priceCategory.toColor(),
                     onItemClick = navigateToDetail
                 ),
-                isLastItem = item.idServiceStation == stations.last().idServiceStation
+                isLastItem = index == stations.size - 1
             )
         }
     }
@@ -534,9 +529,10 @@ fun SearchPlaces(
                     }
 
                     SearchResultUiState.LoadFailed,
-                    -> Unit
-                SearchResultUiState.LoadFailed,
-                    -> Unit
+                        -> Unit
+
+                    SearchResultUiState.LoadFailed,
+                        -> Unit
 
                     SearchResultUiState.EmptyQuery -> {
                         if (recentSearchQueries is RecentSearchQueriesUiState.Success) {
@@ -608,7 +604,8 @@ fun SearchResultBody(
                             event(StationMapEvent.GetStationByPlace(place.id))
                             event(StationMapEvent.UpdateSearchQuery(place.name))
                         }
-                    )
+                    ),
+                    isLastItem = false
                 )
             }
         }
@@ -709,12 +706,12 @@ fun RecentSearchQueriesBody(
                 PlaceItem(
                     model = PlaceItemModel(
                         id = recentSearchQuery.id,
-                        icon = Icons.Outlined.LocationOn,
+                        icon = Icons.Outlined.AccessTime,
                         name = recentSearchQuery.name,
                         onClickItem = {
                             onRecentSearchClicked(recentSearchQuery)
                         }
-                    )
+                    ), isLastItem = false
                 )
             }
         }
