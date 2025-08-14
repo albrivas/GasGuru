@@ -49,7 +49,8 @@ materialIcons = "1.7.8"
 constraintLayout = "1.1.0"
 androidTools = "31.7.3"
 androidxCarApp = "1.4.0"
-
+onesignal = "5.1.35"
+mixpanel = "7.+"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
@@ -113,9 +114,11 @@ junit5-compose = { module = "de.mannodermaus.junit5:android-test-compose", versi
 junit5-runner = { module = "de.mannodermaus.junit5:android-test-runner", version.ref = "junit5Extensions" }
 junit5-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit5Api" }
 material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIcons" }
-constraint-layout = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintLayout"}
+constraint-layout = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintLayout" }
 androidx-car-app = { module = "androidx.car.app:app", version.ref = "androidxCarApp" }
 androidx-auto = { module = "androidx.car.app:app-projected", version.ref = "androidxCarApp" }
+onesignal = { module = "com.onesignal:OneSignal", version.ref = "onesignal" }
+mixpanel = { module = "com.mixpanel.android:mixpanel-android", version.ref = "mixpanel" }
 
 # Dependencies of the included build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
@@ -166,7 +169,7 @@ gasguru-hilt = { id = "gasguru.hilt" }
 gasguru-compose-library = { id = "gasguru.android.library.compose" }
 gasguru-room = { id = "gasguru.room" }
 gasguru-firebase = { id = "gasguru.firebase" }
-gasguru-flavors = { id =  "gasguru.flavors" }
+gasguru-flavors = { id = "gasguru.flavors" }
 gasguru-jacoco = { id = "gasguru.jacoco" }
 gasguru-secrets-google = { id = "gasguru.secrets.google" }
 gasguru-proguard = { id = "gasguru.proguard" }
