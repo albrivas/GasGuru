@@ -6,4 +6,4 @@ name: "Onboarding flow - Select fuel"
 - tapOn: "SP 95"
 - tapOn: "Continue"
 - assertVisible:
-    text: "Search by locations"
+    id: "search_bar"
