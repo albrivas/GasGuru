@@ -16,6 +16,7 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.uikit)
     implementation(projects.core.common)
+    implementation(projects.core.components)
     
     implementation(libs.kotlin.coroutines.play)
     implementation(libs.maps.compose)
