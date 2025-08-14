@@ -97,6 +97,7 @@ import com.gasguru.core.uikit.components.placeitem.PlaceItemModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
+import com.gasguru.core.uikit.utils.maestroTestTag
 import com.gasguru.feature.station_map.BuildConfig
 import com.gasguru.feature.station_map.R
 import com.google.android.gms.maps.GoogleMapOptions
@@ -540,7 +541,8 @@ fun SearchPlaces(
                 start = paddingAnimation,
                 end = paddingAnimation
             )
-            .onGloballyPositioned { onHeight(it.size.height) },
+            .onGloballyPositioned { onHeight(it.size.height) }
+            .maestroTestTag("search_bar"),
         shadowElevation = 2.dp,
         colors = SearchBarDefaults.colors(
             containerColor = GasGuruTheme.colors.neutralWhite,
