@@ -10,50 +10,33 @@ import com.gasguru.core.domain.filters.SaveFilterUseCase
 import com.gasguru.core.domain.fuelstation.FuelStationByLocationUseCase
 import com.gasguru.core.domain.location.GetCurrentLocationUseCase
 import com.gasguru.core.domain.places.GetLocationPlaceUseCase
-import com.gasguru.core.domain.places.GetPlacesUseCase
-import com.gasguru.core.domain.search.ClearRecentSearchQueriesUseCase
-import com.gasguru.core.domain.search.GetRecentSearchQueryUseCase
-import com.gasguru.core.domain.search.InsertRecentSearchQueryUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.model.data.Filter
 import com.gasguru.core.model.data.FilterType
-import com.gasguru.core.model.data.SearchPlace
 import com.google.android.gms.maps.model.LatLngBounds
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-private const val SEARCH_QUERY = "searchQuery"
-private const val SEARCH_QUERY_MIN_LENGTH = 2
-
 @HiltViewModel
 class StationMapViewModel @Inject constructor(
     private val fuelStationByLocation: FuelStationByLocationUseCase,
     private val getUserDataUseCase: GetUserDataUseCase,
     private val savedStateHandle: SavedStateHandle,
-    private val getPlacesUseCase: GetPlacesUseCase,
     private val getLocationPlaceUseCase: GetLocationPlaceUseCase,
-    private val clearRecentSearchQueriesUseCase: ClearRecentSearchQueriesUseCase,
-    private val insertRecentSearchQueryUseCase: InsertRecentSearchQueryUseCase,
-    getRecentSearchQueryUseCase: GetRecentSearchQueryUseCase,
     private val getCurrentLocationUseCase: GetCurrentLocationUseCase,
     getFiltersUseCase: GetFiltersUseCase,
     private val saveFilterUseCase: SaveFilterUseCase,
 ) : ViewModel() {
-
-    val searchQuery = savedStateHandle.getStateFlow(key = SEARCH_QUERY, initialValue = "")
 
     private val _state = MutableStateFlow(StationMapUiState())
     val state: StateFlow<StationMapUiState> = _state
@@ -62,42 +45,10 @@ class StationMapViewModel @Inject constructor(
         getStationByCurrentLocation()
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val searchResultUiState: StateFlow<SearchResultUiState> =
-        searchQuery.flatMapLatest { query ->
-            if (query.length < SEARCH_QUERY_MIN_LENGTH) {
-                flowOf(SearchResultUiState.EmptyQuery)
-            } else {
-                getPlacesUseCase(query).map { predictions ->
-                    if (predictions.isEmpty()) {
-                        SearchResultUiState.EmptySearchResult
-                    } else {
-                        SearchResultUiState.Success(predictions)
-                    }
-                }
-            }
-        }.catch { SearchResultUiState.LoadFailed }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = SearchResultUiState.Loading,
-        )
-
-    val recentSearchQueriesUiState: StateFlow<RecentSearchQueriesUiState> =
-        getRecentSearchQueryUseCase().map { recentQueries ->
-            RecentSearchQueriesUiState.Success(recentQueries)
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = RecentSearchQueriesUiState.Loading,
-        )
-
     fun handleEvent(event: StationMapEvent) {
         when (event) {
             is StationMapEvent.GetStationByCurrentLocation -> getStationByCurrentLocation()
-            is StationMapEvent.ClearRecentSearches -> clearRecentSearches()
-            is StationMapEvent.InsertRecentSearch -> insertRecentSearch(event.searchQuery)
             is StationMapEvent.GetStationByPlace -> getStationByPlace(event.placeId)
-            is StationMapEvent.UpdateSearchQuery -> onSearchQueryChanged(event.query)
             is StationMapEvent.ShowListStations -> showListStation(event.show)
             is StationMapEvent.UpdateBrandFilter -> updateFilterBrand(event.selected)
             is StationMapEvent.UpdateNearbyFilter -> updateFilterNearby(event.number)
@@ -110,10 +61,6 @@ class StationMapViewModel @Inject constructor(
         _state.update { it.copy(shouldCenterMap = false) }
     }
 
-    private fun onSearchQueryChanged(query: String) {
-        savedStateHandle[SEARCH_QUERY] = query
-    }
-
     private fun getStationByCurrentLocation() {
         viewModelScope.launch {
             _state.update { it.copy(loading = true) }
@@ -121,14 +68,6 @@ class StationMapViewModel @Inject constructor(
                 getStationByLocation(location)
             }
         }
-    }
-
-    private fun clearRecentSearches() = viewModelScope.launch {
-        clearRecentSearchQueriesUseCase()
-    }
-
-    private fun insertRecentSearch(searchQuery: SearchPlace) = viewModelScope.launch {
-        insertRecentSearchQueryUseCase(placeId = searchQuery.id, name = searchQuery.name)
     }
 
     private fun getStationByPlace(placeId: String) =
