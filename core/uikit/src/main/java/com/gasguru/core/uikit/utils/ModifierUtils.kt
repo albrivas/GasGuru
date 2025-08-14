@@ -55,15 +55,15 @@ fun Modifier.horizontalDivider(color: Color, isLastItem: Boolean): Modifier =
 
 /**
  * Custom modifier to add testTag and semantics for Maestro Mobile testing.
- * 
+ *
  * This modifier adds both testTag (for Compose UI testing) and semantics with testTagsAsResourceId
  * to make the element easily discoverable by Maestro Mobile and other Android testing tools.
  * The testTagsAsResourceId = true converts the tag to a native Android resource ID for better
  * performance and compatibility.
- * 
+ *
  * @param tag The unique identifier for the element in Maestro tests
  * @return Modifier with testTag and semantics configured for testing
- * 
+ *
  * Usage example:
  * ```kotlin
  * Button(
@@ -73,7 +73,7 @@ fun Modifier.horizontalDivider(color: Color, isLastItem: Boolean): Modifier =
  *     Text("Login")
  * }
  * ```
- * 
+ *
  * In Maestro tests:
  * ```yaml
  * - tapOn:
