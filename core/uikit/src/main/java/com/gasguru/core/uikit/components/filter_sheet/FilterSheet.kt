@@ -125,7 +125,7 @@ private fun FilterSheetContent(model: FilterSheetModel, onDismiss: () -> Unit) =
                 .background(GasGuruTheme.colors.neutralWhite)
         ) {
             val neutral300 = GasGuruTheme.colors.neutral300
-            options.forEach { item ->
+            options.forEachIndexed { index, item ->
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -140,7 +140,7 @@ private fun FilterSheetContent(model: FilterSheetModel, onDismiss: () -> Unit) =
                                 isMustSelection
                             )
                         }
-                        .horizontalDivider(color = neutral300, isLastItem = item == options.last()),
+                        .horizontalDivider(color = neutral300, isLastItem = index == options.size - 1),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     iconMap?.get(item)?.let { iconResId ->
