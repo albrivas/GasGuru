@@ -412,8 +412,6 @@ fun FABLocation(
     }
 }
 
-
-
 @Composable
 private fun FilterGroup(
     filterUiState: FilterUiState,
@@ -567,4 +565,3 @@ private fun StationMapScreenPreview() {
         )
     }
 }
-

@@ -27,7 +27,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 @HiltViewModel
 class StationMapViewModel @Inject constructor(
     private val fuelStationByLocation: FuelStationByLocationUseCase,
@@ -39,14 +38,12 @@ class StationMapViewModel @Inject constructor(
     private val saveFilterUseCase: SaveFilterUseCase,
 ) : ViewModel() {
 
-
     private val _state = MutableStateFlow(StationMapUiState())
     val state: StateFlow<StationMapUiState> = _state
 
     init {
         getStationByCurrentLocation()
     }
-
 
     fun handleEvent(event: StationMapEvent) {
         when (event) {
@@ -64,7 +61,6 @@ class StationMapViewModel @Inject constructor(
         _state.update { it.copy(shouldCenterMap = false) }
     }
 
-
     private fun getStationByCurrentLocation() {
         viewModelScope.launch {
             _state.update { it.copy(loading = true) }
@@ -73,7 +69,6 @@ class StationMapViewModel @Inject constructor(
             }
         }
     }
-
 
     private fun getStationByPlace(placeId: String) =
         viewModelScope.launch {

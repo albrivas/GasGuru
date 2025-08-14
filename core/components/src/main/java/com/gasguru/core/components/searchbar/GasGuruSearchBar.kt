@@ -62,7 +62,7 @@ fun GasGuruSearchBar(
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val searchResultUiState by viewModel.searchResultUiState.collectAsStateWithLifecycle()
     val recentSearchQueriesUiState by viewModel.recentSearchQueriesUiState.collectAsStateWithLifecycle()
-    
+
     GasGuruSearchBarContent(
         model = model,
         searchQuery = searchQuery,
@@ -128,7 +128,7 @@ internal fun GasGuruSearchBarContent(
                 },
                 trailingIcon = {
                     if (searchQuery.isNotEmpty()) {
-                        IconButton(onClick = { 
+                        IconButton(onClick = {
                             onEvent(GasGuruSearchBarEvent.UpdateSearchQuery(""))
                         }) {
                             Icon(
@@ -386,13 +386,13 @@ private fun GasGuruSearchBarPreview() {
 }
 
 @Composable
-@ThemePreviews  
+@ThemePreviews
 private fun RecentSearchQueriesBodyPreview() {
     MyApplicationTheme {
         RecentSearchQueriesBody(
             recentSearchQueries = listOf(
                 RecentSearchQuery("Barcelona", "1"),
-                RecentSearchQuery("Madrid", "2"), 
+                RecentSearchQuery("Madrid", "2"),
                 RecentSearchQuery("Valencia", "3"),
             )
         )
@@ -415,7 +415,7 @@ private fun SearchResultBodyPreview() {
             places = listOf(
                 SearchPlace("Barcelona", "1"),
                 SearchPlace("Madrid", "2"),
-                SearchPlace("Valencia", "3"), 
+                SearchPlace("Valencia", "3"),
             ),
             onPlaceSelected = {}
         )
