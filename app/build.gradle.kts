@@ -116,4 +116,8 @@ dependencies {
     implementation(libs.firebase.analytics)
 
     implementation(libs.splash.screen)
+
+    // Analytics
+    implementation(libs.mixpanel)
+    implementation(libs.onesignal)
 }
