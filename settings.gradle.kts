@@ -35,6 +35,7 @@ include(":core:network")
 include(":core:model")
 include(":core:uikit")
 include(":core:common")
+include(":core:components")
 
 include(":feature:onboarding")
 include(":feature:detail-station")
