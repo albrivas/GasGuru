@@ -28,6 +28,8 @@ jobs:
           echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> local.properties
           echo "keyAlias=${{ secrets.KEYSTORE_ALIAS }}" >> local.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> local.properties
+          echo "onesignalAppId=${{ secrets.ONE_SIGNAL }}" >> local.properties
+          echo "mixpanelProjectToken=${{ secrets.MIXPANEL }}" >> local.properties
 
       - name: Create google-services.json
         env:
