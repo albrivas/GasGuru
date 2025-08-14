@@ -90,6 +90,7 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.auto.common)
     implementation(projects.core.network)
+    implementation(projects.feature.search)
     mockImplementation(projects.mocknetwork)
     androidTestImplementation(projects.core.testing)
 
