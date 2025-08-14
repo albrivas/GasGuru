@@ -36,7 +36,7 @@ playServicesLocation = "21.3.0"
 lottie = "6.6.2"
 googleGmsGoogleServices = "4.4.2"
 detekt = "1.23.8"
-mapsCompose = "6.7.0"
+mapsCompose = "6.7.1"
 playServicesMaps = "19.2.0"
 secrets = "2.0.1"
 places = "4.1.0"
@@ -168,3 +168,5 @@ gasguru-room = { id = "gasguru.room" }
 gasguru-firebase = { id = "gasguru.firebase" }
 gasguru-flavors = { id =  "gasguru.flavors" }
 gasguru-jacoco = { id = "gasguru.jacoco" }
+gasguru-secrets-google = { id = "gasguru.secrets.google" }
+gasguru-proguard = { id = "gasguru.proguard" }
