@@ -57,7 +57,6 @@ import com.gasguru.core.uikit.utils.maestroTestTag
 fun GasGuruSearchBar(
     model: GasGuruSearchBarModel,
     viewModel: GasGuruSearchBarViewModel = hiltViewModel(),
-    state: GasGuruSearchBarState = rememberGasGuruSearchBarState(),
 ) {
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val searchResultUiState by viewModel.searchResultUiState.collectAsStateWithLifecycle()
@@ -68,7 +67,7 @@ fun GasGuruSearchBar(
         searchQuery = searchQuery,
         searchResultUiState = searchResultUiState,
         recentSearchQueriesUiState = recentSearchQueriesUiState,
-        state = state,
+        state = rememberGasGuruSearchBarState(alwaysActive = model.alwaysActive),
         onEvent = viewModel::handleEvent
     )
 }
@@ -80,7 +79,7 @@ internal fun GasGuruSearchBarContent(
     searchQuery: String,
     searchResultUiState: SearchResultUiState,
     recentSearchQueriesUiState: RecentSearchQueriesUiState,
-    state: GasGuruSearchBarState = rememberGasGuruSearchBarState(),
+    state: GasGuruSearchBarState,
     onEvent: (GasGuruSearchBarEvent) -> Unit = {},
 ) {
     val focusManager = LocalFocusManager.current
@@ -109,8 +108,12 @@ internal fun GasGuruSearchBarContent(
                 leadingIcon = {
                     if (state.active) {
                         IconButton(onClick = {
-                            state.deactivateWithFocusClear { focusManager.clearFocus() }
-                            model.onActiveChange(false)
+                            if (model.alwaysActive) {
+                                model.onBackPressed()
+                            } else {
+                                state.deactivateWithFocusClear { focusManager.clearFocus() }
+                                model.onActiveChange(false)
+                            }
                         }) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -195,7 +198,8 @@ internal fun GasGuruSearchBarContent(
                             RecentSearchQueriesBody(
                                 recentSearchQueries = recentState.recentQueries,
                                 onRecentSearchClicked = { recentQuery ->
-                                    val searchPlace = SearchPlace(name = recentQuery.name, id = recentQuery.id)
+                                    val searchPlace =
+                                        SearchPlace(name = recentQuery.name, id = recentQuery.id)
                                     onEvent(GasGuruSearchBarEvent.UpdateSearchQuery(recentQuery.name))
                                     model.onRecentSearchClicked(searchPlace)
                                     state.deactivate()
@@ -206,6 +210,7 @@ internal fun GasGuruSearchBarContent(
                             )
                         }
                     }
+
                     is RecentSearchQueriesUiState.Loading -> {
                         // Show loading or empty state
                     }
@@ -380,7 +385,8 @@ private fun GasGuruSearchBarPreview() {
             model = GasGuruSearchBarModel(),
             searchQuery = "",
             searchResultUiState = SearchResultUiState.EmptyQuery,
-            recentSearchQueriesUiState = RecentSearchQueriesUiState.Loading
+            recentSearchQueriesUiState = RecentSearchQueriesUiState.Loading,
+            state = rememberGasGuruSearchBarState(alwaysActive = false)
         )
     }
 }
@@ -427,5 +433,25 @@ private fun SearchResultBodyPreview() {
 private fun EmptyResultBodyPreview() {
     MyApplicationTheme {
         EmptyResultBody()
+    }
+}
+
+@Composable
+@ThemePreviews
+private fun GasGuruSearchBarExpandedPreview() {
+    MyApplicationTheme {
+        GasGuruSearchBarContent(
+            model = GasGuruSearchBarModel(),
+            searchQuery = "",
+            searchResultUiState = SearchResultUiState.EmptyQuery,
+            recentSearchQueriesUiState = RecentSearchQueriesUiState.Success(
+                recentQueries = listOf(
+                    RecentSearchQuery("Barcelona", "1"),
+                    RecentSearchQuery("Madrid", "2"),
+                    RecentSearchQuery("Valencia", "3"),
+                )
+            ),
+            state = rememberGasGuruSearchBarState(alwaysActive = true)
+        )
     }
 }
