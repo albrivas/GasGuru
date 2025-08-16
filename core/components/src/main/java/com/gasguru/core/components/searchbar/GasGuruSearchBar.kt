@@ -203,6 +203,7 @@ internal fun GasGuruSearchBarContent(
                                     onEvent(GasGuruSearchBarEvent.UpdateSearchQuery(recentQuery.name))
                                     model.onRecentSearchClicked(searchPlace)
                                     state.deactivate()
+                                    focusManager.clearFocus()
                                 },
                                 onClearRecentSearches = {
                                     onEvent(GasGuruSearchBarEvent.ClearRecentSearches)
@@ -227,6 +228,7 @@ internal fun GasGuruSearchBarContent(
                     onPlaceSelected = { place ->
                         state.deactivate()
                         model.onActiveChange(false)
+                        focusManager.clearFocus()
                         onEvent(GasGuruSearchBarEvent.InsertRecentSearch(place))
                         onEvent(GasGuruSearchBarEvent.UpdateSearchQuery(place.name))
                         model.onPlaceSelected(place)
@@ -255,7 +257,9 @@ private fun SearchResultBody(
             color = GasGuruTheme.colors.textMain
         )
         LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
         ) {
             items(places) { place ->
                 PlaceItem(
@@ -263,7 +267,9 @@ private fun SearchResultBody(
                         id = place.id,
                         icon = Icons.Outlined.LocationOn,
                         name = place.name,
-                        onClickItem = { onPlaceSelected(place) }
+                        onClickItem = {
+                            onPlaceSelected(place)
+                        }
                     ),
                     isLastItem = false
                 )
@@ -338,12 +344,11 @@ private fun RecentSearchQueriesBody(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Top,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
+                .fillMaxWidth(),
         ) {
             Text(
                 text = stringResource(id = R.string.label_recent),
-                style = GasGuruTheme.typography.h6,
+                style = GasGuruTheme.typography.baseBold,
                 color = GasGuruTheme.colors.textMain
             )
             if (recentSearchQueries.isNotEmpty()) {
@@ -360,7 +365,6 @@ private fun RecentSearchQueriesBody(
 
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(recentSearchQueries) { recentSearchQuery ->
                 PlaceItem(
