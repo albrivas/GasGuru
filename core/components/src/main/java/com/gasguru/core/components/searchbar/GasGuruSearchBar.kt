@@ -343,7 +343,7 @@ private fun RecentSearchQueriesBody(
         ) {
             Text(
                 text = stringResource(id = R.string.label_recent),
-                style = GasGuruTheme.typography.h6,
+                style = GasGuruTheme.typography.baseBold,
                 color = GasGuruTheme.colors.textMain
             )
             if (recentSearchQueries.isNotEmpty()) {
@@ -360,7 +360,6 @@ private fun RecentSearchQueriesBody(
 
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(recentSearchQueries) { recentSearchQuery ->
                 PlaceItem(
