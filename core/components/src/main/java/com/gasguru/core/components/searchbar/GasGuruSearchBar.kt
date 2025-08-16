@@ -255,7 +255,7 @@ private fun SearchResultBody(
             color = GasGuruTheme.colors.textMain
         )
         LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
         ) {
             items(places) { place ->
                 PlaceItem(
@@ -338,8 +338,7 @@ private fun RecentSearchQueriesBody(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Top,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
+                .fillMaxWidth(),
         ) {
             Text(
                 text = stringResource(id = R.string.label_recent),
