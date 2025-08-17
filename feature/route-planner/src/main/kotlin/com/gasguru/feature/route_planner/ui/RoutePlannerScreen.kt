@@ -21,6 +21,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.SwapVert
+import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material.icons.outlined.NearMe
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -32,28 +33,50 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.gasguru.core.model.data.RecentSearchQuery
+import com.gasguru.core.ui.RecentSearchQueriesUiState
 import com.gasguru.core.uikit.components.divider.DividerLength
 import com.gasguru.core.uikit.components.divider.DividerThickness
 import com.gasguru.core.uikit.components.divider.GasGuruDivider
 import com.gasguru.core.uikit.components.divider.GasGuruDividerModel
+import com.gasguru.core.uikit.components.placeitem.PlaceItemModel
+import com.gasguru.core.uikit.components.searchlist.SearchList
+import com.gasguru.core.uikit.components.searchlist.SearchListModel
+import com.gasguru.core.uikit.components.searchlist.SearchListType
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.route_planner.R
 
 @Composable
-fun RoutePlannerScreenRoute(onBack: () -> Unit = {}, navigateToSearch: () -> Unit = {}) {
-    RoutePlannerScreen(onBack = onBack, navigateToSearch = navigateToSearch)
+fun RoutePlannerScreenRoute(
+    onBack: () -> Unit = {},
+    navigateToSearch: () -> Unit = {},
+    viewModel: RoutePlannerViewModel = hiltViewModel(),
+) {
+    val recents by viewModel.recentSearchQueriesUiState.collectAsStateWithLifecycle()
+    RoutePlannerScreen(
+        onBack = onBack,
+        navigateToSearch = navigateToSearch,
+        recentPlacesState = recents
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun RoutePlannerScreen(onBack: () -> Unit = {}, navigateToSearch: () -> Unit = {}) {
+internal fun RoutePlannerScreen(
+    onBack: () -> Unit = {},
+    navigateToSearch: () -> Unit = {},
+    recentPlacesState: RecentSearchQueriesUiState,
+) {
     Scaffold(
         containerColor = GasGuruTheme.colors.neutral100,
         contentColor = GasGuruTheme.colors.neutral100,
@@ -74,7 +97,7 @@ internal fun RoutePlannerScreen(onBack: () -> Unit = {}, navigateToSearch: () ->
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             tint = GasGuruTheme.colors.neutralBlack,
-                            contentDescription = "Localized description"
+                            contentDescription = "Back"
                         )
                     }
                 }
@@ -86,11 +109,36 @@ internal fun RoutePlannerScreen(onBack: () -> Unit = {}, navigateToSearch: () ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .padding(16.dp)
+                .padding(horizontal = 16.dp, vertical = 12.dp)
                 .fillMaxSize()
         ) {
             RoutePickerCard(origin = null, destination = null)
             LocationContent()
+            when (recentPlacesState) {
+                RecentSearchQueriesUiState.Loading -> {
+                    Unit
+                }
+
+                is RecentSearchQueriesUiState.Success -> {
+                    SearchList(
+                        model = SearchListModel(
+                            type = SearchListType.RECENT,
+                            items = recentPlacesState.recentQueries.map { recentQuery ->
+                                PlaceItemModel(
+                                    id = recentQuery.id,
+                                    icon = Icons.Outlined.AccessTime,
+                                    name = recentQuery.name,
+                                    onClickItem = {
+                                    }
+                                )
+                            },
+                            onClear = {
+                            },
+                        ),
+                        modifier = Modifier.background(color = GasGuruTheme.colors.neutral100).padding(top = 28.dp)
+                    )
+                }
+            }
         }
     }
 }
@@ -116,7 +164,6 @@ fun LocationContent() {
             overflow = TextOverflow.Ellipsis,
         )
     }
-
 }
 
 @Composable
@@ -142,7 +189,6 @@ fun RoutePickerCard(
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
@@ -220,8 +266,11 @@ private fun ClickableFieldRow(
         Text(
             text = text?.takeIf { it.isNotBlank() } ?: placeholder,
             style = GasGuruTheme.typography.baseRegular,
-            color = if (text.isNullOrBlank()) placeholderColor
-            else GasGuruTheme.colors.textMain,
+            color = if (text.isNullOrBlank()) {
+                placeholderColor
+            } else {
+                GasGuruTheme.colors.textMain
+            },
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.align(Alignment.CenterStart)
@@ -229,11 +278,18 @@ private fun ClickableFieldRow(
     }
 }
 
-
 @Composable
 @ThemePreviews
 private fun RoutePlannerScreenPreview() {
     MyApplicationTheme {
-        RoutePlannerScreen()
+        RoutePlannerScreen(
+            recentPlacesState = RecentSearchQueriesUiState.Success(
+                recentQueries = listOf(
+                    RecentSearchQuery("Barcelona", "1"),
+                    RecentSearchQuery("Madrid", "2"),
+                    RecentSearchQuery("Valencia", "3"),
+                )
+            )
+        )
     }
 }
