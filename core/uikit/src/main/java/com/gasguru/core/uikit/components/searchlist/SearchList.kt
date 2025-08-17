@@ -115,7 +115,6 @@ private fun EmptySearchList(
         modifier = modifier
             .fillMaxWidth()
             .background(color = GasGuruTheme.colors.neutral100)
-            .padding(16.dp)
     ) {
         Text(
             text = title,
