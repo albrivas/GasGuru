@@ -253,7 +253,6 @@ internal fun GasGuruSearchBarContent(
     }
 }
 
-
 @Composable
 @ThemePreviews
 private fun GasGuruSearchBarPreview() {
@@ -267,7 +266,6 @@ private fun GasGuruSearchBarPreview() {
         )
     }
 }
-
 
 @Composable
 @ThemePreviews

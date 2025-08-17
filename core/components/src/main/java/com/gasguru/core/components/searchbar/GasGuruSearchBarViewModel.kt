@@ -5,12 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gasguru.core.components.searchbar.state.GasGuruSearchBarEvent
 import com.gasguru.core.components.searchbar.state.SearchResultUiState
-import com.gasguru.core.ui.RecentSearchQueriesUiState
 import com.gasguru.core.domain.places.GetPlacesUseCase
 import com.gasguru.core.domain.search.ClearRecentSearchQueriesUseCase
 import com.gasguru.core.domain.search.GetRecentSearchQueryUseCase
 import com.gasguru.core.domain.search.InsertRecentSearchQueryUseCase
 import com.gasguru.core.model.data.SearchPlace
+import com.gasguru.core.ui.RecentSearchQueriesUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted

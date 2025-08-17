@@ -36,11 +36,11 @@ fun GasGuruNavHost(startDestination: Any = OnboardingRoutes.OnboardingWelcomeRou
         )
         navigationBarHost(
             navigateToDetail = { id ->
-                //navController.navigateToDetailStationAsDialog(id)
+                // navController.navigateToDetailStationAsDialog(id)
                 navController.navigateToRoutePlannerScreen()
             },
             navigateToDetailAsDialog = { id ->
-                //navController.navigateToDetailStationAsDialog(id)
+                // navController.navigateToDetailStationAsDialog(id)
                 navController.navigateToRoutePlannerScreen()
             }
         )

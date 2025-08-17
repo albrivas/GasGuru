@@ -70,7 +70,7 @@ private fun SearchListContent(
                 style = GasGuruTheme.typography.baseBold,
                 color = GasGuruTheme.colors.textMain
             )
-            
+
             if (model.type == SearchListType.RECENT && model.onClear != null) {
                 Icon(
                     imageVector = Icons.Rounded.Close,
@@ -105,7 +105,7 @@ private fun EmptySearchList(
         SearchListType.RECENT -> stringResource(R.string.search_list_recent_title)
         SearchListType.SUGGESTIONS -> stringResource(R.string.search_list_suggestions_title)
     }
-    
+
     val emptyMessage = when (type) {
         SearchListType.RECENT -> stringResource(R.string.search_list_empty_recent)
         SearchListType.SUGGESTIONS -> stringResource(R.string.search_list_empty_suggestions)
@@ -133,7 +133,6 @@ private fun EmptySearchList(
         )
     }
 }
-
 
 @Composable
 @ThemePreviews

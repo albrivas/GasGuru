@@ -6,6 +6,4 @@ import org.junit.jupiter.api.extension.ExtendWith
 @ExtendWith(
     CoroutinesTestExtension::class,
 )
-class RoutePlannerViewModelTest {
-
-}
+class RoutePlannerViewModelTest
