@@ -4,8 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gasguru.core.components.searchbar.state.GasGuruSearchBarEvent
-import com.gasguru.core.components.searchbar.state.RecentSearchQueriesUiState
 import com.gasguru.core.components.searchbar.state.SearchResultUiState
+import com.gasguru.core.ui.RecentSearchQueriesUiState
 import com.gasguru.core.domain.places.GetPlacesUseCase
 import com.gasguru.core.domain.search.ClearRecentSearchQueriesUseCase
 import com.gasguru.core.domain.search.GetRecentSearchQueryUseCase

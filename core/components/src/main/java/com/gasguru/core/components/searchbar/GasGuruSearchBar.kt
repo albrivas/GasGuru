@@ -1,22 +1,14 @@
 package com.gasguru.core.components.searchbar
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material.icons.outlined.LocationOn
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,13 +33,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.components.R
 import com.gasguru.core.components.searchbar.state.GasGuruSearchBarEvent
 import com.gasguru.core.components.searchbar.state.GasGuruSearchBarState
-import com.gasguru.core.components.searchbar.state.RecentSearchQueriesUiState
 import com.gasguru.core.components.searchbar.state.SearchResultUiState
 import com.gasguru.core.components.searchbar.state.rememberGasGuruSearchBarState
 import com.gasguru.core.model.data.RecentSearchQuery
 import com.gasguru.core.model.data.SearchPlace
-import com.gasguru.core.uikit.components.placeitem.PlaceItem
+import com.gasguru.core.ui.RecentSearchQueriesUiState
 import com.gasguru.core.uikit.components.placeitem.PlaceItemModel
+import com.gasguru.core.uikit.components.searchlist.SearchList
+import com.gasguru.core.uikit.components.searchlist.SearchListModel
+import com.gasguru.core.uikit.components.searchlist.SearchListType
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
@@ -170,8 +164,8 @@ internal fun GasGuruSearchBarContent(
             .maestroTestTag("search_bar"),
         shadowElevation = 2.dp,
         colors = SearchBarDefaults.colors(
-            containerColor = GasGuruTheme.colors.neutralWhite,
-            dividerColor = GasGuruTheme.colors.neutralWhite
+            containerColor = GasGuruTheme.colors.neutral100,
+            dividerColor = GasGuruTheme.colors.neutral100
         )
     ) {
         when (searchResultUiState) {
@@ -192,24 +186,29 @@ internal fun GasGuruSearchBarContent(
             SearchResultUiState.EmptyQuery -> {
                 when (val recentState = recentSearchQueriesUiState) {
                     is RecentSearchQueriesUiState.Success -> {
-                        if (recentState.recentQueries.isEmpty()) {
-                            EmptyRecentSearchesBody()
-                        } else {
-                            RecentSearchQueriesBody(
-                                recentSearchQueries = recentState.recentQueries,
-                                onRecentSearchClicked = { recentQuery ->
-                                    val searchPlace =
-                                        SearchPlace(name = recentQuery.name, id = recentQuery.id)
-                                    onEvent(GasGuruSearchBarEvent.UpdateSearchQuery(recentQuery.name))
-                                    model.onRecentSearchClicked(searchPlace)
-                                    state.deactivate()
-                                    focusManager.clearFocus()
+                        SearchList(
+                            model = SearchListModel(
+                                type = SearchListType.RECENT,
+                                items = recentState.recentQueries.map { recentQuery ->
+                                    PlaceItemModel(
+                                        id = recentQuery.id,
+                                        icon = Icons.Outlined.AccessTime,
+                                        name = recentQuery.name,
+                                        onClickItem = {
+                                            val searchPlace = SearchPlace(name = recentQuery.name, id = recentQuery.id)
+                                            onEvent(GasGuruSearchBarEvent.UpdateSearchQuery(recentQuery.name))
+                                            model.onRecentSearchClicked(searchPlace)
+                                            state.deactivate()
+                                            focusManager.clearFocus()
+                                        }
+                                    )
                                 },
-                                onClearRecentSearches = {
+                                onClear = {
                                     onEvent(GasGuruSearchBarEvent.ClearRecentSearches)
                                 }
-                            )
-                        }
+                            ),
+                            modifier = Modifier.padding(16.dp)
+                        )
                     }
 
                     is RecentSearchQueriesUiState.Loading -> {
@@ -219,167 +218,41 @@ internal fun GasGuruSearchBarContent(
             }
 
             SearchResultUiState.EmptySearchResult -> {
-                EmptyResultBody()
+                SearchList(
+                    model = SearchListModel(
+                        type = SearchListType.SUGGESTIONS,
+                        items = emptyList()
+                    )
+                )
             }
 
             is SearchResultUiState.Success -> {
-                SearchResultBody(
-                    places = searchResultUiState.places,
-                    onPlaceSelected = { place ->
-                        state.deactivate()
-                        model.onActiveChange(false)
-                        focusManager.clearFocus()
-                        onEvent(GasGuruSearchBarEvent.InsertRecentSearch(place))
-                        onEvent(GasGuruSearchBarEvent.UpdateSearchQuery(place.name))
-                        model.onPlaceSelected(place)
-                    }
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun SearchResultBody(
-    places: List<SearchPlace>,
-    onPlaceSelected: (SearchPlace) -> Unit,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(color = GasGuruTheme.colors.neutralWhite)
-            .padding(16.dp)
-    ) {
-        Text(
-            text = stringResource(id = R.string.label_suggestion),
-            modifier = Modifier.align(Alignment.Start),
-            style = GasGuruTheme.typography.baseBold,
-            color = GasGuruTheme.colors.textMain
-        )
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp),
-        ) {
-            items(places) { place ->
-                PlaceItem(
-                    model = PlaceItemModel(
-                        id = place.id,
-                        icon = Icons.Outlined.LocationOn,
-                        name = place.name,
-                        onClickItem = {
-                            onPlaceSelected(place)
+                SearchList(
+                    model = SearchListModel(
+                        type = SearchListType.SUGGESTIONS,
+                        items = searchResultUiState.places.map { place ->
+                            PlaceItemModel(
+                                id = place.id,
+                                icon = Icons.Outlined.LocationOn,
+                                name = place.name,
+                                onClickItem = {
+                                    state.deactivate()
+                                    model.onActiveChange(false)
+                                    focusManager.clearFocus()
+                                    onEvent(GasGuruSearchBarEvent.InsertRecentSearch(place))
+                                    onEvent(GasGuruSearchBarEvent.UpdateSearchQuery(place.name))
+                                    model.onPlaceSelected(place)
+                                }
+                            )
                         }
                     ),
-                    isLastItem = false
+                    modifier = Modifier.padding(16.dp)
                 )
             }
         }
     }
 }
 
-@Composable
-private fun EmptyResultBody() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(color = GasGuruTheme.colors.neutralWhite)
-            .padding(16.dp)
-    ) {
-        Text(
-            text = stringResource(id = R.string.label_suggestion),
-            modifier = Modifier
-                .align(Alignment.Start)
-                .padding(bottom = 8.dp),
-            style = GasGuruTheme.typography.h6,
-            color = GasGuruTheme.colors.textMain
-        )
-        Text(
-            text = stringResource(id = R.string.label_empty_suggestions),
-            modifier = Modifier.align(Alignment.Start),
-            style = GasGuruTheme.typography.baseRegular,
-            color = GasGuruTheme.colors.textSubtle
-        )
-    }
-}
-
-@Composable
-private fun EmptyRecentSearchesBody() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(color = GasGuruTheme.colors.neutralWhite)
-            .padding(16.dp)
-    ) {
-        Text(
-            text = stringResource(id = R.string.label_recent),
-            modifier = Modifier
-                .align(Alignment.Start)
-                .padding(bottom = 8.dp),
-            style = GasGuruTheme.typography.h6,
-            color = GasGuruTheme.colors.textMain
-        )
-        Text(
-            text = stringResource(id = R.string.label_empty_recents),
-            modifier = Modifier.align(Alignment.Start),
-            style = GasGuruTheme.typography.baseRegular,
-            color = GasGuruTheme.colors.textSubtle
-        )
-    }
-}
-
-@Composable
-private fun RecentSearchQueriesBody(
-    recentSearchQueries: List<RecentSearchQuery>,
-    onRecentSearchClicked: (RecentSearchQuery) -> Unit = {},
-    onClearRecentSearches: () -> Unit = {},
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(color = GasGuruTheme.colors.neutralWhite)
-            .padding(16.dp)
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Top,
-            modifier = Modifier
-                .fillMaxWidth(),
-        ) {
-            Text(
-                text = stringResource(id = R.string.label_recent),
-                style = GasGuruTheme.typography.baseBold,
-                color = GasGuruTheme.colors.textMain
-            )
-            if (recentSearchQueries.isNotEmpty()) {
-                Icon(
-                    imageVector = Icons.Rounded.Close,
-                    contentDescription = "Clear recent searches",
-                    tint = GasGuruTheme.colors.neutralBlack,
-                    modifier = Modifier
-                        .align(Alignment.Top)
-                        .clickable { onClearRecentSearches() }
-                )
-            }
-        }
-
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            items(recentSearchQueries) { recentSearchQuery ->
-                PlaceItem(
-                    model = PlaceItemModel(
-                        id = recentSearchQuery.id,
-                        icon = Icons.Outlined.AccessTime,
-                        name = recentSearchQuery.name,
-                        onClickItem = { onRecentSearchClicked(recentSearchQuery) }
-                    ),
-                    isLastItem = false
-                )
-            }
-        }
-    }
-}
 
 @Composable
 @ThemePreviews
@@ -395,50 +268,6 @@ private fun GasGuruSearchBarPreview() {
     }
 }
 
-@Composable
-@ThemePreviews
-private fun RecentSearchQueriesBodyPreview() {
-    MyApplicationTheme {
-        RecentSearchQueriesBody(
-            recentSearchQueries = listOf(
-                RecentSearchQuery("Barcelona", "1"),
-                RecentSearchQuery("Madrid", "2"),
-                RecentSearchQuery("Valencia", "3"),
-            )
-        )
-    }
-}
-
-@Composable
-@ThemePreviews
-private fun EmptyRecentSearchQueriesBodyPreview() {
-    MyApplicationTheme {
-        EmptyRecentSearchesBody()
-    }
-}
-
-@Composable
-@ThemePreviews
-private fun SearchResultBodyPreview() {
-    MyApplicationTheme {
-        SearchResultBody(
-            places = listOf(
-                SearchPlace("Barcelona", "1"),
-                SearchPlace("Madrid", "2"),
-                SearchPlace("Valencia", "3"),
-            ),
-            onPlaceSelected = {}
-        )
-    }
-}
-
-@Composable
-@ThemePreviews
-private fun EmptyResultBodyPreview() {
-    MyApplicationTheme {
-        EmptyResultBody()
-    }
-}
 
 @Composable
 @ThemePreviews

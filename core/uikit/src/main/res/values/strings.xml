@@ -5,4 +5,9 @@
     <string name="content_description_fuel_item">Fuel station %1$s</string>
     <string name="content_description_fuel_item_price_box">Fuel station price color"</string>
     <string name="alert_template_description_preview">Para poder ver las estaciones cercanas a tu ubicación necesitamos que actives la localización en tu movil</string>
+    <string name="search_list_recent_title">Recent</string>
+    <string name="search_list_suggestions_title">Suggestions</string>
+    <string name="search_list_empty_recent">No recent searches</string>
+    <string name="search_list_empty_suggestions">No suggestions</string>
+    <string name="search_list_clear_description">Clear recent searches</string>
 </resources>
