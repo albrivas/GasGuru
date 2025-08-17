@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.gasguru.feature.station_map"
+    namespace = "com.gasguru.feature.search"
 }
 
 dependencies {

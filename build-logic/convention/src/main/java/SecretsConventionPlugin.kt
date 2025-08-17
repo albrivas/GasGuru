@@ -39,6 +39,7 @@ class SecretsConventionPlugin : Plugin<Project> {
                     ignoreList.add("keyPassword")
                     ignoreList.add("sha1Debug")
                     ignoreList.add("sha1PlayStore")
+                    ignoreList.add("sha1Release")
                 }
             }
         }

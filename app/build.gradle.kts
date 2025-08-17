@@ -90,6 +90,7 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.auto.common)
     implementation(projects.core.network)
+    implementation(projects.feature.search)
     implementation(projects.feature.routePlanner)
     mockImplementation(projects.mocknetwork)
     androidTestImplementation(projects.core.testing)
@@ -117,4 +118,8 @@ dependencies {
     implementation(libs.firebase.analytics)
 
     implementation(libs.splash.screen)
+
+    // Analytics
+    implementation(libs.mixpanel)
+    implementation(libs.onesignal)
 }
