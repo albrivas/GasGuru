@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="route_planner_title">Plan your route</string>
+    <string name="route_origin_placeholder">Origin</string>
+    <string name="route_destination_placeholder">Destination</string>
+    <string name="route_swap_locations">Swap locations</string>
+</resources>
