@@ -19,9 +19,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -38,6 +42,8 @@ import com.gasguru.core.components.searchbar.state.rememberGasGuruSearchBarState
 import com.gasguru.core.model.data.RecentSearchQuery
 import com.gasguru.core.model.data.SearchPlace
 import com.gasguru.core.ui.RecentSearchQueriesUiState
+import com.gasguru.core.uikit.components.loading.GasGuruLoading
+import com.gasguru.core.uikit.components.loading.GasGuruLoadingModel
 import com.gasguru.core.uikit.components.placeitem.PlaceItemModel
 import com.gasguru.core.uikit.components.searchlist.SearchList
 import com.gasguru.core.uikit.components.searchlist.SearchListModel
@@ -61,7 +67,8 @@ fun GasGuruSearchBar(
         searchQuery = searchQuery,
         searchResultUiState = searchResultUiState,
         recentSearchQueriesUiState = recentSearchQueriesUiState,
-        state = rememberGasGuruSearchBarState(alwaysActive = model.alwaysActive),
+        state = rememberGasGuruSearchBarState(),
+        isActive = model.alwaysActive,
         onEvent = viewModel::handleEvent
     )
 }
@@ -74,9 +81,18 @@ internal fun GasGuruSearchBarContent(
     searchResultUiState: SearchResultUiState,
     recentSearchQueriesUiState: RecentSearchQueriesUiState,
     state: GasGuruSearchBarState,
+    isActive: Boolean = false,
     onEvent: (GasGuruSearchBarEvent) -> Unit = {},
 ) {
     val focusManager = LocalFocusManager.current
+    val focusRequester = remember { FocusRequester() }
+
+    // Auto-focus when search bar becomes active
+    LaunchedEffect(isActive) {
+        if (isActive) {
+            focusRequester.requestFocus()
+        }
+    }
 
     SearchBar(
         inputField = {
@@ -86,6 +102,7 @@ internal fun GasGuruSearchBarContent(
                 onValueChange = { onEvent(GasGuruSearchBarEvent.UpdateSearchQuery(it)) },
                 modifier = Modifier
                     .fillMaxWidth()
+                    .focusRequester(focusRequester)
                     .onFocusChanged { focusState ->
                         if (focusState.isFocused) {
                             state.onFocusReceived()
@@ -195,8 +212,15 @@ internal fun GasGuruSearchBarContent(
                                         icon = Icons.Outlined.AccessTime,
                                         name = recentQuery.name,
                                         onClickItem = {
-                                            val searchPlace = SearchPlace(name = recentQuery.name, id = recentQuery.id)
-                                            onEvent(GasGuruSearchBarEvent.UpdateSearchQuery(recentQuery.name))
+                                            val searchPlace = SearchPlace(
+                                                name = recentQuery.name,
+                                                id = recentQuery.id
+                                            )
+                                            onEvent(
+                                                GasGuruSearchBarEvent.UpdateSearchQuery(
+                                                    recentQuery.name
+                                                )
+                                            )
                                             model.onRecentSearchClicked(searchPlace)
                                             state.deactivate()
                                             focusManager.clearFocus()
@@ -212,7 +236,7 @@ internal fun GasGuruSearchBarContent(
                     }
 
                     is RecentSearchQueriesUiState.Loading -> {
-                        // Show loading or empty state
+                        GasGuruLoading(model = GasGuruLoadingModel(color = GasGuruTheme.colors.primary700))
                     }
                 }
             }
@@ -262,7 +286,7 @@ private fun GasGuruSearchBarPreview() {
             searchQuery = "",
             searchResultUiState = SearchResultUiState.EmptyQuery,
             recentSearchQueriesUiState = RecentSearchQueriesUiState.Loading,
-            state = rememberGasGuruSearchBarState(alwaysActive = false)
+            state = rememberGasGuruSearchBarState()
         )
     }
 }
@@ -282,7 +306,7 @@ private fun GasGuruSearchBarExpandedPreview() {
                     RecentSearchQuery("Valencia", "3"),
                 )
             ),
-            state = rememberGasGuruSearchBarState(alwaysActive = true)
+            state = rememberGasGuruSearchBarState()
         )
     }
 }
