@@ -23,16 +23,21 @@ import com.gasguru.core.uikit.components.divider.DividerThickness
 import com.gasguru.core.uikit.components.divider.GasGuruDivider
 import com.gasguru.core.uikit.components.divider.GasGuruDividerModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
-import com.gasguru.feature.favorite_list_station.navigation.stationListGraph
+import com.gasguru.feature.favorite_list_station.navigation.favoriteGraph
 import com.gasguru.feature.profile.navigation.profileScreen
+import com.gasguru.feature.search.navigation.navigateToSearch
 import com.gasguru.feature.station_map.navigation.route.StationMapGraph
 import com.gasguru.feature.station_map.ui.StationMapScreenRoute
+import com.gasguru.navigation.navigationbar.NavigationBarState
 import com.gasguru.navigation.navigationbar.NavigationBottomBar
+import com.gasguru.navigation.navigationbar.rememberNavigationBarState
+import com.gasguru.navigation.routesearch.navigateToRouteSearchGraph
+import com.gasguru.navigation.routesearch.routeSearchGraph
 
 @Composable
 fun NavigationBarScreenRoute(
     navigateToDetail: (Int) -> Unit,
-    navigateToDetailAsDialog: (Int) -> Unit = navigateToDetail
+    navigateToDetailAsDialog: (Int) -> Unit = navigateToDetail,
 ) {
     NavigationBarScreen(
         navController = rememberNavController(),
@@ -46,6 +51,7 @@ internal fun NavigationBarScreen(
     navController: NavHostController,
     navigateToDetail: (Int) -> Unit,
     navigateToDetailAsDialog: (Int) -> Unit = navigateToDetail,
+    state: NavigationBarState = rememberNavigationBarState(navController),
 ) {
     val backStack by navController.currentBackStackEntryAsState()
     val onMap = backStack?.destination?.hasRoute<StationMapGraph.StationMapRoute>() == true
@@ -60,7 +66,7 @@ internal fun NavigationBarScreen(
                         length = DividerLength.FULL
                     )
                 )
-                NavigationBottomBar(navController = navController)
+                NavigationBottomBar(state = state)
             }
         },
         contentWindowInsets = WindowInsets.captionBar
@@ -71,7 +77,10 @@ internal fun NavigationBarScreen(
                 .padding(innerPadding)
                 .background(GasGuruTheme.colors.neutral100)
         ) {
-            StationMapScreenRoute(navigateToDetail = navigateToDetailAsDialog)
+            StationMapScreenRoute(
+                navigateToDetail = navigateToDetailAsDialog,
+                navigateToRoutePlanner = navController::navigateToRouteSearchGraph
+            )
 
             if (!onMap) {
                 // Overlay to hide map
@@ -90,8 +99,13 @@ internal fun NavigationBarScreen(
                     startDestination = StationMapGraph.StationMapRoute
                 ) {
                     composable<StationMapGraph.StationMapRoute> { /* no-op */ }
-                    stationListGraph(navigateToDetail = navigateToDetail)
+                    favoriteGraph(navigateToDetail = navigateToDetail)
                     profileScreen()
+                    routeSearchGraph(
+                        onBack = navController::popBackStack,
+                        navigateToSearch = navController::navigateToSearch,
+                        popBackToRoutePlanner = navController::popBackStack
+                    )
                 }
             }
         }
