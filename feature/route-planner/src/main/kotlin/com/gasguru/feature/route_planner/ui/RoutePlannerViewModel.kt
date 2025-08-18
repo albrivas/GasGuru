@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 @HiltViewModel
 class RoutePlannerViewModel @Inject constructor(
@@ -26,4 +27,21 @@ class RoutePlannerViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = RecentSearchQueriesUiState.Loading,
         )
+
+    fun handleEvent(event: RoutePlannerUiEvent) {
+        when (event) {
+            is RoutePlannerUiEvent.ChangeCurrentInput -> TODO()
+            RoutePlannerUiEvent.ChangeDestinations -> TODO()
+            RoutePlannerUiEvent.ClearEndDestinationField -> TODO()
+            RoutePlannerUiEvent.ClearRecentSearches -> clearRecentSearch()
+            RoutePlannerUiEvent.ClearStartDestinationField -> TODO()
+            RoutePlannerUiEvent.GetCurrentLocation -> TODO()
+            is RoutePlannerUiEvent.SelectPlace -> TODO()
+            is RoutePlannerUiEvent.UpdateSearchQuery -> TODO()
+        }
+    }
+
+    private fun clearRecentSearch() = viewModelScope.launch {
+        clearRecentSearchQueriesUseCase()
+    }
 }

@@ -66,7 +66,8 @@ fun RoutePlannerScreenRoute(
     RoutePlannerScreen(
         onBack = onBack,
         navigateToSearch = navigateToSearch,
-        recentPlacesState = recents
+        recentPlacesState = recents,
+        onEvent = viewModel::handleEvent
     )
 }
 
@@ -76,6 +77,7 @@ internal fun RoutePlannerScreen(
     onBack: () -> Unit = {},
     navigateToSearch: () -> Unit = {},
     recentPlacesState: RecentSearchQueriesUiState,
+    onEvent: (RoutePlannerUiEvent) -> Unit = {},
 ) {
     Scaffold(
         containerColor = GasGuruTheme.colors.neutral100,
@@ -112,7 +114,12 @@ internal fun RoutePlannerScreen(
                 .padding(horizontal = 16.dp, vertical = 12.dp)
                 .fillMaxSize()
         ) {
-            RoutePickerCard(origin = null, destination = null)
+            RoutePickerCard(
+                origin = null,
+                destination = null,
+                onPickOrigin = navigateToSearch,
+                onPickDestination = navigateToSearch
+            )
             LocationContent()
             when (recentPlacesState) {
                 RecentSearchQueriesUiState.Loading -> {
@@ -128,14 +135,15 @@ internal fun RoutePlannerScreen(
                                     id = recentQuery.id,
                                     icon = Icons.Outlined.AccessTime,
                                     name = recentQuery.name,
-                                    onClickItem = {
-                                    }
+                                    onClickItem = { }
                                 )
                             },
                             onClear = {
                             },
                         ),
-                        modifier = Modifier.background(color = GasGuruTheme.colors.neutral100).padding(top = 28.dp)
+                        modifier = Modifier
+                            .background(color = GasGuruTheme.colors.neutral100)
+                            .padding(top = 28.dp)
                     )
                 }
             }
