@@ -13,14 +13,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Place
-import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material.icons.outlined.NearMe
 import androidx.compose.material3.Card
@@ -33,9 +33,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -43,6 +45,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.model.data.RecentSearchQuery
 import com.gasguru.core.ui.RecentSearchQueriesUiState
+import com.gasguru.core.uikit.components.GasGuruButton
 import com.gasguru.core.uikit.components.divider.DividerLength
 import com.gasguru.core.uikit.components.divider.DividerThickness
 import com.gasguru.core.uikit.components.divider.GasGuruDivider
@@ -58,15 +61,22 @@ import com.gasguru.feature.route_planner.R
 
 @Composable
 fun RoutePlannerScreenRoute(
+    selectedPlaceId: Pair<String, String>? = null,
     onBack: () -> Unit = {},
     navigateToSearch: () -> Unit = {},
     viewModel: RoutePlannerViewModel = hiltViewModel(),
 ) {
     val recents by viewModel.recentSearchQueriesUiState.collectAsStateWithLifecycle()
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val isRouteEnabled by viewModel.isRouteEnabled.collectAsStateWithLifecycle()
+
     RoutePlannerScreen(
+        uiState = state,
+        selectedPlace = selectedPlaceId,
+        isRouteEnabled = isRouteEnabled,
+        recentPlacesState = recents,
         onBack = onBack,
         navigateToSearch = navigateToSearch,
-        recentPlacesState = recents,
         onEvent = viewModel::handleEvent
     )
 }
@@ -74,11 +84,25 @@ fun RoutePlannerScreenRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun RoutePlannerScreen(
+    uiState: RoutePlannerUiState,
+    selectedPlace: Pair<String, String>?,
+    isRouteEnabled: Boolean,
+    recentPlacesState: RecentSearchQueriesUiState,
     onBack: () -> Unit = {},
     navigateToSearch: () -> Unit = {},
-    recentPlacesState: RecentSearchQueriesUiState,
     onEvent: (RoutePlannerUiEvent) -> Unit = {},
 ) {
+    LaunchedEffect(selectedPlace) {
+        if (selectedPlace != null) {
+            onEvent(
+                RoutePlannerUiEvent.SelectPlace(
+                    placeId = selectedPlace.first,
+                    placeName = selectedPlace.second
+                )
+            )
+        }
+    }
+
     Scaffold(
         containerColor = GasGuruTheme.colors.neutral100,
         contentColor = GasGuruTheme.colors.neutral100,
@@ -105,7 +129,22 @@ internal fun RoutePlannerScreen(
                 }
             )
         },
-        bottomBar = {},
+        bottomBar = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                GasGuruButton(
+                    onClick = onBack,
+                    enabled = isRouteEnabled,
+                    text = stringResource(id = R.string.start_route),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .systemBarsPadding()
+                )
+            }
+        },
         modifier = Modifier
     ) { innerPadding ->
         Column(
@@ -115,12 +154,31 @@ internal fun RoutePlannerScreen(
                 .fillMaxSize()
         ) {
             RoutePickerCard(
-                origin = null,
-                destination = null,
-                onPickOrigin = navigateToSearch,
-                onPickDestination = navigateToSearch
+                origin = if (uiState.startQuery.isCurrentLocation)
+                    stringResource(id = R.string.your_location)
+                else uiState.startQuery.name,
+                destination = if (uiState.endQuery.isCurrentLocation)
+                    stringResource(id = R.string.your_location)
+                else uiState.endQuery.name,
+                onPickOrigin = {
+                    navigateToSearch()
+                    onEvent(RoutePlannerUiEvent.ChangeCurrentInput(input = InputField.START))
+                },
+                onPickDestination = {
+                    navigateToSearch()
+                    onEvent(RoutePlannerUiEvent.ChangeCurrentInput(input = InputField.END))
+                },
+                onClearOrigin = {
+                    onEvent(RoutePlannerUiEvent.ClearStartDestinationField)
+                },
+                onClearDestination = {
+                    onEvent(RoutePlannerUiEvent.ClearEndDestinationField)
+                },
+                onSwap = { onEvent(RoutePlannerUiEvent.ChangeDestinations) }
             )
-            LocationContent()
+            LocationContent(onClick = {
+                onEvent(RoutePlannerUiEvent.SelectCurrentLocation)
+            })
             when (recentPlacesState) {
                 RecentSearchQueriesUiState.Loading -> {
                     Unit
@@ -135,7 +193,14 @@ internal fun RoutePlannerScreen(
                                     id = recentQuery.id,
                                     icon = Icons.Outlined.AccessTime,
                                     name = recentQuery.name,
-                                    onClickItem = { }
+                                    onClickItem = {
+                                        onEvent(
+                                            RoutePlannerUiEvent.SelectRecentPlace(
+                                                placeId = recentQuery.id,
+                                                placeName = recentQuery.name
+                                            )
+                                        )
+                                    }
                                 )
                             },
                             onClear = {
@@ -143,7 +208,7 @@ internal fun RoutePlannerScreen(
                         ),
                         modifier = Modifier
                             .background(color = GasGuruTheme.colors.neutral100)
-                            .padding(top = 28.dp)
+                            .padding(top = 20.dp)
                     )
                 }
             }
@@ -152,11 +217,12 @@ internal fun RoutePlannerScreen(
 }
 
 @Composable
-fun LocationContent() {
+fun LocationContent(onClick: () -> Unit = {}) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 16.dp, horizontal = 12.dp),
+            .clickable(onClick = onClick)
+            .padding(vertical = 24.dp, horizontal = 12.dp),
         horizontalArrangement = Arrangement.spacedBy(space = 8.dp)
     ) {
         Icon(
@@ -165,7 +231,7 @@ fun LocationContent() {
             tint = GasGuruTheme.colors.neutralBlack
         )
         Text(
-            text = "Tu ubicación",
+            text = stringResource(id = R.string.your_location),
             style = GasGuruTheme.typography.baseRegular,
             color = GasGuruTheme.colors.textMain,
             maxLines = 1,
@@ -181,6 +247,8 @@ fun RoutePickerCard(
     destination: String?,
     onPickOrigin: () -> Unit = {},
     onPickDestination: () -> Unit = {},
+    onClearOrigin: () -> Unit = {},
+    onClearDestination: () -> Unit = {},
     onSwap: () -> Unit = {},
 ) {
     val border = BorderStroke(1.dp, GasGuruTheme.colors.neutralBlack)
@@ -192,9 +260,9 @@ fun RoutePickerCard(
         colors = CardDefaults.cardColors(containerColor = GasGuruTheme.colors.neutral100)
     ) {
         Row(
-            Modifier
+            modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(start = 16.dp, end = 8.dp, top = 12.dp, bottom = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
@@ -202,12 +270,13 @@ fun RoutePickerCard(
                 verticalArrangement = Arrangement.Center
             ) {
                 Icon(
-                    Icons.Default.LocationOn,
+                    painter = painterResource(id = R.drawable.ic_current_location),
                     contentDescription = null,
-                    tint = GasGuruTheme.colors.primary700
+                    tint = GasGuruTheme.colors.primary700,
+                    modifier = Modifier.size(24.dp)
                 )
                 Spacer(Modifier.height(2.dp))
-                repeat(3) { count ->
+                repeat(times = 3) { count ->
                     Box(
                         Modifier
                             .size(3.dp)
@@ -217,20 +286,21 @@ fun RoutePickerCard(
                 }
                 Spacer(Modifier.height(2.dp))
                 Icon(
-                    Icons.Default.Place,
+                    imageVector = Icons.Default.Place,
                     contentDescription = null,
                     tint = GasGuruTheme.colors.primary700
                 )
             }
             Spacer(Modifier.width(12.dp))
             Column(
-                Modifier
+                modifier = Modifier
                     .weight(1f)
             ) {
                 ClickableFieldRow(
                     text = origin,
                     placeholder = stringResource(R.string.route_origin_placeholder),
                     onClick = onPickOrigin,
+                    onClear = onClearOrigin,
                 )
                 GasGuruDivider(
                     model = GasGuruDividerModel(
@@ -243,13 +313,14 @@ fun RoutePickerCard(
                     text = destination,
                     placeholder = stringResource(R.string.route_destination_placeholder),
                     onClick = onPickDestination,
+                    onClear = onClearDestination,
                 )
             }
 
             IconButton(onClick = onSwap, modifier = Modifier.padding(start = 8.dp)) {
                 Icon(
                     tint = GasGuruTheme.colors.neutralBlack,
-                    imageVector = Icons.Default.SwapVert,
+                    painter = painterResource(id = R.drawable.ic_swap),
                     contentDescription = stringResource(R.string.route_swap_locations)
                 )
             }
@@ -259,17 +330,18 @@ fun RoutePickerCard(
 
 @Composable
 private fun ClickableFieldRow(
+    modifier: Modifier = Modifier,
     text: String?,
     placeholder: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
+    onClear: () -> Unit = {},
 ) {
     val placeholderColor = GasGuruTheme.colors.textSubtle
     Box(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(horizontal = 0.dp, vertical = 13.dp)
+            .padding(horizontal = 0.dp, vertical = 12.dp)
     ) {
         Text(
             text = text?.takeIf { it.isNotBlank() } ?: placeholder,
@@ -281,8 +353,26 @@ private fun ClickableFieldRow(
             },
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.align(Alignment.CenterStart)
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .padding(end = if (!text.isNullOrEmpty()) 32.dp else 0.dp)
         )
+
+        if (!text.isNullOrEmpty()) {
+            IconButton(
+                onClick = onClear,
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .size(24.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Clear",
+                    tint = GasGuruTheme.colors.neutralBlack,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
+        }
     }
 }
 
@@ -291,8 +381,20 @@ private fun ClickableFieldRow(
 private fun RoutePlannerScreenPreview() {
     MyApplicationTheme {
         RoutePlannerScreen(
+            uiState = RoutePlannerUiState(startQuery = RouteQuery(name = "Talavera de la reina")),
+            selectedPlace = null,
+            isRouteEnabled = false,
             recentPlacesState = RecentSearchQueriesUiState.Success(
                 recentQueries = listOf(
+                    RecentSearchQuery("Barcelona", "1"),
+                    RecentSearchQuery("Madrid", "2"),
+                    RecentSearchQuery("Valencia", "3"),
+                    RecentSearchQuery("Barcelona", "1"),
+                    RecentSearchQuery("Madrid", "2"),
+                    RecentSearchQuery("Valencia", "3"),
+                    RecentSearchQuery("Barcelona", "1"),
+                    RecentSearchQuery("Madrid", "2"),
+                    RecentSearchQuery("Valencia", "3"),
                     RecentSearchQuery("Barcelona", "1"),
                     RecentSearchQuery("Madrid", "2"),
                     RecentSearchQuery("Valencia", "3"),
