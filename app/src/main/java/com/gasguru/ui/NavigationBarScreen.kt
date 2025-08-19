@@ -106,7 +106,7 @@ internal fun NavigationBarScreen(
                         navigateToSearch = navController::navigateToSearch,
                         popBackToRoutePlanner = { place ->
                             navController.previousBackStackEntry?.savedStateHandle["selected_place"] =
-                                place.id
+                                Pair(first = place.id, second = place.name)
                             navController.popBackStack()
                         }
                     )
