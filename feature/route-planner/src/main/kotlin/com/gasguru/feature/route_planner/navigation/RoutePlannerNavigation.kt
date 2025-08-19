@@ -5,6 +5,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.dialog
+import com.gasguru.core.model.data.SearchPlace
 import com.gasguru.feature.route_planner.ui.RoutePlannerScreenRoute
 
 fun NavController.navigateToRoutePlannerScreen(navOptions: NavOptions? = null) {
@@ -20,7 +21,13 @@ fun NavGraphBuilder.routePlannerScreen(
             usePlatformDefaultWidth = false,
             decorFitsSystemWindows = false
         )
-    ) {
-        RoutePlannerScreenRoute(onBack = onBack, navigateToSearch = navigateToSearch)
+    ) { navBackResult ->
+        val selectedPlace = navBackResult.savedStateHandle.get<SearchPlace?>("selected_place")
+        RoutePlannerScreenRoute(
+            selectedPlaceId = selectedPlace?.name,
+            onBack = onBack,
+            navigateToSearch = navigateToSearch,
+
+        )
     }
 }

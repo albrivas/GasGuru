@@ -1,4 +1,4 @@
-package com.gasguru.navigation.routesearch
+package com.gasguru.navigation.graphs
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -20,7 +20,7 @@ fun NavController.navigateToRouteSearchGraph(navOptions: NavOptions? = null) {
 fun NavGraphBuilder.routeSearchGraph(
     onBack: () -> Unit = {},
     navigateToSearch: () -> Unit = {},
-    popBackToRoutePlanner: () -> Unit = {}
+    popBackToRoutePlanner: (SearchPlace) -> Unit = {}
 ) {
     navigation<RouteSearchGraph>(
         startDestination = RoutePlannerRoute
@@ -32,10 +32,9 @@ fun NavGraphBuilder.routeSearchGraph(
 
         searchScreen(
             onPlaceSelected = { place: SearchPlace ->
-                // Navigate back to route planner with selected place
-                popBackToRoutePlanner()
+                popBackToRoutePlanner(place)
             },
-            onBackPressed = popBackToRoutePlanner
+            onBackPressed = onBack
         )
     }
 }

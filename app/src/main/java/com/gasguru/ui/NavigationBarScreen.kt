@@ -28,11 +28,11 @@ import com.gasguru.feature.profile.navigation.profileScreen
 import com.gasguru.feature.search.navigation.navigateToSearch
 import com.gasguru.feature.station_map.navigation.route.StationMapGraph
 import com.gasguru.feature.station_map.ui.StationMapScreenRoute
+import com.gasguru.navigation.graphs.navigateToRouteSearchGraph
+import com.gasguru.navigation.graphs.routeSearchGraph
 import com.gasguru.navigation.navigationbar.NavigationBarState
 import com.gasguru.navigation.navigationbar.NavigationBottomBar
 import com.gasguru.navigation.navigationbar.rememberNavigationBarState
-import com.gasguru.navigation.routesearch.navigateToRouteSearchGraph
-import com.gasguru.navigation.routesearch.routeSearchGraph
 
 @Composable
 fun NavigationBarScreenRoute(
@@ -104,7 +104,11 @@ internal fun NavigationBarScreen(
                     routeSearchGraph(
                         onBack = navController::popBackStack,
                         navigateToSearch = navController::navigateToSearch,
-                        popBackToRoutePlanner = navController::popBackStack
+                        popBackToRoutePlanner = { place ->
+                            navController.previousBackStackEntry?.savedStateHandle["selected_place"] =
+                                place.id
+                            navController.popBackStack()
+                        }
                     )
                 }
             }

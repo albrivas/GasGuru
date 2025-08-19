@@ -9,14 +9,14 @@ import com.gasguru.core.model.data.SearchPlace
 import com.gasguru.feature.search.ui.SearchScreenRoute
 
 fun NavController.navigateToSearch(navOptions: NavOptions? = null) {
-    navigate(SearchGraph.SearchRoute, navOptions)
+    navigate(SearchScreenRoute, navOptions)
 }
 
 fun NavGraphBuilder.searchScreen(
     onPlaceSelected: (SearchPlace) -> Unit,
     onBackPressed: () -> Unit
 ) {
-    dialog<SearchGraph.SearchRoute>(
+    dialog<SearchScreenRoute>(
         dialogProperties = DialogProperties(
             usePlatformDefaultWidth = false,
             decorFitsSystemWindows = false
@@ -25,7 +25,6 @@ fun NavGraphBuilder.searchScreen(
         SearchScreenRoute(
             onPlaceSelected = { place ->
                 onPlaceSelected(place)
-                onBackPressed()
             },
             onBackPressed = onBackPressed
         )
