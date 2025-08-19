@@ -246,7 +246,8 @@ internal fun GasGuruSearchBarContent(
                     model = SearchListModel(
                         type = SearchListType.SUGGESTIONS,
                         items = emptyList()
-                    )
+                    ),
+                    modifier = Modifier.padding(16.dp)
                 )
             }
 
