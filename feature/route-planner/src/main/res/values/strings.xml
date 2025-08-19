@@ -4,4 +4,6 @@
     <string name="route_origin_placeholder">Origin</string>
     <string name="route_destination_placeholder">Destination</string>
     <string name="route_swap_locations">Swap locations</string>
+    <string name="your_location">Your location</string>
+    <string name="start_route">Start route</string>
 </resources>
