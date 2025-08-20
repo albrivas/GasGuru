@@ -25,6 +25,6 @@ class GasGuruApplication : Application() {
     }
 
     private fun mixpanelSetUp() {
-        MixpanelAPI.getInstance(this, BuildConfig.mixpanelProjectToken, true);
+        MixpanelAPI.getInstance(this, BuildConfig.mixpanelProjectToken, true)
     }
 }

@@ -1,4 +1,4 @@
-package com.gasguru.core.components.searchbar.state
+package com.gasguru.core.ui
 
 import com.gasguru.core.model.data.RecentSearchQuery
 

@@ -12,14 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
 
 @Composable
-internal fun NavigationBottomBar(navController: NavHostController) {
-    val state = rememberNavigationBarState(navController)
+internal fun NavigationBottomBar(state: NavigationBarState) {
     NavigationBar(
         containerColor = GasGuruTheme.colors.neutralWhite,
     ) {
@@ -79,7 +77,8 @@ private fun RowScope.BarItem(
 @Composable
 @ThemePreviews
 private fun NavigationBarPreview() {
+    val navController = rememberNavController()
     NavigationBottomBar(
-        navController = rememberNavController()
+        state = NavigationBarState(navController)
     )
 }

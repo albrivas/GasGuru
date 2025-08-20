@@ -12,13 +12,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun rememberGasGuruSearchBarState(alwaysActive: Boolean): GasGuruSearchBarState {
-    return remember { GasGuruSearchBarState(alwaysActive = alwaysActive) }
+fun rememberGasGuruSearchBarState(): GasGuruSearchBarState {
+    return remember { GasGuruSearchBarState() }
 }
 
 @Stable
-class GasGuruSearchBarState(alwaysActive: Boolean) {
-    var active by mutableStateOf(alwaysActive)
+class GasGuruSearchBarState() {
+    var active by mutableStateOf(false)
         private set
 
     val paddingAnimation: Dp
