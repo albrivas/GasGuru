@@ -80,6 +80,7 @@ import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.station_map.BuildConfig
 import com.gasguru.feature.station_map.R
+import com.gasguru.navigation.models.RoutePlanArgs
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -97,6 +98,7 @@ import com.gasguru.core.uikit.R as RUikit
 
 @Composable
 fun StationMapScreenRoute(
+    routePlanner: RoutePlanArgs?,
     navigateToDetail: (Int) -> Unit = {},
     navigateToRoutePlanner: () -> Unit = {},
     viewModel: StationMapViewModel = hiltViewModel(),

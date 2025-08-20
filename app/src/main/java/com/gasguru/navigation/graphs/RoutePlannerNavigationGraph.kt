@@ -8,6 +8,7 @@ import com.gasguru.core.model.data.SearchPlace
 import com.gasguru.feature.route_planner.navigation.RoutePlannerRoute
 import com.gasguru.feature.route_planner.navigation.routePlannerScreen
 import com.gasguru.feature.search.navigation.searchScreen
+import com.gasguru.navigation.models.RoutePlanArgs
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -20,14 +21,16 @@ fun NavController.navigateToRouteSearchGraph(navOptions: NavOptions? = null) {
 fun NavGraphBuilder.routeSearchGraph(
     onBack: () -> Unit = {},
     navigateToSearch: () -> Unit = {},
-    popBackToRoutePlanner: (SearchPlace) -> Unit = {}
+    popBackToRoutePlanner: (SearchPlace) -> Unit = {},
+    popBackToMapScreen: (RoutePlanArgs) -> Unit = {},
 ) {
     navigation<RouteSearchGraph>(
         startDestination = RoutePlannerRoute
     ) {
         routePlannerScreen(
             onBack = onBack,
-            navigateToSearch = navigateToSearch
+            navigateToSearch = navigateToSearch,
+            popBackToMapScreen = popBackToMapScreen
         )
 
         searchScreen(

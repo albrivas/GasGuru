@@ -16,6 +16,7 @@ fun NavGraphBuilder.stationMapScreen(
         popExitTransition = { null }
     ) {
         StationMapScreenRoute(
+            routePlanner = null,
             navigateToDetail = navigateToDetail,
             navigateToRoutePlanner = navigateToRoutePlanner
         )

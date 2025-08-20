@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.zIndex
@@ -28,8 +29,14 @@ import com.gasguru.feature.profile.navigation.profileScreen
 import com.gasguru.feature.search.navigation.navigateToSearch
 import com.gasguru.feature.station_map.navigation.route.StationMapGraph
 import com.gasguru.feature.station_map.ui.StationMapScreenRoute
+import com.gasguru.navigation.constants.NavigationKeys
+import com.gasguru.navigation.extensions.getPreviousResult
+import com.gasguru.navigation.extensions.removePreviousResult
+import com.gasguru.navigation.extensions.setPreviousResult
 import com.gasguru.navigation.graphs.navigateToRouteSearchGraph
 import com.gasguru.navigation.graphs.routeSearchGraph
+import com.gasguru.navigation.models.PlaceArgs
+import com.gasguru.navigation.models.RoutePlanArgs
 import com.gasguru.navigation.navigationbar.NavigationBarState
 import com.gasguru.navigation.navigationbar.NavigationBottomBar
 import com.gasguru.navigation.navigationbar.rememberNavigationBarState
@@ -77,7 +84,18 @@ internal fun NavigationBarScreen(
                 .padding(innerPadding)
                 .background(GasGuruTheme.colors.neutral100)
         ) {
+            val routePlanArgs = navController.currentBackStackEntry?.getPreviousResult<RoutePlanArgs>(
+                NavigationKeys.ROUTE_PLANNER
+            )
+
+            LaunchedEffect(routePlanArgs) {
+                if (routePlanArgs != null) {
+                    navController.currentBackStackEntry?.removePreviousResult(key = NavigationKeys.ROUTE_PLANNER)
+                }
+            }
+
             StationMapScreenRoute(
+                routePlanner = routePlanArgs,
                 navigateToDetail = navigateToDetailAsDialog,
                 navigateToRoutePlanner = navController::navigateToRouteSearchGraph
             )
@@ -105,8 +123,17 @@ internal fun NavigationBarScreen(
                         onBack = navController::popBackStack,
                         navigateToSearch = navController::navigateToSearch,
                         popBackToRoutePlanner = { place ->
-                            navController.previousBackStackEntry?.savedStateHandle["selected_place"] =
-                                Pair(first = place.id, second = place.name)
+                            navController.setPreviousResult(
+                                key = "selected_place",
+                                value = PlaceArgs(name = place.name, id = place.id)
+                            )
+                            navController.popBackStack()
+                        },
+                        popBackToMapScreen = { route ->
+                            navController.setPreviousResult(
+                                key = "route_planner",
+                                value = route
+                            )
                             navController.popBackStack()
                         }
                     )

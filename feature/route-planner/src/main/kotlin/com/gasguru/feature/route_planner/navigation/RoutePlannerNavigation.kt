@@ -6,6 +6,11 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.dialog
 import com.gasguru.feature.route_planner.ui.RoutePlannerScreenRoute
+import com.gasguru.navigation.constants.NavigationKeys
+import com.gasguru.navigation.extensions.getPreviousResult
+import com.gasguru.navigation.extensions.removePreviousResult
+import com.gasguru.navigation.models.PlaceArgs
+import com.gasguru.navigation.models.RoutePlanArgs
 
 fun NavController.navigateToRoutePlannerScreen(navOptions: NavOptions? = null) {
     navigate(RoutePlannerRoute, navOptions)
@@ -14,6 +19,7 @@ fun NavController.navigateToRoutePlannerScreen(navOptions: NavOptions? = null) {
 fun NavGraphBuilder.routePlannerScreen(
     onBack: () -> Unit = {},
     navigateToSearch: () -> Unit = {},
+    popBackToMapScreen: (RoutePlanArgs) -> Unit = {},
 ) {
     dialog<RoutePlannerRoute>(
         dialogProperties = DialogProperties(
@@ -21,14 +27,15 @@ fun NavGraphBuilder.routePlannerScreen(
             decorFitsSystemWindows = false
         )
     ) { navBackResult ->
-        val selectedPlace = navBackResult.savedStateHandle.get<Pair<String, String>?>("selected_place")
-        if (selectedPlace != null) {
-            navBackResult.savedStateHandle.remove<String>("selected_place")
+        val result = navBackResult.getPreviousResult<PlaceArgs?>(NavigationKeys.SELECTED_PLACE)
+        if (result != null) {
+            navBackResult.removePreviousResult(NavigationKeys.SELECTED_PLACE)
         }
         RoutePlannerScreenRoute(
-            selectedPlaceId = selectedPlace,
+            selectedPlaceId = result,
             onBack = onBack,
             navigateToSearch = navigateToSearch,
+            popBackToMapScreen = popBackToMapScreen
         )
     }
 }

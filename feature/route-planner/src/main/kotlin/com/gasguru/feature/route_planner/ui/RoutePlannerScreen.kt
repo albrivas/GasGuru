@@ -58,12 +58,15 @@ import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.route_planner.R
+import com.gasguru.navigation.models.PlaceArgs
+import com.gasguru.navigation.models.RoutePlanArgs
 
 @Composable
 fun RoutePlannerScreenRoute(
-    selectedPlaceId: Pair<String, String>? = null,
+    selectedPlaceId: PlaceArgs? = null,
     onBack: () -> Unit = {},
     navigateToSearch: () -> Unit = {},
+    popBackToMapScreen: (RoutePlanArgs) -> Unit = {},
     viewModel: RoutePlannerViewModel = hiltViewModel(),
 ) {
     val recents by viewModel.recentSearchQueriesUiState.collectAsStateWithLifecycle()
@@ -77,7 +80,15 @@ fun RoutePlannerScreenRoute(
         recentPlacesState = recents,
         onBack = onBack,
         navigateToSearch = navigateToSearch,
-        onEvent = viewModel::handleEvent
+        onEvent = viewModel::handleEvent,
+        onStartRoute = {
+            popBackToMapScreen(
+                RoutePlanArgs(
+                    originId = state.startQuery.id,
+                    destinationId = state.endQuery.id
+                )
+            )
+        }
     )
 }
 
@@ -85,19 +96,20 @@ fun RoutePlannerScreenRoute(
 @Composable
 internal fun RoutePlannerScreen(
     uiState: RoutePlannerUiState,
-    selectedPlace: Pair<String, String>?,
+    selectedPlace: PlaceArgs?,
     isRouteEnabled: Boolean,
     recentPlacesState: RecentSearchQueriesUiState,
     onBack: () -> Unit = {},
     navigateToSearch: () -> Unit = {},
     onEvent: (RoutePlannerUiEvent) -> Unit = {},
+    onStartRoute: () -> Unit = {},
 ) {
     LaunchedEffect(selectedPlace) {
         if (selectedPlace != null) {
             onEvent(
                 RoutePlannerUiEvent.SelectPlace(
-                    placeId = selectedPlace.first,
-                    placeName = selectedPlace.second
+                    placeId = selectedPlace.id,
+                    placeName = selectedPlace.name
                 )
             )
         }
@@ -136,7 +148,7 @@ internal fun RoutePlannerScreen(
                     .padding(16.dp)
             ) {
                 GasGuruButton(
-                    onClick = onBack,
+                    onClick = onStartRoute,
                     enabled = isRouteEnabled,
                     text = stringResource(id = R.string.start_route),
                     modifier = Modifier
@@ -208,6 +220,7 @@ internal fun RoutePlannerScreen(
                                 )
                             },
                             onClear = {
+                                onEvent(RoutePlannerUiEvent.ClearRecentSearches)
                             },
                         ),
                         modifier = Modifier
