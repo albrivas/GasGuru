@@ -7,6 +7,7 @@ import com.gasguru.core.domain.fuelstation.GetFuelStationByIdUseCase
 import com.gasguru.core.domain.fuelstation.RemoveFavoriteStationUseCase
 import com.gasguru.core.domain.fuelstation.SaveFavoriteStationUseCase
 import com.gasguru.core.domain.location.GetLastKnownLocationUseCase
+import com.gasguru.core.domain.maps.GetStaticMapUrlUseCase
 import com.gasguru.core.domain.places.GetAddressFromLocationUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,6 +31,7 @@ class DetailStationViewModel @Inject constructor(
     private val saveFavoriteStationUseCase: SaveFavoriteStationUseCase,
     private val removeFavoriteStationUseCase: RemoveFavoriteStationUseCase,
     private val getAddressFromLocationUseCase: GetAddressFromLocationUseCase,
+    private val getStaticMapUrlUseCase: GetStaticMapUrlUseCase,
 ) : ViewModel() {
 
     private val id: Int = checkNotNull(savedStateHandle["idServiceStation"])
@@ -57,11 +59,33 @@ class DetailStationViewModel @Inject constructor(
             initialValue = DetailStationUiState.Loading,
         )
 
-    fun onFavoriteClick(isFavorite: Boolean) = viewModelScope.launch {
-        if (isFavorite) {
-            saveFavoriteStationUseCase(stationId = id)
-        } else {
-            removeFavoriteStationUseCase(stationId = id)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val staticMapUrl: StateFlow<String?> = fuelStation
+        .flatMapLatest { uiState ->
+            if (uiState is DetailStationUiState.Success) {
+                flowOf(getStaticMapUrlUseCase(uiState.station.location))
+            } else {
+                flowOf(null)
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = null,
+        )
+
+    fun onEvent(event: DetailStationEvent) {
+        when (event) {
+            is DetailStationEvent.ToggleFavorite -> {
+                onFavoriteClick(event.isFavorite)
+            }
+        }
+    }
+
+    private fun onFavoriteClick(isFavorite: Boolean) = viewModelScope.launch {
+        when (isFavorite) {
+            true -> saveFavoriteStationUseCase(stationId = id)
+            false -> removeFavoriteStationUseCase(stationId = id)
         }
     }
 

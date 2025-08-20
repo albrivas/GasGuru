@@ -11,7 +11,7 @@ import androidx.compose.ui.test.performClick
 import com.gasguru.core.model.data.previewFuelStationDomain
 import com.gasguru.core.testing.BaseTest
 import com.gasguru.core.ui.IconTintKey
-import com.gasguru.core.uikit.theme.AccentRed
+import com.gasguru.core.uikit.theme.GasGuruTheme
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
@@ -23,29 +23,35 @@ class DetailStationScreenTest : BaseTest() {
     fun markFavoriteStation() {
         val initialStation = previewFuelStationDomain()
         var station by mutableStateOf(initialStation)
+        var black = Color.Unspecified
+        var red = Color.Unspecified
 
         extension.use {
             setContent {
+                black = GasGuruTheme.colors.neutralBlack
+                red = GasGuruTheme.colors.accentRed
                 DetailStationScreen(
                     uiState = DetailStationUiState.Success(station = station, address = null),
-                    onFavoriteClick = { isFavorite ->
-                        station = station.copy(isFavorite = isFavorite)
+                    lastUpdate = 0,
+                    staticMapUrl = "",
+                    onEvent = {
+                        station = station.copy(isFavorite = true)
                     },
-                    lastUpdate = 0
+                    onBack = {},
                 )
             }
 
+
             onNodeWithTag("icon_favorite", useUnmergedTree = true)
-                .assert(hasIconTint(Color.Black))
+                .assert(hasIconTint(black))
 
             onNodeWithTag("button_favorite").performClick()
             waitForIdle()
 
             onNodeWithTag("icon_favorite", useUnmergedTree = true)
-                .assert(hasIconTint(AccentRed))
+                .assert(hasIconTint(red))
         }
     }
-
 
     private fun hasIconTint(expectedColor: Color) =
         SemanticsMatcher.expectValue(IconTintKey, expectedColor)

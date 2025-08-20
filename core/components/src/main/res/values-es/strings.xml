@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hint_search_bar">Buscar ubicaciones…</string>
+    <string name="label_suggestion">Sugerencias</string>
+    <string name="label_empty_suggestions">No se encontraron resultados</string>
+    <string name="label_recent">Recientes</string>
+    <string name="label_empty_recents">No hay búsquedas recientes</string>
+</resources>

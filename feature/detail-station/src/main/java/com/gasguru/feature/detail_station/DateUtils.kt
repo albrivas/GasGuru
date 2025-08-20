@@ -45,7 +45,7 @@ fun getTimeElapsedString(timestamp: Long): String {
 @Composable
 fun formatSchedule(schedule: String): String {
     return when {
-        schedule.contains("24H", ignoreCase = true) -> stringResource(R.string.open_24h)
+        schedule.contains("24H", ignoreCase = true) -> { stringResource(R.string.open_24h) }
         else -> {
             val daysOfWeek = mapOf(
                 "L" to stringResource(R.string.monday_short),
