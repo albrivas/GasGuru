@@ -2,6 +2,7 @@ package com.gasguru.feature.station_map.ui
 
 import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.FuelType
+import com.gasguru.core.model.data.Route
 import com.google.android.gms.maps.model.LatLngBounds
 
 data class StationMapUiState(
@@ -12,4 +13,6 @@ data class StationMapUiState(
     val loading: Boolean = false,
     val mapBounds: LatLngBounds? = null,
     val shouldCenterMap: Boolean = false,
+    val startRoute: Boolean = false,
+    val route: Route? = null,
 )

@@ -1,7 +1,6 @@
 package com.gasguru.feature.station_map.ui
 
 import android.location.Location
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gasguru.core.common.toLatLng
@@ -10,25 +9,23 @@ import com.gasguru.core.domain.filters.SaveFilterUseCase
 import com.gasguru.core.domain.fuelstation.FuelStationByLocationUseCase
 import com.gasguru.core.domain.location.GetCurrentLocationUseCase
 import com.gasguru.core.domain.places.GetLocationPlaceUseCase
-import com.gasguru.core.domain.places.GetPlacesUseCase
 import com.gasguru.core.domain.route.GetRouteUseCase
-import com.gasguru.core.domain.search.ClearRecentSearchQueriesUseCase
-import com.gasguru.core.domain.search.GetRecentSearchQueryUseCase
-import com.gasguru.core.domain.search.InsertRecentSearchQueryUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.model.data.Filter
 import com.gasguru.core.model.data.FilterType
 import com.gasguru.core.model.data.LatLng
-import com.gasguru.core.model.data.Route
-import com.gasguru.core.model.data.SearchPlace
 import com.google.android.gms.maps.model.LatLngBounds
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -39,12 +36,11 @@ import javax.inject.Inject
 class StationMapViewModel @Inject constructor(
     private val fuelStationByLocation: FuelStationByLocationUseCase,
     private val getUserDataUseCase: GetUserDataUseCase,
-    private val savedStateHandle: SavedStateHandle,
     private val getLocationPlaceUseCase: GetLocationPlaceUseCase,
     private val getCurrentLocationUseCase: GetCurrentLocationUseCase,
     getFiltersUseCase: GetFiltersUseCase,
     private val saveFilterUseCase: SaveFilterUseCase,
-    getRouteUseCase: GetRouteUseCase,
+    private val getRouteUseCase: GetRouteUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(StationMapUiState())
@@ -53,44 +49,6 @@ class StationMapViewModel @Inject constructor(
     init {
         getStationByCurrentLocation()
     }
-
-    val polyline: StateFlow<Route?> = getRouteUseCase(
-        origin = LatLng(40.483785, -3.700888),
-        destination = LatLng(39.9633069, -4.8194369)
-    ).stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = null
-    )
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val searchResultUiState: StateFlow<SearchResultUiState> =
-        searchQuery.flatMapLatest { query ->
-            if (query.length < SEARCH_QUERY_MIN_LENGTH) {
-                flowOf(SearchResultUiState.EmptyQuery)
-            } else {
-                getPlacesUseCase(query).map { predictions ->
-                    if (predictions.isEmpty()) {
-                        SearchResultUiState.EmptySearchResult
-                    } else {
-                        SearchResultUiState.Success(predictions)
-                    }
-                }
-            }
-        }.catch { SearchResultUiState.LoadFailed }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = SearchResultUiState.Loading,
-        )
-
-    val recentSearchQueriesUiState: StateFlow<RecentSearchQueriesUiState> =
-        getRecentSearchQueryUseCase().map { recentQueries ->
-            RecentSearchQueriesUiState.Success(recentQueries)
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = RecentSearchQueriesUiState.Loading,
-        )
 
     fun handleEvent(event: StationMapEvent) {
         when (event) {
@@ -101,6 +59,44 @@ class StationMapViewModel @Inject constructor(
             is StationMapEvent.UpdateNearbyFilter -> updateFilterNearby(event.number)
             is StationMapEvent.UpdateScheduleFilter -> updateFilterSchedule(event.schedule)
             is StationMapEvent.OnMapCentered -> markMapAsCentered()
+            is StationMapEvent.StartRoute -> startRoute(event.originId, event.destinationId)
+        }
+    }
+
+    private fun startRoute(originId: String?, destinationId: String?) = viewModelScope.launch {
+        _state.update { it.copy(loading = true) }
+        
+        try {
+            val (originLocation, destinationLocation) = coroutineScope {
+                val originDeferred = async {
+                    if (originId != null) {
+                        getLocationPlaceUseCase(placeId = originId).first()
+                    } else {
+                        getCurrentLocationUseCase() ?: throw Exception("Error to access location")
+                    }
+                }
+                val destinationDeferred = async {
+                    if (destinationId != null) {
+                        getLocationPlaceUseCase(placeId = destinationId).first()
+                    } else {
+                        getCurrentLocationUseCase() ?: throw Exception("Error to access location")
+                    }
+                }
+
+                awaitAll(originDeferred, destinationDeferred)
+            }
+
+            getRouteUseCase(
+                origin = LatLng(
+                    originLocation.latitude,
+                    originLocation.longitude
+                ), destination = LatLng(
+                    destinationLocation.latitude,
+                    destinationLocation.longitude
+                )
+            ).collect { route -> _state.update { it.copy(route = route, loading = false) } }
+        } catch (error: Exception) {
+            _state.update { it.copy(error = error, loading = false) }
         }
     }
 
@@ -143,7 +139,10 @@ class StationMapViewModel @Inject constructor(
                 ).catch { error ->
                     _state.update { it.copy(error = error, loading = false) }
                 }.collect { fuelStations ->
-                    val bounds = calculateBounds(fuelStations = fuelStations.map { it.location }, location = location)
+                    val bounds = calculateBounds(
+                        fuelStations = fuelStations.map { it.location },
+                        location = location
+                    )
                     _state.update {
                         it.copy(
                             fuelStations = fuelStations,

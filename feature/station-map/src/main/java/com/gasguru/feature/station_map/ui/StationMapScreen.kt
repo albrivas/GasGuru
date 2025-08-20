@@ -60,6 +60,7 @@ import com.gasguru.core.components.searchbar.GasGuruSearchBarModel
 import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.FuelStationBrandsType
 import com.gasguru.core.model.data.FuelType
+import com.gasguru.core.model.data.Route
 import com.gasguru.core.ui.getPrice
 import com.gasguru.core.ui.toBrandStationIcon
 import com.gasguru.core.ui.toColor
@@ -83,7 +84,9 @@ import com.gasguru.feature.station_map.R
 import com.gasguru.navigation.models.RoutePlanArgs
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.JointType
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.PolyUtil
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.ComposeMapColorScheme
 import com.google.maps.android.compose.GoogleMap
@@ -91,6 +94,7 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.MarkerComposable
 import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.launch
@@ -108,6 +112,7 @@ fun StationMapScreenRoute(
     StationMapScreen(
         uiState = state,
         filterUiState = filterGroup,
+        routePlanner = routePlanner,
         event = viewModel::handleEvent,
         navigateToDetail = navigateToDetail,
         navigateToRoutePlanner = navigateToRoutePlanner
@@ -119,6 +124,7 @@ fun StationMapScreenRoute(
 internal fun StationMapScreen(
     uiState: StationMapUiState,
     filterUiState: FilterUiState,
+    routePlanner: RoutePlanArgs?,
     event: (StationMapEvent) -> Unit = {},
     navigateToDetail: (Int) -> Unit = {},
     navigateToRoutePlanner: () -> Unit = {},
@@ -140,12 +146,12 @@ internal fun StationMapScreen(
         val screenHeightPx = with(density) { configuration.screenHeightDp.dp.toPx() }
         with(density) {
             (
-                screenHeightPx -
-                    filtersHeightPx -
-                    searchBarHeightPx -
-                    bottomBarHeightPx -
-                    peekHeight.toPx()
-                ).toDp()
+                    screenHeightPx -
+                            filtersHeightPx -
+                            searchBarHeightPx -
+                            bottomBarHeightPx -
+                            peekHeight.toPx()
+                    ).toDp()
         }
     }
 
@@ -153,6 +159,17 @@ internal fun StationMapScreen(
         if (mapBounds != null && shouldCenterMap) {
             cameraState.centerOnMap(bounds = mapBounds, padding = 60)
             event(StationMapEvent.OnMapCentered)
+        }
+    }
+
+    LaunchedEffect(routePlanner) {
+        if (routePlanner != null) {
+            event(
+                StationMapEvent.StartRoute(
+                    originId = routePlanner.originId,
+                    destinationId = routePlanner.destinationId
+                )
+            )
         }
     }
 
@@ -228,6 +245,7 @@ internal fun StationMapScreen(
                     cameraState = cameraState,
                     userSelectedFuelType = selectedType,
                     loading = loading,
+                    route = route,
                     navigateToDetail = navigateToDetail,
                     modifier = Modifier.fillMaxSize()
                 )
@@ -307,6 +325,7 @@ fun MapView(
     cameraState: CameraPositionState,
     userSelectedFuelType: FuelType?,
     loading: Boolean,
+    route: Route?,
     navigateToDetail: (Int) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
@@ -352,6 +371,18 @@ fun MapView(
             contentPadding = PaddingValues(bottom = 60.dp),
             mapColorScheme = if (GasGuruTheme.colors.isDark) ComposeMapColorScheme.DARK else ComposeMapColorScheme.LIGHT
         ) {
+
+            route?.let {
+                val legs = it.legs.map(PolyUtil::decode)
+                legs.forEach { leg ->
+                    Polyline(
+                        points = leg,
+                        width = 20f,
+                        jointType = JointType.ROUND,
+                        color = GasGuruTheme.colors.primary900
+                    )
+                }
+            }
             stations.forEach { station ->
                 val priceCategoryColor = station.priceCategory.toColor()
                 val state = remember(station.idServiceStation) {
@@ -583,6 +614,7 @@ private fun StationMapScreenPreview() {
         StationMapScreen(
             uiState = StationMapUiState(),
             filterUiState = FilterUiState(),
+            routePlanner = null,
             navigateToDetail = {}
         )
     }
