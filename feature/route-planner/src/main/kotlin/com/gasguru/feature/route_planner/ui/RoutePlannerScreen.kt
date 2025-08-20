@@ -154,12 +154,16 @@ internal fun RoutePlannerScreen(
                 .fillMaxSize()
         ) {
             RoutePickerCard(
-                origin = if (uiState.startQuery.isCurrentLocation)
+                origin = if (uiState.startQuery.isCurrentLocation) {
                     stringResource(id = R.string.your_location)
-                else uiState.startQuery.name,
-                destination = if (uiState.endQuery.isCurrentLocation)
+                } else {
+                    uiState.startQuery.name
+                },
+                destination = if (uiState.endQuery.isCurrentLocation) {
                     stringResource(id = R.string.your_location)
-                else uiState.endQuery.name,
+                } else {
+                    uiState.endQuery.name
+                },
                 onPickOrigin = {
                     navigateToSearch()
                     onEvent(RoutePlannerUiEvent.ChangeCurrentInput(input = InputField.START))

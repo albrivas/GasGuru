@@ -32,14 +32,14 @@ class RoutePlannerViewModelTest {
     fun setUp() {
         clearRecentSearchQueriesUseCase = mockk(relaxed = true)
         getRecentSearchQueryUseCase = mockk()
-        
+
         coEvery { getRecentSearchQueryUseCase() } returns flowOf(
             listOf(
                 RecentSearchQuery("Barcelona", "1"),
                 RecentSearchQuery("Madrid", "2")
             )
         )
-        
+
         viewModel = RoutePlannerViewModel(
             clearRecentSearchQueriesUseCase = clearRecentSearchQueriesUseCase,
             getRecentSearchQueryUseCase = getRecentSearchQueryUseCase
@@ -51,7 +51,7 @@ class RoutePlannerViewModelTest {
     fun `should have empty queries and START as current input initially`() = runTest {
         viewModel.state.test {
             val initialState = awaitItem()
-            
+
             assertEquals(RoutePlannerUiState(), initialState)
             assertTrue(initialState.startQuery.isEmpty)
             assertTrue(initialState.endQuery.isEmpty)
@@ -72,12 +72,12 @@ class RoutePlannerViewModelTest {
     fun `should enable route when both queries are filled`() = runTest {
         viewModel.isRouteEnabled.test {
             assertEquals(false, awaitItem())
-            
+
             viewModel.handleEvent(
                 RoutePlannerUiEvent.SelectPlace(placeId = "1", placeName = "Barcelona")
             )
             expectNoEvents()
-            
+
             viewModel.handleEvent(RoutePlannerUiEvent.ChangeCurrentInput(InputField.END))
             viewModel.handleEvent(
                 RoutePlannerUiEvent.SelectPlace(placeId = "2", placeName = "Madrid")
@@ -91,9 +91,9 @@ class RoutePlannerViewModelTest {
     fun `should update current input field`() = runTest {
         viewModel.state.test {
             awaitItem()
-            
+
             viewModel.handleEvent(RoutePlannerUiEvent.ChangeCurrentInput(InputField.END))
-            
+
             assertEquals(InputField.END, awaitItem().currentInput)
         }
     }
@@ -103,11 +103,11 @@ class RoutePlannerViewModelTest {
     fun `should update start query when current input is START`() = runTest {
         viewModel.state.test {
             awaitItem()
-            
+
             viewModel.handleEvent(
                 RoutePlannerUiEvent.SelectPlace(placeId = "123", placeName = "Barcelona")
             )
-            
+
             val state = awaitItem()
             assertEquals("Barcelona", state.startQuery.name)
             assertEquals("123", state.startQuery.id)
@@ -121,14 +121,14 @@ class RoutePlannerViewModelTest {
     fun `should update end query when current input is END`() = runTest {
         viewModel.state.test {
             awaitItem()
-            
+
             viewModel.handleEvent(RoutePlannerUiEvent.ChangeCurrentInput(InputField.END))
             awaitItem()
-            
+
             viewModel.handleEvent(
                 RoutePlannerUiEvent.SelectPlace(placeId = "456", placeName = "Madrid")
             )
-            
+
             val state = awaitItem()
             assertEquals("Madrid", state.endQuery.name)
             assertEquals("456", state.endQuery.id)
@@ -142,9 +142,9 @@ class RoutePlannerViewModelTest {
     fun `should fill empty start query first when selecting current location`() = runTest {
         viewModel.state.test {
             awaitItem()
-            
+
             viewModel.handleEvent(RoutePlannerUiEvent.SelectCurrentLocation)
-            
+
             val state = awaitItem()
             assertTrue(state.startQuery.isCurrentLocation)
             assertTrue(state.endQuery.isEmpty)
@@ -153,33 +153,34 @@ class RoutePlannerViewModelTest {
 
     @Test
     @DisplayName("Should fill empty end query when start query is not empty and selecting current location")
-    fun `should fill empty end query when start query is not empty and selecting current location`() = runTest {
-        viewModel.state.test {
-            awaitItem()
-            
-            viewModel.handleEvent(
-                RoutePlannerUiEvent.SelectPlace(placeId = "123", placeName = "Barcelona")
-            )
-            awaitItem()
-            
-            viewModel.handleEvent(RoutePlannerUiEvent.SelectCurrentLocation)
-            
-            val state = awaitItem()
-            assertEquals("Barcelona", state.startQuery.name)
-            assertTrue(state.endQuery.isCurrentLocation)
+    fun `should fill empty end query when start query is not empty and selecting current location`() =
+        runTest {
+            viewModel.state.test {
+                awaitItem()
+
+                viewModel.handleEvent(
+                    RoutePlannerUiEvent.SelectPlace(placeId = "123", placeName = "Barcelona")
+                )
+                awaitItem()
+
+                viewModel.handleEvent(RoutePlannerUiEvent.SelectCurrentLocation)
+
+                val state = awaitItem()
+                assertEquals("Barcelona", state.startQuery.name)
+                assertTrue(state.endQuery.isCurrentLocation)
+            }
         }
-    }
 
     @Test
     @DisplayName("Should fill empty start query first when selecting recent place")
     fun `should fill empty start query first when selecting recent place`() = runTest {
         viewModel.state.test {
             awaitItem()
-            
+
             viewModel.handleEvent(
                 RoutePlannerUiEvent.SelectRecentPlace(placeId = "789", placeName = "Valencia")
             )
-            
+
             val state = awaitItem()
             assertEquals("Valencia", state.startQuery.name)
             assertEquals("789", state.startQuery.id)
@@ -192,14 +193,14 @@ class RoutePlannerViewModelTest {
     fun `should clear start query`() = runTest {
         viewModel.state.test {
             awaitItem()
-            
+
             viewModel.handleEvent(
                 RoutePlannerUiEvent.SelectPlace(placeId = "123", placeName = "Barcelona")
             )
             awaitItem()
-            
+
             viewModel.handleEvent(RoutePlannerUiEvent.ClearStartDestinationField)
-            
+
             assertTrue(awaitItem().startQuery.isEmpty)
         }
     }
@@ -209,22 +210,22 @@ class RoutePlannerViewModelTest {
     fun `should swap start and end queries`() = runTest {
         viewModel.state.test {
             awaitItem()
-            
+
             viewModel.handleEvent(
                 RoutePlannerUiEvent.SelectPlace(placeId = "123", placeName = "Barcelona")
             )
             awaitItem()
-            
+
             viewModel.handleEvent(RoutePlannerUiEvent.ChangeCurrentInput(InputField.END))
             awaitItem()
-            
+
             viewModel.handleEvent(
                 RoutePlannerUiEvent.SelectPlace(placeId = "456", placeName = "Madrid")
             )
             awaitItem()
-            
+
             viewModel.handleEvent(RoutePlannerUiEvent.ChangeDestinations)
-            
+
             val state = awaitItem()
             assertEquals("Madrid", state.startQuery.name)
             assertEquals("456", state.startQuery.id)
@@ -238,9 +239,9 @@ class RoutePlannerViewModelTest {
     @DisplayName("Should call clear recent searches use case")
     fun `should call clear recent searches use case`() = runTest {
         viewModel.handleEvent(RoutePlannerUiEvent.ClearRecentSearches)
-        
+
         advanceUntilIdle()
-        
+
         coVerify { clearRecentSearchQueriesUseCase() }
     }
 
@@ -249,7 +250,7 @@ class RoutePlannerViewModelTest {
     fun `should emit Success state with recent queries`() = runTest {
         viewModel.recentSearchQueriesUiState.test {
             assertEquals(RecentSearchQueriesUiState.Loading, awaitItem())
-            
+
             val successState = awaitItem() as RecentSearchQueriesUiState.Success
             assertEquals(2, successState.recentQueries.size)
             assertEquals("Barcelona", successState.recentQueries[0].name)
@@ -262,18 +263,18 @@ class RoutePlannerViewModelTest {
     fun `should update route enabled state when queries change`() = runTest {
         viewModel.isRouteEnabled.test {
             assertEquals(false, awaitItem())
-            
+
             viewModel.handleEvent(
                 RoutePlannerUiEvent.SelectPlace(placeId = "123", placeName = "Barcelona")
             )
             expectNoEvents()
-            
+
             viewModel.handleEvent(RoutePlannerUiEvent.ChangeCurrentInput(InputField.END))
             viewModel.handleEvent(
                 RoutePlannerUiEvent.SelectPlace(placeId = "456", placeName = "Madrid")
             )
             assertEquals(true, awaitItem())
-            
+
             viewModel.handleEvent(RoutePlannerUiEvent.ClearStartDestinationField)
             assertEquals(false, awaitItem())
         }
