@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.gasguru.flavors)
     alias(libs.plugins.gasguru.jacoco)
     alias(libs.plugins.gasguru.secrets.google)
+    alias(libs.plugins.kotlin.parcelize)
 }
 
 val localProperties = gradleLocalProperties(rootDir, providers)
@@ -92,6 +93,7 @@ dependencies {
     implementation(projects.core.network)
     implementation(projects.feature.search)
     implementation(projects.feature.routePlanner)
+    implementation(projects.navigation)
     mockImplementation(projects.mocknetwork)
     androidTestImplementation(projects.core.testing)
 

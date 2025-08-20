@@ -15,6 +15,7 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.uikit)
     implementation(projects.core.common)
+    implementation(projects.navigation)
     
     implementation(libs.kotlin.coroutines.play)
     implementation(libs.places)
