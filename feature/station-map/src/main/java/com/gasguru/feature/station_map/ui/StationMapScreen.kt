@@ -19,6 +19,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Directions
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -78,6 +80,7 @@ import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.station_map.BuildConfig
 import com.gasguru.feature.station_map.R
+import com.gasguru.navigation.models.RoutePlanArgs
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -95,7 +98,9 @@ import com.gasguru.core.uikit.R as RUikit
 
 @Composable
 fun StationMapScreenRoute(
-    navigateToDetail: (Int) -> Unit,
+    routePlanner: RoutePlanArgs?,
+    navigateToDetail: (Int) -> Unit = {},
+    navigateToRoutePlanner: () -> Unit = {},
     viewModel: StationMapViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -104,7 +109,8 @@ fun StationMapScreenRoute(
         uiState = state,
         filterUiState = filterGroup,
         event = viewModel::handleEvent,
-        navigateToDetail = navigateToDetail
+        navigateToDetail = navigateToDetail,
+        navigateToRoutePlanner = navigateToRoutePlanner
     )
 }
 
@@ -115,6 +121,7 @@ internal fun StationMapScreen(
     filterUiState: FilterUiState,
     event: (StationMapEvent) -> Unit = {},
     navigateToDetail: (Int) -> Unit = {},
+    navigateToRoutePlanner: () -> Unit = {},
 ) = with(uiState) {
     val cameraState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(LatLng(40.0, -4.0), 5.5f)
@@ -252,6 +259,7 @@ internal fun StationMapScreen(
                     modifier = Modifier.align(Alignment.BottomEnd),
                     isVisible = !isSearchActive,
                     event = event,
+                    navigateToRoutePlanner = navigateToRoutePlanner
                 )
             }
         }
@@ -387,6 +395,7 @@ fun FABLocation(
     modifier: Modifier,
     isVisible: Boolean = true,
     event: (StationMapEvent) -> Unit = {},
+    navigateToRoutePlanner: () -> Unit = {},
 ) {
     if (isVisible) {
         Column(
@@ -406,6 +415,19 @@ fun FABLocation(
                     imageVector = ImageVector.vectorResource(id = RUikit.drawable.ic_my_location),
                     tint = GasGuruTheme.colors.textSubtle,
                     contentDescription = "User location",
+                )
+            }
+
+            FloatingActionButton(
+                onClick = navigateToRoutePlanner,
+                modifier = modifier,
+                containerColor = GasGuruTheme.colors.primary100,
+                contentColor = GasGuruTheme.colors.neutralBlack,
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Directions,
+                    tint = GasGuruTheme.colors.textSubtle,
+                    contentDescription = "Create route",
                 )
             }
         }
