@@ -22,6 +22,7 @@ dependencies {
     implementation(libs.kotlin.coroutines.play)
     implementation(libs.maps.compose)
     implementation(libs.play.services.maps)
+    implementation(libs.maps.utils)
 
     androidTestImplementation(projects.core.testing)
     androidTestImplementation(projects.core.testing)

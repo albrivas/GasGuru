@@ -122,6 +122,7 @@ androidx-auto = { module = "androidx.car.app:app-projected", version.ref = "andr
 onesignal = { module = "com.onesignal:OneSignal", version.ref = "onesignal" }
 mixpanel = { module = "com.mixpanel.android:mixpanel-android", version.ref = "mixpanel" }
 
+
 # Dependencies of the included build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
 android-tools-common = { group = "com.android.tools", name = "common", version.ref = "androidTools" }
