@@ -6,6 +6,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.dialog
 import com.gasguru.core.model.data.SearchPlace
+import com.gasguru.core.ui.ConfigureDialogSystemBars
 import com.gasguru.feature.search.ui.SearchScreenRoute
 
 fun NavController.navigateToSearch(navOptions: NavOptions? = null) {
@@ -22,6 +23,8 @@ fun NavGraphBuilder.searchScreen(
             decorFitsSystemWindows = false
         )
     ) {
+        ConfigureDialogSystemBars()
+
         SearchScreenRoute(
             onPlaceSelected = { place ->
                 onPlaceSelected(place)
