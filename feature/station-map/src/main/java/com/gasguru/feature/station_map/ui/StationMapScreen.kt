@@ -86,7 +86,6 @@ import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.JointType
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.PolyUtil
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.ComposeMapColorScheme
 import com.google.maps.android.compose.GoogleMap
@@ -146,12 +145,12 @@ internal fun StationMapScreen(
         val screenHeightPx = with(density) { configuration.screenHeightDp.dp.toPx() }
         with(density) {
             (
-                    screenHeightPx -
-                            filtersHeightPx -
-                            searchBarHeightPx -
-                            bottomBarHeightPx -
-                            peekHeight.toPx()
-                    ).toDp()
+                screenHeightPx -
+                    filtersHeightPx -
+                    searchBarHeightPx -
+                    bottomBarHeightPx -
+                    peekHeight.toPx()
+                ).toDp()
         }
     }
 
@@ -371,17 +370,16 @@ fun MapView(
             contentPadding = PaddingValues(bottom = 60.dp),
             mapColorScheme = if (GasGuruTheme.colors.isDark) ComposeMapColorScheme.DARK else ComposeMapColorScheme.LIGHT
         ) {
-
             route?.let {
-                val legs = it.legs.map(PolyUtil::decode)
-                legs.forEach { leg ->
-                    Polyline(
-                        points = leg,
-                        width = 20f,
-                        jointType = JointType.ROUND,
-                        color = GasGuruTheme.colors.primary900
-                    )
+                val googleMapsPoints = it.route.map { point ->
+                    LatLng(point.latitude, point.longitude)
                 }
+                Polyline(
+                    points = googleMapsPoints,
+                    width = 20f,
+                    jointType = JointType.ROUND,
+                    color = GasGuruTheme.colors.primary900
+                )
             }
             stations.forEach { station ->
                 val priceCategoryColor = station.priceCategory.toColor()

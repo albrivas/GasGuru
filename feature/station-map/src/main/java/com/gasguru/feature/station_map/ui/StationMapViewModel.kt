@@ -3,10 +3,12 @@ package com.gasguru.feature.station_map.ui
 import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gasguru.core.common.DefaultDispatcher
 import com.gasguru.core.common.toLatLng
 import com.gasguru.core.domain.filters.GetFiltersUseCase
 import com.gasguru.core.domain.filters.SaveFilterUseCase
 import com.gasguru.core.domain.fuelstation.FuelStationByLocationUseCase
+import com.gasguru.core.domain.fuelstation.GetFuelStationsInRouteUseCase
 import com.gasguru.core.domain.location.GetCurrentLocationUseCase
 import com.gasguru.core.domain.places.GetLocationPlaceUseCase
 import com.gasguru.core.domain.route.GetRouteUseCase
@@ -16,6 +18,7 @@ import com.gasguru.core.model.data.FilterType
 import com.gasguru.core.model.data.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -41,6 +44,8 @@ class StationMapViewModel @Inject constructor(
     getFiltersUseCase: GetFiltersUseCase,
     private val saveFilterUseCase: SaveFilterUseCase,
     private val getRouteUseCase: GetRouteUseCase,
+    private val getFuelStationsInRouteUseCase: GetFuelStationsInRouteUseCase,
+    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(StationMapUiState())
@@ -64,8 +69,8 @@ class StationMapViewModel @Inject constructor(
     }
 
     private fun startRoute(originId: String?, destinationId: String?) = viewModelScope.launch {
-        _state.update { it.copy(loading = true) }
-        
+        _state.update { it.copy(loading = true, fuelStations = emptyList()) }
+
         try {
             val (originLocation, destinationLocation) = coroutineScope {
                 val originDeferred = async {
@@ -90,11 +95,31 @@ class StationMapViewModel @Inject constructor(
                 origin = LatLng(
                     originLocation.latitude,
                     originLocation.longitude
-                ), destination = LatLng(
+                ),
+                destination = LatLng(
                     destinationLocation.latitude,
                     destinationLocation.longitude
                 )
-            ).collect { route -> _state.update { it.copy(route = route, loading = false) } }
+            ).collect { route ->
+
+                route?.let { routeData ->
+                    launch(defaultDispatcher) {
+                        try {
+                            val routeFuelStations =
+                                getFuelStationsInRouteUseCase(routePoints = routeData.route)
+                            _state.update {
+                                it.copy(
+                                    fuelStations = routeFuelStations,
+                                    route = route,
+                                    loading = false
+                                )
+                            }
+                        } catch (error: Exception) {
+                            _state.update { it.copy(error = error, loading = false) }
+                        }
+                    }
+                }
+            }
         } catch (error: Exception) {
             _state.update { it.copy(error = error, loading = false) }
         }
