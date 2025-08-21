@@ -6,16 +6,16 @@ import com.gasguru.core.common.DefaultDispatcher
 import com.gasguru.core.common.IoDispatcher
 import com.gasguru.core.common.toLocation
 import com.gasguru.core.data.mapper.asEntity
+import com.gasguru.core.data.mapper.calculateFuelPrices
+import com.gasguru.core.data.mapper.getPriceCategory
 import com.gasguru.core.data.repository.user.OfflineUserDataRepository
 import com.gasguru.core.database.dao.FuelStationDao
 import com.gasguru.core.database.model.FuelStationEntity
 import com.gasguru.core.database.model.asExternalModel
 import com.gasguru.core.database.model.getLocation
 import com.gasguru.core.model.data.FuelStation
-import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.OpeningHours
-import com.gasguru.core.model.data.PriceCategory
 import com.gasguru.core.network.datasource.RemoteDataSource
 import com.gasguru.core.network.model.NetworkPriceFuelStation
 import kotlinx.coroutines.CoroutineDispatcher
@@ -32,8 +32,6 @@ import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.cos
-
-const val PRICE_RANGE = 3
 
 class OfflineFuelStationRepository @Inject constructor(
     private val fuelStationDao: FuelStationDao,
@@ -89,7 +87,7 @@ class OfflineFuelStationRepository @Inject constructor(
                         }
                     }
 
-                val (minPrice, maxPrice) = externalModel.calculateFuelPrices(user.fuelSelection)
+                val (minPrice, maxPrice) = externalModel.calculateFuelPrices(fuelType = user.fuelSelection)
 
                 externalModel.map { fuelStation ->
                     val priceCategory = fuelStation.getPriceCategory(
@@ -123,7 +121,7 @@ class OfflineFuelStationRepository @Inject constructor(
 
     override suspend fun getFuelStationInRoute(
         origin: LatLng,
-        points: List<LatLng>
+        points: List<LatLng>,
     ): List<FuelStation> {
         if (points.isEmpty()) return emptyList()
 
@@ -157,60 +155,19 @@ class OfflineFuelStationRepository @Inject constructor(
         }
 
         val externalModel = allStations.map(FuelStationEntity::asExternalModel)
-        val (minPrice, maxPrice) = externalModel.calculateFuelPrices(userData.fuelSelection)
+        val (minPrice, maxPrice) = externalModel.calculateFuelPrices(fuelType = userData.fuelSelection)
         val originLocation = origin.toLocation()
 
         return externalModel.map { fuelStation ->
             val priceCategory = fuelStation.getPriceCategory(
-                userData.fuelSelection,
-                minPrice,
-                maxPrice
+                fuelType = userData.fuelSelection,
+                minPrice = minPrice,
+                maxPrice = maxPrice
             )
             fuelStation.copy(
                 priceCategory = priceCategory,
                 distance = fuelStation.location.distanceTo(originLocation)
             )
-        }
-    }
-
-    private fun List<FuelStation>.calculateFuelPrices(fuelType: FuelType): Pair<Double, Double> {
-        val prices = when (fuelType) {
-            FuelType.GASOLINE_95 -> map { it.priceGasoline95E5 }
-            FuelType.GASOLINE_98 -> map { it.priceGasoline98E5 }
-            FuelType.DIESEL -> map { it.priceGasoilA }
-            FuelType.DIESEL_PLUS -> map { it.priceGasoilPremium }
-            FuelType.GASOLINE_95_PREMIUM -> map { it.priceGasoline95E5Premium }
-            FuelType.GASOLINE_95_E10 -> map { it.priceGasoline95E10 }
-            FuelType.GASOLINE_98_PREMIUM -> map { it.priceGasoline98E10 }
-            FuelType.GASOIL_B -> map { it.priceGasoilB }
-        }
-
-        return Pair(prices.minOrNull() ?: 0.0, prices.maxOrNull() ?: 0.0)
-    }
-
-    private fun FuelStation.getPriceCategory(
-        fuelType: FuelType,
-        minPrice: Double,
-        maxPrice: Double,
-    ): PriceCategory {
-        val currentPrice = when (fuelType) {
-            FuelType.GASOLINE_95 -> priceGasoline95E5
-            FuelType.GASOLINE_98 -> priceGasoline98E5
-            FuelType.DIESEL -> priceGasoilA
-            FuelType.DIESEL_PLUS -> priceGasoilPremium
-            FuelType.GASOLINE_95_PREMIUM -> priceGasoline95E5Premium
-            FuelType.GASOLINE_95_E10 -> priceGasoline95E10
-            FuelType.GASOLINE_98_PREMIUM -> priceGasoline98E10
-            FuelType.GASOIL_B -> priceGasoilB
-        }
-
-        val priceRange = maxPrice - minPrice
-        val step = priceRange / PRICE_RANGE
-
-        return when {
-            currentPrice < minPrice + step -> PriceCategory.CHEAP
-            currentPrice < minPrice + 2 * step -> PriceCategory.NORMAL
-            else -> PriceCategory.EXPENSIVE
         }
     }
 
@@ -230,6 +187,6 @@ class OfflineFuelStationRepository @Inject constructor(
         val minLat: Double,
         val maxLat: Double,
         val minLng: Double,
-        val maxLng: Double
+        val maxLng: Double,
     )
 }
