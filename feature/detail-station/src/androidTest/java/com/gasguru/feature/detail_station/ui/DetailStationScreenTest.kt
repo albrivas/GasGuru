@@ -11,7 +11,6 @@ import androidx.compose.ui.test.performClick
 import com.gasguru.core.model.data.previewFuelStationDomain
 import com.gasguru.core.testing.BaseTest
 import com.gasguru.core.ui.IconTintKey
-import com.gasguru.core.ui.toUiModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -32,7 +31,7 @@ class DetailStationScreenTest : BaseTest() {
                 black = GasGuruTheme.colors.neutralBlack
                 red = GasGuruTheme.colors.accentRed
                 DetailStationScreen(
-                    uiState = DetailStationUiState.Success(station = station.toUiModel(), address = null),
+                    uiState = DetailStationUiState.Success(station = station, address = null),
                     lastUpdate = 0,
                     staticMapUrl = "",
                     onEvent = {
