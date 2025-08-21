@@ -3,20 +3,17 @@ package com.gasguru.core.data.mapper
 import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.Route
 import com.gasguru.core.network.model.route.NetworkRoutes
+import com.google.maps.android.PolyUtil
 
 fun NetworkRoutes.toDomainRoute(): Route {
-    val legs = routes.map { it.polyline.encodedPolyline }
-
-    val steps = routes.flatMap { route ->
-        route.legs.flatMap { leg ->
-            leg.steps.map { step ->
-                LatLng(
-                    latitude = step.startLocation.latLng.latitude,
-                    longitude = step.startLocation.latLng.longitude
-                )
-            }
+    val route = routes.flatMap { route ->
+        PolyUtil.decode(route.polyline.encodedPolyline).map { point: com.google.android.gms.maps.model.LatLng ->
+            LatLng(
+                latitude = point.latitude,
+                longitude = point.longitude
+            )
         }
     }
 
-    return Route(legs = legs, steps = steps)
+    return Route(route = route)
 }
