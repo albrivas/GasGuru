@@ -128,25 +128,30 @@ class OfflineFuelStationRepository @Inject constructor(
         if (points.isEmpty()) return emptyList()
 
         val userData = offlineUserDataRepository.userData.first()
-        val radiusKm = 0.5 // Radio de 500m
+        val radiusKm = 0.4
+        val radiusMeters = radiusKm * 1000
+        val fuelTypeName = userData.fuelSelection.name
         val allStations = mutableSetOf<FuelStationEntity>()
 
-        points.forEach { point ->
+
+        val reducedPoints = points.filterIndexed { index, _ -> index % 2 == 0 }
+
+        reducedPoints.forEach { point ->
             val bounds = calculateBoundingBox(point, radiusKm)
+            val pointLocation = point.toLocation()
+            
             val stationsInBounds = fuelStationDao.getFuelStationsInBounds(
                 minLat = bounds.minLat,
                 maxLat = bounds.maxLat,
                 minLng = bounds.minLng,
                 maxLng = bounds.maxLng,
-                fuelType = userData.fuelSelection.name
+                fuelType = fuelTypeName
             )
 
             stationsInBounds.forEach { station ->
-                val stationLocation = station.getLocation()
-                val pointLocation = point.toLocation()
-                val distance = stationLocation.distanceTo(pointLocation)
-
-                if (distance <= radiusKm * 1000) {
+                allStations.add(station)
+                val distance = station.getLocation().distanceTo(pointLocation)
+                if (distance <= radiusMeters) {
                     allStations.add(station)
                 }
             }
@@ -210,13 +215,9 @@ class OfflineFuelStationRepository @Inject constructor(
         }
     }
 
-    /**
-     * Calcula el bounding box (cuadrado) alrededor de un punto con un radio determinado
-     */
     private fun calculateBoundingBox(center: LatLng, radiusKm: Double): BoundingBox {
-        // Aproximación: 1 grado lat ≈ 111 km, 1 grado lng ≈ 111 km * cos(lat)
-        val latDiff = radiusKm / 111.0
-        val lngDiff = radiusKm / (111.0 * cos(Math.toRadians(center.latitude)))
+        val latDiff = radiusKm / 110.574
+        val lngDiff = radiusKm / (111.320 * cos(Math.toRadians(center.latitude)))
 
         return BoundingBox(
             minLat = center.latitude - latDiff,
