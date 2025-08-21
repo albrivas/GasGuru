@@ -9,6 +9,7 @@ class GetFuelStationsInRouteUseCase @Inject constructor(
     private val repository: OfflineFuelStationRepository,
 ) {
     suspend operator fun invoke(
-        routePoints: List<LatLng>
-    ): List<FuelStation> = repository.getFuelStationInRoute(routePoints)
+        origin: LatLng,
+        routePoints: List<LatLng>,
+    ): List<FuelStation> = repository.getFuelStationInRoute(origin = origin, points = routePoints)
 }

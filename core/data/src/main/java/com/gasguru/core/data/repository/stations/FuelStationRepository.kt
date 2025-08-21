@@ -16,5 +16,5 @@ interface FuelStationRepository {
     ): Flow<List<FuelStation>>
 
     fun getFuelStationById(id: Int, userLocation: Location): Flow<FuelStation>
-    suspend fun getFuelStationInRoute(points: List<LatLng>): List<FuelStation>
+    suspend fun getFuelStationInRoute(origin: LatLng, points: List<LatLng>): List<FuelStation>
 }

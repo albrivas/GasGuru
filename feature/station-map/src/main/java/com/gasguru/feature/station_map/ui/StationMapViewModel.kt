@@ -91,11 +91,12 @@ class StationMapViewModel @Inject constructor(
                 awaitAll(originDeferred, destinationDeferred)
             }
 
+            val origin = LatLng(
+                originLocation.latitude,
+                originLocation.longitude
+            )
             getRouteUseCase(
-                origin = LatLng(
-                    originLocation.latitude,
-                    originLocation.longitude
-                ),
+                origin = origin,
                 destination = LatLng(
                     destinationLocation.latitude,
                     destinationLocation.longitude
@@ -106,11 +107,20 @@ class StationMapViewModel @Inject constructor(
                     launch(defaultDispatcher) {
                         try {
                             val routeFuelStations =
-                                getFuelStationsInRouteUseCase(routePoints = routeData.route)
+                                getFuelStationsInRouteUseCase(
+                                    origin = origin,
+                                    routePoints = routeData.route
+                                )
+                            val bounds = calculateRouteBounds(
+                                origin = originLocation,
+                                destination = destinationLocation
+                            )
                             _state.update {
                                 it.copy(
                                     fuelStations = routeFuelStations,
                                     route = route,
+                                    mapBounds = bounds,
+                                    shouldCenterMap = true,
                                     loading = false
                                 )
                             }
@@ -131,7 +141,7 @@ class StationMapViewModel @Inject constructor(
 
     private fun getStationByCurrentLocation() {
         viewModelScope.launch {
-            _state.update { it.copy(loading = true) }
+            _state.update { it.copy(loading = true, route = null, fuelStations = emptyList()) }
             getCurrentLocationUseCase()?.let { location ->
                 getStationByLocation(location)
             }
@@ -185,6 +195,16 @@ class StationMapViewModel @Inject constructor(
     private fun calculateBounds(fuelStations: List<Location>, location: Location): LatLngBounds {
         val allLocations =
             fuelStations.map { it.toLatLng() } + location.toLatLng()
+        val boundsBuilder = LatLngBounds.Builder()
+        allLocations.forEach { boundsBuilder.include(it) }
+        return boundsBuilder.build()
+    }
+
+    private fun calculateRouteBounds(
+        origin: Location,
+        destination: Location
+    ): LatLngBounds {
+        val allLocations = listOf(origin.toLatLng(), destination.toLatLng())
         val boundsBuilder = LatLngBounds.Builder()
         allLocations.forEach { boundsBuilder.include(it) }
         return boundsBuilder.build()

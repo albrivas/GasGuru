@@ -122,6 +122,7 @@ class OfflineFuelStationRepository @Inject constructor(
             .flowOn(ioDispatcher)
 
     override suspend fun getFuelStationInRoute(
+        origin: LatLng,
         points: List<LatLng>
     ): List<FuelStation> {
         if (points.isEmpty()) return emptyList()
@@ -153,6 +154,7 @@ class OfflineFuelStationRepository @Inject constructor(
 
         val externalModel = allStations.map(FuelStationEntity::asExternalModel)
         val (minPrice, maxPrice) = externalModel.calculateFuelPrices(userData.fuelSelection)
+        val originLocation = origin.toLocation()
 
         return externalModel.map { fuelStation ->
             val priceCategory = fuelStation.getPriceCategory(
@@ -160,7 +162,10 @@ class OfflineFuelStationRepository @Inject constructor(
                 minPrice,
                 maxPrice
             )
-            fuelStation.copy(priceCategory = priceCategory)
+            fuelStation.copy(
+                priceCategory = priceCategory,
+                distance = fuelStation.location.distanceTo(originLocation)
+            )
         }
     }
 
