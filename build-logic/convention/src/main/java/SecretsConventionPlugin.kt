@@ -37,6 +37,7 @@ class SecretsConventionPlugin : Plugin<Project> {
                     ignoreList.add("sdk.*")
                     ignoreList.add("keyAlias")
                     ignoreList.add("keyPassword")
+                    ignoreList.add("sha1Release")
                 }
             }
         }
