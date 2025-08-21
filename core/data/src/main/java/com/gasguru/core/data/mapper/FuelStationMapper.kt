@@ -6,7 +6,6 @@ import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.PriceCategory
 import com.gasguru.core.network.model.NetworkPriceFuelStation
 
-
 fun NetworkPriceFuelStation.asEntity() = FuelStationEntity(
     bioEthanolPercentage = bioEthanolPercentage,
     esterMethylPercentage = esterMethylPercentage,
@@ -61,7 +60,6 @@ fun List<FuelStation>.calculateFuelPrices(fuelType: FuelType): Pair<Double, Doub
 
     return Pair(prices.minOrNull() ?: 0.0, prices.maxOrNull() ?: 0.0)
 }
-
 
 fun FuelStation.getPriceCategory(
     fuelType: FuelType,
