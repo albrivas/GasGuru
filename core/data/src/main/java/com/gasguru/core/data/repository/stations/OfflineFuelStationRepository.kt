@@ -4,6 +4,7 @@ import android.location.Location
 import com.gasguru.core.common.CommonUtils.isStationOpen
 import com.gasguru.core.common.DefaultDispatcher
 import com.gasguru.core.common.IoDispatcher
+import com.gasguru.core.common.toLocation
 import com.gasguru.core.data.mapper.asEntity
 import com.gasguru.core.data.repository.user.OfflineUserDataRepository
 import com.gasguru.core.database.dao.FuelStationDao
@@ -12,6 +13,7 @@ import com.gasguru.core.database.model.asExternalModel
 import com.gasguru.core.database.model.getLocation
 import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.FuelType
+import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.OpeningHours
 import com.gasguru.core.model.data.PriceCategory
 import com.gasguru.core.network.datasource.RemoteDataSource
@@ -22,12 +24,14 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
+import kotlin.math.cos
 
 const val PRICE_RANGE = 3
 
@@ -117,6 +121,49 @@ class OfflineFuelStationRepository @Inject constructor(
             }
             .flowOn(ioDispatcher)
 
+    override suspend fun getFuelStationInRoute(
+        points: List<LatLng>
+    ): List<FuelStation> {
+        if (points.isEmpty()) return emptyList()
+
+        val userData = offlineUserDataRepository.userData.first()
+        val radiusKm = 0.5 // Radio de 500m
+        val allStations = mutableSetOf<FuelStationEntity>()
+
+        points.forEach { point ->
+            val bounds = calculateBoundingBox(point, radiusKm)
+            val stationsInBounds = fuelStationDao.getFuelStationsInBounds(
+                minLat = bounds.minLat,
+                maxLat = bounds.maxLat,
+                minLng = bounds.minLng,
+                maxLng = bounds.maxLng,
+                fuelType = userData.fuelSelection.name
+            )
+
+            stationsInBounds.forEach { station ->
+                val stationLocation = station.getLocation()
+                val pointLocation = point.toLocation()
+                val distance = stationLocation.distanceTo(pointLocation)
+
+                if (distance <= radiusKm * 1000) {
+                    allStations.add(station)
+                }
+            }
+        }
+
+        val externalModel = allStations.map(FuelStationEntity::asExternalModel)
+        val (minPrice, maxPrice) = externalModel.calculateFuelPrices(userData.fuelSelection)
+
+        return externalModel.map { fuelStation ->
+            val priceCategory = fuelStation.getPriceCategory(
+                userData.fuelSelection,
+                minPrice,
+                maxPrice
+            )
+            fuelStation.copy(priceCategory = priceCategory)
+        }
+    }
+
     private fun List<FuelStation>.calculateFuelPrices(fuelType: FuelType): Pair<Double, Double> {
         val prices = when (fuelType) {
             FuelType.GASOLINE_95 -> map { it.priceGasoline95E5 }
@@ -157,4 +204,27 @@ class OfflineFuelStationRepository @Inject constructor(
             else -> PriceCategory.EXPENSIVE
         }
     }
+
+    /**
+     * Calcula el bounding box (cuadrado) alrededor de un punto con un radio determinado
+     */
+    private fun calculateBoundingBox(center: LatLng, radiusKm: Double): BoundingBox {
+        // Aproximación: 1 grado lat ≈ 111 km, 1 grado lng ≈ 111 km * cos(lat)
+        val latDiff = radiusKm / 111.0
+        val lngDiff = radiusKm / (111.0 * cos(Math.toRadians(center.latitude)))
+
+        return BoundingBox(
+            minLat = center.latitude - latDiff,
+            maxLat = center.latitude + latDiff,
+            minLng = center.longitude - lngDiff,
+            maxLng = center.longitude + lngDiff
+        )
+    }
+
+    private data class BoundingBox(
+        val minLat: Double,
+        val maxLat: Double,
+        val minLng: Double,
+        val maxLng: Double
+    )
 }
