@@ -7,6 +7,7 @@ import com.gasguru.core.domain.fuelstation.RemoveFavoriteStationUseCase
 import com.gasguru.core.domain.location.GetLastKnownLocationUseCase
 import com.gasguru.core.domain.location.IsLocationEnabledUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
+import com.gasguru.core.ui.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
@@ -54,7 +55,7 @@ class FavoriteListStationViewModel @Inject constructor(
                                 FavoriteStationListUiState.EmptyFavorites
                             } else {
                                 FavoriteStationListUiState.Favorites(
-                                    favoriteStations = stations.favoriteStations,
+                                    favoriteStations = stations.favoriteStations.map { it.toUiModel() },
                                     userSelectedFuelType = userData.fuelSelection
                                 )
                             }

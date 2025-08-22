@@ -17,6 +17,7 @@ dependencies {
     implementation(projects.core.common)
 
     androidTestImplementation(projects.core.testing)
+    androidTestImplementation(projects.core.ui)
     androidTestImplementation(libs.junit5.api)
     androidTestImplementation(libs.junit5.extensions)
 }

@@ -16,6 +16,7 @@ import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.model.data.Filter
 import com.gasguru.core.model.data.FilterType
 import com.gasguru.core.model.data.LatLng
+import com.gasguru.core.ui.toUiModel
 import com.google.android.gms.maps.model.LatLngBounds
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -117,7 +118,7 @@ class StationMapViewModel @Inject constructor(
                             )
                             _state.update {
                                 it.copy(
-                                    fuelStations = routeFuelStations,
+                                    fuelStations = routeFuelStations.map { station -> station.toUiModel() },
                                     route = route,
                                     mapBounds = bounds,
                                     shouldCenterMap = true,
@@ -180,7 +181,7 @@ class StationMapViewModel @Inject constructor(
                     )
                     _state.update {
                         it.copy(
-                            fuelStations = fuelStations,
+                            fuelStations = fuelStations.map { station -> station.toUiModel() },
                             loading = false,
                             selectedType = userData.fuelSelection,
                             mapBounds = bounds,
