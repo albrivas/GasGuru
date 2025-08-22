@@ -84,8 +84,8 @@ fun RoutePlannerScreenRoute(
         onStartRoute = {
             popBackToMapScreen(
                 RoutePlanArgs(
-                    originId = state.startQuery.id,
-                    destinationId = state.endQuery.id
+                    originId = state.startQuery.id.takeIf { it.isNotEmpty() },
+                    destinationId = state.endQuery.id.takeIf { it.isNotEmpty() }
                 )
             )
         }

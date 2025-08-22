@@ -1,26 +1,34 @@
 package com.gasguru.feature.station_map.ui
 
 import android.location.Location
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gasguru.core.common.DefaultDispatcher
 import com.gasguru.core.common.toLatLng
 import com.gasguru.core.domain.filters.GetFiltersUseCase
 import com.gasguru.core.domain.filters.SaveFilterUseCase
 import com.gasguru.core.domain.fuelstation.FuelStationByLocationUseCase
+import com.gasguru.core.domain.fuelstation.GetFuelStationsInRouteUseCase
 import com.gasguru.core.domain.location.GetCurrentLocationUseCase
 import com.gasguru.core.domain.places.GetLocationPlaceUseCase
+import com.gasguru.core.domain.route.GetRouteUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.model.data.Filter
 import com.gasguru.core.model.data.FilterType
+import com.gasguru.core.model.data.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -31,11 +39,13 @@ import javax.inject.Inject
 class StationMapViewModel @Inject constructor(
     private val fuelStationByLocation: FuelStationByLocationUseCase,
     private val getUserDataUseCase: GetUserDataUseCase,
-    private val savedStateHandle: SavedStateHandle,
     private val getLocationPlaceUseCase: GetLocationPlaceUseCase,
     private val getCurrentLocationUseCase: GetCurrentLocationUseCase,
     getFiltersUseCase: GetFiltersUseCase,
     private val saveFilterUseCase: SaveFilterUseCase,
+    private val getRouteUseCase: GetRouteUseCase,
+    private val getFuelStationsInRouteUseCase: GetFuelStationsInRouteUseCase,
+    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(StationMapUiState())
@@ -54,6 +64,74 @@ class StationMapViewModel @Inject constructor(
             is StationMapEvent.UpdateNearbyFilter -> updateFilterNearby(event.number)
             is StationMapEvent.UpdateScheduleFilter -> updateFilterSchedule(event.schedule)
             is StationMapEvent.OnMapCentered -> markMapAsCentered()
+            is StationMapEvent.StartRoute -> startRoute(event.originId, event.destinationId)
+        }
+    }
+
+    private fun startRoute(originId: String?, destinationId: String?) = viewModelScope.launch {
+        _state.update { it.copy(loading = true, fuelStations = emptyList()) }
+
+        try {
+            val (originLocation, destinationLocation) = coroutineScope {
+                val originDeferred = async {
+                    if (originId != null) {
+                        getLocationPlaceUseCase(placeId = originId).first()
+                    } else {
+                        getCurrentLocationUseCase() ?: throw Exception("Error to access location")
+                    }
+                }
+                val destinationDeferred = async {
+                    if (destinationId != null) {
+                        getLocationPlaceUseCase(placeId = destinationId).first()
+                    } else {
+                        getCurrentLocationUseCase() ?: throw Exception("Error to access location")
+                    }
+                }
+
+                awaitAll(originDeferred, destinationDeferred)
+            }
+
+            val origin = LatLng(
+                originLocation.latitude,
+                originLocation.longitude
+            )
+            getRouteUseCase(
+                origin = origin,
+                destination = LatLng(
+                    destinationLocation.latitude,
+                    destinationLocation.longitude
+                )
+            ).collect { route ->
+
+                route?.let { routeData ->
+                    launch(defaultDispatcher) {
+                        try {
+                            val routeFuelStations =
+                                getFuelStationsInRouteUseCase(
+                                    origin = origin,
+                                    routePoints = routeData.route
+                                )
+                            val bounds = calculateRouteBounds(
+                                origin = originLocation,
+                                destination = destinationLocation
+                            )
+                            _state.update {
+                                it.copy(
+                                    fuelStations = routeFuelStations,
+                                    route = route,
+                                    mapBounds = bounds,
+                                    shouldCenterMap = true,
+                                    loading = false
+                                )
+                            }
+                        } catch (error: Exception) {
+                            _state.update { it.copy(error = error, loading = false) }
+                        }
+                    }
+                }
+            }
+        } catch (error: Exception) {
+            _state.update { it.copy(error = error, loading = false) }
         }
     }
 
@@ -63,7 +141,7 @@ class StationMapViewModel @Inject constructor(
 
     private fun getStationByCurrentLocation() {
         viewModelScope.launch {
-            _state.update { it.copy(loading = true) }
+            _state.update { it.copy(loading = true, route = null, fuelStations = emptyList()) }
             getCurrentLocationUseCase()?.let { location ->
                 getStationByLocation(location)
             }
@@ -96,7 +174,10 @@ class StationMapViewModel @Inject constructor(
                 ).catch { error ->
                     _state.update { it.copy(error = error, loading = false) }
                 }.collect { fuelStations ->
-                    val bounds = calculateBounds(fuelStations = fuelStations.map { it.location }, location = location)
+                    val bounds = calculateBounds(
+                        fuelStations = fuelStations.map { it.location },
+                        location = location
+                    )
                     _state.update {
                         it.copy(
                             fuelStations = fuelStations,
@@ -114,6 +195,16 @@ class StationMapViewModel @Inject constructor(
     private fun calculateBounds(fuelStations: List<Location>, location: Location): LatLngBounds {
         val allLocations =
             fuelStations.map { it.toLatLng() } + location.toLatLng()
+        val boundsBuilder = LatLngBounds.Builder()
+        allLocations.forEach { boundsBuilder.include(it) }
+        return boundsBuilder.build()
+    }
+
+    private fun calculateRouteBounds(
+        origin: Location,
+        destination: Location
+    ): LatLngBounds {
+        val allLocations = listOf(origin.toLatLng(), destination.toLatLng())
         val boundsBuilder = LatLngBounds.Builder()
         allLocations.forEach { boundsBuilder.include(it) }
         return boundsBuilder.build()

@@ -5,6 +5,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.dialog
+import com.gasguru.core.ui.ConfigureDialogSystemBars
 import com.gasguru.feature.route_planner.ui.RoutePlannerScreenRoute
 import com.gasguru.navigation.constants.NavigationKeys
 import com.gasguru.navigation.extensions.getPreviousResult
@@ -31,6 +32,9 @@ fun NavGraphBuilder.routePlannerScreen(
         if (result != null) {
             navBackResult.removePreviousResult(NavigationKeys.SELECTED_PLACE)
         }
+
+        ConfigureDialogSystemBars()
+
         RoutePlannerScreenRoute(
             selectedPlaceId = result,
             onBack = onBack,
