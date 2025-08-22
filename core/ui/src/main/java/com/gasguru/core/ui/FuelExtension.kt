@@ -38,5 +38,3 @@ fun PriceCategory.toColor() = when (this) {
 }
 
 fun FuelStation.toUiModel(): FuelStationUiModel = FuelStationUiModel.from(this)
-
-

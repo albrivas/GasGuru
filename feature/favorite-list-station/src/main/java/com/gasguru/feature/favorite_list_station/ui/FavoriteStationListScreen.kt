@@ -23,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -33,8 +32,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.previewFuelStationDomain
-import com.gasguru.core.ui.models.FuelStationUiModel
 import com.gasguru.core.ui.getPrice
+import com.gasguru.core.ui.models.FuelStationUiModel
 import com.gasguru.core.ui.toColor
 import com.gasguru.core.ui.toUiModel
 import com.gasguru.core.uikit.components.alert.AlertTemplate

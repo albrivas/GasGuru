@@ -70,9 +70,9 @@ internal fun OnboardingFuelPreferences(
                     modifier = Modifier.padding(0.dp, 30.dp, 0.dp, 0.dp)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                val list = uiState.list.map { 
+                val list = uiState.list.map {
                     val fuelUiModel = FuelTypeUiModel.fromFuelType(it)
-                    Pair(fuelUiModel.iconRes, fuelUiModel.translationRes) 
+                    Pair(fuelUiModel.iconRes, fuelUiModel.translationRes)
                 }
                 FuelListSelection(
                     modifier = Modifier.weight(1f),

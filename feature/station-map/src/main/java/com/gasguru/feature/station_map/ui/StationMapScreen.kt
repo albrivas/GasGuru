@@ -60,8 +60,8 @@ import com.gasguru.core.components.searchbar.GasGuruSearchBarModel
 import com.gasguru.core.model.data.FuelStationBrandsType
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.Route
-import com.gasguru.core.ui.models.FuelStationBrandsUiModel
 import com.gasguru.core.ui.getPrice
+import com.gasguru.core.ui.models.FuelStationBrandsUiModel
 import com.gasguru.core.ui.models.FuelStationUiModel
 import com.gasguru.core.ui.toColor
 import com.gasguru.core.uikit.components.chip.FilterType
@@ -145,12 +145,12 @@ internal fun StationMapScreen(
         val screenHeightPx = with(density) { configuration.screenHeightDp.dp.toPx() }
         with(density) {
             (
-                screenHeightPx -
-                    filtersHeightPx -
-                    searchBarHeightPx -
-                    bottomBarHeightPx -
-                    peekHeight.toPx()
-                ).toDp()
+                    screenHeightPx -
+                            filtersHeightPx -
+                            searchBarHeightPx -
+                            bottomBarHeightPx -
+                            peekHeight.toPx()
+                    ).toDp()
         }
     }
 
@@ -388,7 +388,12 @@ fun MapView(
                 val isSelected = selectedLocation == station.fuelStation.idServiceStation
 
                 val price by remember(userSelectedFuelType, station) {
-                    derivedStateOf { userSelectedFuelType.getPrice(station.fuelStation) }
+                    derivedStateOf {
+                        userSelectedFuelType.getPrice(
+                            context = context,
+                            fuelStation = station.fuelStation
+                        )
+                    }
                 }
                 val color by remember(station) {
                     derivedStateOf { priceCategoryColor }
@@ -407,7 +412,7 @@ fun MapView(
                     StationMarker(
                         model = StationMarkerModel(
                             icon = station.brandIcon,
-                            price = userSelectedFuelType.getPrice(station.fuelStation),
+                            price = userSelectedFuelType.getPrice(fuelStation = station.fuelStation),
                             color = station.fuelStation.priceCategory.toColor(),
                             isSelected = isSelected,
                         )
@@ -558,8 +563,8 @@ fun ShowFilterSheet(
                     onDismiss = { showFilter() },
                     onSaveButton = { event(StationMapEvent.UpdateBrandFilter(it)) },
                     type = FilterSheetType.ICON,
-                    iconMap = brands.associate { 
-                        it.value to FuelStationBrandsUiModel.fromBrandType(it).iconRes 
+                    iconMap = brands.associate {
+                        it.value to FuelStationBrandsUiModel.fromBrandType(it).iconRes
                     }
                 )
             )

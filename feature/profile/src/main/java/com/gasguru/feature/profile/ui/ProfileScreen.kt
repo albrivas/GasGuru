@@ -231,9 +231,9 @@ fun FuelSelectionSheet(
                 style = GasGuruTheme.typography.baseBold,
                 color = GasGuruTheme.colors.textMain
             )
-            val list = FuelType.entries.map { 
+            val list = FuelType.entries.map {
                 val fuelUiModel = FuelTypeUiModel.fromFuelType(it)
-                Pair(fuelUiModel.iconRes, fuelUiModel.translationRes) 
+                Pair(fuelUiModel.iconRes, fuelUiModel.translationRes)
             }
             FuelListSelection(
                 model = FuelListSelectionModel(

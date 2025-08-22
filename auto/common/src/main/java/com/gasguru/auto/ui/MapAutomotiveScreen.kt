@@ -149,7 +149,10 @@ class MapAutomotiveScreen(carContext: CarContext) : Screen(carContext) {
             )
             .setBrowsable(true)
             .setOnClickListener {
-                navigateToStation(stationModel.fuelStation.location.latitude, stationModel.fuelStation.location.longitude)
+                navigateToStation(
+                    latitude = stationModel.fuelStation.location.latitude,
+                    longitude = stationModel.fuelStation.location.longitude
+                )
             }
             .addText(stationModel.formattedDirection)
             .addText(stationModel.formattedDistance)

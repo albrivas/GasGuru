@@ -12,7 +12,7 @@ data class PriceUiModel(
     val fuelType: FuelType
 ) {
     val hasPrice: Boolean get() = rawPrice > 0.0
-    
+
     val formattedPrice: String
         get() = if (hasPrice) {
             val decimalFormat = DecimalFormat("0.000")
@@ -20,7 +20,7 @@ data class PriceUiModel(
         } else {
             "0.000"
         }
-    
+
     fun getDisplayPrice(context: Context): String {
         return if (hasPrice) {
             formattedPrice
@@ -28,7 +28,7 @@ data class PriceUiModel(
             context.getString(FuelTypeUiModel.fromFuelType(fuelType).noPriceRes)
         }
     }
-    
+
     @Composable
     fun getDisplayPrice(): String {
         return if (hasPrice) {
@@ -37,7 +37,7 @@ data class PriceUiModel(
             stringResource(id = FuelTypeUiModel.fromFuelType(fuelType).noPriceRes)
         }
     }
-    
+
     companion object {
         fun from(fuelType: FuelType, fuelStation: FuelStation): PriceUiModel {
             return PriceUiModel(

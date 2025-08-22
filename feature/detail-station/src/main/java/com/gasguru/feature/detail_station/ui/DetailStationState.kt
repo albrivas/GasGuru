@@ -31,7 +31,7 @@ class DetailStationState(internal val station: FuelStationUiModel) {
                 fuelStation = station.fuelStation
             )
             if (!priceModel.hasPrice) return@mapNotNull null
-            
+
             PriceItemModel(
                 icon = fuelUiModel.iconRes,
                 fuelName = stringResource(id = fuelUiModel.translationRes),
