@@ -2,7 +2,6 @@ package com.gasguru.auto.ui
 
 import android.Manifest
 import android.content.Intent
-import android.net.Uri
 import androidx.car.app.CarContext
 import androidx.car.app.Screen
 import androidx.car.app.model.Action
@@ -17,6 +16,7 @@ import androidx.car.app.model.PlaceMarker
 import androidx.car.app.model.Row
 import androidx.car.app.model.Template
 import androidx.compose.ui.graphics.toArgb
+import androidx.core.net.toUri
 import com.gasguru.auto.common.R
 import com.gasguru.auto.common.getAutomotiveThemeColor
 import com.gasguru.auto.di.CarScreenEntryPoint
@@ -24,10 +24,11 @@ import com.gasguru.core.domain.fuelstation.FuelStationByLocationUseCase
 import com.gasguru.core.domain.location.GetCurrentLocationUseCase
 import com.gasguru.core.domain.location.IsLocationEnabledUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
-import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.OpeningHours
 import com.gasguru.core.ui.getPrice
+import com.gasguru.core.ui.models.FuelStationUiModel
+import com.gasguru.core.ui.toUiModel
 import com.gasguru.core.uikit.theme.GasGuruColors
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.CoroutineScope
@@ -93,7 +94,7 @@ class MapAutomotiveScreen(carContext: CarContext) : Screen(carContext) {
                 ) { userData, stations ->
                     carUiState = CarUiState(
                         loading = false,
-                        stations = stations,
+                        stations = stations.map { it.toUiModel() },
                         selectedFuel = userData.fuelSelection,
                         permissionDenied = false,
                         needsOnboarding = !userData.isOnboardingSuccess,
@@ -120,14 +121,11 @@ class MapAutomotiveScreen(carContext: CarContext) : Screen(carContext) {
         }
     }
 
-    private fun cafeRow(station: FuelStation, selectedFuel: FuelType?, theme: GasGuruColors): Row {
+    private fun cafeRow(stationModel: FuelStationUiModel, selectedFuel: FuelType?, theme: GasGuruColors): Row {
         return Row.Builder()
             .setTitle(
-                "${station.formatName()} - ${
-                    selectedFuel?.getPrice(
-                        carContext,
-                        station
-                    ) ?: ""
+                "${stationModel.formattedName} - ${
+                    selectedFuel?.getPrice(carContext, stationModel.fuelStation) ?: ""
                 }"
             )
             .setMetadata(
@@ -135,8 +133,8 @@ class MapAutomotiveScreen(carContext: CarContext) : Screen(carContext) {
                     .setPlace(
                         Place.Builder(
                             CarLocation.create(
-                                station.location.latitude,
-                                station.location.longitude
+                                stationModel.fuelStation.location.latitude,
+                                stationModel.fuelStation.location.longitude
                             )
                         ).setMarker(
                             PlaceMarker.Builder().setColor(
@@ -151,17 +149,20 @@ class MapAutomotiveScreen(carContext: CarContext) : Screen(carContext) {
             )
             .setBrowsable(true)
             .setOnClickListener {
-                navigateToStation(station.location.latitude, station.location.longitude)
+                navigateToStation(
+                    latitude = stationModel.fuelStation.location.latitude,
+                    longitude = stationModel.fuelStation.location.longitude
+                )
             }
-            .addText(station.formatDirection())
-            .addText(station.formatDistance())
+            .addText(stationModel.formattedDirection)
+            .addText(stationModel.formattedDistance)
             .build()
     }
 
     private fun navigateToStation(latitude: Double, longitude: Double) {
         val intent = Intent().apply {
             action = CarContext.ACTION_NAVIGATE
-            data = Uri.parse("geo:$latitude,$longitude")
+            data = "geo:$latitude,$longitude".toUri()
         }
         carContext.startCarApp(intent)
         screenManager.pop()
@@ -194,7 +195,7 @@ class MapAutomotiveScreen(carContext: CarContext) : Screen(carContext) {
                     }
                     invalidate()
                 }
-            } catch (e: SecurityException) {
+            } catch (_: SecurityException) {
                 carUiState = CarUiState()
                 invalidate()
             }

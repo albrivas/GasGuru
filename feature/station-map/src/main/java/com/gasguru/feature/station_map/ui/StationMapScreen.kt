@@ -57,12 +57,12 @@ import com.gasguru.core.common.dpToPx
 import com.gasguru.core.common.toLatLng
 import com.gasguru.core.components.searchbar.GasGuruSearchBar
 import com.gasguru.core.components.searchbar.GasGuruSearchBarModel
-import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.FuelStationBrandsType
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.Route
 import com.gasguru.core.ui.getPrice
-import com.gasguru.core.ui.toBrandStationIcon
+import com.gasguru.core.ui.models.FuelStationBrandsUiModel
+import com.gasguru.core.ui.models.FuelStationUiModel
 import com.gasguru.core.ui.toColor
 import com.gasguru.core.uikit.components.chip.FilterType
 import com.gasguru.core.uikit.components.chip.SelectableFilter
@@ -286,11 +286,10 @@ internal fun StationMapScreen(
 @Composable
 fun ListFuelStations(
     modifier: Modifier = Modifier,
-    stations: List<FuelStation>,
+    stations: List<FuelStationUiModel>,
     selectedFuel: FuelType?,
     navigateToDetail: (Int) -> Unit = {},
 ) {
-    val context = LocalContext.current
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -303,13 +302,13 @@ fun ListFuelStations(
         stations.forEachIndexed { index, item ->
             FuelStationItem(
                 model = FuelStationItemModel(
-                    idServiceStation = item.idServiceStation,
-                    icon = item.brandStationBrandsType.toBrandStationIcon(),
-                    name = item.formatName(),
-                    distance = item.formatDistance(),
-                    price = selectedFuel.getPrice(context, item),
+                    idServiceStation = item.fuelStation.idServiceStation,
+                    icon = item.brandIcon,
+                    name = item.formattedName,
+                    distance = item.formattedDistance,
+                    price = selectedFuel.getPrice(item.fuelStation),
                     index = index,
-                    categoryColor = item.priceCategory.toColor(),
+                    categoryColor = item.fuelStation.priceCategory.toColor(),
                     onItemClick = navigateToDetail
                 ),
                 isLastItem = index == stations.size - 1
@@ -320,7 +319,7 @@ fun ListFuelStations(
 
 @Composable
 fun MapView(
-    stations: List<FuelStation>,
+    stations: List<FuelStationUiModel>,
     cameraState: CameraPositionState,
     userSelectedFuelType: FuelType?,
     loading: Boolean,
@@ -382,34 +381,39 @@ fun MapView(
                 )
             }
             stations.forEach { station ->
-                val priceCategoryColor = station.priceCategory.toColor()
-                val state = remember(station.idServiceStation) {
-                    MarkerState(position = station.location.toLatLng())
+                val priceCategoryColor = station.fuelStation.priceCategory.toColor()
+                val state = remember(station.fuelStation.idServiceStation) {
+                    MarkerState(position = station.fuelStation.location.toLatLng())
                 }
-                val isSelected = selectedLocation == station.idServiceStation
+                val isSelected = selectedLocation == station.fuelStation.idServiceStation
 
                 val price by remember(userSelectedFuelType, station) {
-                    derivedStateOf { userSelectedFuelType.getPrice(context, station) }
+                    derivedStateOf {
+                        userSelectedFuelType.getPrice(
+                            context = context,
+                            fuelStation = station.fuelStation
+                        )
+                    }
                 }
                 val color by remember(station) {
                     derivedStateOf { priceCategoryColor }
                 }
 
                 MarkerComposable(
-                    keys = arrayOf(station.idServiceStation, price, color),
+                    keys = arrayOf(station.fuelStation.idServiceStation, price, color),
                     state = state,
                     onClick = {
-                        selectedLocation = station.idServiceStation
-                        navigateToDetail(station.idServiceStation)
+                        selectedLocation = station.fuelStation.idServiceStation
+                        navigateToDetail(station.fuelStation.idServiceStation)
                         false
                     },
-                    contentDescription = "Marker ${station.brandStationName}",
+                    contentDescription = "Marker ${station.fuelStation.brandStationName}",
                 ) {
                     StationMarker(
                         model = StationMarkerModel(
-                            icon = station.brandStationBrandsType.toBrandStationIcon(),
-                            price = userSelectedFuelType.getPrice(context, station),
-                            color = station.priceCategory.toColor(),
+                            icon = station.brandIcon,
+                            price = userSelectedFuelType.getPrice(fuelStation = station.fuelStation),
+                            color = station.fuelStation.priceCategory.toColor(),
                             isSelected = isSelected,
                         )
                     )
@@ -559,7 +563,9 @@ fun ShowFilterSheet(
                     onDismiss = { showFilter() },
                     onSaveButton = { event(StationMapEvent.UpdateBrandFilter(it)) },
                     type = FilterSheetType.ICON,
-                    iconMap = brands.associate { it.value to it.toBrandStationIcon() }
+                    iconMap = brands.associate {
+                        it.value to FuelStationBrandsUiModel.fromBrandType(it).iconRes
+                    }
                 )
             )
         }

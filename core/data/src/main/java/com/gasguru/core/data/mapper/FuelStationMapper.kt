@@ -47,17 +47,7 @@ fun String.toSafeDouble(): Double =
     this.takeIf { it.isNotEmpty() }?.replace(",", ".")?.toDoubleOrNull() ?: 0.0
 
 fun List<FuelStation>.calculateFuelPrices(fuelType: FuelType): Pair<Double, Double> {
-    val prices = when (fuelType) {
-        FuelType.GASOLINE_95 -> map { it.priceGasoline95E5 }
-        FuelType.GASOLINE_98 -> map { it.priceGasoline98E5 }
-        FuelType.DIESEL -> map { it.priceGasoilA }
-        FuelType.DIESEL_PLUS -> map { it.priceGasoilPremium }
-        FuelType.GASOLINE_95_PREMIUM -> map { it.priceGasoline95E5Premium }
-        FuelType.GASOLINE_95_E10 -> map { it.priceGasoline95E10 }
-        FuelType.GASOLINE_98_PREMIUM -> map { it.priceGasoline98E10 }
-        FuelType.GASOIL_B -> map { it.priceGasoilB }
-    }
-
+    val prices = map { fuelType.extractPrice(it) }
     return Pair(prices.minOrNull() ?: 0.0, prices.maxOrNull() ?: 0.0)
 }
 
@@ -66,17 +56,7 @@ fun FuelStation.getPriceCategory(
     minPrice: Double,
     maxPrice: Double,
 ): PriceCategory {
-    val currentPrice = when (fuelType) {
-        FuelType.GASOLINE_95 -> priceGasoline95E5
-        FuelType.GASOLINE_98 -> priceGasoline98E5
-        FuelType.DIESEL -> priceGasoilA
-        FuelType.DIESEL_PLUS -> priceGasoilPremium
-        FuelType.GASOLINE_95_PREMIUM -> priceGasoline95E5Premium
-        FuelType.GASOLINE_95_E10 -> priceGasoline95E10
-        FuelType.GASOLINE_98_PREMIUM -> priceGasoline98E10
-        FuelType.GASOIL_B -> priceGasoilB
-    }
-
+    val currentPrice = fuelType.extractPrice(this)
     val priceRange = maxPrice - minPrice
     val step = priceRange / 3 // 3 range prices (cheap, normal, expensive)
 
