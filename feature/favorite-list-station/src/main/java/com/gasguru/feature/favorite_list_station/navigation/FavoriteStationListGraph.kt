@@ -4,7 +4,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
 import com.gasguru.feature.favorite_list_station.navigation.route.StationListGraph
 
-fun NavGraphBuilder.stationListGraph(
+fun NavGraphBuilder.favoriteGraph(
     navigateToDetail: (Int) -> Unit
 ) {
     navigation<StationListGraph.StationListGraphRoute>(
