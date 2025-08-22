@@ -7,9 +7,9 @@ import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.domain.user.SaveThemeModeUseCase
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.ThemeMode
-import com.gasguru.core.ui.ThemeModeUi
-import com.gasguru.core.ui.toUi
-import com.gasguru.core.ui.translation
+import com.gasguru.core.ui.models.FuelTypeUiModel
+import com.gasguru.core.ui.models.ThemeModeUi
+import com.gasguru.core.ui.models.toUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -33,7 +33,7 @@ class ProfileViewModel @Inject constructor(
     val userData: StateFlow<ProfileUiState> = getUserData().map { userData ->
         ProfileUiState.Success(
             content = ProfileContentUi(
-                fuelTranslation = userData.fuelSelection.translation(),
+                fuelTranslation = FuelTypeUiModel.fromFuelType(userData.fuelSelection).translationRes,
                 themeUi = userData.themeMode.toUi(),
                 allThemesUi = allThemesUi
             )
