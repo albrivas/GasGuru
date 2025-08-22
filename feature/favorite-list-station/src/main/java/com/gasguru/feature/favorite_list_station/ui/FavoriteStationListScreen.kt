@@ -148,7 +148,6 @@ fun ListFuelStations(
     event: (FavoriteStationEvent) -> Unit,
     navigateToDetail: (Int) -> Unit = {},
 ) {
-    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -191,7 +190,7 @@ fun ListFuelStations(
                                 icon = item.brandIcon,
                                 name = item.formattedName,
                                 distance = item.formattedDistance,
-                                price = selectedFuel.getPrice(context, item.fuelStation),
+                                price = selectedFuel.getPrice(item.fuelStation),
                                 index = index,
                                 categoryColor = item.fuelStation.priceCategory.toColor(),
                                 onItemClick = navigateToDetail

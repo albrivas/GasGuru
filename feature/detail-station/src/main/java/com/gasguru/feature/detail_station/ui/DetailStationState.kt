@@ -9,8 +9,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toLowerCase
 import com.gasguru.core.common.CommonUtils.isStationOpen
-import com.gasguru.core.ui.getFuelPriceItems
 import com.gasguru.core.ui.models.FuelStationUiModel
+import com.gasguru.core.ui.models.FuelTypeUiModel
+import com.gasguru.core.ui.models.PriceUiModel
 import com.gasguru.core.uikit.components.price.PriceItemModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.feature.detail_station.R
@@ -24,7 +25,19 @@ fun rememberDetailStationState(station: FuelStationUiModel) = remember(station) 
 class DetailStationState(internal val station: FuelStationUiModel) {
 
     internal val fuelItems: List<PriceItemModel>
-        @Composable get() = station.fuelStation.getFuelPriceItems()
+        @Composable get() = FuelTypeUiModel.ALL_FUELS.mapNotNull { fuelUiModel ->
+            val priceModel = PriceUiModel.from(
+                fuelType = fuelUiModel.type,
+                fuelStation = station.fuelStation
+            )
+            if (!priceModel.hasPrice) return@mapNotNull null
+            
+            PriceItemModel(
+                icon = fuelUiModel.iconRes,
+                fuelName = stringResource(id = fuelUiModel.translationRes),
+                price = priceModel.formattedPrice
+            )
+        }
 
     internal val formattedDistance: String
         get() = station.fuelStation.formatDistance()
