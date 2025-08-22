@@ -38,10 +38,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.common.CommonUtils.getAppVersion
 import com.gasguru.core.model.data.FuelType
-import com.gasguru.core.ui.ThemeModeUi
-import com.gasguru.core.ui.getIcon
+import com.gasguru.core.ui.models.FuelTypeUiModel
+import com.gasguru.core.ui.models.ThemeModeUi
 import com.gasguru.core.ui.toFuelType
-import com.gasguru.core.ui.translation
 import com.gasguru.core.uikit.components.filter_sheet.FilterSheet
 import com.gasguru.core.uikit.components.filter_sheet.FilterSheetModel
 import com.gasguru.core.uikit.components.filter_sheet.FilterSheetType
@@ -232,7 +231,10 @@ fun FuelSelectionSheet(
                 style = GasGuruTheme.typography.baseBold,
                 color = GasGuruTheme.colors.textMain
             )
-            val list = FuelType.entries.map { Pair(it.getIcon(), it.translation()) }
+            val list = FuelType.entries.map { 
+                val fuelUiModel = FuelTypeUiModel.fromFuelType(it)
+                Pair(fuelUiModel.iconRes, fuelUiModel.translationRes) 
+            }
             FuelListSelection(
                 model = FuelListSelectionModel(
                     list = list,

@@ -57,7 +57,7 @@ fun NavigationBarScreenRoute(
 internal fun NavigationBarScreen(
     navController: NavHostController,
     navigateToDetail: (Int) -> Unit,
-    navigateToDetailAsDialog: (Int) -> Unit = navigateToDetail,
+    navigateToDetailAsDialog: (Int) -> Unit,
     state: NavigationBarState = rememberNavigationBarState(navController),
 ) {
     val backStack by navController.currentBackStackEntryAsState()
@@ -117,7 +117,7 @@ internal fun NavigationBarScreen(
                     startDestination = StationMapGraph.StationMapRoute
                 ) {
                     composable<StationMapGraph.StationMapRoute> { /* no-op */ }
-                    favoriteGraph(navigateToDetail = navigateToDetail)
+                    favoriteGraph(navigateToDetail = navigateToDetailAsDialog)
                     profileScreen()
                     routeSearchGraph(
                         onBack = navController::popBackStack,
