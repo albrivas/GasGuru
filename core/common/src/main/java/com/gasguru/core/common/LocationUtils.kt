@@ -9,16 +9,17 @@ import android.location.Location
 import android.location.LocationManager
 import android.net.Uri
 import androidx.core.content.ContextCompat
+import com.gasguru.core.model.data.LatLng
 import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.compose.CameraPositionState
+import com.google.android.gms.maps.model.LatLng as GoogleLatLng
 
-fun Location?.toLatLng(): LatLng {
+fun Location?.toLatLng(): GoogleLatLng {
     return if (this != null) {
-        LatLng(latitude, longitude)
+        GoogleLatLng(latitude, longitude)
     } else {
-        LatLng(0.0, 0.0)
+        GoogleLatLng(0.0, 0.0)
     }
 }
 

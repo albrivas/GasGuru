@@ -47,6 +47,7 @@ junit5Extensions = "1.7.0"
 junit5Plugin = "1.11.3.0"
 materialIcons = "1.7.8"
 constraintLayout = "1.1.0"
+mapsUtil = "3.8.2"
 androidTools = "31.7.3"
 androidxCarApp = "1.4.0"
 onesignal = "5.1.35"
@@ -104,6 +105,7 @@ kotlin-coroutines-play = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-pl
 lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
+maps-utils = { module = "com.google.maps.android:android-maps-utils", version.ref = "mapsUtil" }
 play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
 places = { module = "com.google.android.libraries.places:places", version.ref = "places" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
@@ -119,6 +121,7 @@ androidx-car-app = { module = "androidx.car.app:app", version.ref = "androidxCar
 androidx-auto = { module = "androidx.car.app:app-projected", version.ref = "androidxCarApp" }
 onesignal = { module = "com.onesignal:OneSignal", version.ref = "onesignal" }
 mixpanel = { module = "com.mixpanel.android:mixpanel-android", version.ref = "mixpanel" }
+
 
 # Dependencies of the included build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
