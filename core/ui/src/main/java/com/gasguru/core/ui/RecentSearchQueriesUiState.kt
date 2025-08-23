@@ -1,4 +1,4 @@
-package com.gasguru.feature.station_map.ui
+package com.gasguru.core.ui
 
 import com.gasguru.core.model.data.RecentSearchQuery
 

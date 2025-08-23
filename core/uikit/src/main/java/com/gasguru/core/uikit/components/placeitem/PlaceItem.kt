@@ -20,10 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
+import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.core.uikit.utils.horizontalDivider
 
 @Composable
@@ -32,9 +32,11 @@ fun PlaceItem(model: PlaceItemModel, isLastItem: Boolean) = with(model) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RectangleShape)
+            .background(color = GasGuruTheme.colors.neutral100)
             .clickable { onClickItem() }
             .padding(horizontal = 12.dp)
             .horizontalDivider(color = GasGuruTheme.colors.neutral300, isLastItem = isLastItem)
+
     ) {
         Row(
             modifier = Modifier
@@ -68,8 +70,8 @@ fun PlaceItem(model: PlaceItemModel, isLastItem: Boolean) = with(model) {
     }
 }
 
-@Preview(showBackground = true)
 @Composable
+@ThemePreviews
 private fun PlaceItemPreview() {
     MyApplicationTheme {
         PlaceItem(

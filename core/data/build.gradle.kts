@@ -19,6 +19,7 @@ dependencies {
     implementation(libs.io.arrow.kt.arrow.core)
     implementation(libs.play.services.location)
     implementation(libs.places)
+    implementation(libs.maps.utils)
 
     testImplementation(projects.core.testing)
 }

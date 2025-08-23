@@ -35,7 +35,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -51,16 +50,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.gasguru.core.common.startRoute
-import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.FuelStationBrandsType
 import com.gasguru.core.model.data.previewFuelStationDomain
 import com.gasguru.core.ui.iconTint
-import com.gasguru.core.ui.toBrandStationIcon
+import com.gasguru.core.ui.toUiModel
 import com.gasguru.core.uikit.components.information_card.InformationCard
 import com.gasguru.core.uikit.components.information_card.InformationCardModel
 import com.gasguru.core.uikit.components.loading.GasGuruLoading
 import com.gasguru.core.uikit.components.loading.GasGuruLoadingModel
 import com.gasguru.core.uikit.components.price.PriceItem
+import com.gasguru.core.uikit.components.price.PriceItemModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
@@ -107,12 +106,12 @@ internal fun DetailStationScreen(
             )
         }
         is DetailStationUiState.Success -> {
-            val stationState = rememberDetailStationState(uiState.station)
+            val stationState = rememberDetailStationState(uiState.stationModel)
 
             Scaffold(
                 topBar = {
                     HeaderStation(
-                        station = uiState.station,
+                        stationState = stationState,
                         staticMapUrl = staticMapUrl,
                         onBack = onBack,
                         onEvent = onEvent
@@ -126,7 +125,6 @@ internal fun DetailStationScreen(
                         .padding(padding)
                 ) {
                     DetailStationContent(
-                        station = uiState.station,
                         stationState = stationState,
                         address = uiState.address,
                         lastUpdate = lastUpdate,
@@ -139,7 +137,6 @@ internal fun DetailStationScreen(
 
 @Composable
 fun DetailStationContent(
-    station: FuelStation,
     stationState: DetailStationState,
     address: String?,
     lastUpdate: Long,
@@ -216,7 +213,7 @@ fun DetailStationContent(
                     }
             ) {
                 Image(
-                    painter = painterResource(id = station.brandStationBrandsType.toBrandStationIcon()),
+                    painter = painterResource(id = stationState.brandIcon),
                     contentDescription = "Fuel station brand",
                     modifier = Modifier
                         .fillMaxSize()
@@ -230,18 +227,16 @@ fun DetailStationContent(
         FuelTypes(fuelItems = stationState.fuelItems, lastUpdate = lastUpdate)
         Spacer(modifier = Modifier.height(24.dp))
         InformationStation(
-            station = station,
+            stationState = stationState,
             address = address,
-            isStationOpen = stationState.isOpen,
-            colorStationOpen = stationState.colorStationOpen,
-            navigateToGoogleMaps = { startRoute(context = context, location = station.location) }
+            navigateToGoogleMaps = { startRoute(context = context, location = stationState.location) }
         )
     }
 }
 
 @Composable
 fun FuelTypes(
-    fuelItems: List<com.gasguru.core.uikit.components.price.PriceItemModel>,
+    fuelItems: List<PriceItemModel>,
     lastUpdate: Long
 ) {
     Column(modifier = Modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -282,10 +277,8 @@ fun calculateHeight(size: Int): Dp {
 
 @Composable
 fun InformationStation(
-    station: FuelStation,
+    stationState: DetailStationState,
     address: String?,
-    isStationOpen: Boolean,
-    colorStationOpen: Color,
     navigateToGoogleMaps: () -> Unit,
 ) {
     Column(
@@ -300,25 +293,20 @@ fun InformationStation(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-        val textOpenClose = if (isStationOpen) {
-            stringResource(id = R.string.open)
-        } else {
-            stringResource(id = R.string.close)
-        }
 
         InformationCard(
             model = InformationCardModel(
                 title = stringResource(id = R.string.schedule),
-                subtitle = textOpenClose,
-                description = formatSchedule(station.schedule),
+                subtitle = stationState.openCloseText,
+                description = formatSchedule(stationState.schedule),
                 type = InformationCardModel.InformationCardType.EXPANDABLE,
-                subtitleColor = colorStationOpen
+                subtitleColor = stationState.colorStationOpen
             )
         )
         InformationCard(
             model = InformationCardModel(
                 title = stringResource(id = R.string.direction),
-                subtitle = address ?: station.formatDirection(),
+                subtitle = address ?: stationState.formattedDirection,
                 icon = com.gasguru.core.uikit.R.drawable.ic_direction,
                 onClick = navigateToGoogleMaps,
                 type = InformationCardModel.InformationCardType.NONE,
@@ -330,7 +318,7 @@ fun InformationStation(
 
 @Composable
 fun HeaderStation(
-    station: FuelStation,
+    stationState: DetailStationState,
     staticMapUrl: String?,
     onBack: () -> Unit,
     onEvent: (DetailStationEvent) -> Unit
@@ -344,8 +332,8 @@ fun HeaderStation(
             model = coil.request.ImageRequest.Builder(LocalContext.current)
                 .data(staticMapUrl)
                 .crossfade(300)
-                .memoryCacheKey("map_${station.idServiceStation}")
-                .diskCacheKey("map_${station.idServiceStation}")
+                .memoryCacheKey("map_${stationState.idServiceStation}")
+                .diskCacheKey("map_${stationState.idServiceStation}")
                 .build(),
             contentDescription = "Detail station map",
             contentScale = ContentScale.FillBounds
@@ -372,7 +360,7 @@ fun HeaderStation(
                 .padding(end = 16.dp)
                 .clip(CircleShape)
                 .testTag("button_favorite"),
-            onClick = { onEvent(DetailStationEvent.ToggleFavorite(!station.isFavorite)) },
+            onClick = { onEvent(DetailStationEvent.ToggleFavorite(!stationState.isFavorite)) },
             colors = IconButtonDefaults.iconButtonColors(containerColor = GasGuruTheme.colors.neutralWhite)
         ) {
             val accentRed = GasGuruTheme.colors.accentRed
@@ -381,11 +369,11 @@ fun HeaderStation(
                 modifier = Modifier
                     .testTag("icon_favorite")
                     .semantics {
-                        iconTint = if (station.isFavorite) accentRed else black
+                        iconTint = if (stationState.isFavorite) accentRed else black
                     },
-                imageVector = if (station.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                imageVector = if (stationState.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                 contentDescription = "Favorite icon",
-                tint = if (station.isFavorite) accentRed else black,
+                tint = if (stationState.isFavorite) accentRed else black,
             )
         }
     }
@@ -397,11 +385,11 @@ private fun DetailStationPreview() {
     MyApplicationTheme {
         DetailStationScreen(
             uiState = DetailStationUiState.Success(
-                station = previewFuelStationDomain().copy(
+                stationModel = previewFuelStationDomain().copy(
                     isFavorite = true,
                     schedule = "L-V: 06:00-22:00; S: 07:00-22:00; D: 08:00-22:00",
                     brandStationBrandsType = FuelStationBrandsType.AZUL_OIL
-                ),
+                ).toUiModel(),
                 address = null
             ),
             staticMapUrl = null,
