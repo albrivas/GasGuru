@@ -17,7 +17,7 @@ fun rememberGasGuruSearchBarState(): GasGuruSearchBarState {
 }
 
 @Stable
-class GasGuruSearchBarState {
+class GasGuruSearchBarState() {
     var active by mutableStateOf(false)
         private set
 

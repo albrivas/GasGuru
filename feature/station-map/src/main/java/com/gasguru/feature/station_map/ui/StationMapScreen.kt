@@ -19,6 +19,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Directions
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -55,11 +57,12 @@ import com.gasguru.core.common.dpToPx
 import com.gasguru.core.common.toLatLng
 import com.gasguru.core.components.searchbar.GasGuruSearchBar
 import com.gasguru.core.components.searchbar.GasGuruSearchBarModel
-import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.FuelStationBrandsType
 import com.gasguru.core.model.data.FuelType
+import com.gasguru.core.model.data.Route
 import com.gasguru.core.ui.getPrice
-import com.gasguru.core.ui.toBrandStationIcon
+import com.gasguru.core.ui.models.FuelStationBrandsUiModel
+import com.gasguru.core.ui.models.FuelStationUiModel
 import com.gasguru.core.ui.toColor
 import com.gasguru.core.uikit.components.chip.FilterType
 import com.gasguru.core.uikit.components.chip.SelectableFilter
@@ -78,8 +81,10 @@ import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.station_map.BuildConfig
 import com.gasguru.feature.station_map.R
+import com.gasguru.navigation.models.RoutePlanArgs
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.JointType
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.ComposeMapColorScheme
@@ -88,6 +93,7 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.MarkerComposable
 import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.launch
@@ -95,7 +101,9 @@ import com.gasguru.core.uikit.R as RUikit
 
 @Composable
 fun StationMapScreenRoute(
-    navigateToDetail: (Int) -> Unit,
+    routePlanner: RoutePlanArgs?,
+    navigateToDetail: (Int) -> Unit = {},
+    navigateToRoutePlanner: () -> Unit = {},
     viewModel: StationMapViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -103,8 +111,10 @@ fun StationMapScreenRoute(
     StationMapScreen(
         uiState = state,
         filterUiState = filterGroup,
+        routePlanner = routePlanner,
         event = viewModel::handleEvent,
-        navigateToDetail = navigateToDetail
+        navigateToDetail = navigateToDetail,
+        navigateToRoutePlanner = navigateToRoutePlanner
     )
 }
 
@@ -113,8 +123,10 @@ fun StationMapScreenRoute(
 internal fun StationMapScreen(
     uiState: StationMapUiState,
     filterUiState: FilterUiState,
+    routePlanner: RoutePlanArgs?,
     event: (StationMapEvent) -> Unit = {},
     navigateToDetail: (Int) -> Unit = {},
+    navigateToRoutePlanner: () -> Unit = {},
 ) = with(uiState) {
     val cameraState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(LatLng(40.0, -4.0), 5.5f)
@@ -146,6 +158,17 @@ internal fun StationMapScreen(
         if (mapBounds != null && shouldCenterMap) {
             cameraState.centerOnMap(bounds = mapBounds, padding = 60)
             event(StationMapEvent.OnMapCentered)
+        }
+    }
+
+    LaunchedEffect(routePlanner) {
+        if (routePlanner != null) {
+            event(
+                StationMapEvent.StartRoute(
+                    originId = routePlanner.originId,
+                    destinationId = routePlanner.destinationId
+                )
+            )
         }
     }
 
@@ -221,6 +244,7 @@ internal fun StationMapScreen(
                     cameraState = cameraState,
                     userSelectedFuelType = selectedType,
                     loading = loading,
+                    route = route,
                     navigateToDetail = navigateToDetail,
                     modifier = Modifier.fillMaxSize()
                 )
@@ -252,6 +276,7 @@ internal fun StationMapScreen(
                     modifier = Modifier.align(Alignment.BottomEnd),
                     isVisible = !isSearchActive,
                     event = event,
+                    navigateToRoutePlanner = navigateToRoutePlanner
                 )
             }
         }
@@ -261,11 +286,10 @@ internal fun StationMapScreen(
 @Composable
 fun ListFuelStations(
     modifier: Modifier = Modifier,
-    stations: List<FuelStation>,
+    stations: List<FuelStationUiModel>,
     selectedFuel: FuelType?,
     navigateToDetail: (Int) -> Unit = {},
 ) {
-    val context = LocalContext.current
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -278,13 +302,13 @@ fun ListFuelStations(
         stations.forEachIndexed { index, item ->
             FuelStationItem(
                 model = FuelStationItemModel(
-                    idServiceStation = item.idServiceStation,
-                    icon = item.brandStationBrandsType.toBrandStationIcon(),
-                    name = item.formatName(),
-                    distance = item.formatDistance(),
-                    price = selectedFuel.getPrice(context, item),
+                    idServiceStation = item.fuelStation.idServiceStation,
+                    icon = item.brandIcon,
+                    name = item.formattedName,
+                    distance = item.formattedDistance,
+                    price = selectedFuel.getPrice(item.fuelStation),
                     index = index,
-                    categoryColor = item.priceCategory.toColor(),
+                    categoryColor = item.fuelStation.priceCategory.toColor(),
                     onItemClick = navigateToDetail
                 ),
                 isLastItem = index == stations.size - 1
@@ -295,10 +319,11 @@ fun ListFuelStations(
 
 @Composable
 fun MapView(
-    stations: List<FuelStation>,
+    stations: List<FuelStationUiModel>,
     cameraState: CameraPositionState,
     userSelectedFuelType: FuelType?,
     loading: Boolean,
+    route: Route?,
     navigateToDetail: (Int) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
@@ -344,35 +369,51 @@ fun MapView(
             contentPadding = PaddingValues(bottom = 60.dp),
             mapColorScheme = if (GasGuruTheme.colors.isDark) ComposeMapColorScheme.DARK else ComposeMapColorScheme.LIGHT
         ) {
-            stations.forEach { station ->
-                val priceCategoryColor = station.priceCategory.toColor()
-                val state = remember(station.idServiceStation) {
-                    MarkerState(position = station.location.toLatLng())
+            route?.let {
+                val googleMapsPoints = it.route.map { point ->
+                    LatLng(point.latitude, point.longitude)
                 }
-                val isSelected = selectedLocation == station.idServiceStation
+                Polyline(
+                    points = googleMapsPoints,
+                    width = 20f,
+                    jointType = JointType.ROUND,
+                    color = GasGuruTheme.colors.primary900
+                )
+            }
+            stations.forEach { station ->
+                val priceCategoryColor = station.fuelStation.priceCategory.toColor()
+                val state = remember(station.fuelStation.idServiceStation) {
+                    MarkerState(position = station.fuelStation.location.toLatLng())
+                }
+                val isSelected = selectedLocation == station.fuelStation.idServiceStation
 
                 val price by remember(userSelectedFuelType, station) {
-                    derivedStateOf { userSelectedFuelType.getPrice(context, station) }
+                    derivedStateOf {
+                        userSelectedFuelType.getPrice(
+                            context = context,
+                            fuelStation = station.fuelStation
+                        )
+                    }
                 }
                 val color by remember(station) {
                     derivedStateOf { priceCategoryColor }
                 }
 
                 MarkerComposable(
-                    keys = arrayOf(station.idServiceStation, price, color),
+                    keys = arrayOf(station.fuelStation.idServiceStation, price, color),
                     state = state,
                     onClick = {
-                        selectedLocation = station.idServiceStation
-                        navigateToDetail(station.idServiceStation)
+                        selectedLocation = station.fuelStation.idServiceStation
+                        navigateToDetail(station.fuelStation.idServiceStation)
                         false
                     },
-                    contentDescription = "Marker ${station.brandStationName}",
+                    contentDescription = "Marker ${station.fuelStation.brandStationName}",
                 ) {
                     StationMarker(
                         model = StationMarkerModel(
-                            icon = station.brandStationBrandsType.toBrandStationIcon(),
-                            price = userSelectedFuelType.getPrice(context, station),
-                            color = station.priceCategory.toColor(),
+                            icon = station.brandIcon,
+                            price = userSelectedFuelType.getPrice(fuelStation = station.fuelStation),
+                            color = station.fuelStation.priceCategory.toColor(),
                             isSelected = isSelected,
                         )
                     )
@@ -387,6 +428,7 @@ fun FABLocation(
     modifier: Modifier,
     isVisible: Boolean = true,
     event: (StationMapEvent) -> Unit = {},
+    navigateToRoutePlanner: () -> Unit = {},
 ) {
     if (isVisible) {
         Column(
@@ -406,6 +448,19 @@ fun FABLocation(
                     imageVector = ImageVector.vectorResource(id = RUikit.drawable.ic_my_location),
                     tint = GasGuruTheme.colors.textSubtle,
                     contentDescription = "User location",
+                )
+            }
+
+            FloatingActionButton(
+                onClick = navigateToRoutePlanner,
+                modifier = modifier,
+                containerColor = GasGuruTheme.colors.primary100,
+                contentColor = GasGuruTheme.colors.neutralBlack,
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Directions,
+                    tint = GasGuruTheme.colors.textSubtle,
+                    contentDescription = "Create route",
                 )
             }
         }
@@ -508,7 +563,9 @@ fun ShowFilterSheet(
                     onDismiss = { showFilter() },
                     onSaveButton = { event(StationMapEvent.UpdateBrandFilter(it)) },
                     type = FilterSheetType.ICON,
-                    iconMap = brands.associate { it.value to it.toBrandStationIcon() }
+                    iconMap = brands.associate {
+                        it.value to FuelStationBrandsUiModel.fromBrandType(it).iconRes
+                    }
                 )
             )
         }
@@ -561,6 +618,7 @@ private fun StationMapScreenPreview() {
         StationMapScreen(
             uiState = StationMapUiState(),
             filterUiState = FilterUiState(),
+            routePlanner = null,
             navigateToDetail = {}
         )
     }

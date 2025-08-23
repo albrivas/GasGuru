@@ -23,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -31,12 +30,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.previewFuelStationDomain
 import com.gasguru.core.ui.getPrice
-import com.gasguru.core.ui.toBrandStationIcon
+import com.gasguru.core.ui.models.FuelStationUiModel
 import com.gasguru.core.ui.toColor
+import com.gasguru.core.ui.toUiModel
 import com.gasguru.core.uikit.components.alert.AlertTemplate
 import com.gasguru.core.uikit.components.alert.AlertTemplateModel
 import com.gasguru.core.uikit.components.fuelItem.FuelStationItem
@@ -143,12 +142,11 @@ internal fun FavoriteListStationScreen(
 @Composable
 fun ListFuelStations(
     modifier: Modifier = Modifier,
-    stations: List<FuelStation>,
+    stations: List<FuelStationUiModel>,
     selectedFuel: FuelType,
     event: (FavoriteStationEvent) -> Unit,
     navigateToDetail: (Int) -> Unit = {},
 ) {
-    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -171,7 +169,7 @@ fun ListFuelStations(
         ) {
             itemsIndexed(
                 items = stations,
-                key = { _, item -> item.idServiceStation }
+                key = { _, item -> item.fuelStation.idServiceStation }
             ) { index, item ->
                 SwipeItem(
                     modifier = Modifier.animateItem(),
@@ -181,19 +179,19 @@ fun ListFuelStations(
                         iconAnimated = com.gasguru.core.ui.R.raw.trash_animated,
                         backgroundColor = GasGuruTheme.colors.red500,
                         onClick = {
-                            event(FavoriteStationEvent.RemoveFavoriteStation(item.idServiceStation))
+                            event(FavoriteStationEvent.RemoveFavoriteStation(item.fuelStation.idServiceStation))
                         },
                     ) {
                         FuelStationItem(
                             modifier = Modifier.testTag("item $index"),
                             model = FuelStationItemModel(
-                                idServiceStation = item.idServiceStation,
-                                icon = item.brandStationBrandsType.toBrandStationIcon(),
-                                name = item.brandStationName,
-                                distance = item.formatDistance(),
-                                price = selectedFuel.getPrice(context, item),
+                                idServiceStation = item.fuelStation.idServiceStation,
+                                icon = item.brandIcon,
+                                name = item.formattedName,
+                                distance = item.formattedDistance,
+                                price = selectedFuel.getPrice(item.fuelStation),
                                 index = index,
-                                categoryColor = item.priceCategory.toColor(),
+                                categoryColor = item.fuelStation.priceCategory.toColor(),
                                 onItemClick = navigateToDetail
                             ),
                             isLastItem = index == stations.size - 1
@@ -223,7 +221,7 @@ fun FavoriteFuelStationsPreview() {
     MyApplicationTheme {
         FavoriteListStationScreen(
             uiState = FavoriteStationListUiState.Favorites(
-                favoriteStations = listOf(previewFuelStationDomain()),
+                favoriteStations = listOf(previewFuelStationDomain().toUiModel()),
                 userSelectedFuelType = FuelType.GASOLINE_95_E10
             ),
             navigateToDetail = {},
