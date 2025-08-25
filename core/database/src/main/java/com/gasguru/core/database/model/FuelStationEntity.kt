@@ -3,12 +3,16 @@ package com.gasguru.core.database.model
 import android.location.Location
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.FuelStationBrandsType
 
 @Entity(
-    tableName = "fuel-station"
+    tableName = "fuel-station",
+    indices = [
+        Index(value = ["latitude", "longitudeWGS84"], name = "index_location")
+    ]
 )
 data class FuelStationEntity(
     val bioEthanolPercentage: String,
