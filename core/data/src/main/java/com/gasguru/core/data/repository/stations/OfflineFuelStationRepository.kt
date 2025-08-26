@@ -132,10 +132,10 @@ class OfflineFuelStationRepository @Inject constructor(
         val allStations = mutableSetOf<FuelStationEntity>()
 
         val reducedPoints = points.filterIndexed { index, _ -> index % 2 == 0 }
+        val pointsWithLocations = reducedPoints.map { point -> point to point.toLocation() }
 
-        reducedPoints.forEach { point ->
+        pointsWithLocations.forEach { (point, pointLocation) ->
             val bounds = calculateBoundingBox(point, radiusKm)
-            val pointLocation = point.toLocation()
 
             val stationsInBounds = fuelStationDao.getFuelStationsInBounds(
                 minLat = bounds.minLat,
@@ -146,7 +146,6 @@ class OfflineFuelStationRepository @Inject constructor(
             )
 
             stationsInBounds.forEach { station ->
-                allStations.add(station)
                 val distance = station.getLocation().distanceTo(pointLocation)
                 if (distance <= radiusMeters) {
                     allStations.add(station)
