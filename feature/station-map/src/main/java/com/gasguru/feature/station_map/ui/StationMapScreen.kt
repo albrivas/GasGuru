@@ -8,11 +8,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -33,7 +36,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -43,17 +45,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.common.centerOnMap
-import com.gasguru.core.common.dpToPx
 import com.gasguru.core.common.toLatLng
 import com.gasguru.core.components.searchbar.GasGuruSearchBar
 import com.gasguru.core.components.searchbar.GasGuruSearchBarModel
@@ -132,27 +134,10 @@ internal fun StationMapScreen(
         position = CameraPosition.fromLatLngZoom(LatLng(40.0, -4.0), 5.5f)
     }
 
-    var filtersHeightPx by remember { mutableIntStateOf(0) }
-    var searchBarHeightPx by remember { mutableIntStateOf(0) }
-    val bottomBarHeightPx = 90.dpToPx()
     val peekHeight = 60.dp
     var isSearchActive by remember { mutableStateOf(false) }
 
-    val density = LocalDensity.current
-    val configuration = LocalConfiguration.current
-
-    val maxHeightSheetDp = remember(filtersHeightPx, searchBarHeightPx) {
-        val screenHeightPx = with(density) { configuration.screenHeightDp.dp.toPx() }
-        with(density) {
-            (
-                screenHeightPx -
-                    filtersHeightPx -
-                    searchBarHeightPx -
-                    bottomBarHeightPx -
-                    peekHeight.toPx()
-                ).toDp()
-        }
-    }
+    val maxHeightSheetDp = calculateMaxSheetHeight(peekHeight = peekHeight)
 
     LaunchedEffect(mapBounds, shouldCenterMap) {
         if (mapBounds != null && shouldCenterMap) {
@@ -262,13 +247,12 @@ internal fun StationMapScreen(
                             onRecentSearchClicked = { place ->
                                 event(StationMapEvent.GetStationByPlace(place.id))
                             },
-                            onHeight = { searchBarHeightPx = it }
                         )
                     )
                     FilterGroup(
                         modifier = Modifier,
                         event = event,
-                        onHeight = { filtersHeightPx = it },
+                        onHeight = { },
                         filterUiState = filterUiState,
                     )
                 }
@@ -609,6 +593,20 @@ fun ShowFilterSheet(
             )
         }
     }
+}
+
+@Composable
+internal fun calculateMaxSheetHeight(peekHeight: Dp): Dp {
+    val windowInfo = LocalWindowInfo.current
+    val density = LocalDensity.current
+    val systemBarsHeight = WindowInsets.systemBars.asPaddingValues().let {
+        it.calculateTopPadding() + it.calculateBottomPadding()
+    }
+    val appNavigationBarHeight = 80.dp
+
+    return with(density) {
+        windowInfo.containerSize.height.toDp()
+    } - systemBarsHeight - appNavigationBarHeight - peekHeight
 }
 
 @Composable
