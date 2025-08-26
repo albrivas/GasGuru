@@ -11,6 +11,7 @@ const val DB_VERSION_6 = 6
 const val DB_VERSION_7 = 7
 const val DB_VERSION_8 = 8
 const val DB_VERSION_9 = 9
+const val DB_VERSION_10 = 10
 
 internal val MIGRATION_2_3 = object : Migration(DB_VERSION_2, DB_VERSION_3) {
     override fun migrate(db: SupportSQLiteDatabase) {
@@ -67,5 +68,11 @@ internal val MIGRATION_7_8 = object : Migration(DB_VERSION_7, DB_VERSION_8) {
 internal val MIGRATION_8_9 = object : Migration(DB_VERSION_8, DB_VERSION_9) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("ALTER TABLE 'user-data' ADD COLUMN 'themeModeId' INTEGER NOT NULL DEFAULT 3")
+    }
+}
+
+internal val MIGRATION_9_10 = object : Migration(DB_VERSION_9, DB_VERSION_10) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_location` ON `fuel-station` (`latitude`, `longitudeWGS84`)")
     }
 }
