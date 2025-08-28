@@ -2,10 +2,13 @@ package com.gasguru.core.data.repository.user
 
 import android.location.Location
 import com.gasguru.core.data.mapper.asEntity
+import com.gasguru.core.data.mapper.calculateFuelPrices
+import com.gasguru.core.data.mapper.getPriceCategory
 import com.gasguru.core.database.dao.UserDataDao
 import com.gasguru.core.database.model.FavoriteStationCrossRef
 import com.gasguru.core.database.model.asExternalModel
 import com.gasguru.core.model.data.FuelType
+import com.gasguru.core.model.data.PriceCategory
 import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.model.data.UserData
 import com.gasguru.core.model.data.UserWithFavoriteStations
@@ -56,12 +59,34 @@ class OfflineUserDataRepository @Inject constructor(
         userDataDao.getUserData().filterNotNull().flatMapLatest { userEntity ->
             userDataDao.getUserWithFavoriteStations(userEntity.id)
                 .map { userWithFavorites ->
-                    val updatedStations =
-                        userWithFavorites.asExternalModel().favoriteStations.map { station ->
-                            station.copy(distance = station.location.distanceTo(userLocation))
+                    val userWithFavoritesModel = userWithFavorites.asExternalModel()
+                    val favoriteStations = userWithFavoritesModel.favoriteStations
+                    val user = userWithFavoritesModel.user
+                    
+                    val updatedStations = if (favoriteStations.size <= 1) {
+                        favoriteStations.map { station ->
+                            station.copy(
+                                distance = station.location.distanceTo(userLocation),
+                                priceCategory = PriceCategory.NONE
+                            )
                         }
+                    } else {
+                        val (minPrice, maxPrice) = favoriteStations.calculateFuelPrices(fuelType = user.fuelSelection)
+                        favoriteStations.map { station ->
+                            val priceCategory = station.getPriceCategory(
+                                user.fuelSelection,
+                                minPrice,
+                                maxPrice
+                            )
+                            station.copy(
+                                distance = station.location.distanceTo(userLocation),
+                                priceCategory = priceCategory
+                            )
+                        }
+                    }
+                    
                     UserWithFavoriteStations(
-                        user = userWithFavorites.asExternalModel().user,
+                        user = user,
                         favoriteStations = updatedStations
                     )
                 }
