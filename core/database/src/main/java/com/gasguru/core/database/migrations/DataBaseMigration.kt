@@ -83,19 +83,19 @@ internal val MIGRATION_10_11 = object : Migration(DB_VERSION_10, DB_VERSION_11) 
         // 1. Create new simplified table for favorite stations
         db.execSQL(
             """
-            CREATE TABLE IF NOT EXISTS `favorite_stations` (
-                `idServiceStation` INTEGER NOT NULL, 
-                PRIMARY KEY(`idServiceStation`)
-            )
+                CREATE TABLE IF NOT EXISTS `favorite_stations` (
+                    `idServiceStation` INTEGER NOT NULL, 
+                    PRIMARY KEY(`idServiceStation`)
+                )
             """.trimIndent()
         )
 
         // 2. Migrate existing data from cross-reference table (if any)
         db.execSQL(
             """
-            INSERT OR IGNORE INTO `favorite_stations` (`idServiceStation`)
-            SELECT DISTINCT `idServiceStation` 
-            FROM `favorite_station_cross_ref`
+                INSERT OR IGNORE INTO `favorite_stations` (`idServiceStation`)
+                SELECT DISTINCT `idServiceStation` 
+                FROM `favorite_station_cross_ref`
             """.trimIndent()
         )
 
