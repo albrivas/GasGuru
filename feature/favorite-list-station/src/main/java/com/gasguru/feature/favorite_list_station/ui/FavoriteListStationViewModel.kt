@@ -63,7 +63,7 @@ class FavoriteListStationViewModel @Inject constructor(
                                 FavoriteStationListUiState.EmptyFavorites
                             } else {
                                 val listUiModel = stations.favoriteStations.map { it.toUiModel() }
-                                val filteredStations = when(tabState.selectedTab) {
+                                val filteredStations = when (tabState.selectedTab) {
                                     0 -> listUiModel.sortedBy { userData.fuelSelection.extractPrice(it.fuelStation) }
                                     1 -> listUiModel.sortedBy { it.formattedDistance }
                                     else -> listUiModel
