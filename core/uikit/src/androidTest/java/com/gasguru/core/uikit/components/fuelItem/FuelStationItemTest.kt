@@ -4,8 +4,8 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithTag
 import com.gasguru.core.testing.BaseTest
 import com.gasguru.core.uikit.R
+import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
-import com.gasguru.core.uikit.theme.Primary500
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
@@ -24,9 +24,10 @@ class FuelStationItemTest : BaseTest() {
                         distance = "1.2 km",
                         price = "Without fuel diesel premium plus ultra clean",
                         index = 1,
-                        categoryColor = Primary500,
+                        categoryColor = GasGuruTheme.colors.primary500,
                         onItemClick = {}
-                    )
+                    ),
+                    isLastItem = true
                 )
             }
         }
