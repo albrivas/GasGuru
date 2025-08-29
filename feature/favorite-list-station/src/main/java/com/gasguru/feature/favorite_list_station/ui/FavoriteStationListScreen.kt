@@ -2,7 +2,6 @@ package com.gasguru.feature.favorite_list_station.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,19 +10,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
@@ -32,18 +25,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.previewFuelStationDomain
-import com.gasguru.core.ui.getPrice
 import com.gasguru.core.ui.models.FuelStationUiModel
-import com.gasguru.core.ui.toColor
+import com.gasguru.core.ui.toStationListItems
 import com.gasguru.core.ui.toUiModel
 import com.gasguru.core.uikit.components.alert.AlertTemplate
 import com.gasguru.core.uikit.components.alert.AlertTemplateModel
-import com.gasguru.core.uikit.components.fuelItem.FuelStationItem
-import com.gasguru.core.uikit.components.fuelItem.FuelStationItemModel
+import com.gasguru.core.uikit.components.filterable_station_list.FilterableStationList
+import com.gasguru.core.uikit.components.filterable_station_list.FilterableStationListModel
 import com.gasguru.core.uikit.components.loading.GasGuruLoading
 import com.gasguru.core.uikit.components.loading.GasGuruLoadingModel
-import com.gasguru.core.uikit.components.swipe.SwipeItem
-import com.gasguru.core.uikit.components.swipe.SwipeItemModel
+import com.gasguru.core.uikit.components.station_list.StationListSwipeModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
@@ -55,8 +46,10 @@ fun FavoriteListStationScreenRoute(
     viewModel: FavoriteListStationViewModel = hiltViewModel(),
 ) {
     val state by viewModel.favoriteStations.collectAsStateWithLifecycle()
+    val tabState by viewModel.tabState.collectAsStateWithLifecycle()
     FavoriteListStationScreen(
         uiState = state,
+        tabState = tabState,
         navigateToDetail = navigateToDetail,
         event = viewModel::handleEvents
     )
@@ -65,6 +58,7 @@ fun FavoriteListStationScreenRoute(
 @Composable
 internal fun FavoriteListStationScreen(
     uiState: FavoriteStationListUiState,
+    tabState: SelectedTabUiState,
     navigateToDetail: (Int) -> Unit,
     event: (FavoriteStationEvent) -> Unit,
 ) {
@@ -91,6 +85,7 @@ internal fun FavoriteListStationScreen(
                 stations = uiState.favoriteStations,
                 selectedFuel = uiState.userSelectedFuelType,
                 navigateToDetail = navigateToDetail,
+                selectedTab = tabState.selectedTab,
                 event = event
             )
 
@@ -144,6 +139,7 @@ fun ListFuelStations(
     modifier: Modifier = Modifier,
     stations: List<FuelStationUiModel>,
     selectedFuel: FuelType,
+    selectedTab: Int,
     event: (FavoriteStationEvent) -> Unit,
     navigateToDetail: (Int) -> Unit = {},
 ) {
@@ -159,47 +155,26 @@ fun ListFuelStations(
             style = GasGuruTheme.typography.h5,
             color = GasGuruTheme.colors.textMain
         )
-        LazyColumn(
-            modifier = modifier
-                .clip(RoundedCornerShape(8.dp))
-                .border(1.dp, GasGuruTheme.colors.neutral300, RoundedCornerShape(8.dp))
-                .background(color = GasGuruTheme.colors.neutralWhite)
-                .wrapContentHeight()
-                .testTag("favorite_list"),
-        ) {
-            itemsIndexed(
-                items = stations,
-                key = { _, item -> item.fuelStation.idServiceStation }
-            ) { index, item ->
-                SwipeItem(
-                    modifier = Modifier.animateItem(),
-                    model = SwipeItemModel(
-                        enableDismissFromEndToStart = true,
-                        enableDismissFromStartToEnd = true,
-                        iconAnimated = com.gasguru.core.ui.R.raw.trash_animated,
-                        backgroundColor = GasGuruTheme.colors.red500,
-                        onClick = {
-                            event(FavoriteStationEvent.RemoveFavoriteStation(item.fuelStation.idServiceStation))
-                        },
-                    ) {
-                        FuelStationItem(
-                            modifier = Modifier.testTag("item $index"),
-                            model = FuelStationItemModel(
-                                idServiceStation = item.fuelStation.idServiceStation,
-                                icon = item.brandIcon,
-                                name = item.formattedName,
-                                distance = item.formattedDistance,
-                                price = selectedFuel.getPrice(item.fuelStation),
-                                index = index,
-                                categoryColor = item.fuelStation.priceCategory.toColor(),
-                                onItemClick = navigateToDetail
-                            ),
-                            isLastItem = index == stations.size - 1
-                        )
-                    }
+
+        FilterableStationList(
+            model = FilterableStationListModel(
+                stations = stations.toStationListItems(selectedFuel),
+                selectedTab = selectedTab,
+                onTabChange = { event(FavoriteStationEvent.ChangeTab(selected = it)) },
+                onStationClick = navigateToDetail,
+                swipeConfig = StationListSwipeModel(
+                    iconAnimated = com.gasguru.core.ui.R.raw.trash_animated,
+                    backgroundColor = GasGuruTheme.colors.red500,
+                    onSwipe = { event(FavoriteStationEvent.RemoveFavoriteStation(it)) }
+                ),
+                testTag = "favorite_list",
+                tabNames = listOf(
+                    stringResource(com.gasguru.core.uikit.R.string.tab_price),
+                    stringResource(com.gasguru.core.uikit.R.string.tab_distance)
                 )
-            }
-        }
+            ),
+            modifier = modifier
+        )
     }
 }
 
@@ -209,6 +184,7 @@ fun EmptyFavoritesPreview() {
     MyApplicationTheme {
         FavoriteListStationScreen(
             uiState = FavoriteStationListUiState.EmptyFavorites,
+            tabState = SelectedTabUiState(),
             navigateToDetail = {},
             event = {}
         )
@@ -224,6 +200,7 @@ fun FavoriteFuelStationsPreview() {
                 favoriteStations = listOf(previewFuelStationDomain().toUiModel()),
                 userSelectedFuelType = FuelType.GASOLINE_95_E10
             ),
+            tabState = SelectedTabUiState(),
             navigateToDetail = {},
             event = {}
         )
