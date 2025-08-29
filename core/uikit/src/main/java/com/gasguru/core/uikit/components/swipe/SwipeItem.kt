@@ -28,7 +28,7 @@ import com.gasguru.core.uikit.theme.ThemePreviews
 
 @Composable
 fun SwipeItem(
-    modifier: Modifier = Modifier, 
+    modifier: Modifier = Modifier,
     model: SwipeItemModel,
     content: @Composable () -> Unit
 ) = with(model) {

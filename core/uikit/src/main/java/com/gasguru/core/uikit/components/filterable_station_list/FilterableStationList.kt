@@ -17,7 +17,7 @@ fun FilterableStationList(
     modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
-    
+
     Column(
         modifier = modifier
             .fillMaxWidth(),

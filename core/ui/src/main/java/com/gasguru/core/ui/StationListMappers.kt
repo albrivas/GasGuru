@@ -7,7 +7,7 @@ import com.gasguru.core.uikit.components.station_list.StationListItemModel
 
 @Composable
 fun List<FuelStationUiModel>.toStationListItems(selectedFuel: FuelType): List<StationListItemModel> {
-    return map { 
+    return map {
         StationListItemModel(
             idServiceStation = it.fuelStation.idServiceStation,
             icon = it.brandIcon,

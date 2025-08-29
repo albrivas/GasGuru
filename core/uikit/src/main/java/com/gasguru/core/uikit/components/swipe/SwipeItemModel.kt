@@ -1,6 +1,5 @@
 package com.gasguru.core.uikit.components.swipe
 
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 data class SwipeItemModel(

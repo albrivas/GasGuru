@@ -68,8 +68,8 @@ fun StationList(
                         backgroundColor = swipeConfig.backgroundColor,
                         onClick = { swipeConfig.onSwipe(item.idServiceStation) }
                     )
-                ) { 
-                    stationItem() 
+                ) {
+                    stationItem()
                 }
             } else {
                 stationItem()
