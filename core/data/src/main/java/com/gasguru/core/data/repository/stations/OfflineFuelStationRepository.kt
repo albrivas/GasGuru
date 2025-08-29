@@ -9,6 +9,7 @@ import com.gasguru.core.data.mapper.asEntity
 import com.gasguru.core.data.mapper.calculateFuelPrices
 import com.gasguru.core.data.mapper.getPriceCategory
 import com.gasguru.core.data.repository.user.OfflineUserDataRepository
+import com.gasguru.core.database.dao.FavoriteStationDao
 import com.gasguru.core.database.dao.FuelStationDao
 import com.gasguru.core.database.model.FuelStationEntity
 import com.gasguru.core.database.model.asExternalModel
@@ -39,6 +40,7 @@ class OfflineFuelStationRepository @Inject constructor(
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val offlineUserDataRepository: OfflineUserDataRepository,
+    private val favoriteStationDao: FavoriteStationDao,
 ) : FuelStationRepository {
 
     private val defaultScope = CoroutineScope(defaultDispatcher + SupervisorJob())
@@ -107,10 +109,9 @@ class OfflineFuelStationRepository @Inject constructor(
     override fun getFuelStationById(id: Int, userLocation: Location): Flow<FuelStation> =
         fuelStationDao.getFuelStationById(id)
             .flatMapLatest { station ->
-                offlineUserDataRepository.getUserWithFavoriteStations(userLocation = userLocation)
-                    .map { userWithFavorites ->
-                        val isFavorite =
-                            userWithFavorites.favoriteStations.any { it.idServiceStation == station.idServiceStation }
+                favoriteStationDao.getFavoriteStationIds()
+                    .map { favoriteIds ->
+                        val isFavorite = favoriteIds.contains(station.idServiceStation)
                         station.asExternalModel().copy(
                             isFavorite = isFavorite,
                             distance = station.getLocation().distanceTo(userLocation)
