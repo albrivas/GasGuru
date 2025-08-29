@@ -8,6 +8,5 @@ data class SwipeItemModel(
     val backgroundColor: Color,
     val onClick: () -> Unit,
     val enableDismissFromEndToStart: Boolean = true,
-    val enableDismissFromStartToEnd: Boolean = true,
-    val content: @Composable () -> Unit
+    val enableDismissFromStartToEnd: Boolean = true
 )

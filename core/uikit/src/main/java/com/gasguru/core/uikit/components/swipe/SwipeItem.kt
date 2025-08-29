@@ -27,7 +27,11 @@ import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
 
 @Composable
-fun SwipeItem(modifier: Modifier = Modifier, model: SwipeItemModel) = with(model) {
+fun SwipeItem(
+    modifier: Modifier = Modifier, 
+    model: SwipeItemModel,
+    content: @Composable () -> Unit
+) = with(model) {
     val swipeState = rememberSwipeToDismissBoxState(confirmValueChange = { value ->
         when (value) {
             SwipeToDismissBoxValue.StartToEnd,
@@ -100,23 +104,22 @@ private fun SwipeItemPreview() {
             model = SwipeItemModel(
                 iconAnimated = 0,
                 backgroundColor = Color.Red,
-                onClick = {},
-                content = {
-                    FuelStationItem(
-                        model = FuelStationItemModel(
-                            idServiceStation = 1,
-                            icon = R.drawable.ic_logo_repsol,
-                            name = "EDAN REPSOL",
-                            distance = "567 m",
-                            price = "1.75 €/l",
-                            index = 3686,
-                            categoryColor = GasGuruTheme.colors.red500,
-                            onItemClick = {}
-                        ),
-                        isLastItem = false
-                    )
-                }
+                onClick = {}
             )
-        )
+        ) {
+            FuelStationItem(
+                model = FuelStationItemModel(
+                    idServiceStation = 1,
+                    icon = R.drawable.ic_logo_repsol,
+                    name = "EDAN REPSOL",
+                    distance = "567 m",
+                    price = "1.75 €/l",
+                    index = 3686,
+                    categoryColor = GasGuruTheme.colors.red500,
+                    onItemClick = {}
+                ),
+                isLastItem = false
+            )
+        }
     }
 }
