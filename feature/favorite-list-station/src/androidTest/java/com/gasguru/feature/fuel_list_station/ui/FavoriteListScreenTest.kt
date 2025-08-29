@@ -14,6 +14,7 @@ import com.gasguru.core.ui.toUiModel
 import com.gasguru.feature.favorite_list_station.R
 import com.gasguru.feature.favorite_list_station.ui.FavoriteListStationScreen
 import com.gasguru.feature.favorite_list_station.ui.FavoriteStationListUiState
+import com.gasguru.feature.favorite_list_station.ui.SelectedTabUiState
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
@@ -25,6 +26,7 @@ class FavoriteListScreenTest : BaseTest() {
         setContent {
             FavoriteListStationScreen(
                 uiState = FavoriteStationListUiState.EmptyFavorites,
+                tabState = SelectedTabUiState(),
                 navigateToDetail = {},
                 event = {}
             )
@@ -44,6 +46,7 @@ class FavoriteListScreenTest : BaseTest() {
                         previewFuelStationDomain().toUiModel()
                     ), userSelectedFuelType = FuelType.GASOLINE_95
                 ),
+                tabState = SelectedTabUiState(),
                 navigateToDetail = {},
                 event = {}
             )
@@ -63,6 +66,7 @@ class FavoriteListScreenTest : BaseTest() {
                         previewFuelStationDomain(idServiceStation = 1)
                     ).map { it.toUiModel() }, userSelectedFuelType = FuelType.GASOLINE_95
                 ),
+                tabState = SelectedTabUiState(),
                 navigateToDetail = {},
                 event = {}
             )
