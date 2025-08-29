@@ -12,7 +12,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -20,9 +19,8 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.gasguru.core.uikit.R
 import com.gasguru.core.uikit.theme.GasGuruTheme
-import com.gasguru.core.uikit.theme.GrayLight
 import com.gasguru.core.uikit.theme.MyApplicationTheme
-import com.gasguru.core.uikit.theme.Neutral100
+import com.gasguru.core.uikit.theme.ThemePreviews
 
 @Composable
 fun AlertTemplate(model: AlertTemplateModel) {
@@ -32,7 +30,7 @@ fun AlertTemplate(model: AlertTemplateModel) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Neutral100)
+                .background(GasGuruTheme.colors.neutral100)
                 .padding(24.dp),
             verticalArrangement = Arrangement.Center
         ) {
@@ -45,7 +43,7 @@ fun AlertTemplate(model: AlertTemplateModel) {
             )
             Text(
                 text = description,
-                color = GrayLight,
+                color = GasGuruTheme.colors.textSubtle,
                 textAlign = TextAlign.Center,
                 style = GasGuruTheme.typography.baseRegular
             )
@@ -53,8 +51,8 @@ fun AlertTemplate(model: AlertTemplateModel) {
     }
 }
 
-@Preview(showBackground = true)
 @Composable
+@ThemePreviews
 private fun AlertMoleculePreview() {
     MyApplicationTheme {
         AlertTemplate(

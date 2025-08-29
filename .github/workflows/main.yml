@@ -1,4 +1,4 @@
-name: Push
+name: CI - Pull Request to Develop
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    if: ${{ github.actor != 'dependabot[bot]' }}
+    if: ${{ github.actor != 'dependabot[bot]' && !startsWith(github.head_ref, 'sync/') && !startsWith(github.head_ref, 'docs/')}}
     name: Build
     runs-on: ubuntu-22.04
     steps:
@@ -28,6 +28,10 @@ jobs:
           echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> local.properties
           echo "keyAlias=${{ secrets.KEYSTORE_ALIAS }}" >> local.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> local.properties
+          echo "onesignalAppId=${{ secrets.ONE_SIGNAL }}" >> local.properties
+          echo "mixpanelProjectToken=${{ secrets.MIXPANEL }}" >> local.properties
+          echo "sha1Debug=${{ secrets.SHA1_DEBUG }}" >> local.properties
+          echo "sha1PlayStore=${{ secrets.SHA1_PLAY_STORE }}" >> local.properties
 
       - name: Create google-services.json
         env:
@@ -66,13 +70,13 @@ jobs:
             ./gradlew connectedCheck
             
             # Assemble APK for Maestro
-            ./gradlew assembleProdDebug
+            ./gradlew assembleProdRelease
             
             # Wait for emulator to be ready
             adb wait-for-device
             
             # Install APK in the emulator
-            adb install app/build/outputs/apk/prod/debug/app-prod-debug.apk
+            adb install app/build/outputs/apk/prod/release/app-prod-release.apk
             
             # Execute test with maestro
             maestro test .maestro/config.yaml

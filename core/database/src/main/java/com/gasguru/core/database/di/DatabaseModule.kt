@@ -9,6 +9,8 @@ import com.gasguru.core.database.migrations.MIGRATION_4_5
 import com.gasguru.core.database.migrations.MIGRATION_5_6
 import com.gasguru.core.database.migrations.MIGRATION_6_7
 import com.gasguru.core.database.migrations.MIGRATION_7_8
+import com.gasguru.core.database.migrations.MIGRATION_8_9
+import com.gasguru.core.database.migrations.MIGRATION_9_10
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -33,7 +35,9 @@ class DatabaseModule {
             MIGRATION_4_5,
             MIGRATION_5_6,
             MIGRATION_6_7,
-            MIGRATION_7_8
+            MIGRATION_7_8,
+            MIGRATION_8_9,
+            MIGRATION_9_10
         ).build()
     }
 }

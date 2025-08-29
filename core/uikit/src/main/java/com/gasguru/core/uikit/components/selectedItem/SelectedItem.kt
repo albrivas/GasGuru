@@ -16,20 +16,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.R
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
-import com.gasguru.core.uikit.theme.Neutral300
-import com.gasguru.core.uikit.theme.Neutral500
-import com.gasguru.core.uikit.theme.Primary600
+import com.gasguru.core.uikit.theme.ThemePreviews
 
 @Composable
 fun BasicSelectedItem(
@@ -40,7 +36,7 @@ fun BasicSelectedItem(
         modifier = modifier
             .fillMaxWidth()
             .then(if (model.isRoundedItem) Modifier.clip(RoundedCornerShape(8.dp)) else Modifier)
-            .background(color = Color.White)
+            .background(color = GasGuruTheme.colors.neutralWhite)
             .selectable(
                 selected = true,
                 onClick = { onItemSelected(model) }
@@ -49,7 +45,7 @@ fun BasicSelectedItem(
                 if (model.isRoundedItem) {
                     Modifier.border(
                         width = if (isSelected) 2.dp else 0.5.dp,
-                        color = if (isSelected) Primary600 else Neutral300,
+                        color = if (isSelected) GasGuruTheme.colors.primary600 else GasGuruTheme.colors.neutral300,
                         shape = RoundedCornerShape(8.dp)
                     )
                 } else {
@@ -68,9 +64,11 @@ fun BasicSelectedItem(
             contentDescription = "Icon fuel"
         )
         Text(
-            modifier = Modifier.weight(1f).padding(start = 8.dp),
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 8.dp),
             style = if (isSelected) GasGuruTheme.typography.baseBold else GasGuruTheme.typography.baseRegular,
-            color = Color.Black,
+            color = GasGuruTheme.colors.neutralBlack,
             textAlign = TextAlign.Start,
             text = stringResource(id = title),
         )
@@ -78,14 +76,17 @@ fun BasicSelectedItem(
         RadioButton(
             selected = isSelected,
             onClick = { onItemSelected(model) },
-            colors = RadioButtonDefaults.colors(selectedColor = Primary600, unselectedColor = Neutral500),
+            colors = RadioButtonDefaults.colors(
+                selectedColor = GasGuruTheme.colors.primary600,
+                unselectedColor = GasGuruTheme.colors.neutral500
+            ),
             modifier = Modifier.testTag("radio_button_$title")
         )
     }
 }
 
 @Composable
-@Preview(name = "Item selected", backgroundColor = 0xFFFFFFFF, showBackground = true)
+@ThemePreviews
 private fun BasicSelectedItemPreview() {
     MyApplicationTheme {
         BasicSelectedItem(
@@ -100,7 +101,7 @@ private fun BasicSelectedItemPreview() {
 }
 
 @Composable
-@Preview(name = "Item not selected", backgroundColor = 0xFFFFFFFF, showBackground = true)
+@ThemePreviews
 private fun BasicItemPreview() {
     MyApplicationTheme {
         BasicSelectedItem(
