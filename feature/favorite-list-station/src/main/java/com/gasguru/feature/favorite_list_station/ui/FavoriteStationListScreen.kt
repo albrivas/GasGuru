@@ -5,8 +5,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -19,23 +21,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.FuelType
+import com.gasguru.core.model.data.previewFuelStationDomain
 import com.gasguru.core.ui.getPrice
-import com.gasguru.core.ui.toBrandStationIcon
+import com.gasguru.core.ui.models.FuelStationUiModel
 import com.gasguru.core.ui.toColor
+import com.gasguru.core.ui.toUiModel
 import com.gasguru.core.uikit.components.alert.AlertTemplate
 import com.gasguru.core.uikit.components.alert.AlertTemplateModel
 import com.gasguru.core.uikit.components.fuelItem.FuelStationItem
@@ -45,10 +45,8 @@ import com.gasguru.core.uikit.components.loading.GasGuruLoadingModel
 import com.gasguru.core.uikit.components.swipe.SwipeItem
 import com.gasguru.core.uikit.components.swipe.SwipeItemModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
-import com.gasguru.core.uikit.theme.Neutral100
-import com.gasguru.core.uikit.theme.Neutral300
-import com.gasguru.core.uikit.theme.Primary800
-import com.gasguru.core.uikit.theme.Red500
+import com.gasguru.core.uikit.theme.MyApplicationTheme
+import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.favorite_list_station.R
 
 @Composable
@@ -73,7 +71,7 @@ internal fun FavoriteListStationScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Neutral100)
+            .background(color = GasGuruTheme.colors.neutral100)
             .padding(horizontal = 16.dp)
             .statusBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -85,7 +83,7 @@ internal fun FavoriteListStationScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .statusBarsPadding(),
-                    model = GasGuruLoadingModel(color = Primary800)
+                    model = GasGuruLoadingModel(color = GasGuruTheme.colors.primary800)
                 )
             }
 
@@ -113,15 +111,27 @@ internal fun FavoriteListStationScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Image(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_empty_favorites),
-                        contentDescription = "",
-                        contentScale = ContentScale.None
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_file_search),
+                        contentDescription = null,
+                        contentScale = ContentScale.Inside,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(224.dp)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        modifier = Modifier,
+                        text = stringResource(id = R.string.empty_favorites_title),
+                        style = GasGuruTheme.typography.h4,
+                        textAlign = TextAlign.Center,
+                        color = GasGuruTheme.colors.textMain
                     )
                     Text(
                         modifier = Modifier,
-                        text = stringResource(id = R.string.empty_favorites),
-                        style = GasGuruTheme.typography.h4,
-                        textAlign = TextAlign.Center
+                        text = stringResource(id = R.string.empty_favorites_subtitle),
+                        style = GasGuruTheme.typography.baseRegular,
+                        textAlign = TextAlign.Center,
+                        color = GasGuruTheme.colors.textSubtle
                     )
                 }
             }
@@ -132,12 +142,11 @@ internal fun FavoriteListStationScreen(
 @Composable
 fun ListFuelStations(
     modifier: Modifier = Modifier,
-    stations: List<FuelStation>,
+    stations: List<FuelStationUiModel>,
     selectedFuel: FuelType,
     event: (FavoriteStationEvent) -> Unit,
     navigateToDetail: (Int) -> Unit = {},
 ) {
-    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -147,19 +156,20 @@ fun ListFuelStations(
         Text(
             modifier = Modifier,
             text = stringResource(id = R.string.favorites),
-            style = GasGuruTheme.typography.h5
+            style = GasGuruTheme.typography.h5,
+            color = GasGuruTheme.colors.textMain
         )
         LazyColumn(
             modifier = modifier
                 .clip(RoundedCornerShape(8.dp))
-                .border(1.dp, Neutral300, RoundedCornerShape(8.dp))
-                .background(color = Color.White)
+                .border(1.dp, GasGuruTheme.colors.neutral300, RoundedCornerShape(8.dp))
+                .background(color = GasGuruTheme.colors.neutralWhite)
                 .wrapContentHeight()
                 .testTag("favorite_list"),
         ) {
             itemsIndexed(
                 items = stations,
-                key = { _, item -> item.idServiceStation }
+                key = { _, item -> item.fuelStation.idServiceStation }
             ) { index, item ->
                 SwipeItem(
                     modifier = Modifier.animateItem(),
@@ -167,23 +177,24 @@ fun ListFuelStations(
                         enableDismissFromEndToStart = true,
                         enableDismissFromStartToEnd = true,
                         iconAnimated = com.gasguru.core.ui.R.raw.trash_animated,
-                        backgroundColor = Red500,
+                        backgroundColor = GasGuruTheme.colors.red500,
                         onClick = {
-                            event(FavoriteStationEvent.RemoveFavoriteStation(item.idServiceStation))
+                            event(FavoriteStationEvent.RemoveFavoriteStation(item.fuelStation.idServiceStation))
                         },
                     ) {
                         FuelStationItem(
                             modifier = Modifier.testTag("item $index"),
                             model = FuelStationItemModel(
-                                idServiceStation = item.idServiceStation,
-                                icon = item.brandStationBrandsType.toBrandStationIcon(),
-                                name = item.brandStationName,
-                                distance = item.formatDistance(),
-                                price = selectedFuel.getPrice(context, item),
+                                idServiceStation = item.fuelStation.idServiceStation,
+                                icon = item.brandIcon,
+                                name = item.formattedName,
+                                distance = item.formattedDistance,
+                                price = selectedFuel.getPrice(item.fuelStation),
                                 index = index,
-                                categoryColor = item.priceCategory.toColor(),
+                                categoryColor = item.fuelStation.priceCategory.toColor(),
                                 onItemClick = navigateToDetail
-                            )
+                            ),
+                            isLastItem = index == stations.size - 1
                         )
                     }
                 )
@@ -192,12 +203,29 @@ fun ListFuelStations(
     }
 }
 
-@Preview
 @Composable
+@ThemePreviews
 fun EmptyFavoritesPreview() {
-    FavoriteListStationScreen(
-        uiState = FavoriteStationListUiState.EmptyFavorites,
-        navigateToDetail = {},
-        event = {}
-    )
+    MyApplicationTheme {
+        FavoriteListStationScreen(
+            uiState = FavoriteStationListUiState.EmptyFavorites,
+            navigateToDetail = {},
+            event = {}
+        )
+    }
+}
+
+@Composable
+@ThemePreviews
+fun FavoriteFuelStationsPreview() {
+    MyApplicationTheme {
+        FavoriteListStationScreen(
+            uiState = FavoriteStationListUiState.Favorites(
+                favoriteStations = listOf(previewFuelStationDomain().toUiModel()),
+                userSelectedFuelType = FuelType.GASOLINE_95_E10
+            ),
+            navigateToDetail = {},
+            event = {}
+        )
+    }
 }
