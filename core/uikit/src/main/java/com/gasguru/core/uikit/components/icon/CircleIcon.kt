@@ -12,9 +12,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.gasguru.core.uikit.theme.Neutral300
+import com.gasguru.core.uikit.theme.GasGuruTheme
+import com.gasguru.core.uikit.theme.ThemePreviews
 
 @Composable
 fun CircleIcon(model: CircleIconModel) = with(model) {
@@ -22,7 +22,7 @@ fun CircleIcon(model: CircleIconModel) = with(model) {
         modifier = Modifier
             .size(32.dp)
             .clip(CircleShape)
-            .border(width = 1.dp, color = Neutral300, shape = CircleShape)
+            .border(width = 1.dp, color = GasGuruTheme.colors.neutral300, shape = CircleShape)
     ) {
         Image(
             modifier = Modifier
@@ -36,8 +36,8 @@ fun CircleIcon(model: CircleIconModel) = with(model) {
     }
 }
 
-@Preview()
 @Composable
+@ThemePreviews
 private fun CircleIconPreview() {
     CircleIcon(model = CircleIconModel(icon = FuelStationIcons.Repsol, size = 32.dp))
 }

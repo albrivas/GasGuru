@@ -24,7 +24,7 @@ import com.gasguru.core.database.model.UserDataEntity
         FavoriteStationCrossRef::class,
         FilterEntity::class
     ],
-    version = 8,
+    version = 10,
     exportSchema = true
 )
 @TypeConverters(UserDataConverters::class, ListConverters::class, FilterTypeConverter::class)

@@ -8,4 +8,9 @@ object GasGuruTheme {
         @Composable
         @ReadOnlyComposable
         get() = LocalGasGuruTypography.current
+
+    val colors: GasGuruColors
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalGasGuruColors.current
 }

@@ -19,51 +19,37 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.R
 import com.gasguru.core.uikit.components.chip.StatusChip
 import com.gasguru.core.uikit.components.chip.StatusChipModel
-import com.gasguru.core.uikit.theme.AccentRed
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
-import com.gasguru.core.uikit.theme.Neutral300
-import com.gasguru.core.uikit.theme.Neutral500
-import com.gasguru.core.uikit.theme.TextMain
-import com.gasguru.core.uikit.theme.TextSubtle
+import com.gasguru.core.uikit.theme.ThemePreviews
+import com.gasguru.core.uikit.utils.horizontalDivider
 
 @Composable
 fun FuelStationItem(
     modifier: Modifier = Modifier,
     model: FuelStationItemModel,
+    isLastItem: Boolean,
 ) = with(model) {
     val contentDescription = stringResource(id = R.string.content_description_fuel_item, index)
-
+    val neutral300 = GasGuruTheme.colors.neutral300
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(color = Color.White)
+            .background(color = GasGuruTheme.colors.neutralWhite)
             .clickable { onItemClick(idServiceStation) }
             .semantics { this.contentDescription = contentDescription }
             .padding(horizontal = 12.dp)
-            .drawBehind {
-                val lineY = size.height - 1.dp.toPx()
-                drawLine(
-                    color = Neutral300,
-                    start = Offset(0f, lineY),
-                    end = Offset(size.width, lineY),
-                    strokeWidth = 1.dp.toPx()
-                )
-            },
+            .horizontalDivider(color = neutral300, isLastItem = isLastItem),
     ) {
         Column(
             modifier = Modifier
@@ -73,7 +59,7 @@ fun FuelStationItem(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
-                    .border(width = 1.dp, color = Neutral300, shape = CircleShape)
+                    .border(width = 1.dp, color = neutral300, shape = CircleShape)
             ) {
                 Image(
                     modifier = Modifier
@@ -98,14 +84,14 @@ fun FuelStationItem(
                 style = GasGuruTheme.typography.baseRegular,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                color = TextMain
+                color = GasGuruTheme.colors.textMain
             )
             Text(
                 modifier = Modifier.testTag("station-distance"),
                 text = distance,
                 maxLines = 1,
                 style = GasGuruTheme.typography.smallRegular,
-                color = TextSubtle,
+                color = GasGuruTheme.colors.textSubtle,
                 overflow = TextOverflow.Ellipsis
             )
         }
@@ -130,7 +116,7 @@ fun FuelStationItem(
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                tint = Neutral500,
+                tint = GasGuruTheme.colors.neutral500,
                 contentDescription = ""
             )
         }
@@ -138,7 +124,7 @@ fun FuelStationItem(
 }
 
 @Composable
-@Preview(showBackground = true)
+@ThemePreviews
 fun PreviewFuelItem() {
     MyApplicationTheme {
         FuelStationItem(
@@ -149,9 +135,10 @@ fun PreviewFuelItem() {
                 distance = "567 m",
                 price = "1.75 €/l",
                 index = 3686,
-                categoryColor = AccentRed,
+                categoryColor = GasGuruTheme.colors.secondaryLight,
                 onItemClick = {}
-            )
+            ),
+            isLastItem = false
         )
     }
 }
