@@ -33,20 +33,6 @@ class UserDataDaoTest {
     fun closeDb() = db.close()
 
     @Test
-    @DisplayName("Retrieves user ID")
-    fun getUserIdTest() = runTest {
-        val userData = UserDataEntity(
-            id = 1,
-            fuelSelection = FuelType.GASOLINE_95,
-            lastUpdate = 0,
-            isOnboardingSuccess = true
-        )
-        userDataDao.insertUserData(userData)
-        val userId = userDataDao.getUserId()
-        assertEquals(1, userId)
-    }
-
-    @Test
     @DisplayName("Retrieves user data")
     fun getUserDataTest() = runTest {
         val userData = UserDataEntity(

@@ -2,23 +2,25 @@ package com.gasguru.core.data.repository.user
 
 import android.location.Location
 import com.gasguru.core.data.mapper.asEntity
+import com.gasguru.core.data.mapper.calculateFuelPrices
+import com.gasguru.core.data.mapper.getPriceCategory
+import com.gasguru.core.database.dao.FavoriteStationDao
 import com.gasguru.core.database.dao.UserDataDao
-import com.gasguru.core.database.model.FavoriteStationCrossRef
 import com.gasguru.core.database.model.asExternalModel
 import com.gasguru.core.model.data.FuelType
+import com.gasguru.core.model.data.PriceCategory
 import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.model.data.UserData
 import com.gasguru.core.model.data.UserWithFavoriteStations
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class OfflineUserDataRepository @Inject constructor(
     private val userDataDao: UserDataDao,
+    private val favoriteStationDao: FavoriteStationDao,
 ) : UserDataRepository {
     override val userData: Flow<UserData>
         get() = userDataDao.getUserData()
@@ -40,34 +42,47 @@ class OfflineUserDataRepository @Inject constructor(
     }
 
     override suspend fun addFavoriteStation(stationId: Int) {
-        val userId = getUserId()
-        val crossRef = FavoriteStationCrossRef(id = userId, idServiceStation = stationId)
-        userDataDao.insertFavoriteStationCrossRef(crossRef)
+        favoriteStationDao.addFavoriteStation(stationId)
     }
 
     override suspend fun removeFavoriteStation(stationId: Int) {
-        val userId = getUserId()
-        val crossRef = FavoriteStationCrossRef(id = userId, idServiceStation = stationId)
-        userDataDao.deleteFavoriteStationCrossRef(crossRef)
+        favoriteStationDao.removeFavoriteStation(stationId)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun getUserWithFavoriteStations(userLocation: Location): Flow<UserWithFavoriteStations> =
-        userDataDao.getUserData().filterNotNull().flatMapLatest { userEntity ->
-            userDataDao.getUserWithFavoriteStations(userEntity.id)
-                .map { userWithFavorites ->
-                    val updatedStations =
-                        userWithFavorites.asExternalModel().favoriteStations.map { station ->
-                            station.copy(distance = station.location.distanceTo(userLocation))
-                        }
-                    UserWithFavoriteStations(
-                        user = userWithFavorites.asExternalModel().user,
-                        favoriteStations = updatedStations
+        combine(
+            userData,
+            favoriteStationDao.getFavoriteStations()
+        ) { user, favoriteStationEntities ->
+            val favoriteStations = favoriteStationEntities.map { it.asExternalModel() }
+
+            val updatedStations = if (favoriteStations.size <= 1) {
+                favoriteStations.map { station ->
+                    station.copy(
+                        distance = station.location.distanceTo(userLocation),
+                        priceCategory = PriceCategory.NONE
                     )
                 }
-        }
+            } else {
+                val (minPrice, maxPrice) = favoriteStations.calculateFuelPrices(fuelType = user.fuelSelection)
+                favoriteStations.map { station ->
+                    val priceCategory = station.getPriceCategory(
+                        user.fuelSelection,
+                        minPrice,
+                        maxPrice
+                    )
+                    station.copy(
+                        distance = station.location.distanceTo(userLocation),
+                        priceCategory = priceCategory
+                    )
+                }
+            }
 
-    private suspend fun getUserId(): Long = userDataDao.getUserId()
+            UserWithFavoriteStations(
+                user = user,
+                favoriteStations = updatedStations
+            )
+        }
 
     private suspend fun saveUserData(userData: UserData) {
         userDataDao.insertUserData(userData.asEntity())
