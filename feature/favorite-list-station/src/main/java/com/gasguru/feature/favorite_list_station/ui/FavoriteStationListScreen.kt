@@ -42,6 +42,8 @@ import com.gasguru.core.uikit.components.fuelItem.FuelStationItem
 import com.gasguru.core.uikit.components.fuelItem.FuelStationItemModel
 import com.gasguru.core.uikit.components.loading.GasGuruLoading
 import com.gasguru.core.uikit.components.loading.GasGuruLoadingModel
+import com.gasguru.core.uikit.components.segmented.HeaderSegmentedTabs
+import com.gasguru.core.uikit.components.segmented.HeaderSegmentedTabsModel
 import com.gasguru.core.uikit.components.swipe.SwipeItem
 import com.gasguru.core.uikit.components.swipe.SwipeItemModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
@@ -55,8 +57,10 @@ fun FavoriteListStationScreenRoute(
     viewModel: FavoriteListStationViewModel = hiltViewModel(),
 ) {
     val state by viewModel.favoriteStations.collectAsStateWithLifecycle()
+    val tabState by viewModel.tabState.collectAsStateWithLifecycle()
     FavoriteListStationScreen(
         uiState = state,
+        tabState = tabState,
         navigateToDetail = navigateToDetail,
         event = viewModel::handleEvents
     )
@@ -65,6 +69,7 @@ fun FavoriteListStationScreenRoute(
 @Composable
 internal fun FavoriteListStationScreen(
     uiState: FavoriteStationListUiState,
+    tabState: SelectedTabUiState,
     navigateToDetail: (Int) -> Unit,
     event: (FavoriteStationEvent) -> Unit,
 ) {
@@ -91,6 +96,7 @@ internal fun FavoriteListStationScreen(
                 stations = uiState.favoriteStations,
                 selectedFuel = uiState.userSelectedFuelType,
                 navigateToDetail = navigateToDetail,
+                selectedTab = tabState.selectedTab,
                 event = event
             )
 
@@ -144,6 +150,7 @@ fun ListFuelStations(
     modifier: Modifier = Modifier,
     stations: List<FuelStationUiModel>,
     selectedFuel: FuelType,
+    selectedTab: Int,
     event: (FavoriteStationEvent) -> Unit,
     navigateToDetail: (Int) -> Unit = {},
 ) {
@@ -158,6 +165,15 @@ fun ListFuelStations(
             text = stringResource(id = R.string.favorites),
             style = GasGuruTheme.typography.h5,
             color = GasGuruTheme.colors.textMain
+        )
+
+        HeaderSegmentedTabs(
+            modifier = Modifier.fillMaxWidth(),
+            model = HeaderSegmentedTabsModel(
+                tabs = listOf("Price", "Distance"),
+                selectedTab = selectedTab,
+                onSelectedTab = { event(FavoriteStationEvent.ChangeTab(selected = it)) }
+            )
         )
         LazyColumn(
             modifier = modifier
@@ -209,6 +225,7 @@ fun EmptyFavoritesPreview() {
     MyApplicationTheme {
         FavoriteListStationScreen(
             uiState = FavoriteStationListUiState.EmptyFavorites,
+            tabState = SelectedTabUiState(),
             navigateToDetail = {},
             event = {}
         )
@@ -224,6 +241,7 @@ fun FavoriteFuelStationsPreview() {
                 favoriteStations = listOf(previewFuelStationDomain().toUiModel()),
                 userSelectedFuelType = FuelType.GASOLINE_95_E10
             ),
+            tabState = SelectedTabUiState(),
             navigateToDetail = {},
             event = {}
         )
