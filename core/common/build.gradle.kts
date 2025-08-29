@@ -3,6 +3,7 @@ import com.google.android.libraries.mapsplatform.secrets_gradle_plugin.loadPrope
 plugins {
     alias(libs.plugins.gasguru.android.library)
     alias(libs.plugins.gasguru.hilt)
+    alias(libs.plugins.gasguru.proguard)
 }
 
 val versionProperties = loadPropertiesFile("../../versions.properties")

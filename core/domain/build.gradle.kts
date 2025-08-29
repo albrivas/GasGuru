@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.gasguru.android.library)
     alias(libs.plugins.gasguru.hilt)
+    alias(libs.plugins.gasguru.proguard)
 }
 
 android {

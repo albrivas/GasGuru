@@ -21,17 +21,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.components.GasGuruButton
 import com.gasguru.core.uikit.theme.GasGuruTheme
-import com.gasguru.core.uikit.theme.GrayLight
 import com.gasguru.core.uikit.theme.MyApplicationTheme
+import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.onboarding.R
 import com.gasguru.core.uikit.R as RUikit
 
@@ -65,7 +63,7 @@ internal fun OnboardingWelcomeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(GasGuruTheme.colors.neutral100)
             .padding(start = 16.dp, top = 24.dp, end = 16.dp, bottom = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -78,13 +76,14 @@ internal fun OnboardingWelcomeScreen(
         Spacer(modifier = Modifier.height(66.dp))
         Text(
             text = stringResource(id = R.string.welcome),
+            color = GasGuruTheme.colors.neutralBlack,
             style = GasGuruTheme.typography.h2
         )
 
         Spacer(modifier = Modifier.height(28.dp))
         Text(
             text = stringResource(id = R.string.welcome_text),
-            color = GrayLight,
+            color = GasGuruTheme.colors.textSubtle,
             textAlign = TextAlign.Center,
             style = GasGuruTheme.typography.baseRegular
         )
@@ -92,7 +91,7 @@ internal fun OnboardingWelcomeScreen(
         Spacer(modifier = Modifier.height(24.dp))
         Text(
             text = stringResource(id = R.string.welcome_permission),
-            color = GrayLight,
+            color = GasGuruTheme.colors.textSubtle,
             textAlign = TextAlign.Center,
             style = GasGuruTheme.typography.baseRegular
         )
@@ -110,7 +109,7 @@ internal fun OnboardingWelcomeScreen(
 }
 
 @Composable
-@Preview
+@ThemePreviews
 private fun OnboardingWelcomeScreenPreview() {
     MyApplicationTheme {
         OnboardingWelcomeScreen(isPermissionGranted = false)

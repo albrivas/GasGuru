@@ -10,6 +10,7 @@ import androidx.compose.ui.test.swipeLeft
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.previewFuelStationDomain
 import com.gasguru.core.testing.BaseTest
+import com.gasguru.core.ui.toUiModel
 import com.gasguru.feature.favorite_list_station.R
 import com.gasguru.feature.favorite_list_station.ui.FavoriteListStationScreen
 import com.gasguru.feature.favorite_list_station.ui.FavoriteStationListUiState
@@ -29,7 +30,8 @@ class FavoriteListScreenTest : BaseTest() {
             )
         }
 
-        onNodeWithText(text = getStringResource(R.string.empty_favorites)).assertIsDisplayed()
+        onNodeWithText(text = getStringResource(R.string.empty_favorites_title)).assertIsDisplayed()
+        onNodeWithText(text = getStringResource(R.string.empty_favorites_subtitle)).assertIsDisplayed()
     }
 
     @Test
@@ -39,7 +41,7 @@ class FavoriteListScreenTest : BaseTest() {
             FavoriteListStationScreen(
                 uiState = FavoriteStationListUiState.Favorites(
                     favoriteStations = listOf(
-                        previewFuelStationDomain()
+                        previewFuelStationDomain().toUiModel()
                     ), userSelectedFuelType = FuelType.GASOLINE_95
                 ),
                 navigateToDetail = {},
@@ -59,7 +61,7 @@ class FavoriteListScreenTest : BaseTest() {
                     favoriteStations = listOf(
                         previewFuelStationDomain(idServiceStation = 0),
                         previewFuelStationDomain(idServiceStation = 1)
-                    ), userSelectedFuelType = FuelType.GASOLINE_95
+                    ).map { it.toUiModel() }, userSelectedFuelType = FuelType.GASOLINE_95
                 ),
                 navigateToDetail = {},
                 event = {}

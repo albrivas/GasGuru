@@ -762,6 +762,7 @@ style:
     ignoreAnnotated:
       - 'Preview'
       - 'DevicePreviews'
+      - 'ThemePreviews'
     allowedNames: ''
   UnusedPrivateProperty:
     active: true

@@ -1,6 +1,7 @@
 package com.gasguru.core.uikit.components.text
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,24 +15,24 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.R
-import com.gasguru.core.uikit.theme.GrayLight
+import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
+import com.gasguru.core.uikit.theme.ThemePreviews
 
 @Composable
 fun InformationText(modifier: Modifier = Modifier, model: InformationTextModel) = with(model) {
     Row(
         modifier = modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .background(color = GasGuruTheme.colors.neutralWhite),
     ) {
         Card(
             shape = RoundedCornerShape(8.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.LightGray)
+            colors = CardDefaults.cardColors(containerColor = GasGuruTheme.colors.neutral500)
         ) {
             Image(
                 modifier = Modifier.padding(8.dp),
@@ -49,19 +50,20 @@ fun InformationText(modifier: Modifier = Modifier, model: InformationTextModel) 
             Text(
                 style = typography.bodySmall,
                 text = title,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = GasGuruTheme.colors.textMain
             )
             Text(
                 text = description,
-                color = GrayLight,
+                color = GasGuruTheme.colors.textSubtle,
                 style = typography.displaySmall
             )
         }
     }
 }
 
-@Preview
 @Composable
+@ThemePreviews
 private fun InformationTextPreview() {
     MyApplicationTheme {
         InformationText(

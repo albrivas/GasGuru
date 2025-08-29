@@ -1,4 +1,4 @@
-appId: com.gasguru.debug
+appId: com.gasguru
 ---
 - launchApp:
     clearState: true

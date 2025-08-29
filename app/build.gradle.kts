@@ -8,9 +8,10 @@ plugins {
     alias(libs.plugins.gms)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.secrets)
     alias(libs.plugins.gasguru.flavors)
     alias(libs.plugins.gasguru.jacoco)
+    alias(libs.plugins.gasguru.secrets.google)
+    alias(libs.plugins.kotlin.parcelize)
 }
 
 val localProperties = gradleLocalProperties(rootDir, providers)
@@ -43,7 +44,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             isDebuggable = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -63,10 +65,6 @@ android {
 
     buildFeatures {
         compose = true
-        aidl = false
-        renderScript = false
-        shaders = false
-        buildConfig = true
     }
 
     packaging {
@@ -93,7 +91,10 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.auto.common)
     implementation(projects.core.network)
-    implementation(projects.mocknetwork)
+    implementation(projects.feature.search)
+    implementation(projects.feature.routePlanner)
+    implementation(projects.navigation)
+    mockImplementation(projects.mocknetwork)
     androidTestImplementation(projects.core.testing)
 
     // Core Android dependencies
@@ -119,4 +120,8 @@ dependencies {
     implementation(libs.firebase.analytics)
 
     implementation(libs.splash.screen)
+
+    // Analytics
+    implementation(libs.mixpanel)
+    implementation(libs.onesignal)
 }

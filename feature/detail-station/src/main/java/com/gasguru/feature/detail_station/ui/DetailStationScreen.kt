@@ -35,17 +35,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.toLowerCase
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -53,29 +49,20 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import com.gasguru.core.common.CommonUtils.isStationOpen
-import com.gasguru.core.common.generateStaticMapUrl
 import com.gasguru.core.common.startRoute
-import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.FuelStationBrandsType
 import com.gasguru.core.model.data.previewFuelStationDomain
-import com.gasguru.core.ui.getFuelPriceItems
 import com.gasguru.core.ui.iconTint
-import com.gasguru.core.ui.toBrandStationIcon
+import com.gasguru.core.ui.toUiModel
 import com.gasguru.core.uikit.components.information_card.InformationCard
 import com.gasguru.core.uikit.components.information_card.InformationCardModel
 import com.gasguru.core.uikit.components.loading.GasGuruLoading
 import com.gasguru.core.uikit.components.loading.GasGuruLoadingModel
 import com.gasguru.core.uikit.components.price.PriceItem
-import com.gasguru.core.uikit.theme.AccentRed
+import com.gasguru.core.uikit.components.price.PriceItemModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
-import com.gasguru.core.uikit.theme.Neutral100
-import com.gasguru.core.uikit.theme.Neutral300
-import com.gasguru.core.uikit.theme.Primary500
-import com.gasguru.core.uikit.theme.Primary800
-import com.gasguru.core.uikit.theme.TextSubtle
-import com.gasguru.feature.detail_station.BuildConfig
+import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.detail_station.R
 import com.gasguru.feature.detail_station.formatSchedule
 import com.gasguru.feature.detail_station.getTimeElapsedString
@@ -85,54 +72,62 @@ internal fun DetailStationScreenRoute(
     onBack: () -> Unit,
     viewModel: DetailStationViewModel = hiltViewModel(),
 ) {
-    val state by viewModel.fuelStation.collectAsStateWithLifecycle()
+    val uiState by viewModel.fuelStation.collectAsStateWithLifecycle()
+    val staticMapUrl by viewModel.staticMapUrl.collectAsStateWithLifecycle()
     val lastUpdate by viewModel.lastUpdate.collectAsStateWithLifecycle()
+
     DetailStationScreen(
-        uiState = state,
+        uiState = uiState,
+        staticMapUrl = staticMapUrl,
         lastUpdate = lastUpdate,
         onBack = onBack,
-        onFavoriteClick = viewModel::onFavoriteClick
+        onEvent = viewModel::onEvent
     )
 }
 
 @Composable
 internal fun DetailStationScreen(
     uiState: DetailStationUiState,
+    staticMapUrl: String?,
     lastUpdate: Long,
     onBack: () -> Unit = {},
-    onFavoriteClick: (Boolean) -> Unit = {},
+    onEvent: (DetailStationEvent) -> Unit = {},
 ) {
     when (uiState) {
-        DetailStationUiState.Error -> Unit
+        DetailStationUiState.Error -> {
+            // Handle error state
+        }
         DetailStationUiState.Loading -> {
             GasGuruLoading(
                 modifier = Modifier
                     .fillMaxSize()
                     .statusBarsPadding(),
-                model = GasGuruLoadingModel(color = Primary800)
+                model = GasGuruLoadingModel(color = GasGuruTheme.colors.primary800)
             )
         }
-
         is DetailStationUiState.Success -> {
+            val stationState = rememberDetailStationState(uiState.stationModel)
+
             Scaffold(
                 topBar = {
                     HeaderStation(
-                        station = uiState.station,
+                        stationState = stationState,
+                        staticMapUrl = staticMapUrl,
                         onBack = onBack,
-                        onFavoriteClick = onFavoriteClick
+                        onEvent = onEvent
                     )
                 },
             ) { padding ->
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(color = Neutral100)
+                        .background(color = GasGuruTheme.colors.neutral100)
                         .padding(padding)
                 ) {
                     DetailStationContent(
-                        station = uiState.station,
+                        stationState = stationState,
+                        address = uiState.address,
                         lastUpdate = lastUpdate,
-                        address = uiState.address
                     )
                 }
             }
@@ -141,7 +136,11 @@ internal fun DetailStationScreen(
 }
 
 @Composable
-fun DetailStationContent(station: FuelStation, lastUpdate: Long, address: String?) {
+fun DetailStationContent(
+    stationState: DetailStationState,
+    address: String?,
+    lastUpdate: Long,
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -149,7 +148,7 @@ fun DetailStationContent(station: FuelStation, lastUpdate: Long, address: String
             .verticalScroll(rememberScrollState())
     ) {
         val context = LocalContext.current
-        val isOpen = if (station.isStationOpen()) "Open" else "Closed"
+
         ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
             val (textGroup, image) = createRefs()
 
@@ -163,20 +162,12 @@ fun DetailStationContent(station: FuelStation, lastUpdate: Long, address: String
                 }
             ) {
                 Text(
-                    text = station.brandStationName.toLowerCase(Locale.current)
-                        .replaceFirstChar {
-                            if (it.isLowerCase()) {
-                                it.titlecase(
-                                    java.util.Locale.getDefault()
-                                )
-                            } else {
-                                it.toString()
-                            }
-                        },
+                    text = stationState.formattedName,
                     style = GasGuruTheme.typography.h3,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
-                    modifier = Modifier.testTag("name-station")
+                    modifier = Modifier.testTag("name-station"),
+                    color = GasGuruTheme.colors.textMain
                 )
 
                 Row(
@@ -184,9 +175,9 @@ fun DetailStationContent(station: FuelStation, lastUpdate: Long, address: String
                     modifier = Modifier.wrapContentHeight()
                 ) {
                     Text(
-                        text = station.formatDistance(),
+                        text = stationState.formattedDistance,
                         style = GasGuruTheme.typography.baseRegular,
-                        color = TextSubtle,
+                        color = GasGuruTheme.colors.textSubtle,
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 1,
                         modifier = Modifier.testTag("distance")
@@ -194,12 +185,12 @@ fun DetailStationContent(station: FuelStation, lastUpdate: Long, address: String
                     Text(
                         text = " · ",
                         style = GasGuruTheme.typography.baseRegular,
-                        color = TextSubtle
+                        color = GasGuruTheme.colors.textSubtle
                     )
                     Text(
-                        text = isOpen,
+                        text = stationState.openCloseText,
                         style = GasGuruTheme.typography.baseRegular,
-                        color = if (station.isStationOpen()) Primary500 else AccentRed,
+                        color = stationState.colorStationOpen,
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 1
                     )
@@ -212,7 +203,7 @@ fun DetailStationContent(station: FuelStation, lastUpdate: Long, address: String
                     .clip(CircleShape)
                     .border(
                         width = 2.dp,
-                        color = Neutral300,
+                        color = GasGuruTheme.colors.neutral300,
                         shape = CircleShape
                     )
                     .constrainAs(image) {
@@ -222,7 +213,7 @@ fun DetailStationContent(station: FuelStation, lastUpdate: Long, address: String
                     }
             ) {
                 Image(
-                    painter = painterResource(id = station.brandStationBrandsType.toBrandStationIcon()),
+                    painter = painterResource(id = stationState.brandIcon),
                     contentDescription = "Fuel station brand",
                     modifier = Modifier
                         .fillMaxSize()
@@ -231,27 +222,31 @@ fun DetailStationContent(station: FuelStation, lastUpdate: Long, address: String
                 )
             }
         }
+
         Spacer(modifier = Modifier.height(24.dp))
-        FuelTypes(station = station, lastUpdate = lastUpdate)
+        FuelTypes(fuelItems = stationState.fuelItems, lastUpdate = lastUpdate)
         Spacer(modifier = Modifier.height(24.dp))
         InformationStation(
-            station = station,
+            stationState = stationState,
             address = address,
-            navigateToGoogleMaps = { startRoute(context = context, location = station.location) }
+            navigateToGoogleMaps = { startRoute(context = context, location = stationState.location) }
         )
     }
 }
 
 @Composable
-fun FuelTypes(station: FuelStation, lastUpdate: Long) {
+fun FuelTypes(
+    fuelItems: List<PriceItemModel>,
+    lastUpdate: Long
+) {
     Column(modifier = Modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text(
             text = stringResource(id = R.string.fuel_types),
             style = GasGuruTheme.typography.h5,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
+            color = GasGuruTheme.colors.textMain
         )
-        val fuelItems = station.getFuelPriceItems()
         val height = calculateHeight(fuelItems.size)
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
@@ -269,7 +264,8 @@ fun FuelTypes(station: FuelStation, lastUpdate: Long) {
             text = getTimeElapsedString(lastUpdate),
             style = GasGuruTheme.typography.captionRegular,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
+            color = GasGuruTheme.colors.textMain
         )
     }
 }
@@ -280,59 +276,65 @@ fun calculateHeight(size: Int): Dp {
 }
 
 @Composable
-fun InformationStation(station: FuelStation, address: String?, navigateToGoogleMaps: () -> Unit) {
-    Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+fun InformationStation(
+    stationState: DetailStationState,
+    address: String?,
+    navigateToGoogleMaps: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
         Text(
             text = stringResource(id = R.string.station_detail),
+            color = GasGuruTheme.colors.neutralBlack,
             style = GasGuruTheme.typography.h5,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-        val textOpenClose = if (station.isStationOpen()) {
-            stringResource(
-                id = R.string.open
-            )
-        } else {
-            stringResource(id = R.string.close)
-        }
 
         InformationCard(
             model = InformationCardModel(
                 title = stringResource(id = R.string.schedule),
-                subtitle = textOpenClose,
-                description = formatSchedule(station.schedule),
+                subtitle = stationState.openCloseText,
+                description = formatSchedule(stationState.schedule),
                 type = InformationCardModel.InformationCardType.EXPANDABLE,
-                subtitleColor = if (station.isStationOpen()) Primary500 else AccentRed
+                subtitleColor = stationState.colorStationOpen
             )
         )
         InformationCard(
             model = InformationCardModel(
                 title = stringResource(id = R.string.direction),
-                subtitle = address ?: station.formatDirection(),
+                subtitle = address ?: stationState.formattedDirection,
                 icon = com.gasguru.core.uikit.R.drawable.ic_direction,
                 onClick = navigateToGoogleMaps,
-                type = InformationCardModel.InformationCardType.NONE
+                type = InformationCardModel.InformationCardType.NONE,
+                subtitleColor = GasGuruTheme.colors.textMain
             )
         )
     }
 }
 
 @Composable
-fun HeaderStation(station: FuelStation, onBack: () -> Unit, onFavoriteClick: (Boolean) -> Unit) {
-    val staticMapUrl = generateStaticMapUrl(
-        location = station.location,
-        zoom = 17,
-        width = 400,
-        height = 240,
-        apiKey = BuildConfig.googleApiKey
-    )
+fun HeaderStation(
+    stationState: DetailStationState,
+    staticMapUrl: String?,
+    onBack: () -> Unit,
+    onEvent: (DetailStationEvent) -> Unit
+) {
     Box(modifier = Modifier.fillMaxWidth()) {
         AsyncImage(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(240.dp)
-                .background(Color.Gray),
-            model = staticMapUrl,
+                .background(GasGuruTheme.colors.neutral300),
+            model = coil.request.ImageRequest.Builder(LocalContext.current)
+                .data(staticMapUrl)
+                .crossfade(300)
+                .memoryCacheKey("map_${stationState.idServiceStation}")
+                .diskCacheKey("map_${stationState.idServiceStation}")
+                .build(),
             contentDescription = "Detail station map",
             contentScale = ContentScale.FillBounds
         )
@@ -343,12 +345,12 @@ fun HeaderStation(station: FuelStation, onBack: () -> Unit, onFavoriteClick: (Bo
                 .padding(start = 16.dp)
                 .clip(CircleShape),
             onClick = onBack,
-            colors = IconButtonDefaults.iconButtonColors(containerColor = Color.White)
+            colors = IconButtonDefaults.iconButtonColors(containerColor = GasGuruTheme.colors.neutralWhite)
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Default.ArrowBack,
                 contentDescription = "Back to map",
-                tint = Color.Black,
+                tint = GasGuruTheme.colors.neutralBlack,
             )
         }
         IconButton(
@@ -358,37 +360,41 @@ fun HeaderStation(station: FuelStation, onBack: () -> Unit, onFavoriteClick: (Bo
                 .padding(end = 16.dp)
                 .clip(CircleShape)
                 .testTag("button_favorite"),
-            onClick = { onFavoriteClick(!station.isFavorite) },
-            colors = IconButtonDefaults.iconButtonColors(containerColor = Color.White)
+            onClick = { onEvent(DetailStationEvent.ToggleFavorite(!stationState.isFavorite)) },
+            colors = IconButtonDefaults.iconButtonColors(containerColor = GasGuruTheme.colors.neutralWhite)
         ) {
+            val accentRed = GasGuruTheme.colors.accentRed
+            val black = GasGuruTheme.colors.neutralBlack
             Icon(
                 modifier = Modifier
                     .testTag("icon_favorite")
                     .semantics {
-                        iconTint = if (station.isFavorite) AccentRed else Color.Black
+                        iconTint = if (stationState.isFavorite) accentRed else black
                     },
-                imageVector = if (station.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                imageVector = if (stationState.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                 contentDescription = "Favorite icon",
-                tint = if (station.isFavorite) AccentRed else Color.Black,
+                tint = if (stationState.isFavorite) accentRed else black,
             )
         }
     }
 }
 
-@Preview(showBackground = true)
 @Composable
+@ThemePreviews
 private fun DetailStationPreview() {
     MyApplicationTheme {
         DetailStationScreen(
             uiState = DetailStationUiState.Success(
-                previewFuelStationDomain().copy(
+                stationModel = previewFuelStationDomain().copy(
                     isFavorite = true,
                     schedule = "L-V: 06:00-22:00; S: 07:00-22:00; D: 08:00-22:00",
                     brandStationBrandsType = FuelStationBrandsType.AZUL_OIL
-                ),
+                ).toUiModel(),
                 address = null
             ),
-            lastUpdate = 0
+            staticMapUrl = null,
+            lastUpdate = 0,
+            onEvent = {}
         )
     }
 }

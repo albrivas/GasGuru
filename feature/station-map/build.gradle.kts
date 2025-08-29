@@ -2,15 +2,12 @@ plugins {
     alias(libs.plugins.gasguru.android.library)
     alias(libs.plugins.gasguru.hilt)
     alias(libs.plugins.gasguru.compose.library)
-    alias(libs.plugins.secrets)
+    alias(libs.plugins.gasguru.secrets.google)
+    alias(libs.plugins.gasguru.proguard)
 }
 
 android {
     namespace = "com.gasguru.feature.station_map"
-
-    buildFeatures {
-        buildConfig = true
-    }
 }
 
 dependencies {
@@ -19,11 +16,13 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.uikit)
     implementation(projects.core.common)
-    
+    implementation(projects.core.components)
+    implementation(projects.navigation)
+
     implementation(libs.kotlin.coroutines.play)
     implementation(libs.maps.compose)
     implementation(libs.play.services.maps)
-    implementation(libs.places)
+    implementation(libs.maps.utils)
 
     androidTestImplementation(projects.core.testing)
     androidTestImplementation(projects.core.testing)
