@@ -9,5 +9,6 @@ data class FilterableStationListModel(
     val onTabChange: (Int) -> Unit,
     val onStationClick: (Int) -> Unit,
     val swipeConfig: StationListSwipeModel? = null,
-    val testTag: String? = null
+    val testTag: String? = null,
+    val tabNames: List<String> = emptyList()
 )

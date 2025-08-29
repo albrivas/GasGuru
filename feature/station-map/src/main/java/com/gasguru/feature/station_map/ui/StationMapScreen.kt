@@ -218,7 +218,11 @@ internal fun StationMapScreen(
                         onTabChange = { event(StationMapEvent.ChangeTab(selected = it)) },
                         onStationClick = navigateToDetail,
                         swipeConfig = null,
-                        testTag = "map_station_list"
+                        testTag = "map_station_list",
+                        tabNames = listOf(
+                            stringResource(com.gasguru.core.uikit.R.string.tab_price),
+                            stringResource(com.gasguru.core.uikit.R.string.tab_distance)
+                        )
                     )
                 )
             }

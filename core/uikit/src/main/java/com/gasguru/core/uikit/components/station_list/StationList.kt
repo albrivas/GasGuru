@@ -43,7 +43,9 @@ fun StationList(
         ) { index, item ->
             val stationItem = @Composable {
                 FuelStationItem(
-                    modifier = Modifier.testTag("item $index"),
+                    modifier = Modifier
+                        .testTag("item $index")
+                        .animateItem(),
                     model = FuelStationItemModel(
                         idServiceStation = item.idServiceStation,
                         icon = item.icon,

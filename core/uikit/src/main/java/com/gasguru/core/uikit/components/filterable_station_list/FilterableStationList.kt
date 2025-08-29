@@ -26,7 +26,7 @@ fun FilterableStationList(
         HeaderSegmentedTabs(
             modifier = Modifier.fillMaxWidth(),
             model = HeaderSegmentedTabsModel(
-                tabs = listOf("Price", "Distance"),
+                tabs = model.tabNames,
                 selectedTab = model.selectedTab,
                 onSelectedTab = model.onTabChange
             )

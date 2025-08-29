@@ -167,7 +167,11 @@ fun ListFuelStations(
                     backgroundColor = GasGuruTheme.colors.red500,
                     onSwipe = { event(FavoriteStationEvent.RemoveFavoriteStation(it)) }
                 ),
-                testTag = "favorite_list"
+                testTag = "favorite_list",
+                tabNames = listOf(
+                    stringResource(com.gasguru.core.uikit.R.string.tab_price),
+                    stringResource(com.gasguru.core.uikit.R.string.tab_distance)
+                )
             ),
             modifier = modifier
         )
