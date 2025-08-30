@@ -10,14 +10,17 @@ import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.ui.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,9 +33,13 @@ class FavoriteListStationViewModel @Inject constructor(
     private val removeFavoriteStationUseCase: RemoveFavoriteStationUseCase,
 ) : ViewModel() {
 
+    private val _tabState = MutableStateFlow(SelectedTabUiState())
+    val tabState = _tabState.asStateFlow()
+
     fun handleEvents(event: FavoriteStationEvent) {
         when (event) {
-            is FavoriteStationEvent.RemoveFavoriteStation -> removeFavoriteStation(event.idStation)
+            is FavoriteStationEvent.RemoveFavoriteStation -> removeFavoriteStation(idStation = event.idStation)
+            is FavoriteStationEvent.ChangeTab -> changeTab(position = event.selected)
         }
     }
 
@@ -49,13 +56,20 @@ class FavoriteListStationViewModel @Inject constructor(
                     .flatMapLatest { location ->
                         combine(
                             getFavoriteStationsUseCase(userLocation = location),
-                            getUserDataUseCase()
-                        ) { stations, userData ->
+                            getUserDataUseCase(),
+                            _tabState,
+                        ) { stations, userData, tabState ->
                             if (stations.favoriteStations.isEmpty()) {
                                 FavoriteStationListUiState.EmptyFavorites
                             } else {
+                                val listUiModel = stations.favoriteStations.map { it.toUiModel() }
+                                val sortedStations = when (tabState.selectedTab) {
+                                    0 -> listUiModel.sortedBy { userData.fuelSelection.extractPrice(it.fuelStation) }
+                                    1 -> listUiModel.sortedBy { it.formattedDistance }
+                                    else -> listUiModel
+                                }
                                 FavoriteStationListUiState.Favorites(
-                                    favoriteStations = stations.favoriteStations.map { it.toUiModel() },
+                                    favoriteStations = sortedStations,
                                     userSelectedFuelType = userData.fuelSelection
                                 )
                             }
@@ -75,4 +89,6 @@ class FavoriteListStationViewModel @Inject constructor(
     private fun removeFavoriteStation(idStation: Int) = viewModelScope.launch {
         removeFavoriteStationUseCase.invoke(idStation)
     }
+
+    private fun changeTab(position: Int) = _tabState.update { it.copy(selectedTab = position) }
 }
