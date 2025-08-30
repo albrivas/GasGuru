@@ -13,6 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.theme.GasGuruTheme
+import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -27,13 +28,22 @@ fun HeaderSegmentedTabs(
         tabs.forEachIndexed { index, label ->
             SegmentedButton(
                 shape = SegmentedButtonDefaults.itemShape(index = index, count = tabs.size),
-                colors = SegmentedButtonDefaults.colors(activeContainerColor = GasGuruTheme.colors.primary200),
+                colors = SegmentedButtonDefaults.colors(
+                    activeContainerColor = GasGuruTheme.colors.primary700,
+                    inactiveContainerColor = GasGuruTheme.colors.neutralWhite
+                ),
                 onClick = {
                     selectedIndex = index
+                    onSelectedTab(index)
                 },
                 selected = index == selectedIndex,
+                icon = {}
             ) {
-                Text(label)
+                Text(
+                    text = label,
+                    color = GasGuruTheme.colors.textMain,
+                    style = GasGuruTheme.typography.baseRegular
+                )
             }
         }
     }
@@ -42,10 +52,12 @@ fun HeaderSegmentedTabs(
 @Composable
 @ThemePreviews
 private fun SegmentedButtonPreview() {
-    HeaderSegmentedTabs(
-        model = HeaderSegmentedTabsModel(
-            tabs = listOf("All", "Favorites"),
-            onSelectedTab = {}
+    MyApplicationTheme {
+        HeaderSegmentedTabs(
+            model = HeaderSegmentedTabsModel(
+                tabs = listOf("Price", "Distance"),
+                onSelectedTab = {}
+            )
         )
-    )
+    }
 }

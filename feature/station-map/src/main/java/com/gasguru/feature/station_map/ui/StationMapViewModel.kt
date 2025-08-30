@@ -52,6 +52,9 @@ class StationMapViewModel @Inject constructor(
     private val _state = MutableStateFlow(StationMapUiState())
     val state: StateFlow<StationMapUiState> = _state
 
+    private val _tabState = MutableStateFlow(SelectedTabUiState())
+    val tabState: StateFlow<SelectedTabUiState> = _tabState
+
     init {
         getStationByCurrentLocation()
     }
@@ -66,6 +69,7 @@ class StationMapViewModel @Inject constructor(
             is StationMapEvent.UpdateScheduleFilter -> updateFilterSchedule(event.schedule)
             is StationMapEvent.OnMapCentered -> markMapAsCentered()
             is StationMapEvent.StartRoute -> startRoute(event.originId, event.destinationId)
+            is StationMapEvent.ChangeTab -> changeTab(event.selected)
         }
     }
 
@@ -163,10 +167,11 @@ class StationMapViewModel @Inject constructor(
         viewModelScope.launch {
             combine(
                 filters,
-                getUserDataUseCase()
-            ) { filterState, userData ->
-                Pair(filterState, userData)
-            }.collectLatest { (filterState, userData) ->
+                getUserDataUseCase(),
+                _tabState
+            ) { filterState, userData, tabState ->
+                Triple(filterState, userData, tabState)
+            }.collectLatest { (filterState, userData, tabState) ->
                 fuelStationByLocation(
                     userLocation = location,
                     maxStations = filterState.filterStationsNearby,
@@ -179,9 +184,15 @@ class StationMapViewModel @Inject constructor(
                         fuelStations = fuelStations.map { it.location },
                         location = location
                     )
+                    val uiStations = fuelStations.map { station -> station.toUiModel() }
+                    val sortedStations = when (tabState.selectedTab) {
+                        0 -> uiStations.sortedBy { userData.fuelSelection.extractPrice(it.fuelStation) }
+                        1 -> uiStations.sortedBy { it.formattedDistance }
+                        else -> uiStations
+                    }
                     _state.update {
                         it.copy(
-                            fuelStations = fuelStations.map { station -> station.toUiModel() },
+                            fuelStations = sortedStations,
                             loading = false,
                             selectedType = userData.fuelSelection,
                             mapBounds = bounds,
@@ -243,6 +254,10 @@ class StationMapViewModel @Inject constructor(
         }
 
     private fun showListStation(show: Boolean) = _state.update { it.copy(showListStations = show) }
+
+    private fun changeTab(selectedTab: Int) {
+        _tabState.update { it.copy(selectedTab = selectedTab) }
+    }
 
     private fun Map<FilterType, Filter>.getBrandFilter() =
         this[FilterType.BRAND]?.selection ?: emptyList()
