@@ -16,3 +16,7 @@ data class StationMapUiState(
     val startRoute: Boolean = false,
     val route: Route? = null,
 )
+
+data class SelectedTabUiState(
+    val selectedTab: Int = 0,
+)
