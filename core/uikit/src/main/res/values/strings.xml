@@ -10,4 +10,6 @@
     <string name="search_list_empty_recent">No recent searches</string>
     <string name="search_list_empty_suggestions">No suggestions</string>
     <string name="search_list_clear_description">Clear recent searches</string>
+    <string name="tab_price">Price</string>
+    <string name="tab_distance">Distance</string>
 </resources>
