@@ -1,0 +1,52 @@
+# CLAUDE.md — GasGuru
+
+## Módulos y reglas
+- Permitido: `feature → core`, `app → features/core`
+- Prohibido: `feature ↔ feature`, `UI ↔ data sources directos`
+- Navegación: pasar IDs y cargar datos en ViewModel vía UseCases
+
+## Compose & Estado
+- VM expone: `UiState` sellada + `events`
+- Usar `collectAsStateWithLifecycle`, evitar `!!`
+- Componentes deben ser `@Stable` cuando aplique
+
+## Theming
+- Usar siempre `GasGuruColors` para Light y Dark
+- Prohibido hardcodear colores (usar solo desde el tema)
+- Mantener coherencia visual entre modos claro y oscuro
+
+## PR Checklist
+- [ ] No hay dependencias cruzadas entre features
+- [ ] Navegación pasa IDs, no objetos complejos ni modelos de red
+- [ ] Colores y estilos tomados de `GasGuruColors` y `GasGuruTheme`
+- [ ] Sin hardcode de strings (usar `stringResource`)
+- [ ] Código cumple reglas de módulos y arquitectura
+
+## Release Playbook
+
+### Crear release completo
+1. Asegúrate de tener `develop` actualizado (checkout + pull):
+   ```bash
+   git checkout develop && git pull
+   ```
+2. Crear rama `release/X.X.X` desde `main` (incrementar patch)
+3. Mergear `develop` manteniendo cambios de `develop` en conflictos
+4. Actualizar `versions.properties` (incrementar `versionCode` y `versionPatch`)
+5. Actualizar archivos whatsnew: remover primera línea y agregar nuevos cambios de esta release
+6. Commit: `chore: bump version from X.X.X to X.X.X` (sin referencias a Claude)
+7. Push de la rama y crear PR `Release - vX.X.X` con body vacío
+
+### Archivos clave
+- `versions.properties` (versionCode, versionPatch)
+- `distribution/whatsnew/whatsnew-en-US`
+- `distribution/whatsnew/whatsnew-es-ES`
+
+### Comandos
+```bash
+git checkout main && git pull
+git checkout -b release/X.X.X
+git merge develop --strategy-option=theirs
+git add . && git commit -m "chore: bump version from X.X.X to X.X.X"
+git push origin release/X.X.X -u
+gh pr create --base main --title "Release - vX.X.X" --body ""
+```
