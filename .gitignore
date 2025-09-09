@@ -227,5 +227,3 @@ core/database/schemas/
 .gitconfig
 sonar-project.properties
 
-# Anthorpic
-CLAUDE.md
