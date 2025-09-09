@@ -58,5 +58,4 @@ object StationRowComponent {
             .addText(stationModel.formattedDistance)
             .build()
     }
-
 }
