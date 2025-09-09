@@ -1,30 +1,19 @@
 package com.gasguru.auto.ui.favoritestation
 
-import android.content.Intent
 import androidx.car.app.CarContext
 import androidx.car.app.Screen
 import androidx.car.app.model.Action
-import androidx.car.app.model.CarColor
-import androidx.car.app.model.CarLocation
 import androidx.car.app.model.ItemList
-import androidx.car.app.model.Metadata
-import androidx.car.app.model.Place
 import androidx.car.app.model.PlaceListMapTemplate
-import androidx.car.app.model.PlaceMarker
-import androidx.car.app.model.Row
 import androidx.car.app.model.Template
-import androidx.compose.ui.graphics.toArgb
-import androidx.core.net.toUri
 import com.gasguru.auto.common.getAutomotiveThemeColor
 import com.gasguru.auto.di.CarScreenEntryPoint
+import com.gasguru.auto.navigation.StationNavigationHelper
+import com.gasguru.auto.ui.component.StationRowComponent
 import com.gasguru.core.domain.fuelstation.GetFavoriteStationsUseCase
 import com.gasguru.core.domain.location.GetCurrentLocationUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
-import com.gasguru.core.model.data.FuelType
-import com.gasguru.core.ui.getPrice
-import com.gasguru.core.ui.models.FuelStationUiModel
 import com.gasguru.core.ui.toUiModel
-import com.gasguru.core.uikit.theme.GasGuruColors
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -96,53 +85,6 @@ class FavoriteStationsScreen(carContext: CarContext) : Screen(carContext) {
         }
     }
 
-    private fun stationRow(stationModel: FuelStationUiModel, selectedFuel: FuelType?, theme: GasGuruColors): Row {
-        return Row.Builder()
-            .setTitle(
-                "${stationModel.formattedName} - ${
-                    selectedFuel?.getPrice(carContext, stationModel.fuelStation) ?: ""
-                }"
-            )
-            .setMetadata(
-                Metadata.Builder()
-                    .setPlace(
-                        Place.Builder(
-                            CarLocation.create(
-                                stationModel.fuelStation.location.latitude,
-                                stationModel.fuelStation.location.longitude
-                            )
-                        ).setMarker(
-                            PlaceMarker.Builder().setColor(
-                                CarColor.createCustom(
-                                    theme.neutralWhite.toArgb(),
-                                    theme.primary600.toArgb(),
-                                )
-                            ).build()
-                        )
-                            .build()
-                    ).build()
-            )
-            .setBrowsable(true)
-            .setOnClickListener {
-                navigateToStation(
-                    latitude = stationModel.fuelStation.location.latitude,
-                    longitude = stationModel.fuelStation.location.longitude
-                )
-            }
-            .addText(stationModel.formattedDirection)
-            .addText(stationModel.formattedDistance)
-            .build()
-    }
-
-    private fun navigateToStation(latitude: Double, longitude: Double) {
-        val intent = Intent().apply {
-            action = CarContext.ACTION_NAVIGATE
-            data = "geo:$latitude,$longitude".toUri()
-        }
-        carContext.startCarApp(intent)
-        screenManager.pop()
-    }
-
     override fun onGetTemplate(): Template {
         val builder = PlaceListMapTemplate
             .Builder()
@@ -157,7 +99,20 @@ class FavoriteStationsScreen(carContext: CarContext) : Screen(carContext) {
             val items = ItemList.Builder()
 
             uiState.stations.forEach { station ->
-                items.addItem(stationRow(station, uiState.selectedFuel, theme))
+                items.addItem(
+                    StationRowComponent.createStationRow(
+                        stationModel = station,
+                        selectedFuel = uiState.selectedFuel,
+                        theme = theme,
+                        carContext = carContext
+                    ) { lat, lng ->
+                        StationNavigationHelper.navigateToStationAndPopScreen(
+                            screen = this@FavoriteStationsScreen,
+                            latitude = lat,
+                            longitude = lng
+                        )
+                    }
+                )
             }
 
             builder.setItemList(items.build())
