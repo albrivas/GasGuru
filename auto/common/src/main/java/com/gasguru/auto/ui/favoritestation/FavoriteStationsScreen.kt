@@ -26,12 +26,12 @@ import com.gasguru.core.ui.models.FuelStationUiModel
 import com.gasguru.core.ui.toUiModel
 import com.gasguru.core.uikit.theme.GasGuruColors
 import dagger.hilt.android.EntryPointAccessors
-import com.gasguru.core.ui.R as CoreUiR
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
+import com.gasguru.core.ui.R as CoreUiR
 
 class FavoriteStationsScreen(carContext: CarContext) : Screen(carContext) {
 

@@ -27,12 +27,12 @@ import com.gasguru.core.ui.models.FuelStationUiModel
 import com.gasguru.core.ui.toUiModel
 import com.gasguru.core.uikit.theme.GasGuruColors
 import dagger.hilt.android.EntryPointAccessors
-import com.gasguru.core.ui.R as CoreUiR
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
+import com.gasguru.core.ui.R as CoreUiR
 
 class NearbyStationsScreen(carContext: CarContext) : Screen(carContext) {
 
@@ -62,7 +62,6 @@ class NearbyStationsScreen(carContext: CarContext) : Screen(carContext) {
             CarScreenEntryPoint::class.java
         ).getUserDataUseCase()
     }
-
 
     init {
         updateStationList()
@@ -151,9 +150,7 @@ class NearbyStationsScreen(carContext: CarContext) : Screen(carContext) {
         screenManager.pop()
     }
 
-
     override fun onGetTemplate(): Template {
-
         val builder = PlaceListMapTemplate
             .Builder()
             .setTitle(carContext.getString(CoreUiR.string.nearby_stations))

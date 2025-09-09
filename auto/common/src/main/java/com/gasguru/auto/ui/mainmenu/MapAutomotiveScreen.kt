@@ -10,8 +10,8 @@ import androidx.car.app.model.PlaceListMapTemplate
 import androidx.car.app.model.Row
 import androidx.car.app.model.Template
 import com.gasguru.auto.common.R
-import com.gasguru.auto.ui.nearbystation.NearbyStationsScreen
 import com.gasguru.auto.ui.favoritestation.FavoriteStationsScreen
+import com.gasguru.auto.ui.nearbystation.NearbyStationsScreen
 import com.gasguru.core.ui.R as CoreUiR
 
 class MapAutomotiveScreen(carContext: CarContext) : Screen(carContext) {
@@ -25,10 +25,9 @@ class MapAutomotiveScreen(carContext: CarContext) : Screen(carContext) {
         checkPermissions()
     }
 
-
     private fun createStationListOptions(): ItemList {
         val items = ItemList.Builder()
-        
+
         items.addItem(
             Row.Builder()
                 .setTitle(carContext.getString(CoreUiR.string.nearby_stations))
@@ -38,7 +37,7 @@ class MapAutomotiveScreen(carContext: CarContext) : Screen(carContext) {
                 }
                 .build()
         )
-        
+
         items.addItem(
             Row.Builder()
                 .setTitle(carContext.getString(CoreUiR.string.favorites))
@@ -48,10 +47,9 @@ class MapAutomotiveScreen(carContext: CarContext) : Screen(carContext) {
                 }
                 .build()
         )
-        
+
         return items.build()
     }
-
 
     private fun checkPermissions() {
         val hasLocationPermissions = carContext.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) ==
@@ -83,7 +81,6 @@ class MapAutomotiveScreen(carContext: CarContext) : Screen(carContext) {
             }
         }
     }
-
 
     override fun onGetTemplate(): Template {
         if (uiState.permissionDenied) {
@@ -127,7 +124,6 @@ class MapAutomotiveScreen(carContext: CarContext) : Screen(carContext) {
         if (hasLocationPermission) {
             builder.setCurrentLocationEnabled(true)
         }
-
 
         return builder.build()
     }
