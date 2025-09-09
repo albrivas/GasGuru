@@ -264,8 +264,7 @@ class StationMapViewModel @Inject constructor(
 
     private fun changeTab(selectedTab: Int) {
         _tabState.update { it.copy(selectedTab = selectedTab) }
-        
-        // Si estamos en modo ruta, reordenar las estaciones de la ruta
+
         val currentState = _state.value
         if (currentState.route != null && currentState.fuelStations.isNotEmpty()) {
             viewModelScope.launch {
