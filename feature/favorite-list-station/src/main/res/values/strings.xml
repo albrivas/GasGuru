@@ -7,5 +7,4 @@
     <string name="choice_favorite">Favorite</string>
     <string name="empty_favorites_title">Your favorites list is empty</string>
     <string name="empty_favorites_subtitle">Search and save the ones you use most to keep them always available</string>
-    <string name="favorites">Favorites</string>
 </resources>
