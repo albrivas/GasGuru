@@ -151,7 +151,7 @@ fun ListFuelStations(
     ) {
         Text(
             modifier = Modifier,
-            text = stringResource(id = R.string.favorites),
+            text = stringResource(id = com.gasguru.core.ui.R.string.favorites),
             style = GasGuruTheme.typography.h5,
             color = GasGuruTheme.colors.textMain
         )
