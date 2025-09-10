@@ -16,6 +16,8 @@ import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.model.data.Filter
 import com.gasguru.core.model.data.FilterType
 import com.gasguru.core.model.data.LatLng
+import com.gasguru.core.model.data.UserData
+import com.gasguru.core.ui.models.FuelStationUiModel
 import com.gasguru.core.ui.toUiModel
 import com.google.android.gms.maps.model.LatLngBounds
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -120,9 +122,17 @@ class StationMapViewModel @Inject constructor(
                                 origin = originLocation,
                                 destination = destinationLocation
                             )
+                            val userData = getUserDataUseCase().first()
+                            val tabState = _tabState.value
+                            val uiStations = routeFuelStations.map { station -> station.toUiModel() }
+                            val sortedStations = sortStationsByTab(
+                                stations = uiStations,
+                                selectedTab = tabState.selectedTab,
+                                userData = userData
+                            )
                             _state.update {
                                 it.copy(
-                                    fuelStations = routeFuelStations.map { station -> station.toUiModel() },
+                                    fuelStations = sortedStations,
                                     route = route,
                                     mapBounds = bounds,
                                     shouldCenterMap = true,
@@ -172,6 +182,7 @@ class StationMapViewModel @Inject constructor(
             ) { filterState, userData, tabState ->
                 Triple(filterState, userData, tabState)
             }.collectLatest { (filterState, userData, tabState) ->
+                if (_state.value.route != null) return@collectLatest
                 fuelStationByLocation(
                     userLocation = location,
                     maxStations = filterState.filterStationsNearby,
@@ -185,11 +196,7 @@ class StationMapViewModel @Inject constructor(
                         location = location
                     )
                     val uiStations = fuelStations.map { station -> station.toUiModel() }
-                    val sortedStations = when (tabState.selectedTab) {
-                        0 -> uiStations.sortedBy { userData.fuelSelection.extractPrice(it.fuelStation) }
-                        1 -> uiStations.sortedBy { it.formattedDistance }
-                        else -> uiStations
-                    }
+                    val sortedStations = sortStationsByTab(uiStations, tabState.selectedTab, userData)
                     _state.update {
                         it.copy(
                             fuelStations = sortedStations,
@@ -257,6 +264,25 @@ class StationMapViewModel @Inject constructor(
 
     private fun changeTab(selectedTab: Int) {
         _tabState.update { it.copy(selectedTab = selectedTab) }
+
+        val currentState = _state.value
+        if (currentState.route != null && currentState.fuelStations.isNotEmpty()) {
+            viewModelScope.launch {
+                val userData = getUserDataUseCase().first()
+                val sortedStations = sortStationsByTab(currentState.fuelStations, selectedTab, userData)
+                _state.update { it.copy(fuelStations = sortedStations) }
+            }
+        }
+    }
+
+    private fun sortStationsByTab(
+        stations: List<FuelStationUiModel>,
+        selectedTab: Int,
+        userData: UserData
+    ) = when (selectedTab) {
+        0 -> stations.sortedBy { userData.fuelSelection.extractPrice(it.fuelStation) }
+        1 -> stations.sortedBy { it.formattedDistance }
+        else -> stations
     }
 
     private fun Map<FilterType, Filter>.getBrandFilter() =
