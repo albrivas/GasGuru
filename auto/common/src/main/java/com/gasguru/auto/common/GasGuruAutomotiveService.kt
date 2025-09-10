@@ -5,7 +5,7 @@ import androidx.car.app.CarAppService
 import androidx.car.app.Screen
 import androidx.car.app.Session
 import androidx.car.app.validation.HostValidator
-import com.gasguru.auto.ui.MapAutomotiveScreen
+import com.gasguru.auto.ui.mainmenu.MapAutomotiveScreen
 
 class GasGuruAutomotiveService : CarAppService() {
     override fun createHostValidator(): HostValidator {

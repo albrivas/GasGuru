@@ -196,7 +196,7 @@ internal fun StationMapScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = stringResource(id = R.string.sheet_title),
+                        text = stringResource(id = com.gasguru.core.ui.R.string.nearby_stations),
                         style = GasGuruTheme.typography.baseBold,
                         color = GasGuruTheme.colors.textSubtle
                     )
