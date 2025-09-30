@@ -36,6 +36,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.components.GasGuruButton
+import com.gasguru.core.uikit.components.drag_handle.DragHandle
 import com.gasguru.core.uikit.components.icon.CircleIcon
 import com.gasguru.core.uikit.components.icon.CircleIconModel
 import com.gasguru.core.uikit.components.icon.FuelStationIcons
@@ -56,20 +57,7 @@ fun FilterSheet(model: FilterSheetModel, modifier: Modifier = Modifier) {
         contentColor = GasGuruTheme.colors.neutral100,
         shape = MaterialTheme.shapes.large,
         contentWindowInsets = { WindowInsets.navigationBars },
-        dragHandle = {
-            Surface(
-                modifier = Modifier.padding(vertical = 8.dp),
-                color = GasGuruTheme.colors.neutral700,
-                shape = MaterialTheme.shapes.extraLarge
-            ) {
-                Box(
-                    modifier = Modifier.size(
-                        width = 32.dp,
-                        height = 4.0.dp
-                    )
-                )
-            }
-        },
+        dragHandle = { DragHandle() },
         modifier = modifier.statusBarsPadding()
     ) {
         FilterSheetContent(model = model, onDismiss = {

@@ -66,6 +66,7 @@ import com.gasguru.core.ui.toStationListItems
 import com.gasguru.core.uikit.components.chip.FilterType
 import com.gasguru.core.uikit.components.chip.SelectableFilter
 import com.gasguru.core.uikit.components.chip.SelectableFilterModel
+import com.gasguru.core.uikit.components.drag_handle.DragHandle
 import com.gasguru.core.uikit.components.filter_sheet.FilterSheet
 import com.gasguru.core.uikit.components.filter_sheet.FilterSheetModel
 import com.gasguru.core.uikit.components.filter_sheet.FilterSheetType
@@ -166,20 +167,7 @@ internal fun StationMapScreen(
         sheetShadowElevation = 32.dp,
         sheetPeekHeight = if (isSearchActive) 0.dp else peekHeight,
         sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
-        sheetDragHandle = {
-            Surface(
-                modifier = Modifier.padding(vertical = 8.dp),
-                color = GasGuruTheme.colors.neutral700,
-                shape = MaterialTheme.shapes.extraLarge
-            ) {
-                Box(
-                    modifier = Modifier.size(
-                        width = 32.dp,
-                        height = 4.0.dp
-                    )
-                )
-            }
-        },
+        sheetDragHandle = { DragHandle() },
         sheetContent = {
             Column(
                 modifier = Modifier
