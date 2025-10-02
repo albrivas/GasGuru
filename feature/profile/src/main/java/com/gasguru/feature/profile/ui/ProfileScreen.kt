@@ -11,15 +11,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -41,6 +38,7 @@ import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.ui.models.FuelTypeUiModel
 import com.gasguru.core.ui.models.ThemeModeUi
 import com.gasguru.core.ui.toFuelType
+import com.gasguru.core.uikit.components.drag_handle.DragHandle
 import com.gasguru.core.uikit.components.filter_sheet.FilterSheet
 import com.gasguru.core.uikit.components.filter_sheet.FilterSheetModel
 import com.gasguru.core.uikit.components.filter_sheet.FilterSheetType
@@ -200,20 +198,7 @@ fun FuelSelectionSheet(
         modifier = Modifier
             .testTag("bottom_sheet_fuel"),
         onDismissRequest = onDismiss,
-        dragHandle = {
-            Surface(
-                modifier = Modifier.padding(vertical = 8.dp),
-                color = GasGuruTheme.colors.neutral700,
-                shape = MaterialTheme.shapes.extraLarge
-            ) {
-                Box(
-                    modifier = Modifier.size(
-                        width = 32.dp,
-                        height = 4.0.dp
-                    )
-                )
-            }
-        },
+        dragHandle = { DragHandle() },
         shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
         sheetState = sheetState,
         containerColor = GasGuruTheme.colors.neutral100,
