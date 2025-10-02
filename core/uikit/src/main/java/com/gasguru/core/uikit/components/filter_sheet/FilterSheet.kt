@@ -3,7 +3,6 @@ package com.gasguru.core.uikit.components.filter_sheet
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -23,7 +22,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -36,6 +34,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.components.GasGuruButton
+import com.gasguru.core.uikit.components.drag_handle.DragHandle
 import com.gasguru.core.uikit.components.icon.CircleIcon
 import com.gasguru.core.uikit.components.icon.CircleIconModel
 import com.gasguru.core.uikit.components.icon.FuelStationIcons
@@ -56,20 +55,7 @@ fun FilterSheet(model: FilterSheetModel, modifier: Modifier = Modifier) {
         contentColor = GasGuruTheme.colors.neutral100,
         shape = MaterialTheme.shapes.large,
         contentWindowInsets = { WindowInsets.navigationBars },
-        dragHandle = {
-            Surface(
-                modifier = Modifier.padding(vertical = 8.dp),
-                color = GasGuruTheme.colors.neutral700,
-                shape = MaterialTheme.shapes.extraLarge
-            ) {
-                Box(
-                    modifier = Modifier.size(
-                        width = 32.dp,
-                        height = 4.0.dp
-                    )
-                )
-            }
-        },
+        dragHandle = { DragHandle() },
         modifier = modifier.statusBarsPadding()
     ) {
         FilterSheetContent(model = model, onDismiss = {
