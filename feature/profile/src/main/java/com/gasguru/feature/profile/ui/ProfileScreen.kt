@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
@@ -25,7 +24,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -44,6 +42,8 @@ import com.gasguru.core.uikit.components.filter_sheet.FilterSheetModel
 import com.gasguru.core.uikit.components.filter_sheet.FilterSheetType
 import com.gasguru.core.uikit.components.fuel_list.FuelListSelection
 import com.gasguru.core.uikit.components.fuel_list.FuelListSelectionModel
+import com.gasguru.core.uikit.components.loading.GasGuruLoading
+import com.gasguru.core.uikit.components.loading.GasGuruLoadingModel
 import com.gasguru.core.uikit.components.settings.SettingItem
 import com.gasguru.core.uikit.components.settings.SettingItemModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
@@ -70,16 +70,13 @@ internal fun ProfileScreen(uiState: ProfileUiState, event: (ProfileEvents) -> Un
 
     when (uiState) {
         is ProfileUiState.Loading -> {
-            Box(
+            GasGuruLoading(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(GasGuruTheme.colors.neutralWhite)
                     .statusBarsPadding()
                     .testTag("loading"),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            }
+                model = GasGuruLoadingModel(color = GasGuruTheme.colors.primary800)
+            )
         }
 
         is ProfileUiState.Success -> {
@@ -114,10 +111,13 @@ private fun ProfileSheetHandler(
     onEvent: (ProfileEvents) -> Unit,
     content: ProfileContentUi,
     sheetState: SheetState,
-    scope: CoroutineScope
+    scope: CoroutineScope,
 ) {
     when (activeSheet) {
-        ProfileSheet.None -> { Unit }
+        ProfileSheet.None -> {
+            Unit
+        }
+
         ProfileSheet.Theme -> {
             ThemeModeSheet(
                 selectedTheme = content.themeUi,
@@ -129,6 +129,7 @@ private fun ProfileSheetHandler(
                 }
             )
         }
+
         ProfileSheet.Fuel -> {
             FuelSelectionSheet(
                 selectedFuel = content.fuelTranslation,
@@ -192,7 +193,7 @@ fun FuelSelectionSheet(
     selectedFuel: Int,
     onDismiss: () -> Unit,
     onFuelSelected: (Int) -> Unit,
-    sheetState: SheetState
+    sheetState: SheetState,
 ) {
     ModalBottomSheet(
         modifier = Modifier
@@ -236,7 +237,7 @@ fun ThemeModeSheet(
     selectedTheme: ThemeModeUi,
     allThemesUi: List<ThemeModeUi>,
     onDismiss: () -> Unit,
-    onThemeSelected: (ThemeModeUi) -> Unit
+    onThemeSelected: (ThemeModeUi) -> Unit,
 ) {
     val themeOptions = allThemesUi.map { stringResource(it.titleRes) }
     val selectedOption = stringResource(selectedTheme.titleRes)
@@ -277,7 +278,7 @@ fun VersionAppInfo(modifier: Modifier = Modifier) {
 @Composable
 @ThemePreviews
 private fun ProfileScreenPreview(
-    @PreviewParameter(ProfileContentUiPreviewParameterProvider::class) content: ProfileContentUi
+    @PreviewParameter(ProfileContentUiPreviewParameterProvider::class) content: ProfileContentUi,
 ) {
     MyApplicationTheme {
         ProfileScreen(
