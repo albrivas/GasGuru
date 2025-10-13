@@ -1,6 +1,4 @@
-- Enhanced Android Auto interface with new station screens
-- Optimized code structure reducing duplication by 46%
-- Added reusable components for better maintainability
-- Improved station list components and filters
+- New segmented filter component with improved user experience
+- Enhanced dialog components with drag handle functionality
 - Added price and distance filters for station lists
 - UI tweaks and stability updates
