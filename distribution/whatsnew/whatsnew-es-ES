@@ -1,6 +1,4 @@
-- Interfaz mejorada de Android Auto con nuevas pantallas de estaciones
-- Estructura de código optimizada reduciendo duplicación en 46%
-- Componentes reutilizables añadidos para mejor mantenimiento
 - Mejoras en componentes de lista de estaciones y filtros
 - Agregados filtros de precio y distancia para listas de estaciones
 - Ajustes en la interfaz y mejoras de estabilidad
+- Solucionados problemas de diseño y mejora general de la estabilidad
