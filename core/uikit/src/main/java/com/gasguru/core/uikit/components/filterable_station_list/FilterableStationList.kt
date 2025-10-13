@@ -7,8 +7,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.gasguru.core.uikit.components.segmented.HeaderSegmentedTabs
-import com.gasguru.core.uikit.components.segmented.HeaderSegmentedTabsModel
+import com.gasguru.core.uikit.components.segmented.HeaderFilterTabs
+import com.gasguru.core.uikit.components.segmented.HeaderFilterTabsModel
 import com.gasguru.core.uikit.components.station_list.StationList
 
 @Composable
@@ -23,9 +23,9 @@ fun FilterableStationList(
             .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        HeaderSegmentedTabs(
+        HeaderFilterTabs(
             modifier = Modifier.fillMaxWidth(),
-            model = HeaderSegmentedTabsModel(
+            model = HeaderFilterTabsModel(
                 tabs = model.tabNames,
                 selectedTab = model.selectedTab,
                 onSelectedTab = model.onTabChange
