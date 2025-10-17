@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -22,9 +21,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Directions
 import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
@@ -186,16 +187,18 @@ internal fun StationMapScreen(
                         style = GasGuruTheme.typography.baseBold,
                         color = GasGuruTheme.colors.textSubtle
                     )
-                    Text(
-                        modifier = Modifier.clickable {
-                            coroutine.launch {
-                                scaffoldState.bottomSheetState.expand()
-                            }
-                        },
-                        text = stringResource(id = R.string.sheet_button),
-                        style = GasGuruTheme.typography.baseRegular,
-                        color = GasGuruTheme.colors.primary600
-                    )
+                    if (!isSheetExpanded(scaffoldState)) {
+                        Text(
+                            modifier = Modifier.clickable {
+                                coroutine.launch {
+                                    scaffoldState.bottomSheetState.expand()
+                                }
+                            },
+                            text = stringResource(id = R.string.sheet_button),
+                            style = GasGuruTheme.typography.baseRegular,
+                            color = GasGuruTheme.colors.primary600
+                        )
+                    }
                 }
                 FilterableStationList(
                     model = FilterableStationListModel(
@@ -261,6 +264,11 @@ internal fun StationMapScreen(
         }
     )
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun isSheetExpanded(state: BottomSheetScaffoldState): Boolean =
+    state.bottomSheetState.currentValue == SheetValue.PartiallyExpanded
 
 @Composable
 fun MapView(
