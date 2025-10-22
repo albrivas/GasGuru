@@ -262,7 +262,7 @@ class StationMapViewModel @Inject constructor(
 
     private fun showListStation(show: Boolean) = _state.update { it.copy(showListStations = show) }
 
-    private fun changeTab(selectedTab: Int) {
+    private fun changeTab(selectedTab: StationSortTab) {
         _tabState.update { it.copy(selectedTab = selectedTab) }
 
         val currentState = _state.value
@@ -277,12 +277,11 @@ class StationMapViewModel @Inject constructor(
 
     private fun sortStationsByTab(
         stations: List<FuelStationUiModel>,
-        selectedTab: Int,
+        selectedTab: StationSortTab,
         userData: UserData
     ) = when (selectedTab) {
-        0 -> stations.sortedBy { userData.fuelSelection.extractPrice(it.fuelStation) }
-        1 -> stations.sortedBy { it.formattedDistance }
-        else -> stations
+        StationSortTab.PRICE -> stations.sortedBy { userData.fuelSelection.extractPrice(it.fuelStation) }
+        StationSortTab.DISTANCE -> stations.sortedBy { it.fuelStation.distance }
     }
 
     private fun Map<FilterType, Filter>.getBrandFilter() =

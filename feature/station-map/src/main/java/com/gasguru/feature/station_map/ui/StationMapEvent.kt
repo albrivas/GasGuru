@@ -9,5 +9,5 @@ sealed class StationMapEvent {
     data class UpdateScheduleFilter(val schedule: FilterUiState.OpeningHours) : StationMapEvent()
     data object OnMapCentered : StationMapEvent()
     data class StartRoute(val originId: String?, val destinationId: String?) : StationMapEvent()
-    data class ChangeTab(val selected: Int) : StationMapEvent()
+    data class ChangeTab(val selected: StationSortTab) : StationMapEvent()
 }
