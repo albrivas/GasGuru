@@ -53,16 +53,11 @@
 ## Release Playbook
 
 ### Crear release completo
-1. Asegúrate de tener `develop` actualizado:
+1. Asegúrate de tener `develop` actualizado (checkout + pull):
    ```bash
    git checkout develop && git pull
    ```
-2. **IMPORTANTE**: Verificar versión actual en `main` y crear release:
-   ```bash
-   git checkout main && git pull
-   cat versions.properties  
-   git checkout -b release/X.X.X  
-   ```
+2. Crear rama `release/X.X.X` desde `main` (incrementar patch)
 3. Mergear `develop` manteniendo cambios de `develop` en conflictos
 4. Actualizar `versions.properties` (incrementar `versionCode` y `versionPatch`)
 5. Actualizar archivos whatsnew: remover primera línea y agregar nuevos cambios de esta release
@@ -77,11 +72,9 @@
 - `distribution/whatsnew/whatsnew-en-US`
 - `distribution/whatsnew/whatsnew-es-ES`
 
-### Comandos resumidos
+### Comandos
 ```bash
-git checkout develop && git pull
 git checkout main && git pull
-cat versions.properties  
 git checkout -b release/X.X.X
 git merge develop --strategy-option=theirs
 git add . && git commit -m "chore: bump version from X.X.X to X.X.X"

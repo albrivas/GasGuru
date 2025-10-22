@@ -18,5 +18,15 @@ data class StationMapUiState(
 )
 
 data class SelectedTabUiState(
-    val selectedTab: Int = 0,
+    val selectedTab: StationSortTab = StationSortTab.PRICE,
 )
+
+enum class StationSortTab(val value: Int) {
+    PRICE(0),
+    DISTANCE(1);
+
+    companion object {
+        fun fromValue(value: Int): StationSortTab =
+            entries.find { it.value == value } ?: PRICE
+    }
+}
