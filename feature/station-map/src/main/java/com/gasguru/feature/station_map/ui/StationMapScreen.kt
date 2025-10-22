@@ -178,7 +178,7 @@ internal fun StationMapScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 17.dp),
+                        .padding(bottom = 8.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -187,7 +187,7 @@ internal fun StationMapScreen(
                         style = GasGuruTheme.typography.baseBold,
                         color = GasGuruTheme.colors.textSubtle
                     )
-                    if (!isSheetExpanded(scaffoldState)) {
+                    if (isSheetPartiallyExpanded(scaffoldState)) {
                         Text(
                             modifier = Modifier.clickable {
                                 coroutine.launch {
@@ -267,7 +267,7 @@ internal fun StationMapScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun isSheetExpanded(state: BottomSheetScaffoldState): Boolean =
+private fun isSheetPartiallyExpanded(state: BottomSheetScaffoldState): Boolean =
     state.bottomSheetState.currentValue == SheetValue.PartiallyExpanded
 
 @Composable
