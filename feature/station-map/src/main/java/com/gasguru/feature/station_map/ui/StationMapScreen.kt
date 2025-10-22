@@ -203,8 +203,16 @@ internal fun StationMapScreen(
                 FilterableStationList(
                     model = FilterableStationListModel(
                         stations = fuelStations.toStationListItems(selectedType ?: return@Column),
-                        selectedTab = tabState.selectedTab,
-                        onTabChange = { event(StationMapEvent.ChangeTab(selected = it)) },
+                        selectedTab = tabState.selectedTab.value,
+                        onTabChange = { selectedTab ->
+                            event(
+                                StationMapEvent.ChangeTab(
+                                    selected = StationSortTab.fromValue(
+                                        selectedTab
+                                    )
+                                )
+                            )
+                        },
                         onStationClick = navigateToDetail,
                         swipeConfig = null,
                         testTag = "map_station_list",
@@ -277,8 +285,8 @@ fun MapView(
     userSelectedFuelType: FuelType?,
     loading: Boolean,
     route: Route?,
-    navigateToDetail: (Int) -> Unit = {},
     modifier: Modifier = Modifier,
+    navigateToDetail: (Int) -> Unit = {},
 ) {
     val context = LocalContext.current
     var selectedLocation by remember { mutableStateOf<Int?>(null) }
