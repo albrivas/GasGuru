@@ -397,10 +397,12 @@ private fun startRoute(context: Context, location: Location) {
 
     val intents = mutableListOf<Intent>()
 
-    intents.add(Intent(Intent.ACTION_VIEW).apply {
-        data = "google.navigation:q=$lat,$lng".toUri()
-        setPackage("com.google.android.apps.maps")
-    })
+    intents.add(
+        Intent(Intent.ACTION_VIEW).apply {
+            data = "google.navigation:q=$lat,$lng".toUri()
+            setPackage("com.google.android.apps.maps")
+        }
+    )
 
     val wazeIntent = Intent(Intent.ACTION_VIEW).apply {
         data = "waze://?ll=$lat,$lng&navigate=yes".toUri()
