@@ -1,5 +1,9 @@
 package com.gasguru.feature.detail_station.ui
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
+import android.location.Location
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -46,10 +50,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import com.gasguru.core.common.startRoute
 import com.gasguru.core.model.data.FuelStationBrandsType
 import com.gasguru.core.model.data.previewFuelStationDomain
 import com.gasguru.core.ui.iconTint
@@ -97,6 +101,7 @@ internal fun DetailStationScreen(
         DetailStationUiState.Error -> {
             // Handle error state
         }
+
         DetailStationUiState.Loading -> {
             GasGuruLoading(
                 modifier = Modifier
@@ -105,6 +110,7 @@ internal fun DetailStationScreen(
                 model = GasGuruLoadingModel(color = GasGuruTheme.colors.primary800)
             )
         }
+
         is DetailStationUiState.Success -> {
             val stationState = rememberDetailStationState(uiState.stationModel)
 
@@ -229,7 +235,12 @@ fun DetailStationContent(
         InformationStation(
             stationState = stationState,
             address = address,
-            navigateToGoogleMaps = { startRoute(context = context, location = stationState.location) }
+            navigateToGoogleMaps = {
+                startRoute(
+                    context = context,
+                    location = stationState.location
+                )
+            }
         )
     }
 }
@@ -237,7 +248,7 @@ fun DetailStationContent(
 @Composable
 fun FuelTypes(
     fuelItems: List<PriceItemModel>,
-    lastUpdate: Long
+    lastUpdate: Long,
 ) {
     Column(modifier = Modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text(
@@ -321,7 +332,7 @@ fun HeaderStation(
     stationState: DetailStationState,
     staticMapUrl: String?,
     onBack: () -> Unit,
-    onEvent: (DetailStationEvent) -> Unit
+    onEvent: (DetailStationEvent) -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxWidth()) {
         AsyncImage(
@@ -377,6 +388,38 @@ fun HeaderStation(
             )
         }
     }
+}
+
+@SuppressLint("QueryPermissionsNeeded")
+private fun startRoute(context: Context, location: Location) {
+    val lat = location.latitude
+    val lng = location.longitude
+
+    val intents = mutableListOf<Intent>()
+
+    intents.add(
+        Intent(Intent.ACTION_VIEW).apply {
+            data = "google.navigation:q=$lat,$lng".toUri()
+            setPackage("com.google.android.apps.maps")
+        }
+    )
+
+    val wazeIntent = Intent(Intent.ACTION_VIEW).apply {
+        data = "waze://?ll=$lat,$lng&navigate=yes".toUri()
+        setPackage("com.waze")
+    }
+    if (wazeIntent.resolveActivity(context.packageManager) != null) {
+        intents.add(wazeIntent)
+    }
+
+    val chooserIntent =
+        Intent.createChooser(
+            intents.removeAt(0),
+            context.getString(R.string.navigate_with)
+        ).apply {
+            putExtra(Intent.EXTRA_INITIAL_INTENTS, intents.toTypedArray())
+        }
+    context.startActivity(chooserIntent)
 }
 
 @Composable

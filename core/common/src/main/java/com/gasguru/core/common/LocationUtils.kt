@@ -2,12 +2,10 @@ package com.gasguru.core.common
 
 import android.Manifest
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.location.Location
 import android.location.LocationManager
-import android.net.Uri
 import androidx.core.content.ContextCompat
 import com.gasguru.core.model.data.LatLng
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -52,15 +50,4 @@ fun Context.isLocationEnabled(): Boolean {
     val locationManager = getSystemService(Context.LOCATION_SERVICE) as? LocationManager
     return locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER) == true ||
         locationManager?.isProviderEnabled(LocationManager.NETWORK_PROVIDER) == true
-}
-
-fun startRoute(context: Context, location: Location) {
-    val intent = Intent(Intent.ACTION_VIEW).apply {
-        data = Uri.parse(
-            "https://www.google.com/maps/dir/?api=1" +
-                "&destination=${location.latitude},${location.longitude}" +
-                "&mode=driving"
-        )
-    }
-    context.startActivity(intent, null)
 }
