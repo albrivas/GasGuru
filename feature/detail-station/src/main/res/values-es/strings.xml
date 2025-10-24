@@ -25,4 +25,5 @@
     <string name="update_day_ago">Actualizado hace 1 día</string>
     <string name="update_days_ago">Actualizado hace %d días</string>
     <string name="update_long_ago">Actualizado hace mucho tiempo</string>
+    <string name="navigate_with">Navegar con:</string>
 </resources>
