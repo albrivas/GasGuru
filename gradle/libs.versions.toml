@@ -52,6 +52,8 @@ androidTools = "31.7.3"
 androidxCarApp = "1.7.0"
 onesignal = "5.1.35"
 mixpanel = "7.+"
+supabase = "3.2.5"
+ktor = "3.3.1"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
@@ -121,6 +123,9 @@ androidx-car-app = { module = "androidx.car.app:app", version.ref = "androidxCar
 androidx-auto = { module = "androidx.car.app:app-projected", version.ref = "androidxCarApp" }
 onesignal = { module = "com.onesignal:OneSignal", version.ref = "onesignal" }
 mixpanel = { module = "com.mixpanel.android:mixpanel-android", version.ref = "mixpanel" }
+supabase-bom = { module = "io.github.jan-tennert.supabase:bom", version.ref = "supabase" }
+supabase-postgrest = { module = "io.github.jan-tennert.supabase:postgrest-kt" }
+ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
 
 
 # Dependencies of the included build-logic

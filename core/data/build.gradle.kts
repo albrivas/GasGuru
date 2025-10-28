@@ -14,6 +14,7 @@ dependencies {
     implementation(projects.core.network)
     implementation(projects.core.model)
     implementation(projects.core.common)
+    implementation(projects.core.supabase)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlin.coroutines.play)
     implementation(libs.io.arrow.kt.arrow.core)
