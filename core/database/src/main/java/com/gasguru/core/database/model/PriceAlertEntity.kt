@@ -7,5 +7,6 @@ import androidx.room.PrimaryKey
 data class PriceAlertEntity(
     @PrimaryKey
     val stationId: Int,
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = System.currentTimeMillis(),
+    val isSynced: Boolean = false
 )
