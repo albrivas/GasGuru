@@ -26,7 +26,7 @@ class SupabaseManagerImpl @Inject constructor(
             .from(TABLE_ALERTS)
             .delete {
                 filter {
-                    eq("stationId", stationId)
+                    eq(column = "stationId", value = stationId)
                 }
             }
     }

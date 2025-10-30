@@ -88,3 +88,6 @@ gh pr create --base main --title "Release - vX.X.X" --body ""
    ```
    Sync - Actualizar develop con main
    ```
+
+- Siempre que añadas dependencias deben ir en el libs.versions.toml y luego referenciarlas en los build.gradle que necesiten esas depdencias. Lo mismo para los plugins. Todas las dependencias se centralizan en lisb.versions.toml
+- Usar trailling comma siempre que se pueda
