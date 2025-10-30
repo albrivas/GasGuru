@@ -1,16 +1,22 @@
 package com.gasguru
 
 import android.app.Application
+import com.gasguru.core.data.sync.SyncManager
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.onesignal.OneSignal
 import com.onesignal.debug.LogLevel
 import dagger.hilt.android.HiltAndroidApp
+import javax.inject.Inject
 
 @HiltAndroidApp
 class GasGuruApplication : Application() {
 
+    @Inject
+    lateinit var syncManager: SyncManager
+
     override fun onCreate() {
         super.onCreate()
+        syncManager.execute()
         oneSignalSetUp()
         mixpanelSetUp()
     }
