@@ -13,6 +13,7 @@ const val DB_VERSION_8 = 8
 const val DB_VERSION_9 = 9
 const val DB_VERSION_10 = 10
 const val DB_VERSION_11 = 11
+const val DB_VERSION_12 = 12
 
 internal val MIGRATION_2_3 = object : Migration(DB_VERSION_2, DB_VERSION_3) {
     override fun migrate(db: SupportSQLiteDatabase) {
@@ -101,5 +102,20 @@ internal val MIGRATION_10_11 = object : Migration(DB_VERSION_10, DB_VERSION_11) 
 
         // 3. Drop obsolete cross-reference table
         db.execSQL("DROP TABLE IF EXISTS `favorite_station_cross_ref`")
+    }
+}
+
+internal val MIGRATION_11_12 = object : Migration(DB_VERSION_11, DB_VERSION_12) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `price_alerts` (
+                `stationId` INTEGER NOT NULL,
+                `createdAt` INTEGER NOT NULL,
+                `isSynced` INTEGER NOT NULL,
+                PRIMARY KEY(`stationId`)
+            )
+            """.trimIndent()
+        )
     }
 }
