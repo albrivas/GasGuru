@@ -8,17 +8,29 @@ import javax.inject.Inject
 
 
 class SupabaseManagerImpl @Inject constructor(
-    private val supabaseClient: SupabaseClient
+    private val supabaseClient: SupabaseClient,
 ) : SupabaseManager {
 
     companion object {
         private const val TABLE_ALERTS = "user_stations_alerts"
     }
 
-    override suspend fun addPriceAlert(stationId: Int) {
+    override suspend fun addPriceAlert(
+        stationId: Int,
+        onesignalPlayerId: String,
+        fuelType: String,
+        lastNotifiedPrice: Double,
+    ) {
         supabaseClient
             .from(TABLE_ALERTS)
-            .insert(PriceAlertSupabase(stationId = stationId))
+            .insert(
+                PriceAlertSupabase(
+                    stationId = stationId,
+                    onesignalPlayerId = onesignalPlayerId,
+                    fuelType = fuelType,
+                    lastNotifiedPrice = lastNotifiedPrice,
+                )
+            )
     }
 
     override suspend fun removePriceAlert(stationId: Int) {
@@ -26,7 +38,7 @@ class SupabaseManagerImpl @Inject constructor(
             .from(TABLE_ALERTS)
             .delete {
                 filter {
-                    eq(column = "stationId", value = stationId)
+                    eq(column = "id_service_station", value = stationId)
                 }
             }
     }
