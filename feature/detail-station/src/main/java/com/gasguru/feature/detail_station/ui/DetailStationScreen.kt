@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -29,6 +30,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -364,28 +367,53 @@ fun HeaderStation(
                 tint = GasGuruTheme.colors.neutralBlack,
             )
         }
-        IconButton(
+        Row(
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .statusBarsPadding()
                 .padding(end = 16.dp)
-                .clip(CircleShape)
-                .testTag("button_favorite"),
-            onClick = { onEvent(DetailStationEvent.ToggleFavorite(!stationState.isFavorite)) },
-            colors = IconButtonDefaults.iconButtonColors(containerColor = GasGuruTheme.colors.neutralWhite)
         ) {
-            val accentRed = GasGuruTheme.colors.accentRed
-            val black = GasGuruTheme.colors.neutralBlack
-            Icon(
+            IconButton(
                 modifier = Modifier
-                    .testTag("icon_favorite")
-                    .semantics {
-                        iconTint = if (stationState.isFavorite) accentRed else black
-                    },
-                imageVector = if (stationState.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                contentDescription = "Favorite icon",
-                tint = if (stationState.isFavorite) accentRed else black,
-            )
+                    .clip(CircleShape)
+                    .testTag("button_price_alert"),
+                onClick = { onEvent(DetailStationEvent.TogglePriceAlert(!stationState.hasPriceAlert)) },
+                colors = IconButtonDefaults.iconButtonColors(containerColor = GasGuruTheme.colors.neutralWhite)
+            ) {
+                val accentBlue = GasGuruTheme.colors.primary600
+                val black = GasGuruTheme.colors.neutralBlack
+                Icon(
+                    modifier = Modifier
+                        .testTag("icon_price_alert")
+                        .semantics {
+                            iconTint = if (stationState.hasPriceAlert) accentBlue else black
+                        },
+                    imageVector = if (stationState.hasPriceAlert) Icons.Outlined.NotificationsActive else Icons.Outlined.Notifications,
+                    contentDescription = "Price alert icon",
+                    tint = if (stationState.hasPriceAlert) accentBlue else black,
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            IconButton(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .testTag("button_favorite"),
+                onClick = { onEvent(DetailStationEvent.ToggleFavorite(!stationState.isFavorite)) },
+                colors = IconButtonDefaults.iconButtonColors(containerColor = GasGuruTheme.colors.neutralWhite)
+            ) {
+                val accentRed = GasGuruTheme.colors.accentRed
+                val black = GasGuruTheme.colors.neutralBlack
+                Icon(
+                    modifier = Modifier
+                        .testTag("icon_favorite")
+                        .semantics {
+                            iconTint = if (stationState.isFavorite) accentRed else black
+                        },
+                    imageVector = if (stationState.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    contentDescription = "Favorite icon",
+                    tint = if (stationState.isFavorite) accentRed else black,
+                )
+            }
         }
     }
 }
