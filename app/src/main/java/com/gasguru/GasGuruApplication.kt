@@ -16,9 +16,9 @@ class GasGuruApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        syncManager.execute()
         oneSignalSetUp()
         mixpanelSetUp()
+        initSyncManager()
     }
 
     private fun oneSignalSetUp() {
@@ -32,5 +32,9 @@ class GasGuruApplication : Application() {
 
     private fun mixpanelSetUp() {
         MixpanelAPI.getInstance(this, BuildConfig.mixpanelProjectToken, true)
+    }
+
+    private fun initSyncManager() {
+        syncManager.execute()
     }
 }
