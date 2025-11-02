@@ -2,6 +2,7 @@ package com.gasguru.core.data.repository.alerts
 
 import com.gasguru.core.data.util.NetworkMonitor
 import com.gasguru.core.database.dao.PriceAlertDao
+import com.gasguru.core.database.dao.UserDataDao
 import com.gasguru.core.database.model.PriceAlertEntity
 import com.gasguru.core.notifications.OneSignalManager
 import com.gasguru.core.supabase.SupabaseManager
@@ -13,15 +14,25 @@ class PriceAlertRepositoryImpl @Inject constructor(
     private val supabaseManager: SupabaseManager,
     private val networkMonitor: NetworkMonitor,
     private val oneSignalManager: OneSignalManager,
+    private val userDataDao: UserDataDao,
 ) : PriceAlertRepository {
 
-    override suspend fun addPriceAlert(stationId: Int) {
+    override suspend fun addPriceAlert(stationId: Int, lastNotifiedPrice: Double) {
         enableNotificationsIfFirstAlert()
         
-        priceAlertDao.addPriceAlert(PriceAlertEntity(stationId = stationId, isSynced = false))
+        priceAlertDao.addPriceAlert(PriceAlertEntity(stationId = stationId, lastNotifiedPrice = lastNotifiedPrice, isSynced = false))
         
         if (networkMonitor.isOnline.first()) {
-            supabaseManager.addPriceAlert(stationId = stationId)
+            val playerId = oneSignalManager.getPlayerId().orEmpty()
+            val userData = userDataDao.getUserData().first()
+            val fuelType = userData?.fuelSelection?.name.orEmpty()
+            
+            supabaseManager.addPriceAlert(
+                stationId = stationId,
+                onesignalPlayerId = playerId,
+                fuelType = fuelType,
+                lastNotifiedPrice = lastNotifiedPrice,
+            )
             priceAlertDao.markAsSynced(stationId = stationId)
         }
     }
@@ -34,13 +45,14 @@ class PriceAlertRepositoryImpl @Inject constructor(
     }
 
     override suspend fun removePriceAlert(stationId: Int) {
-        priceAlertDao.removePriceAlert(stationId = stationId)
-        
-        disableNotificationsIfNoAlerts()
+        priceAlertDao.markAsDeleted(stationId = stationId)
         
         if (networkMonitor.isOnline.first()) {
             supabaseManager.removePriceAlert(stationId = stationId)
+            priceAlertDao.cleanupSyncedDeletes()
         }
+        
+        disableNotificationsIfNoAlerts()
     }
 
     private suspend fun disableNotificationsIfNoAlerts() {
