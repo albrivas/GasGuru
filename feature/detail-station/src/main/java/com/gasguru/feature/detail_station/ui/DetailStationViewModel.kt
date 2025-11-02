@@ -18,6 +18,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -30,7 +31,7 @@ class DetailStationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     getFuelStationByIdUseCase: GetFuelStationByIdUseCase,
     getLastKnownLocationUseCase: GetLastKnownLocationUseCase,
-    userDataUseCase: GetUserDataUseCase,
+    private val userDataUseCase: GetUserDataUseCase,
     private val saveFavoriteStationUseCase: SaveFavoriteStationUseCase,
     private val removeFavoriteStationUseCase: RemoveFavoriteStationUseCase,
     private val getAddressFromLocationUseCase: GetAddressFromLocationUseCase,
@@ -102,8 +103,16 @@ class DetailStationViewModel @Inject constructor(
 
     private fun onPriceAlertClick(isEnabled: Boolean) = viewModelScope.launch {
         when (isEnabled) {
-            true -> addPriceAlertUseCase(stationId = id)
-            false -> removePriceAlertUseCase(stationId = id)
+            true -> {
+                val userData = userDataUseCase().first()
+                val station = (fuelStation.value as DetailStationUiState.Success).stationModel.fuelStation
+                val price = userData.fuelSelection.extractPrice(station)
+
+                addPriceAlertUseCase(stationId = id, lastNotifiedPrice = price)
+            }
+            false -> {
+                removePriceAlertUseCase(stationId = id)
+            }
         }
     }
 
