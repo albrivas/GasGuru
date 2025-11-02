@@ -113,7 +113,7 @@ class OfflineFuelStationRepository @Inject constructor(
         combine(
             fuelStationDao.getFuelStationById(id),
             favoriteStationDao.getFavoriteStationIds(),
-            priceAlertDao.getPendingSyncAlerts(),
+            priceAlertDao.getAllPriceAlerts(),
         ) { station, favoriteIds, alertEntities ->
             val isFavorite = favoriteIds.contains(station.idServiceStation)
             val hasPriceAlert = alertEntities.any { it.stationId == station.idServiceStation }
