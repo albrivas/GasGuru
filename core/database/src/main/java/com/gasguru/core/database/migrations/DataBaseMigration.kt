@@ -112,7 +112,9 @@ internal val MIGRATION_11_12 = object : Migration(DB_VERSION_11, DB_VERSION_12) 
             CREATE TABLE IF NOT EXISTS `price_alerts` (
                 `stationId` INTEGER NOT NULL,
                 `createdAt` INTEGER NOT NULL,
-                `isSynced` INTEGER NOT NULL,
+                `lastNotifiedPrice` REAL NOT NULL,
+                `isDeleted` INTEGER NOT NULL DEFAULT 0,
+                `isSynced` INTEGER NOT NULL DEFAULT 0,
                 PRIMARY KEY(`stationId`)
             )
             """.trimIndent()

@@ -8,5 +8,7 @@ data class PriceAlertEntity(
     @PrimaryKey
     val stationId: Int,
     val createdAt: Long = System.currentTimeMillis(),
+    val lastNotifiedPrice: Double,
+    val isDeleted: Boolean = false,
     val isSynced: Boolean = false
 )
