@@ -29,7 +29,7 @@ interface PriceAlertDao {
     suspend fun hasPendingSync(): Boolean
 
     @Query("SELECT COUNT(*) FROM price_alerts WHERE isDeleted = 0")
-    suspend fun getTotalAlertsCount(): Int
+    suspend fun getActiveAlertsCount(): Int
 
     @Query("SELECT * FROM price_alerts WHERE isDeleted = 0")
     fun getAllPriceAlerts(): Flow<List<PriceAlertEntity>>

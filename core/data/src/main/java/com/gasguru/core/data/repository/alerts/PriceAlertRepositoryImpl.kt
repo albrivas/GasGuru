@@ -38,7 +38,7 @@ class PriceAlertRepositoryImpl @Inject constructor(
     }
 
     private suspend fun enableNotificationsIfFirstAlert() {
-        val hasExistingAlerts = priceAlertDao.getTotalAlertsCount() > 0
+        val hasExistingAlerts = priceAlertDao.getActiveAlertsCount() > 0
         if (!hasExistingAlerts) {
             oneSignalManager.enablePriceNotificationAlert(enable = true)
         }
@@ -56,7 +56,7 @@ class PriceAlertRepositoryImpl @Inject constructor(
     }
 
     private suspend fun disableNotificationsIfNoAlerts() {
-        val remainingAlerts = priceAlertDao.getTotalAlertsCount()
+        val remainingAlerts = priceAlertDao.getActiveAlertsCount()
         if (remainingAlerts == 0) {
             oneSignalManager.enablePriceNotificationAlert(enable = false)
         }
