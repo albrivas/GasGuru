@@ -56,6 +56,15 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.core.content.ContextCompat
+import android.content.pm.PackageManager
 import coil.compose.AsyncImage
 import com.gasguru.core.model.data.FuelStationBrandsType
 import com.gasguru.core.model.data.previewFuelStationDomain
@@ -337,6 +346,36 @@ fun HeaderStation(
     onBack: () -> Unit,
     onEvent: (DetailStationEvent) -> Unit,
 ) {
+    val context = LocalContext.current
+    val (showPermissionRequest, setShowPermissionRequest) = remember { mutableStateOf(false) }
+    
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            onEvent(DetailStationEvent.TogglePriceAlert(!stationState.hasPriceAlert))
+        }
+        setShowPermissionRequest(false)
+    }
+    
+    fun handlePriceAlertClick() {
+        val hasPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true
+        }
+        
+        if (hasPermission) {
+            onEvent(DetailStationEvent.TogglePriceAlert(!stationState.hasPriceAlert))
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
     Box(modifier = Modifier.fillMaxWidth()) {
         AsyncImage(
             modifier = Modifier
@@ -377,7 +416,7 @@ fun HeaderStation(
                 modifier = Modifier
                     .clip(CircleShape)
                     .testTag("button_price_alert"),
-                onClick = { onEvent(DetailStationEvent.TogglePriceAlert(!stationState.hasPriceAlert)) },
+                onClick = { handlePriceAlertClick() },
                 colors = IconButtonDefaults.iconButtonColors(containerColor = GasGuruTheme.colors.neutralWhite)
             ) {
                 val accentBlue = GasGuruTheme.colors.primary600
