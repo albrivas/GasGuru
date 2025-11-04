@@ -1,9 +1,16 @@
 package com.gasguru.feature.detail_station.ui
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.location.Location
+import android.os.Build
+import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -53,18 +60,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import android.Manifest
-import android.os.Build
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.core.content.ContextCompat
-import android.content.pm.PackageManager
 import coil.compose.AsyncImage
 import com.gasguru.core.model.data.FuelStationBrandsType
 import com.gasguru.core.model.data.previewFuelStationDomain
@@ -125,6 +124,17 @@ internal fun DetailStationScreen(
 
         is DetailStationUiState.Success -> {
             val stationState = rememberDetailStationState(uiState.stationModel)
+            val context = LocalContext.current
+            
+            val notificationPermissionLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.RequestPermission()
+            ) { isGranted ->
+                if (isGranted) {
+                    onEvent(DetailStationEvent.TogglePriceAlert(!stationState.hasPriceAlert))
+                } else {
+                    openNotificationSettings(context)
+                }
+            }
 
             Scaffold(
                 topBar = {
@@ -132,6 +142,14 @@ internal fun DetailStationScreen(
                         stationState = stationState,
                         staticMapUrl = staticMapUrl,
                         onBack = onBack,
+                        onPriceAlertClick = { 
+                            handlePriceAlertWithPermissions(
+                                context = context,
+                                stationState = stationState,
+                                permissionLauncher = notificationPermissionLauncher,
+                                onEvent = onEvent
+                            )
+                        },
                         onEvent = onEvent
                     )
                 },
@@ -344,38 +362,9 @@ fun HeaderStation(
     stationState: DetailStationState,
     staticMapUrl: String?,
     onBack: () -> Unit,
+    onPriceAlertClick: () -> Unit,
     onEvent: (DetailStationEvent) -> Unit,
 ) {
-    val context = LocalContext.current
-    val (showPermissionRequest, setShowPermissionRequest) = remember { mutableStateOf(false) }
-    
-    val notificationPermissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            onEvent(DetailStationEvent.TogglePriceAlert(!stationState.hasPriceAlert))
-        }
-        setShowPermissionRequest(false)
-    }
-    
-    fun handlePriceAlertClick() {
-        val hasPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) == PackageManager.PERMISSION_GRANTED
-        } else {
-            true
-        }
-        
-        if (hasPermission) {
-            onEvent(DetailStationEvent.TogglePriceAlert(!stationState.hasPriceAlert))
-        } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-            }
-        }
-    }
     Box(modifier = Modifier.fillMaxWidth()) {
         AsyncImage(
             modifier = Modifier
@@ -416,7 +405,7 @@ fun HeaderStation(
                 modifier = Modifier
                     .clip(CircleShape)
                     .testTag("button_price_alert"),
-                onClick = { handlePriceAlertClick() },
+                onClick = onPriceAlertClick,
                 colors = IconButtonDefaults.iconButtonColors(containerColor = GasGuruTheme.colors.neutralWhite)
             ) {
                 val accentBlue = GasGuruTheme.colors.primary600
@@ -487,6 +476,36 @@ private fun startRoute(context: Context, location: Location) {
             putExtra(Intent.EXTRA_INITIAL_INTENTS, intents.toTypedArray())
         }
     context.startActivity(chooserIntent)
+}
+
+fun openNotificationSettings(context: Context) {
+    val intent = Intent().apply {
+        action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
+        putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+    }
+    context.startActivity(intent)
+}
+
+fun handlePriceAlertWithPermissions(
+    context: Context,
+    stationState: DetailStationState,
+    permissionLauncher: ActivityResultLauncher<String>,
+    onEvent: (DetailStationEvent) -> Unit
+) {
+    val hasPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.POST_NOTIFICATIONS
+        ) == PackageManager.PERMISSION_GRANTED
+    } else {
+        true
+    }
+
+    if (hasPermission) {
+        onEvent(DetailStationEvent.TogglePriceAlert(!stationState.hasPriceAlert))
+    } else {
+        permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+    }
 }
 
 @Composable
