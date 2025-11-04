@@ -1,5 +1,7 @@
 package com.gasguru.core.data.di
 
+import com.gasguru.core.data.repository.alerts.PriceAlertRepository
+import com.gasguru.core.data.repository.alerts.PriceAlertRepositoryImpl
 import com.gasguru.core.data.repository.filter.FilterRepository
 import com.gasguru.core.data.repository.filter.FilterRepositoryImpl
 import com.gasguru.core.data.repository.geocoder.GeocoderAddress
@@ -16,8 +18,6 @@ import com.gasguru.core.data.repository.search.OfflineRecentSearchRepository
 import com.gasguru.core.data.repository.search.OfflineRecentSearchRepositoryImp
 import com.gasguru.core.data.repository.stations.FuelStationRepository
 import com.gasguru.core.data.repository.stations.OfflineFuelStationRepository
-import com.gasguru.core.data.repository.alerts.PriceAlertRepository
-import com.gasguru.core.data.repository.alerts.PriceAlertRepositoryImpl
 import com.gasguru.core.data.repository.user.OfflineUserDataRepository
 import com.gasguru.core.data.repository.user.UserDataRepository
 import com.gasguru.core.data.util.ConnectivityManagerNetworkMonitor

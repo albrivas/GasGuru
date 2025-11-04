@@ -1,11 +1,9 @@
 package com.gasguru.core.supabase
 
-
 import com.gasguru.core.supabase.model.PriceAlertSupabase
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
 import javax.inject.Inject
-
 
 class SupabaseManagerImpl @Inject constructor(
     private val supabaseClient: SupabaseClient,

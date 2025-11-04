@@ -19,14 +19,14 @@ class PriceAlertRepositoryImpl @Inject constructor(
 
     override suspend fun addPriceAlert(stationId: Int, lastNotifiedPrice: Double) {
         enableNotificationsIfFirstAlert()
-        
+
         priceAlertDao.addPriceAlert(PriceAlertEntity(stationId = stationId, lastNotifiedPrice = lastNotifiedPrice, isSynced = false))
-        
+
         if (networkMonitor.isOnline.first()) {
             val playerId = oneSignalManager.getPlayerId().orEmpty()
             val userData = userDataDao.getUserData().first()
             val fuelType = userData?.fuelSelection?.name.orEmpty()
-            
+
             supabaseManager.addPriceAlert(
                 stationId = stationId,
                 onesignalPlayerId = playerId,
@@ -46,12 +46,12 @@ class PriceAlertRepositoryImpl @Inject constructor(
 
     override suspend fun removePriceAlert(stationId: Int) {
         priceAlertDao.markAsDeleted(stationId = stationId)
-        
+
         if (networkMonitor.isOnline.first()) {
             supabaseManager.removePriceAlert(stationId = stationId)
             priceAlertDao.cleanupSyncedDeletes()
         }
-        
+
         disableNotificationsIfNoAlerts()
     }
 

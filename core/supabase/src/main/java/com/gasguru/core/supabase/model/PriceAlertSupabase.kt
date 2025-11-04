@@ -13,6 +13,6 @@ data class PriceAlertSupabase(
     val lastNotifiedPrice: Double? = null,
     @SerialName("fuel_type")
     val fuelType: String,
-    @SerialName("created_at") 
+    @SerialName("created_at")
     val createdAt: String? = null,
 )

@@ -125,7 +125,7 @@ internal fun DetailStationScreen(
         is DetailStationUiState.Success -> {
             val stationState = rememberDetailStationState(uiState.stationModel)
             val context = LocalContext.current
-            
+
             val notificationPermissionLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.RequestPermission()
             ) { isGranted ->
@@ -142,7 +142,7 @@ internal fun DetailStationScreen(
                         stationState = stationState,
                         staticMapUrl = staticMapUrl,
                         onBack = onBack,
-                        onPriceAlertClick = { 
+                        onPriceAlertClick = {
                             handlePriceAlertWithPermissions(
                                 context = context,
                                 stationState = stationState,
