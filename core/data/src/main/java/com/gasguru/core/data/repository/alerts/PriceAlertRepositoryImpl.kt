@@ -61,4 +61,37 @@ class PriceAlertRepositoryImpl @Inject constructor(
             oneSignalManager.enablePriceNotificationAlert(enable = false)
         }
     }
+
+    override suspend fun hasPendingSync(): Boolean {
+        return priceAlertDao.hasPendingSync()
+    }
+
+    override suspend fun sync(): Boolean {
+        return try {
+            val playerId = oneSignalManager.getPlayerId().orEmpty()
+            val userData = userDataDao.getUserData().first()
+            val fuelType = userData?.fuelSelection?.name.orEmpty()
+
+            val pendingAdds = priceAlertDao.getPendingAddAlerts()
+            pendingAdds.forEach { alert ->
+                supabaseManager.addPriceAlert(
+                    stationId = alert.stationId,
+                    onesignalPlayerId = playerId,
+                    fuelType = fuelType,
+                    lastNotifiedPrice = alert.lastNotifiedPrice,
+                )
+                priceAlertDao.markAsSynced(stationId = alert.stationId)
+            }
+
+            val pendingDeletes = priceAlertDao.getPendingDeleteAlerts()
+            pendingDeletes.forEach { alert ->
+                supabaseManager.removePriceAlert(stationId = alert.stationId)
+            }
+
+            priceAlertDao.cleanupSyncedDeletes()
+            true
+        } catch (_: Exception) {
+            false
+        }
+    }
 }
