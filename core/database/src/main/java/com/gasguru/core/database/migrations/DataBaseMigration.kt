@@ -113,7 +113,7 @@ internal val MIGRATION_11_12 = object : Migration(DB_VERSION_11, DB_VERSION_12) 
                 `stationId` INTEGER NOT NULL,
                 `createdAt` INTEGER NOT NULL,
                 `lastNotifiedPrice` REAL NOT NULL,
-                `isDeleted` INTEGER NOT NULL DEFAULT 0,
+                `typeModification` TEXT NOT NULL DEFAULT 'INSERT',
                 `isSynced` INTEGER NOT NULL DEFAULT 0,
                 PRIMARY KEY(`stationId`)
             )

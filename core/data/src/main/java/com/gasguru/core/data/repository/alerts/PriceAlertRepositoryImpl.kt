@@ -3,6 +3,7 @@ package com.gasguru.core.data.repository.alerts
 import com.gasguru.core.data.util.NetworkMonitor
 import com.gasguru.core.database.dao.PriceAlertDao
 import com.gasguru.core.database.dao.UserDataDao
+import com.gasguru.core.database.model.ModificationType
 import com.gasguru.core.database.model.PriceAlertEntity
 import com.gasguru.core.notifications.OneSignalManager
 import com.gasguru.core.supabase.SupabaseManager
@@ -20,7 +21,14 @@ class PriceAlertRepositoryImpl @Inject constructor(
     override suspend fun addPriceAlert(stationId: Int, lastNotifiedPrice: Double) {
         enableNotificationsIfFirstAlert()
 
-        priceAlertDao.addPriceAlert(PriceAlertEntity(stationId = stationId, lastNotifiedPrice = lastNotifiedPrice, isSynced = false))
+        priceAlertDao.insert(
+            PriceAlertEntity(
+                stationId = stationId,
+                lastNotifiedPrice = lastNotifiedPrice,
+                typeModification = ModificationType.INSERT,
+                isSynced = false
+            )
+        )
 
         if (networkMonitor.isOnline.first()) {
             val playerId = oneSignalManager.getPlayerId().orEmpty()
@@ -45,11 +53,25 @@ class PriceAlertRepositoryImpl @Inject constructor(
     }
 
     override suspend fun removePriceAlert(stationId: Int) {
-        priceAlertDao.markAsDeleted(stationId = stationId)
+        val existingAlert = priceAlertDao.getByStationId(stationId = stationId) ?: return
 
-        if (networkMonitor.isOnline.first()) {
+        if (!existingAlert.isSynced) {
+            // case 1: Without sync → Remove local
+            priceAlertDao.deleteByStationId(stationId = stationId)
+        } else if (networkMonitor.isOnline.first()) {
+            // Case 2: Synced + online → Remove local and server
+            priceAlertDao.deleteByStationId(stationId = stationId)
             supabaseManager.removePriceAlert(stationId = stationId)
-            priceAlertDao.cleanupSyncedDeletes()
+        } else {
+            // Case 3: Synced + offline → mark as DELETE pending
+            priceAlertDao.insert(
+                PriceAlertEntity(
+                    stationId = stationId,
+                    lastNotifiedPrice = existingAlert.lastNotifiedPrice,
+                    typeModification = ModificationType.DELETE,
+                    isSynced = false
+                )
+            )
         }
 
         disableNotificationsIfNoAlerts()
@@ -72,8 +94,8 @@ class PriceAlertRepositoryImpl @Inject constructor(
             val userData = userDataDao.getUserData().first()
             val fuelType = userData?.fuelSelection?.name.orEmpty()
 
-            val pendingAdds = priceAlertDao.getPendingAddAlerts()
-            pendingAdds.forEach { alert ->
+            val pendingInserts = priceAlertDao.getPendingInserts()
+            pendingInserts.forEach { alert ->
                 supabaseManager.addPriceAlert(
                     stationId = alert.stationId,
                     onesignalPlayerId = playerId,
@@ -83,12 +105,12 @@ class PriceAlertRepositoryImpl @Inject constructor(
                 priceAlertDao.markAsSynced(stationId = alert.stationId)
             }
 
-            val pendingDeletes = priceAlertDao.getPendingDeleteAlerts()
+            val pendingDeletes = priceAlertDao.getPendingDeletes()
             pendingDeletes.forEach { alert ->
                 supabaseManager.removePriceAlert(stationId = alert.stationId)
+                priceAlertDao.deleteByStationId(stationId = alert.stationId)
             }
 
-            priceAlertDao.cleanupSyncedDeletes()
             true
         } catch (_: Exception) {
             false

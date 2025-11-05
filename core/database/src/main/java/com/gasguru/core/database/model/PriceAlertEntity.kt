@@ -9,6 +9,6 @@ data class PriceAlertEntity(
     val stationId: Int,
     val createdAt: Long = System.currentTimeMillis(),
     val lastNotifiedPrice: Double,
-    val isDeleted: Boolean = false,
+    val typeModification: ModificationType = ModificationType.INSERT,
     val isSynced: Boolean = false
 )
