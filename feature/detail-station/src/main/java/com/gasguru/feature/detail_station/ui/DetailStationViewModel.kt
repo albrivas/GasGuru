@@ -56,6 +56,13 @@ class DetailStationViewModel @Inject constructor(
                                 stationModel = station.toUiModel(),
                                 address = it
                             )
+                        }.catch {
+                            emit(
+                                DetailStationUiState.Success(
+                                    stationModel = station.toUiModel(),
+                                    address = null
+                                )
+                            )
                         }
                     }.catch {
                         DetailStationUiState.Error
@@ -88,6 +95,7 @@ class DetailStationViewModel @Inject constructor(
             is DetailStationEvent.ToggleFavorite -> {
                 onFavoriteClick(event.isFavorite)
             }
+
             is DetailStationEvent.TogglePriceAlert -> {
                 onPriceAlertClick(event.isEnabled)
             }
@@ -105,11 +113,13 @@ class DetailStationViewModel @Inject constructor(
         when (isEnabled) {
             true -> {
                 val userData = userDataUseCase().first()
-                val station = (fuelStation.value as DetailStationUiState.Success).stationModel.fuelStation
+                val station =
+                    (fuelStation.value as DetailStationUiState.Success).stationModel.fuelStation
                 val price = userData.fuelSelection.extractPrice(station)
 
                 addPriceAlertUseCase(stationId = id, lastNotifiedPrice = price)
             }
+
             false -> {
                 removePriceAlertUseCase(stationId = id)
             }
