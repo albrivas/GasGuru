@@ -1,5 +1,6 @@
 package com.gasguru
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,6 +19,7 @@ import com.gasguru.core.data.util.NetworkMonitor
 import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.feature.onboarding_welcome.navigation.OnboardingRoutes
+import com.gasguru.navigation.DeepLinkManager
 import com.gasguru.navigation.navigationbar.route.NavigationBarRoute
 import com.gasguru.ui.GasGuruApp
 import com.gasguru.ui.rememberGasGuruAppState
@@ -35,6 +37,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var networkMonitor: NetworkMonitor
+    
+    @Inject
+    lateinit var deepLinkManager: DeepLinkManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splash = installSplashScreen()
@@ -88,6 +93,7 @@ class MainActivity : ComponentActivity() {
                 when (val state = uiState) {
                     is SplashUiState.Success -> GasGuruApp(
                         appState = appState,
+                        deepLinkManager = deepLinkManager,
                         startDestination = if (state.isOnboardingSuccess) {
                             NavigationBarRoute
                         } else {
@@ -97,6 +103,7 @@ class MainActivity : ComponentActivity() {
 
                     SplashUiState.Error -> GasGuruApp(
                         appState = appState,
+                        deepLinkManager = deepLinkManager,
                         startDestination = OnboardingRoutes.OnboardingWelcomeRoute
                     )
 
@@ -104,6 +111,22 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun handleIntent(intent: Intent) {
+        val stationId = intent.getStringExtra("station_id")?.toIntOrNull()
+        stationId?.let {
+            deepLinkManager.navigateToDetailStation(stationId = it)
+            return
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        
+        // Handle push (app in foreground and background)
+        handleIntent(intent)
     }
 
     override fun onStop() {
