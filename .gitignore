@@ -227,3 +227,4 @@ core/database/schemas/
 .gitconfig
 sonar-project.properties
 
+.claude/settings.local.json
