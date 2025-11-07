@@ -3,7 +3,8 @@
     "allow": [
       "WebFetch(domain:supabase.com)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "WebFetch(domain:github.com)"
     ],
     "deny": [],
     "ask": []

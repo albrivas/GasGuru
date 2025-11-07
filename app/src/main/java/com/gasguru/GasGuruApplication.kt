@@ -14,7 +14,7 @@ class GasGuruApplication : Application() {
 
     @Inject
     lateinit var syncManager: SyncManager
-    
+
     @Inject
     lateinit var pushNotificationService: PushNotificationService
 

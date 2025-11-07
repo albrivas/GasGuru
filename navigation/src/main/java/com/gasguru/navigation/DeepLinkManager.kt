@@ -8,10 +8,10 @@ import javax.inject.Singleton
 
 @Singleton
 class DeepLinkManager @Inject constructor() {
-    
+
     private val _deepLinkEvents = Channel<DeepLinkEvent>(Channel.UNLIMITED)
     val deepLinkEvents: Flow<DeepLinkEvent> = _deepLinkEvents.receiveAsFlow()
-    
+
     fun navigateToDetailStation(stationId: Int) {
         _deepLinkEvents.trySend(DeepLinkEvent.NavigateToDetailStation(stationId))
     }

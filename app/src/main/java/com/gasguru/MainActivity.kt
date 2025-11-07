@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var networkMonitor: NetworkMonitor
-    
+
     @Inject
     lateinit var deepLinkManager: DeepLinkManager
 
@@ -124,7 +124,7 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        
+
         // Handle push (app in foreground and background)
         handleIntent(intent)
     }

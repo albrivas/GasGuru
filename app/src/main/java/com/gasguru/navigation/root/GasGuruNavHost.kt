@@ -24,7 +24,7 @@ fun GasGuruNavHost(
     startDestination: Any = OnboardingRoutes.OnboardingWelcomeRoute
 ) {
     val navController = rememberNavController()
-    
+
     LaunchedEffect(Unit) {
         deepLinkManager.deepLinkEvents.collect { event ->
             when (event) {
