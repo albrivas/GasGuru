@@ -2,7 +2,9 @@ package com.gasguru.core.notifications
 
 import com.onesignal.OneSignal
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class OneSignalManagerImpl @Inject constructor() : OneSignalManager {
 
     companion object {
