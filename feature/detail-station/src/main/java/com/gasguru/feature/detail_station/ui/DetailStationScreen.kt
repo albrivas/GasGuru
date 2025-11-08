@@ -1,5 +1,16 @@
 package com.gasguru.feature.detail_station.ui
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
+import android.os.Build
+import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -14,6 +25,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -25,6 +37,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -46,10 +60,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import com.gasguru.core.common.startRoute
 import com.gasguru.core.model.data.FuelStationBrandsType
 import com.gasguru.core.model.data.previewFuelStationDomain
 import com.gasguru.core.ui.iconTint
@@ -97,6 +112,7 @@ internal fun DetailStationScreen(
         DetailStationUiState.Error -> {
             // Handle error state
         }
+
         DetailStationUiState.Loading -> {
             GasGuruLoading(
                 modifier = Modifier
@@ -107,6 +123,17 @@ internal fun DetailStationScreen(
         }
         is DetailStationUiState.Success -> {
             val stationState = rememberDetailStationState(uiState.stationModel)
+            val context = LocalContext.current
+
+            val notificationPermissionLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.RequestPermission()
+            ) { isGranted ->
+                if (isGranted) {
+                    onEvent(DetailStationEvent.TogglePriceAlert(!stationState.hasPriceAlert))
+                } else {
+                    openNotificationSettings(context)
+                }
+            }
 
             Scaffold(
                 topBar = {
@@ -114,6 +141,14 @@ internal fun DetailStationScreen(
                         stationState = stationState,
                         staticMapUrl = staticMapUrl,
                         onBack = onBack,
+                        onPriceAlertClick = {
+                            handlePriceAlertWithPermissions(
+                                context = context,
+                                stationState = stationState,
+                                permissionLauncher = notificationPermissionLauncher,
+                                onEvent = onEvent
+                            )
+                        },
                         onEvent = onEvent
                     )
                 },
@@ -229,7 +264,12 @@ fun DetailStationContent(
         InformationStation(
             stationState = stationState,
             address = address,
-            navigateToGoogleMaps = { startRoute(context = context, location = stationState.location) }
+            navigateToGoogleMaps = {
+                startRoute(
+                    context = context,
+                    location = stationState.location
+                )
+            }
         )
     }
 }
@@ -237,7 +277,7 @@ fun DetailStationContent(
 @Composable
 fun FuelTypes(
     fuelItems: List<PriceItemModel>,
-    lastUpdate: Long
+    lastUpdate: Long,
 ) {
     Column(modifier = Modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text(
@@ -321,7 +361,8 @@ fun HeaderStation(
     stationState: DetailStationState,
     staticMapUrl: String?,
     onBack: () -> Unit,
-    onEvent: (DetailStationEvent) -> Unit
+    onPriceAlertClick: () -> Unit,
+    onEvent: (DetailStationEvent) -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxWidth()) {
         AsyncImage(
@@ -353,29 +394,116 @@ fun HeaderStation(
                 tint = GasGuruTheme.colors.neutralBlack,
             )
         }
-        IconButton(
+        Row(
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .statusBarsPadding()
                 .padding(end = 16.dp)
-                .clip(CircleShape)
-                .testTag("button_favorite"),
-            onClick = { onEvent(DetailStationEvent.ToggleFavorite(!stationState.isFavorite)) },
-            colors = IconButtonDefaults.iconButtonColors(containerColor = GasGuruTheme.colors.neutralWhite)
         ) {
-            val accentRed = GasGuruTheme.colors.accentRed
-            val black = GasGuruTheme.colors.neutralBlack
-            Icon(
+            IconButton(
                 modifier = Modifier
-                    .testTag("icon_favorite")
-                    .semantics {
-                        iconTint = if (stationState.isFavorite) accentRed else black
-                    },
-                imageVector = if (stationState.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                contentDescription = "Favorite icon",
-                tint = if (stationState.isFavorite) accentRed else black,
-            )
+                    .clip(CircleShape)
+                    .testTag("button_price_alert"),
+                onClick = onPriceAlertClick,
+                colors = IconButtonDefaults.iconButtonColors(containerColor = GasGuruTheme.colors.neutralWhite)
+            ) {
+                val accentBlue = GasGuruTheme.colors.primary600
+                val black = GasGuruTheme.colors.neutralBlack
+                Icon(
+                    modifier = Modifier
+                        .testTag("icon_price_alert")
+                        .semantics {
+                            iconTint = if (stationState.hasPriceAlert) accentBlue else black
+                        },
+                    imageVector = if (stationState.hasPriceAlert) Icons.Outlined.NotificationsActive else Icons.Outlined.Notifications,
+                    contentDescription = "Price alert icon",
+                    tint = if (stationState.hasPriceAlert) accentBlue else black,
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            IconButton(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .testTag("button_favorite"),
+                onClick = { onEvent(DetailStationEvent.ToggleFavorite(!stationState.isFavorite)) },
+                colors = IconButtonDefaults.iconButtonColors(containerColor = GasGuruTheme.colors.neutralWhite)
+            ) {
+                val accentRed = GasGuruTheme.colors.accentRed
+                val black = GasGuruTheme.colors.neutralBlack
+                Icon(
+                    modifier = Modifier
+                        .testTag("icon_favorite")
+                        .semantics {
+                            iconTint = if (stationState.isFavorite) accentRed else black
+                        },
+                    imageVector = if (stationState.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    contentDescription = "Favorite icon",
+                    tint = if (stationState.isFavorite) accentRed else black,
+                )
+            }
         }
+    }
+}
+
+@SuppressLint("QueryPermissionsNeeded")
+private fun startRoute(context: Context, location: Location) {
+    val lat = location.latitude
+    val lng = location.longitude
+
+    val intents = mutableListOf<Intent>()
+
+    intents.add(
+        Intent(Intent.ACTION_VIEW).apply {
+            data = "google.navigation:q=$lat,$lng".toUri()
+            setPackage("com.google.android.apps.maps")
+        }
+    )
+
+    val wazeIntent = Intent(Intent.ACTION_VIEW).apply {
+        data = "waze://?ll=$lat,$lng&navigate=yes".toUri()
+        setPackage("com.waze")
+    }
+    if (wazeIntent.resolveActivity(context.packageManager) != null) {
+        intents.add(wazeIntent)
+    }
+
+    val chooserIntent =
+        Intent.createChooser(
+            intents.removeAt(0),
+            context.getString(R.string.navigate_with)
+        ).apply {
+            putExtra(Intent.EXTRA_INITIAL_INTENTS, intents.toTypedArray())
+        }
+    context.startActivity(chooserIntent)
+}
+
+fun openNotificationSettings(context: Context) {
+    val intent = Intent().apply {
+        action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
+        putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+    }
+    context.startActivity(intent)
+}
+
+fun handlePriceAlertWithPermissions(
+    context: Context,
+    stationState: DetailStationState,
+    permissionLauncher: ActivityResultLauncher<String>,
+    onEvent: (DetailStationEvent) -> Unit
+) {
+    val hasPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.POST_NOTIFICATIONS
+        ) == PackageManager.PERMISSION_GRANTED
+    } else {
+        true
+    }
+
+    if (hasPermission) {
+        onEvent(DetailStationEvent.TogglePriceAlert(!stationState.hasPriceAlert))
+    } else {
+        permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
     }
 }
 

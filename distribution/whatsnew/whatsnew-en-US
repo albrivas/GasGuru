@@ -1,3 +1,4 @@
-- Improvements in stations list
-- Improvements when calculating a route
-- UI tweaks and stability updates
+- New price alert system for favorite stations
+- Push notifications when prices drop at your stations
+- Enhanced navigation via deep links from notifications
+- Improved station list components and filters

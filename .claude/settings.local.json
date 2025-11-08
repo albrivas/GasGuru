@@ -12,7 +12,8 @@
       "Bash(mkdir:*)",
       "Bash(rm:*)",
       "Bash(git fetch:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(git merge:*)"
     ],
     "defaultMode": "acceptEdits"
   }

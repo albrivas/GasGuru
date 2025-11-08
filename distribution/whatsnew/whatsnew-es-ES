@@ -1,3 +1,4 @@
-- Mejoras en la lista de estaciones
-- Mejoras al calcular una ruta
-- Ajustes en la interfaz y mejoras de estabilidad
+- Nuevo sistema de alertas de precios para estaciones favoritas
+- Notificaciones push cuando los precios bajan en tus estaciones
+- Navegación mejorada mediante deep links desde notificaciones
+- Mejoras en componentes de lista de estaciones y filtros
