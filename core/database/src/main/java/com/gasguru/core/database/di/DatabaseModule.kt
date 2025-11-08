@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.gasguru.core.database.GasGuruDatabase
 import com.gasguru.core.database.migrations.MIGRATION_10_11
+import com.gasguru.core.database.migrations.MIGRATION_11_12
 import com.gasguru.core.database.migrations.MIGRATION_2_3
 import com.gasguru.core.database.migrations.MIGRATION_3_4
 import com.gasguru.core.database.migrations.MIGRATION_4_5
@@ -39,7 +40,8 @@ class DatabaseModule {
             MIGRATION_7_8,
             MIGRATION_8_9,
             MIGRATION_9_10,
-            MIGRATION_10_11
+            MIGRATION_10_11,
+            MIGRATION_11_12,
         ).build()
     }
 }

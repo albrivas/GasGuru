@@ -26,7 +26,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                 configureDetekt(this)
 
                 defaultConfig.apply {
-                    targetSdk = 35
+                    targetSdk = 36
                     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
                     testInstrumentationRunnerArguments["runnerBuilder"] =
                         "de.mannodermaus.junit5.AndroidJUnit5Builder"

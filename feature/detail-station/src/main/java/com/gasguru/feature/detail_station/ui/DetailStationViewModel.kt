@@ -3,6 +3,8 @@ package com.gasguru.feature.detail_station.ui
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gasguru.core.domain.alerts.AddPriceAlertUseCase
+import com.gasguru.core.domain.alerts.RemovePriceAlertUseCase
 import com.gasguru.core.domain.fuelstation.GetFuelStationByIdUseCase
 import com.gasguru.core.domain.fuelstation.RemoveFavoriteStationUseCase
 import com.gasguru.core.domain.fuelstation.SaveFavoriteStationUseCase
@@ -16,6 +18,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -28,11 +31,13 @@ class DetailStationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     getFuelStationByIdUseCase: GetFuelStationByIdUseCase,
     getLastKnownLocationUseCase: GetLastKnownLocationUseCase,
-    userDataUseCase: GetUserDataUseCase,
+    private val userDataUseCase: GetUserDataUseCase,
     private val saveFavoriteStationUseCase: SaveFavoriteStationUseCase,
     private val removeFavoriteStationUseCase: RemoveFavoriteStationUseCase,
     private val getAddressFromLocationUseCase: GetAddressFromLocationUseCase,
     private val getStaticMapUrlUseCase: GetStaticMapUrlUseCase,
+    private val addPriceAlertUseCase: AddPriceAlertUseCase,
+    private val removePriceAlertUseCase: RemovePriceAlertUseCase,
 ) : ViewModel() {
 
     private val id: Int = checkNotNull(savedStateHandle["idServiceStation"])
@@ -50,6 +55,13 @@ class DetailStationViewModel @Inject constructor(
                             DetailStationUiState.Success(
                                 stationModel = station.toUiModel(),
                                 address = it
+                            )
+                        }.catch {
+                            emit(
+                                DetailStationUiState.Success(
+                                    stationModel = station.toUiModel(),
+                                    address = null
+                                )
                             )
                         }
                     }.catch {
@@ -83,6 +95,10 @@ class DetailStationViewModel @Inject constructor(
             is DetailStationEvent.ToggleFavorite -> {
                 onFavoriteClick(event.isFavorite)
             }
+
+            is DetailStationEvent.TogglePriceAlert -> {
+                onPriceAlertClick(event.isEnabled)
+            }
         }
     }
 
@@ -90,6 +106,23 @@ class DetailStationViewModel @Inject constructor(
         when (isFavorite) {
             true -> saveFavoriteStationUseCase(stationId = id)
             false -> removeFavoriteStationUseCase(stationId = id)
+        }
+    }
+
+    private fun onPriceAlertClick(isEnabled: Boolean) = viewModelScope.launch {
+        when (isEnabled) {
+            true -> {
+                val userData = userDataUseCase().first()
+                val station =
+                    (fuelStation.value as DetailStationUiState.Success).stationModel.fuelStation
+                val price = userData.fuelSelection.extractPrice(station)
+
+                addPriceAlertUseCase(stationId = id, lastNotifiedPrice = price)
+            }
+
+            false -> {
+                removePriceAlertUseCase(stationId = id)
+            }
         }
     }
 
