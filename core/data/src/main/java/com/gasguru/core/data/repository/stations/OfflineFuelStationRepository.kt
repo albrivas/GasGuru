@@ -11,6 +11,7 @@ import com.gasguru.core.data.mapper.getPriceCategory
 import com.gasguru.core.data.repository.user.OfflineUserDataRepository
 import com.gasguru.core.database.dao.FavoriteStationDao
 import com.gasguru.core.database.dao.FuelStationDao
+import com.gasguru.core.database.dao.PriceAlertDao
 import com.gasguru.core.database.model.FuelStationEntity
 import com.gasguru.core.database.model.asExternalModel
 import com.gasguru.core.database.model.getLocation
@@ -25,6 +26,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
@@ -41,6 +43,7 @@ class OfflineFuelStationRepository @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val offlineUserDataRepository: OfflineUserDataRepository,
     private val favoriteStationDao: FavoriteStationDao,
+    private val priceAlertDao: PriceAlertDao,
 ) : FuelStationRepository {
 
     private val defaultScope = CoroutineScope(defaultDispatcher + SupervisorJob())
@@ -107,18 +110,20 @@ class OfflineFuelStationRepository @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getFuelStationById(id: Int, userLocation: Location): Flow<FuelStation> =
-        fuelStationDao.getFuelStationById(id)
-            .flatMapLatest { station ->
-                favoriteStationDao.getFavoriteStationIds()
-                    .map { favoriteIds ->
-                        val isFavorite = favoriteIds.contains(station.idServiceStation)
-                        station.asExternalModel().copy(
-                            isFavorite = isFavorite,
-                            distance = station.getLocation().distanceTo(userLocation)
-                        )
-                    }
-            }
-            .flowOn(ioDispatcher)
+        combine(
+            fuelStationDao.getFuelStationById(id),
+            favoriteStationDao.getFavoriteStationIds(),
+            priceAlertDao.getAllPriceAlerts(),
+        ) { station, favoriteIds, alertEntities ->
+            val isFavorite = favoriteIds.contains(station.idServiceStation)
+            val hasPriceAlert = alertEntities.any { it.stationId == station.idServiceStation }
+
+            station.asExternalModel().copy(
+                isFavorite = isFavorite,
+                hasPriceAlert = hasPriceAlert,
+                distance = station.getLocation().distanceTo(userLocation)
+            )
+        }.flowOn(ioDispatcher)
 
     override suspend fun getFuelStationInRoute(
         origin: LatLng,
