@@ -12,6 +12,7 @@ dependencies {
     implementation(projects.core.data)
     implementation(projects.core.model)
     implementation(projects.core.common)
+    implementation(projects.core.notifications)
     implementation(libs.androidx.core.ktx)
 
     testImplementation(projects.core.testing)

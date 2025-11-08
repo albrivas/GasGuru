@@ -4,6 +4,7 @@ import com.gasguru.core.database.GasGuruDatabase
 import com.gasguru.core.database.dao.FavoriteStationDao
 import com.gasguru.core.database.dao.FilterDao
 import com.gasguru.core.database.dao.FuelStationDao
+import com.gasguru.core.database.dao.PriceAlertDao
 import com.gasguru.core.database.dao.RecentSearchQueryDao
 import com.gasguru.core.database.dao.UserDataDao
 import dagger.Module
@@ -33,4 +34,8 @@ class DaoModule {
     @Provides
     fun provideFavoriteStationDao(appDatabase: GasGuruDatabase): FavoriteStationDao =
         appDatabase.favoriteStationDao()
+
+    @Provides
+    fun providePriceAlertDao(appDatabase: GasGuruDatabase): PriceAlertDao =
+        appDatabase.priceAlertDao()
 }
