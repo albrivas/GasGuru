@@ -1,5 +1,7 @@
 package com.gasguru.core.data.di
 
+import com.gasguru.core.data.repository.alerts.PriceAlertRepository
+import com.gasguru.core.data.repository.alerts.PriceAlertRepositoryImpl
 import com.gasguru.core.data.repository.filter.FilterRepository
 import com.gasguru.core.data.repository.filter.FilterRepositoryImpl
 import com.gasguru.core.data.repository.geocoder.GeocoderAddress
@@ -92,4 +94,9 @@ interface DataModule {
     fun bindRoutesRepository(
         routesRepository: RoutesRepositoryImpl
     ): RoutesRepository
+
+    @Binds
+    fun bindPriceAlertRepository(
+        priceAlertRepository: PriceAlertRepositoryImpl
+    ): PriceAlertRepository
 }
