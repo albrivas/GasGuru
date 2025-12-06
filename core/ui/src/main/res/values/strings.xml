@@ -21,4 +21,6 @@
     <string name="theme_mode_light">Light</string>
     <string name="theme_mode_dark">Dark</string>
     <string name="theme_mode_system">System default</string>
+    <string name="nearby_stations">Nearby stations</string>
+    <string name="favorites">Favorites</string>
 </resources>

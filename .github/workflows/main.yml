@@ -32,6 +32,8 @@ jobs:
           echo "mixpanelProjectToken=${{ secrets.MIXPANEL }}" >> local.properties
           echo "sha1Debug=${{ secrets.SHA1_DEBUG }}" >> local.properties
           echo "sha1PlayStore=${{ secrets.SHA1_PLAY_STORE }}" >> local.properties
+          echo "supabaseUrl=${{ secrets.SUPABASE_URL }}" >> local.properties
+          echo "supabaseKey=${{ secrets.SUPABASE_API_KEY }}" >> local.properties
 
       - name: Create google-services.json
         env:
