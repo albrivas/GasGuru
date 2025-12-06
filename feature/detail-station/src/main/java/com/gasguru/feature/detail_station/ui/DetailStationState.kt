@@ -77,6 +77,9 @@ class DetailStationState(internal val station: FuelStationUiModel) {
     internal val isFavorite: Boolean
         get() = station.fuelStation.isFavorite
 
+    internal val hasPriceAlert: Boolean
+        get() = station.fuelStation.hasPriceAlert
+
     internal val location: Location
         get() = station.fuelStation.location
 

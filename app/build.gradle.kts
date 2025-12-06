@@ -94,6 +94,7 @@ dependencies {
     implementation(projects.feature.search)
     implementation(projects.feature.routePlanner)
     implementation(projects.navigation)
+    implementation(projects.core.notifications)
     mockImplementation(projects.mocknetwork)
     androidTestImplementation(projects.core.testing)
 

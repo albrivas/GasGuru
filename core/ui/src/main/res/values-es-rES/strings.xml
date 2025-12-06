@@ -21,4 +21,6 @@
     <string name="theme_mode_light">Claro</string>
     <string name="theme_mode_dark">Oscuro</string>
     <string name="theme_mode_system">Predeterminado del sistema</string>
+    <string name="nearby_stations">Estaciones cercanas</string>
+    <string name="favorites">Favoritas</string>
 </resources>

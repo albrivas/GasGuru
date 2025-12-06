@@ -1,18 +1,29 @@
 package com.gasguru
 
 import android.app.Application
+import com.gasguru.core.data.sync.SyncManager
+import com.gasguru.core.notifications.PushNotificationService
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.onesignal.OneSignal
 import com.onesignal.debug.LogLevel
 import dagger.hilt.android.HiltAndroidApp
+import javax.inject.Inject
 
 @HiltAndroidApp
 class GasGuruApplication : Application() {
 
+    @Inject
+    lateinit var syncManager: SyncManager
+
+    @Inject
+    lateinit var pushNotificationService: PushNotificationService
+
     override fun onCreate() {
         super.onCreate()
         oneSignalSetUp()
+        initPushNotifications()
         mixpanelSetUp()
+        initSyncManager()
     }
 
     private fun oneSignalSetUp() {
@@ -26,5 +37,13 @@ class GasGuruApplication : Application() {
 
     private fun mixpanelSetUp() {
         MixpanelAPI.getInstance(this, BuildConfig.mixpanelProjectToken, true)
+    }
+
+    private fun initPushNotifications() {
+        pushNotificationService.init()
+    }
+
+    private fun initSyncManager() {
+        syncManager.execute()
     }
 }

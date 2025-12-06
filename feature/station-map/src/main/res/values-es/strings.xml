@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="sheet_title">Estaciones cercanas</string>
     <string name="sheet_button">Mostrar lista</string>
     <string name="filter_brand_number">Marcas (%1$s)</string>
     <string name="filter_brand">Marcas</string>
