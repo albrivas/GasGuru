@@ -76,7 +76,7 @@ class StationMapViewModel @Inject constructor(
     }
 
     private fun startRoute(originId: String?, destinationId: String?) = viewModelScope.launch {
-        _state.update { it.copy(loading = true, fuelStations = emptyList()) }
+        _state.update { it.copy(loading = true, listStations = emptyList()) }
 
         try {
             val (originLocation, destinationLocation) = coroutineScope {
@@ -132,7 +132,8 @@ class StationMapViewModel @Inject constructor(
                             )
                             _state.update {
                                 it.copy(
-                                    fuelStations = sortedStations,
+                                    mapStations = uiStations,
+                                    listStations = sortedStations,
                                     route = route,
                                     mapBounds = bounds,
                                     shouldCenterMap = true,
@@ -156,7 +157,7 @@ class StationMapViewModel @Inject constructor(
 
     private fun getStationByCurrentLocation() {
         viewModelScope.launch {
-            _state.update { it.copy(loading = true, route = null, fuelStations = emptyList()) }
+            _state.update { it.copy(loading = true, route = null, listStations = emptyList()) }
             getCurrentLocationUseCase()?.let { location ->
                 getStationByLocation(location)
             }
@@ -177,11 +178,10 @@ class StationMapViewModel @Inject constructor(
         viewModelScope.launch {
             combine(
                 filters,
-                getUserDataUseCase(),
-                _tabState
-            ) { filterState, userData, tabState ->
-                Triple(filterState, userData, tabState)
-            }.collectLatest { (filterState, userData, tabState) ->
+                getUserDataUseCase()
+            ) { filterState, userData ->
+                Pair(filterState, userData)
+            }.collectLatest { (filterState, userData) ->
                 if (_state.value.route != null) return@collectLatest
                 fuelStationByLocation(
                     userLocation = location,
@@ -196,10 +196,10 @@ class StationMapViewModel @Inject constructor(
                         location = location
                     )
                     val uiStations = fuelStations.map { station -> station.toUiModel() }
-                    val sortedStations = sortStationsByTab(uiStations, tabState.selectedTab, userData)
                     _state.update {
                         it.copy(
-                            fuelStations = sortedStations,
+                            mapStations = uiStations,
+                            listStations = sortStationsByTab(uiStations, _tabState.value.selectedTab, userData),
                             loading = false,
                             selectedType = userData.fuelSelection,
                             mapBounds = bounds,
@@ -266,11 +266,11 @@ class StationMapViewModel @Inject constructor(
         _tabState.update { it.copy(selectedTab = selectedTab) }
 
         val currentState = _state.value
-        if (currentState.route != null && currentState.fuelStations.isNotEmpty()) {
-            viewModelScope.launch {
+        if (currentState.mapStations.isNotEmpty()) {
+            viewModelScope.launch(defaultDispatcher) {
                 val userData = getUserDataUseCase().first()
-                val sortedStations = sortStationsByTab(currentState.fuelStations, selectedTab, userData)
-                _state.update { it.copy(fuelStations = sortedStations) }
+                val sortedStations = sortStationsByTab(currentState.mapStations, selectedTab, userData)
+                _state.update { it.copy(listStations = sortedStations) }
             }
         }
     }
