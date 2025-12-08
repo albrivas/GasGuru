@@ -6,7 +6,8 @@ import com.gasguru.core.ui.models.FuelStationUiModel
 import com.google.android.gms.maps.model.LatLngBounds
 
 data class StationMapUiState(
-    val fuelStations: List<FuelStationUiModel> = emptyList(),
+    val mapStations: List<FuelStationUiModel> = emptyList(), // Only for map
+    val listStations: List<FuelStationUiModel> = emptyList(), // Only for sheet
     val error: Throwable? = null,
     val selectedType: FuelType? = null,
     val showListStations: Boolean = false,
