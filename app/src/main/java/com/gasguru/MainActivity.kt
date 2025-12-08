@@ -111,6 +111,9 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+        // Handle deep link from push notification (cold start)
+        handleIntent(intent)
     }
 
     private fun handleIntent(intent: Intent) {
