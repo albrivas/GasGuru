@@ -54,6 +54,7 @@ onesignal = "5.1.35"
 mixpanel = "7.+"
 supabase = "3.2.5"
 ktor = "3.3.1"
+playReview = "2.0.1"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
@@ -126,6 +127,7 @@ mixpanel = { module = "com.mixpanel.android:mixpanel-android", version.ref = "mi
 supabase-bom = { module = "io.github.jan-tennert.supabase:bom", version.ref = "supabase" }
 supabase-postgrest = { module = "io.github.jan-tennert.supabase:postgrest-kt" }
 ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
+play-review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "playReview" }
 
 
 # Dependencies of the included build-logic

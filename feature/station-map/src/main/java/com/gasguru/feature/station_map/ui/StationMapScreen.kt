@@ -202,7 +202,7 @@ internal fun StationMapScreen(
                 }
                 FilterableStationList(
                     model = FilterableStationListModel(
-                        stations = fuelStations.toStationListItems(selectedType ?: return@Column),
+                        stations = listStations.toStationListItems(selectedType ?: return@Column),
                         selectedTab = tabState.selectedTab.value,
                         onTabChange = { selectedTab ->
                             event(
@@ -231,7 +231,7 @@ internal fun StationMapScreen(
                     .background(color = GasGuruTheme.colors.neutral300)
             ) {
                 MapView(
-                    stations = fuelStations,
+                    stations = mapStations,
                     cameraState = cameraState,
                     userSelectedFuelType = selectedType,
                     loading = loading,

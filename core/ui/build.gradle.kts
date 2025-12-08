@@ -11,4 +11,5 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.uikit)
     implementation(libs.androidx.core.ktx)
+    implementation(libs.play.review.ktx)
 }

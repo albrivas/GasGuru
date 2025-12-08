@@ -46,6 +46,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -68,6 +69,8 @@ import coil.compose.AsyncImage
 import com.gasguru.core.model.data.FuelStationBrandsType
 import com.gasguru.core.model.data.previewFuelStationDomain
 import com.gasguru.core.ui.iconTint
+import com.gasguru.core.ui.review.findActivity
+import com.gasguru.core.ui.review.rememberInAppReviewManager
 import com.gasguru.core.ui.toUiModel
 import com.gasguru.core.uikit.components.information_card.InformationCard
 import com.gasguru.core.uikit.components.information_card.InformationCardModel
@@ -81,6 +84,7 @@ import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.detail_station.R
 import com.gasguru.feature.detail_station.formatSchedule
 import com.gasguru.feature.detail_station.getTimeElapsedString
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun DetailStationScreenRoute(
@@ -365,6 +369,10 @@ fun HeaderStation(
     onPriceAlertClick: () -> Unit,
     onEvent: (DetailStationEvent) -> Unit,
 ) {
+    val context = LocalContext.current
+    val reviewManager = rememberInAppReviewManager()
+    val coroutineScope = rememberCoroutineScope()
+
     Box(modifier = Modifier.fillMaxWidth()) {
         AsyncImage(
             modifier = Modifier
@@ -426,7 +434,24 @@ fun HeaderStation(
                 modifier = Modifier
                     .clip(CircleShape)
                     .testTag("button_favorite"),
-                onClick = { onEvent(DetailStationEvent.ToggleFavorite(!stationState.isFavorite)) },
+                onClick = {
+                    val wasNotFavorite = !stationState.isFavorite
+                    onEvent(DetailStationEvent.ToggleFavorite(wasNotFavorite))
+
+                    if (wasNotFavorite) {
+                        coroutineScope.launch {
+                            context.findActivity()?.let { activity ->
+                                reviewManager.launchReviewFlow(
+                                    activity = activity,
+                                    onReviewCompleted = {
+                                    },
+                                    onReviewFailed = { _ ->
+                                    }
+                                )
+                            }
+                        }
+                    }
+                },
                 colors = IconButtonDefaults.iconButtonColors(containerColor = GasGuruTheme.colors.neutralWhite)
             ) {
                 val accentRed = GasGuruTheme.colors.accentRed
