@@ -1,4 +1,4 @@
-- Nuevo sistema de alertas de precios para estaciones favoritas
-- Notificaciones push cuando los precios bajan en tus estaciones
-- Navegación mejorada mediante deep links desde notificaciones
 - Mejoras en componentes de lista de estaciones y filtros
+- Agregados filtros de precio y distancia para listas de estaciones
+- Ajustes en la interfaz y mejoras de estabilidad
+- Solucionados problemas de diseño y mejora general de la estabilidad

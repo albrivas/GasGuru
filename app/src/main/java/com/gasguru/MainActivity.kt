@@ -111,6 +111,25 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+        // Handle deep link from push notification (cold start)
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent) {
+        val stationId = intent.getStringExtra("station_id")?.toIntOrNull()
+        stationId?.let {
+            deepLinkManager.navigateToDetailStation(stationId = it)
+            return
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+
+        // Handle push (app in foreground and background)
+        handleIntent(intent)
     }
 
     private fun handleIntent(intent: Intent) {
