@@ -1,4 +1,4 @@
-- New price alert system for favorite stations
-- Push notifications when prices drop at your stations
-- Enhanced navigation via deep links from notifications
-- Improved station list components and filters
+- Added in-app review prompts for store ratings
+- Improved push notification handling
+- Updated dependencies for better performance
+- Bug fixes and stability improvements
