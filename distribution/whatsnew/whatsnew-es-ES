@@ -1,4 +1,4 @@
-- Nuevo sistema de alertas de precios para estaciones favoritas
-- Notificaciones push cuando los precios bajan en tus estaciones
-- Navegación mejorada mediante deep links desde notificaciones
-- Mejoras en componentes de lista de estaciones y filtros
+- Añadidas solicitudes de valoración en la app
+- Mejoras en la gestión de notificaciones push
+- Dependencias actualizadas para mejor rendimiento
+- Corrección de errores y mejoras de estabilidad
