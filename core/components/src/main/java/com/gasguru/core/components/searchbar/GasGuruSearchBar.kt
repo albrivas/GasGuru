@@ -167,8 +167,18 @@ internal fun GasGuruSearchBarContent(
         },
         expanded = state.active,
         onExpandedChange = { newActive ->
-            state.onExpandedChange(newActive)
-            model.onActiveChange(newActive)
+            if (!newActive) {
+                if (model.alwaysActive) {
+                    model.onBackPressed()
+                } else {
+                    focusManager.clearFocus()
+                    state.onExpandedChange(false)
+                    model.onActiveChange(false)
+                }
+            } else {
+                state.onExpandedChange(true)
+                model.onActiveChange(true)
+            }
         },
         modifier = model.modifier
             .fillMaxWidth()
