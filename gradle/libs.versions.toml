@@ -52,7 +52,7 @@ androidTools = "31.7.3"
 androidxCarApp = "1.7.0"
 onesignal = "5.1.35"
 mixpanel = "7.+"
-supabase = "3.2.5"
+supabase = "3.2.6"
 ktor = "3.3.1"
 
 [libraries]
