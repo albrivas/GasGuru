@@ -44,6 +44,8 @@ data class FuelStationEntity(
     val priceGasoline98E10: Double,
     val priceGasoline98E5: Double,
     val priceHydrogen: Double,
+    @ColumnInfo(defaultValue = "0.0")
+    val priceAdblue: Double,
     val province: String,
     val referral: String,
     val brandStation: String,
@@ -77,6 +79,7 @@ fun FuelStationEntity.asExternalModel() = FuelStation(
     priceGasoline98E10 = priceGasoline98E10,
     priceGasoline98E5 = priceGasoline98E5,
     priceHydrogen = priceHydrogen,
+    priceAdblue = priceAdblue,
     province = province,
     referral = referral,
     brandStationName = brandStation,
