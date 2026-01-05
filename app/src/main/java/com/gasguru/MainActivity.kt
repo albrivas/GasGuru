@@ -78,6 +78,12 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        // Handle deep links after splash screen is dismissed and UI is ready
+        splash.setOnExitAnimationListener { splashScreenView ->
+            splashScreenView.remove()
+            handleIntent(intent = intent)
+        }
+
         enableEdgeToEdge()
         setContent {
             val appState = rememberGasGuruAppState(networkMonitor)
@@ -111,9 +117,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-
-        // Handle deep link from push notification (cold start)
-        handleIntent(intent)
     }
 
     private fun handleIntent(intent: Intent) {
