@@ -311,6 +311,30 @@ Este es el paso más importante y fácil de olvidar. Hay **3 queries** que deben
 
 ---
 
+## Paso 11: Actualizar tests
+
+### 11.1 FuelStationDaoTest
+
+**Archivo:** `core/database/src/androidTest/java/com/gasguru/core/database/dao/FuelStationDaoTest.kt`
+
+Actualizar la función helper `testFuelStationEntity` para incluir el nuevo campo:
+
+```kotlin
+private fun testFuelStationEntity(brand: String, isFavorite: Boolean, idServiceStation: Int) =
+    FuelStationEntity(
+        // ... otros campos
+        priceGasoline98E5 = 124.125,
+        priceHydrogen = 126.127,
+        priceAdblue = 128.129,  // ← NUEVO
+        province = "luptatum",
+        // ... resto
+    )
+```
+
+> **⚠️ Importante:** Si no actualizas los tests, obtendrás errores en el CI/CD al pasar los test.
+
+---
+
 ## Checklist completo
 
 - [ ] NetworkPriceFuelStation: campo con @Json
@@ -329,6 +353,7 @@ Este es el paso más importante y fácil de olvidar. Hay **3 queries** que deben
 - [ ] DatabaseModule: añadir a addMigrations()
 - [ ] GasGuruDatabase: incrementar version
 - [ ] FuelStationDao: 3 queries SQL actualizadas
+- [ ] FuelStationDaoTest: actualizar testFuelStationEntity helper
 
 ---
 
@@ -355,6 +380,9 @@ Este es el paso más importante y fácil de olvidar. Hay **3 queries** que deben
 - `core/ui/src/main/java/com/gasguru/core/ui/models/FuelTypeUiModel.kt`
 - `core/ui/src/main/res/values/strings.xml`
 - `core/ui/src/main/res/values-es-rES/strings.xml`
+
+### Tests
+- `core/database/src/androidTest/java/com/gasguru/core/database/dao/FuelStationDaoTest.kt`
 
 ---
 
