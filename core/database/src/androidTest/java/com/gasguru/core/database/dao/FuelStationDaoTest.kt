@@ -128,6 +128,7 @@ private fun testFuelStationEntity(brand: String, isFavorite: Boolean, idServiceS
         priceGasoline98E10 = 122.123,
         priceGasoline98E5 = 124.125,
         priceHydrogen = 126.127,
+        priceAdblue = 128.129,
         province = "luptatum",
         referral = "possim",
         brandStation = brand,

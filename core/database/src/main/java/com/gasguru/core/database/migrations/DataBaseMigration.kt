@@ -14,6 +14,7 @@ const val DB_VERSION_9 = 9
 const val DB_VERSION_10 = 10
 const val DB_VERSION_11 = 11
 const val DB_VERSION_12 = 12
+const val DB_VERSION_13 = 13
 
 internal val MIGRATION_2_3 = object : Migration(DB_VERSION_2, DB_VERSION_3) {
     override fun migrate(db: SupportSQLiteDatabase) {
@@ -119,5 +120,11 @@ internal val MIGRATION_11_12 = object : Migration(DB_VERSION_11, DB_VERSION_12) 
             )
             """.trimIndent()
         )
+    }
+}
+
+internal val MIGRATION_12_13 = object : Migration(DB_VERSION_12, DB_VERSION_13) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE 'fuel-station' ADD COLUMN 'priceAdblue' REAL NOT NULL DEFAULT 0.0")
     }
 }
