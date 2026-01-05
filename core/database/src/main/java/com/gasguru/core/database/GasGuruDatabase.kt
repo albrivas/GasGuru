@@ -26,10 +26,10 @@ import com.gasguru.core.database.model.UserDataEntity
         RecentSearchQueryEntity::class,
         FavoriteStationEntity::class,
         FilterEntity::class,
-        PriceAlertEntity::class
+        PriceAlertEntity::class,
     ],
-    version = 12,
-    exportSchema = true
+    version = 13,
+    exportSchema = true,
 )
 @TypeConverters(UserDataConverters::class, ListConverters::class, FilterTypeConverter::class)
 abstract class GasGuruDatabase : RoomDatabase() {
