@@ -35,6 +35,7 @@ fun NetworkPriceFuelStation.asEntity() = FuelStationEntity(
     priceGasoline98E10 = priceGasoline98E10.toSafeDouble(),
     priceGasoline98E5 = priceGasoline98E5.toSafeDouble(),
     priceHydrogen = priceHydrogen.toSafeDouble(),
+    priceAdblue = priceAdblue.toSafeDouble(),
     province = province,
     referral = referral,
     brandStation = brandStation,

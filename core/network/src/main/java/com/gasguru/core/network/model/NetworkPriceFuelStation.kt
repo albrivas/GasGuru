@@ -60,6 +60,8 @@ data class NetworkPriceFuelStation(
     val priceGasoline98E5: String,
     @Json(name = "Precio Hidrogeno")
     val priceHydrogen: String,
+    @Json(name = "Precio Adblue")
+    val priceAdblue: String,
     @Json(name = "Provincia")
     val province: String,
     @Json(name = "Remisión")
