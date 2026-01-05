@@ -61,7 +61,13 @@ data class FuelTypeUiModel(
                 translationRes = R.string.gasoil_b,
                 iconRes = RUikit.drawable.ic_gasoleo_b,
                 noPriceRes = R.string.sin_gasoleo_b
-            )
+            ),
+            FuelTypeUiModel(
+                type = FuelType.ADBLUE,
+                translationRes = R.string.adblue,
+                iconRes = RUikit.drawable.ic_adblue,
+                noPriceRes = R.string.sin_adblue
+            ),
         )
 
         fun fromFuelType(fuelType: FuelType): FuelTypeUiModel =

@@ -11,4 +11,5 @@ enum class FuelType(
     DIESEL({ it.priceGasoilA }),
     DIESEL_PLUS({ it.priceGasoilPremium }),
     GASOIL_B({ it.priceGasoilB }),
+    ADBLUE({ it.priceAdblue }),
 }
