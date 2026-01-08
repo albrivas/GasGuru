@@ -1,7 +1,6 @@
 package com.gasguru.core.uikit.components.route_navigation_card
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,11 +38,6 @@ fun RouteNavigationCard(
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
             .background(color = GasGuruTheme.colors.neutralWhite)
-            .border(
-                width = 1.dp,
-                color = GasGuruTheme.colors.neutral300,
-                shape = RoundedCornerShape(8.dp),
-            )
             .padding(all = 12.dp),
     ) {
         ConstraintLayout(
@@ -75,43 +69,51 @@ fun RouteNavigationCard(
                     modifier = Modifier.padding(top = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(
-                        text = "$stationCount gasolineras",
-                        style = GasGuruTheme.typography.smallRegular,
-                        color = GasGuruTheme.colors.textSubtle,
-                    )
+                    if (distance != null && duration != null) {
+                        Text(
+                            text = "$stationCount gasolineras",
+                            style = GasGuruTheme.typography.smallRegular,
+                            color = GasGuruTheme.colors.textSubtle,
+                        )
 
-                    Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
 
-                    Text(
-                        text = "•",
-                        style = GasGuruTheme.typography.smallRegular,
-                        color = GasGuruTheme.colors.textSubtle,
-                    )
+                        Text(
+                            text = "•",
+                            style = GasGuruTheme.typography.smallRegular,
+                            color = GasGuruTheme.colors.textSubtle,
+                        )
 
-                    Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
 
-                    Text(
-                        text = distance,
-                        style = GasGuruTheme.typography.smallRegular,
-                        color = GasGuruTheme.colors.textSubtle,
-                    )
+                        Text(
+                            text = distance,
+                            style = GasGuruTheme.typography.smallRegular,
+                            color = GasGuruTheme.colors.textSubtle,
+                        )
 
-                    Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
 
-                    Text(
-                        text = "•",
-                        style = GasGuruTheme.typography.smallRegular,
-                        color = GasGuruTheme.colors.textSubtle,
-                    )
+                        Text(
+                            text = "•",
+                            style = GasGuruTheme.typography.smallRegular,
+                            color = GasGuruTheme.colors.textSubtle,
+                        )
 
-                    Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
 
-                    Text(
-                        text = duration,
-                        style = GasGuruTheme.typography.smallRegular,
-                        color = GasGuruTheme.colors.textSubtle,
-                    )
+                        Text(
+                            text = duration,
+                            style = GasGuruTheme.typography.smallRegular,
+                            color = GasGuruTheme.colors.textSubtle,
+                        )
+                    } else {
+                        Text(
+                            text = "Calculando ruta...",
+                            style = GasGuruTheme.typography.smallRegular,
+                            color = GasGuruTheme.colors.textSubtle,
+                        )
+                    }
                 }
             }
 
@@ -159,6 +161,22 @@ private fun RouteNavigationCardLongDestinationPreview() {
                 stationCount = 15,
                 distance = "45,8 km",
                 duration = "1 h 30 min",
+                onClose = {},
+            ),
+        )
+    }
+}
+
+@Composable
+@ThemePreviews
+private fun RouteNavigationCardLoadingPreview() {
+    MyApplicationTheme {
+        RouteNavigationCard(
+            model = RouteNavigationCardModel(
+                destination = "Calle Gran Vía, 28, Madrid",
+                stationCount = 0,
+                distance = null,
+                duration = null,
                 onClose = {},
             ),
         )
