@@ -70,13 +70,18 @@ class StationMapViewModel @Inject constructor(
             is StationMapEvent.UpdateNearbyFilter -> updateFilterNearby(event.number)
             is StationMapEvent.UpdateScheduleFilter -> updateFilterSchedule(event.schedule)
             is StationMapEvent.OnMapCentered -> markMapAsCentered()
-            is StationMapEvent.StartRoute -> startRoute(event.originId, event.destinationId)
+            is StationMapEvent.StartRoute -> startRoute(
+                originId = event.originId,
+                destinationId = event.destinationId,
+                destinationName = event.destinationName,
+            )
+            is StationMapEvent.CancelRoute -> cancelRoute()
             is StationMapEvent.ChangeTab -> changeTab(event.selected)
         }
     }
 
-    private fun startRoute(originId: String?, destinationId: String?) = viewModelScope.launch {
-        _state.update { it.copy(loading = true, listStations = emptyList()) }
+    private fun startRoute(originId: String?, destinationId: String?, destinationName: String?) = viewModelScope.launch {
+        _state.update { it.copy(loading = true, listStations = emptyList(), routeDestinationName = destinationName) }
 
         try {
             val (originLocation, destinationLocation) = coroutineScope {
@@ -135,19 +140,20 @@ class StationMapViewModel @Inject constructor(
                                     mapStations = uiStations,
                                     listStations = sortedStations,
                                     route = route,
+                                    routeDestinationName = destinationName,
                                     mapBounds = bounds,
                                     shouldCenterMap = true,
-                                    loading = false
+                                    loading = false,
                                 )
                             }
                         } catch (error: Exception) {
-                            _state.update { it.copy(error = error, loading = false) }
+                            _state.update { it.copy(error = error, loading = false, routeDestinationName = null) }
                         }
                     }
                 }
             }
         } catch (error: Exception) {
-            _state.update { it.copy(error = error, loading = false) }
+            _state.update { it.copy(error = error, loading = false, routeDestinationName = null) }
         }
     }
 
@@ -155,12 +161,34 @@ class StationMapViewModel @Inject constructor(
         _state.update { it.copy(shouldCenterMap = false) }
     }
 
+    private fun cancelRoute() {
+        _state.update { it.copy(route = null, routeDestinationName = null) }
+        getStationByCurrentLocation()
+    }
+
     private fun getStationByCurrentLocation() {
         viewModelScope.launch {
-            _state.update { it.copy(loading = true, route = null, listStations = emptyList()) }
             getCurrentLocationUseCase()?.let { location ->
-                getStationByLocation(location)
+                if (_state.value.route != null) {
+                    centerMapOnLocation(location = location)
+                } else {
+                    _state.update { it.copy(loading = true, listStations = emptyList()) }
+                    getStationByLocation(location = location)
+                }
             }
+        }
+    }
+
+    private fun centerMapOnLocation(location: Location) {
+        val bounds = LatLngBounds.builder()
+            .include(location.toLatLng())
+            .build()
+
+        _state.update {
+            it.copy(
+                mapBounds = bounds,
+                shouldCenterMap = true,
+            )
         }
     }
 

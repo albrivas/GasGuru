@@ -16,6 +16,7 @@ data class StationMapUiState(
     val shouldCenterMap: Boolean = false,
     val startRoute: Boolean = false,
     val route: Route? = null,
+    val routeDestinationName: String? = null,
 )
 
 data class SelectedTabUiState(

@@ -1,5 +1,9 @@
 package com.gasguru.feature.station_map.ui
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -75,6 +79,8 @@ import com.gasguru.core.uikit.components.loading.GasGuruLoading
 import com.gasguru.core.uikit.components.loading.GasGuruLoadingModel
 import com.gasguru.core.uikit.components.marker.StationMarker
 import com.gasguru.core.uikit.components.marker.StationMarkerModel
+import com.gasguru.core.uikit.components.route_navigation_card.RouteNavigationCard
+import com.gasguru.core.uikit.components.route_navigation_card.RouteNavigationCardModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
@@ -136,6 +142,7 @@ internal fun StationMapScreen(
 
     val peekHeight = 60.dp
     var isSearchActive by remember { mutableStateOf(false) }
+    val isRouteActive = route != null || (loading && routeDestinationName != null)
 
     val maxHeightSheetDp = calculateMaxSheetHeight(peekHeight = peekHeight)
 
@@ -151,7 +158,8 @@ internal fun StationMapScreen(
             event(
                 StationMapEvent.StartRoute(
                     originId = routePlanner.originId,
-                    destinationId = routePlanner.destinationId
+                    destinationId = routePlanner.destinationId,
+                    destinationName = routePlanner.destinationName,
                 )
             )
         }
@@ -239,34 +247,53 @@ internal fun StationMapScreen(
                     navigateToDetail = navigateToDetail,
                     modifier = Modifier.fillMaxSize()
                 )
-                Column(
+                AnimatedContent(
+                    targetState = isRouteActive,
+                    transitionSpec = { fadeIn() togetherWith fadeOut() },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .align(Alignment.TopStart)
-                ) {
-                    GasGuruSearchBar(
-                        model = GasGuruSearchBarModel(
-                            onActiveChange = { isSearchActive = it },
-                            onPlaceSelected = { place ->
-                                event(StationMapEvent.GetStationByPlace(place.id))
-                            },
-                            onRecentSearchClicked = { place ->
-                                event(StationMapEvent.GetStationByPlace(place.id))
-                            },
+                        .align(Alignment.TopStart),
+                    label = "route_content_animation",
+                ) { isActive ->
+                    if (isActive) {
+                        RouteNavigationCard(
+                            model = RouteNavigationCardModel(
+                                destination = routeDestinationName.orEmpty(),
+                                stationCount = mapStations.size,
+                                distance = route?.distanceText,
+                                duration = route?.durationText,
+                                onClose = { event(StationMapEvent.CancelRoute) },
+                            ),
+                            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 48.dp, bottom = 16.dp),
                         )
-                    )
-                    FilterGroup(
-                        modifier = Modifier,
-                        event = event,
-                        onHeight = { },
-                        filterUiState = filterUiState,
-                    )
+                    } else {
+                        Column {
+                            GasGuruSearchBar(
+                                model = GasGuruSearchBarModel(
+                                    onActiveChange = { isSearchActive = it },
+                                    onPlaceSelected = { place ->
+                                        event(StationMapEvent.GetStationByPlace(place.id))
+                                    },
+                                    onRecentSearchClicked = { place ->
+                                        event(StationMapEvent.GetStationByPlace(place.id))
+                                    },
+                                )
+                            )
+                            FilterGroup(
+                                modifier = Modifier,
+                                event = event,
+                                onHeight = { },
+                                filterUiState = filterUiState,
+                            )
+                        }
+                    }
                 }
-                FABLocation(
+                FloatingButtons(
                     modifier = Modifier.align(Alignment.BottomEnd),
                     isVisible = !isSearchActive,
+                    showRoutePlannerButton = !isRouteActive,
                     event = event,
-                    navigateToRoutePlanner = navigateToRoutePlanner
+                    navigateToRoutePlanner = navigateToRoutePlanner,
                 )
             }
         }
@@ -385,9 +412,10 @@ fun MapView(
 }
 
 @Composable
-fun FABLocation(
+fun FloatingButtons(
     modifier: Modifier,
     isVisible: Boolean = true,
+    showRoutePlannerButton: Boolean = true,
     event: (StationMapEvent) -> Unit = {},
     navigateToRoutePlanner: () -> Unit = {},
 ) {
@@ -412,17 +440,19 @@ fun FABLocation(
                 )
             }
 
-            FloatingActionButton(
-                onClick = navigateToRoutePlanner,
-                modifier = modifier,
-                containerColor = GasGuruTheme.colors.primary100,
-                contentColor = GasGuruTheme.colors.neutralBlack,
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Directions,
-                    tint = GasGuruTheme.colors.textSubtle,
-                    contentDescription = "Create route",
-                )
+            if (showRoutePlannerButton) {
+                FloatingActionButton(
+                    onClick = navigateToRoutePlanner,
+                    modifier = modifier,
+                    containerColor = GasGuruTheme.colors.primary100,
+                    contentColor = GasGuruTheme.colors.neutralBlack,
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Directions,
+                        tint = GasGuruTheme.colors.textSubtle,
+                        contentDescription = "Create route",
+                    )
+                }
             }
         }
     }
