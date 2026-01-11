@@ -70,6 +70,7 @@ class StationMapViewModel @Inject constructor(
             is StationMapEvent.UpdateNearbyFilter -> updateFilterNearby(event.number)
             is StationMapEvent.UpdateScheduleFilter -> updateFilterSchedule(event.schedule)
             is StationMapEvent.OnMapCentered -> markMapAsCentered()
+            is StationMapEvent.OnUserLocationCentered -> markUserLocationCentered()
             is StationMapEvent.StartRoute -> startRoute(
                 originId = event.originId,
                 destinationId = event.destinationId,
@@ -161,6 +162,10 @@ class StationMapViewModel @Inject constructor(
         _state.update { it.copy(shouldCenterMap = false) }
     }
 
+    private fun markUserLocationCentered() {
+        _state.update { it.copy(userLocationToCenter = null) }
+    }
+
     private fun cancelRoute() {
         _state.update { it.copy(route = null, routeDestinationName = null) }
         getStationByCurrentLocation()
@@ -180,15 +185,8 @@ class StationMapViewModel @Inject constructor(
     }
 
     private fun centerMapOnLocation(location: Location) {
-        val bounds = LatLngBounds.builder()
-            .include(location.toLatLng())
-            .build()
-
         _state.update {
-            it.copy(
-                mapBounds = bounds,
-                shouldCenterMap = true,
-            )
+            it.copy(userLocationToCenter = location.toLatLng())
         }
     }
 

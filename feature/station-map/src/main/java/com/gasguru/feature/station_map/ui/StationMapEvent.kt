@@ -8,6 +8,7 @@ sealed class StationMapEvent {
     data class UpdateNearbyFilter(val number: String) : StationMapEvent()
     data class UpdateScheduleFilter(val schedule: FilterUiState.OpeningHours) : StationMapEvent()
     data object OnMapCentered : StationMapEvent()
+    data object OnUserLocationCentered : StationMapEvent()
     data class StartRoute(
         val originId: String?,
         val destinationId: String?,

@@ -54,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.gasguru.core.common.centerOnLocation
 import com.gasguru.core.common.centerOnMap
 import com.gasguru.core.common.toLatLng
 import com.gasguru.core.components.searchbar.GasGuruSearchBar
@@ -162,6 +163,13 @@ internal fun StationMapScreen(
                     destinationName = routePlanner.destinationName,
                 )
             )
+        }
+    }
+
+    LaunchedEffect(userLocationToCenter) {
+        if (userLocationToCenter != null) {
+            cameraState.centerOnLocation(location = userLocationToCenter)
+            event(StationMapEvent.OnUserLocationCentered)
         }
     }
 
