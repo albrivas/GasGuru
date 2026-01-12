@@ -36,6 +36,12 @@ suspend fun CameraPositionState.centerOnMap(bounds: LatLngBounds, padding: Int) 
         durationMs = 500
     )
 
+suspend fun CameraPositionState.centerOnLocation(location: GoogleLatLng) =
+    animate(
+        update = CameraUpdateFactory.newLatLng(location),
+        durationMs = 500
+    )
+
 fun Context.hasLocationPermission(): Boolean {
     return ContextCompat.checkSelfPermission(
         this,
