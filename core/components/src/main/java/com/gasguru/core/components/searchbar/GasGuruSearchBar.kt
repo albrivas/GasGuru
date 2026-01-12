@@ -231,9 +231,10 @@ internal fun GasGuruSearchBarContent(
                                                     recentQuery.name
                                                 )
                                             )
-                                            model.onRecentSearchClicked(searchPlace)
                                             state.deactivate()
+                                            model.onActiveChange(false)
                                             focusManager.clearFocus()
+                                            model.onRecentSearchClicked(searchPlace)
                                         }
                                     )
                                 },
