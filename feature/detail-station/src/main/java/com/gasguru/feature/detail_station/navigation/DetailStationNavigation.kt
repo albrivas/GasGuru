@@ -20,7 +20,7 @@ fun NavController.navigateToDetailStationAsDialog(
     navigate(DetailStationDialogRoute(idServiceStation), navOptions)
 }
 
-fun NavGraphBuilder.detailStationScreen(onBack: () -> Unit) {
+fun NavGraphBuilder.detailStationScreen() {
     composable<DetailStationRoute>(
         enterTransition = {
             null
@@ -29,18 +29,18 @@ fun NavGraphBuilder.detailStationScreen(onBack: () -> Unit) {
             null
         },
     ) {
-        DetailStationScreenRoute(onBack = onBack)
+        DetailStationScreenRoute()
     }
 }
 
-fun NavGraphBuilder.detailStationScreenDialog(onBack: () -> Unit) {
+fun NavGraphBuilder.detailStationScreenDialog() {
     dialog<DetailStationDialogRoute>(
         dialogProperties = DialogProperties(
             usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = false
+            decorFitsSystemWindows = false,
         ),
     ) {
         ConfigureDialogSystemBars(invertColors = true)
-        DetailStationScreenRoute(onBack = onBack)
+        DetailStationScreenRoute()
     }
 }

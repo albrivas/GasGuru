@@ -14,6 +14,7 @@ dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.model)
     implementation(projects.core.uikit)
+    implementation(projects.navigation)
 
     androidTestImplementation(projects.core.testing)
     androidTestImplementation(projects.core.testing)

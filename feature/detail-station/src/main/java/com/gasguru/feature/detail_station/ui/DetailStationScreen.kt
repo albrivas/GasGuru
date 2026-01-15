@@ -84,13 +84,14 @@ import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.detail_station.R
 import com.gasguru.feature.detail_station.formatSchedule
 import com.gasguru.feature.detail_station.getTimeElapsedString
+import com.gasguru.navigation.LocalNavigationManager
 import kotlinx.coroutines.launch
 
 @Composable
 internal fun DetailStationScreenRoute(
-    onBack: () -> Unit,
     viewModel: DetailStationViewModel = hiltViewModel(),
 ) {
+    val navigationManager = LocalNavigationManager.current
     val uiState by viewModel.fuelStation.collectAsStateWithLifecycle()
     val staticMapUrl by viewModel.staticMapUrl.collectAsStateWithLifecycle()
     val lastUpdate by viewModel.lastUpdate.collectAsStateWithLifecycle()
@@ -99,8 +100,8 @@ internal fun DetailStationScreenRoute(
         uiState = uiState,
         staticMapUrl = staticMapUrl,
         lastUpdate = lastUpdate,
-        onBack = onBack,
-        onEvent = viewModel::onEvent
+        onBack = { navigationManager.navigateBack() },
+        onEvent = viewModel::onEvent,
     )
 }
 

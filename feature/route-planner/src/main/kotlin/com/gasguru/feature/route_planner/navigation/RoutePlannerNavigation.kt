@@ -11,17 +11,12 @@ import com.gasguru.navigation.constants.NavigationKeys
 import com.gasguru.navigation.extensions.getPreviousResult
 import com.gasguru.navigation.extensions.removePreviousResult
 import com.gasguru.navigation.models.PlaceArgs
-import com.gasguru.navigation.models.RoutePlanArgs
 
 fun NavController.navigateToRoutePlannerScreen(navOptions: NavOptions? = null) {
     navigate(RoutePlannerRoute, navOptions)
 }
 
-fun NavGraphBuilder.routePlannerScreen(
-    onBack: () -> Unit = {},
-    navigateToSearch: () -> Unit = {},
-    popBackToMapScreen: (RoutePlanArgs) -> Unit = {},
-) {
+fun NavGraphBuilder.routePlannerScreen() {
     dialog<RoutePlannerRoute>(
         dialogProperties = DialogProperties(
             usePlatformDefaultWidth = false,
@@ -35,11 +30,6 @@ fun NavGraphBuilder.routePlannerScreen(
 
         ConfigureDialogSystemBars()
 
-        RoutePlannerScreenRoute(
-            selectedPlaceId = result,
-            onBack = onBack,
-            navigateToSearch = navigateToSearch,
-            popBackToMapScreen = popBackToMapScreen
-        )
+        RoutePlannerScreenRoute(selectedPlaceId = result)
     }
 }
