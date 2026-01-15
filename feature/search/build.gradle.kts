@@ -17,6 +17,7 @@ dependencies {
     implementation(projects.core.uikit)
     implementation(projects.core.common)
     implementation(projects.core.components)
+    implementation(projects.navigation)
     
     implementation(libs.kotlin.coroutines.play)
     implementation(libs.maps.compose)
