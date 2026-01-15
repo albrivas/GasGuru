@@ -10,10 +10,10 @@ import kotlinx.coroutines.flow.SharedFlow
  */
 interface NavigationManager {
     /**
-     * Flow of navigation destinations to be observed by NavHost.
+     * Flow of navigation commands to be observed by NavHost.
      * The NavHost will collect this flow and execute navigation actions.
      */
-    val navigationFlow: SharedFlow<NavigationDestination>
+    val navigationFlow: SharedFlow<NavigationCommand>
 
     /**
      * Navigate to a specific destination.
@@ -26,4 +26,14 @@ interface NavigationManager {
      * Navigate back (pop current screen from back stack).
      */
     fun navigateBack()
+
+    /**
+     * Navigate back to a specific route in the back stack.
+     */
+    fun navigateBackTo(route: Any, inclusive: Boolean = false)
+
+    /**
+     * Navigate back and pass data to the previous screen.
+     */
+    fun navigateBackWithData(key: String, value: Any)
 }

@@ -9,23 +9,35 @@ import javax.inject.Singleton
 
 /**
  * Implementation of [NavigationManager].
- * Emits navigation events through a SharedFlow that will be collected by the NavHost.
+ * Emits navigation commands through a SharedFlow that will be collected by the NavHost.
  */
 @Singleton
 class NavigationManagerImpl @Inject constructor() : NavigationManager {
 
-    private val _navigationFlow = MutableSharedFlow<NavigationDestination>(
+    private val _navigationFlow = MutableSharedFlow<NavigationCommand>(
         extraBufferCapacity = 10,
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
     )
 
-    override val navigationFlow: SharedFlow<NavigationDestination> = _navigationFlow.asSharedFlow()
+    override val navigationFlow: SharedFlow<NavigationCommand> = _navigationFlow.asSharedFlow()
 
     override fun navigateTo(destination: NavigationDestination) {
-        _navigationFlow.tryEmit(value = destination)
+        _navigationFlow.tryEmit(value = NavigationCommand.To(destination = destination))
     }
 
     override fun navigateBack() {
-        _navigationFlow.tryEmit(value = NavigationDestination.Back)
+        _navigationFlow.tryEmit(value = NavigationCommand.Back)
+    }
+
+    override fun navigateBackTo(route: Any, inclusive: Boolean) {
+        _navigationFlow.tryEmit(
+            value = NavigationCommand.BackTo(route = route, inclusive = inclusive)
+        )
+    }
+
+    override fun navigateBackWithData(key: String, value: Any) {
+        _navigationFlow.tryEmit(
+            value = NavigationCommand.BackWithData(key = key, value = value)
+        )
     }
 }

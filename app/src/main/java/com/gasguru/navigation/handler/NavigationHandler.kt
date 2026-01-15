@@ -10,11 +10,12 @@ import com.gasguru.feature.onboarding_welcome.navigation.navigateToOnboardingWel
 import com.gasguru.feature.route_planner.navigation.navigateToRoutePlannerScreen
 import com.gasguru.feature.search.navigation.navigateToSearch
 import com.gasguru.navigation.extensions.setPreviousResult
+import com.gasguru.navigation.manager.NavigationCommand
 import com.gasguru.navigation.manager.NavigationDestination
 import com.gasguru.navigation.navigationbar.navigateToNavigationBar
 
 /**
- * NavigationHandler is responsible for translating [NavigationDestination] objects
+ * NavigationHandler is responsible for translating [NavigationCommand] objects
  * into actual navigation actions using NavController extension functions.
  *
  * This class acts as a bridge between the centralized [NavigationManager] and
@@ -23,65 +24,67 @@ import com.gasguru.navigation.navigationbar.navigateToNavigationBar
 class NavigationHandler(private val navController: NavController) {
 
     /**
-     * Handles a navigation destination and executes the appropriate navigation action.
+     * Handles a navigation command and executes the appropriate navigation action.
      *
-     * @param destination The destination to navigate to
+     * @param command The command to execute
      */
-    fun handle(destination: NavigationDestination) {
-        when (destination) {
-            is NavigationDestination.DetailStation -> {
-                if (destination.presentAsDialog) {
-                    navController.navigateToDetailStationAsDialog(
-                        idServiceStation = destination.idServiceStation,
-                    )
-                } else {
-                    navController.navigateToDetailStation(
-                        idServiceStation = destination.idServiceStation,
-                    )
+    fun handle(command: NavigationCommand) {
+        when (command) {
+            is NavigationCommand.To -> when (val destination = command.destination) {
+                is NavigationDestination.DetailStation -> {
+                    if (destination.presentAsDialog) {
+                        navController.navigateToDetailStationAsDialog(
+                            idServiceStation = destination.idServiceStation,
+                        )
+                    } else {
+                        navController.navigateToDetailStation(
+                            idServiceStation = destination.idServiceStation,
+                        )
+                    }
+                }
+
+                is NavigationDestination.OnboardingWelcome -> {
+                    navController.navigateToOnboardingWelcomeRoute()
+                }
+
+                is NavigationDestination.OnboardingFuelPreferences -> {
+                    navController.navigateToOnboardingFuelPreferencesRoute()
+                }
+
+                is NavigationDestination.Home -> {
+                    val navOptions = NavOptions.Builder()
+                        .setPopUpTo(
+                            route = OnboardingRoutes.OnboardingWelcomeRoute,
+                            inclusive = true,
+                        )
+                        .build()
+                    navController.navigateToNavigationBar(navOptions = navOptions)
+                }
+
+                is NavigationDestination.Search -> {
+                    navController.navigateToSearch()
+                }
+
+                is NavigationDestination.RoutePlanner -> {
+                    navController.navigateToRoutePlannerScreen()
                 }
             }
 
-            is NavigationDestination.OnboardingWelcome -> {
-                navController.navigateToOnboardingWelcomeRoute()
-            }
-
-            is NavigationDestination.OnboardingFuelPreferences -> {
-                navController.navigateToOnboardingFuelPreferencesRoute()
-            }
-
-            is NavigationDestination.Home -> {
-                val navOptions = NavOptions.Builder()
-                    .setPopUpTo(
-                        route = OnboardingRoutes.OnboardingWelcomeRoute,
-                        inclusive = true,
-                    )
-                    .build()
-                navController.navigateToNavigationBar(navOptions = navOptions)
-            }
-
-            is NavigationDestination.Search -> {
-                navController.navigateToSearch()
-            }
-
-            is NavigationDestination.RoutePlanner -> {
-                navController.navigateToRoutePlannerScreen()
-            }
-
-            is NavigationDestination.Back -> {
+            is NavigationCommand.Back -> {
                 navController.popBackStack()
             }
 
-            is NavigationDestination.BackTo -> {
+            is NavigationCommand.BackTo -> {
                 navController.popBackStack(
-                    route = destination.route,
-                    inclusive = destination.inclusive,
+                    route = command.route,
+                    inclusive = command.inclusive,
                 )
             }
 
-            is NavigationDestination.BackWithData -> {
+            is NavigationCommand.BackWithData -> {
                 navController.setPreviousResult(
-                    key = destination.key,
-                    value = destination.value,
+                    key = command.key,
+                    value = command.value,
                 )
                 navController.popBackStack()
             }
