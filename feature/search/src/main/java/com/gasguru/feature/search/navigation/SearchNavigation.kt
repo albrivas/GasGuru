@@ -5,7 +5,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.dialog
-import com.gasguru.core.model.data.SearchPlace
 import com.gasguru.core.ui.ConfigureDialogSystemBars
 import com.gasguru.feature.search.ui.SearchScreenRoute
 

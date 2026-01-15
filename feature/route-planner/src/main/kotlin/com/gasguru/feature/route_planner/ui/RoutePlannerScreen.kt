@@ -43,9 +43,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.gasguru.navigation.LocalNavigationManager
-import com.gasguru.navigation.constants.NavigationKeys
-import com.gasguru.navigation.manager.NavigationDestination
 import com.gasguru.core.model.data.RecentSearchQuery
 import com.gasguru.core.ui.RecentSearchQueriesUiState
 import com.gasguru.core.uikit.components.GasGuruButton
@@ -61,6 +58,9 @@ import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.route_planner.R
+import com.gasguru.navigation.LocalNavigationManager
+import com.gasguru.navigation.constants.NavigationKeys
+import com.gasguru.navigation.manager.NavigationDestination
 import com.gasguru.navigation.models.PlaceArgs
 import com.gasguru.navigation.models.RoutePlanArgs
 
