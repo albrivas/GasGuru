@@ -23,6 +23,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.gasguru.navigation.LocalNavigationManager
+import com.gasguru.navigation.manager.NavigationDestination
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.previewFuelStationDomain
 import com.gasguru.core.ui.models.FuelStationUiModel
@@ -42,15 +44,22 @@ import com.gasguru.feature.favorite_list_station.R
 
 @Composable
 fun FavoriteListStationScreenRoute(
-    navigateToDetail: (Int) -> Unit,
     viewModel: FavoriteListStationViewModel = hiltViewModel(),
 ) {
+    val navigationManager = LocalNavigationManager.current
     val state by viewModel.favoriteStations.collectAsStateWithLifecycle()
     val tabState by viewModel.tabState.collectAsStateWithLifecycle()
     FavoriteListStationScreen(
         uiState = state,
         tabState = tabState,
-        navigateToDetail = navigateToDetail,
+        navigateToDetail = { stationId ->
+            navigationManager.navigateTo(
+                destination = NavigationDestination.DetailStation(
+                    idServiceStation = stationId,
+                    presentAsDialog = true,
+                ),
+            )
+        },
         event = viewModel::handleEvents
     )
 }
