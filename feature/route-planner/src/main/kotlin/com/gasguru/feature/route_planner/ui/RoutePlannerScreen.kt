@@ -58,17 +58,18 @@ import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.route_planner.R
+import com.gasguru.navigation.LocalNavigationManager
+import com.gasguru.navigation.constants.NavigationKeys
+import com.gasguru.navigation.manager.NavigationDestination
 import com.gasguru.navigation.models.PlaceArgs
 import com.gasguru.navigation.models.RoutePlanArgs
 
 @Composable
 fun RoutePlannerScreenRoute(
     selectedPlaceId: PlaceArgs? = null,
-    onBack: () -> Unit = {},
-    navigateToSearch: () -> Unit = {},
-    popBackToMapScreen: (RoutePlanArgs) -> Unit = {},
     viewModel: RoutePlannerViewModel = hiltViewModel(),
 ) {
+    val navigationManager = LocalNavigationManager.current
     val recents by viewModel.recentSearchQueriesUiState.collectAsStateWithLifecycle()
     val state by viewModel.state.collectAsStateWithLifecycle()
     val isRouteEnabled by viewModel.isRouteEnabled.collectAsStateWithLifecycle()
@@ -78,18 +79,21 @@ fun RoutePlannerScreenRoute(
         selectedPlace = selectedPlaceId,
         isRouteEnabled = isRouteEnabled,
         recentPlacesState = recents,
-        onBack = onBack,
-        navigateToSearch = navigateToSearch,
+        onBack = { navigationManager.navigateBack() },
+        navigateToSearch = {
+            navigationManager.navigateTo(destination = NavigationDestination.Search)
+        },
         onEvent = viewModel::handleEvent,
         onStartRoute = {
-            popBackToMapScreen(
-                RoutePlanArgs(
+            navigationManager.navigateBackWithData(
+                key = NavigationKeys.ROUTE_PLANNER,
+                value = RoutePlanArgs(
                     originId = state.startQuery.id.takeIf { it.isNotEmpty() },
                     destinationId = state.endQuery.id.takeIf { it.isNotEmpty() },
                     destinationName = state.endQuery.name.takeIf { it.isNotEmpty() },
-                )
+                ),
             )
-        }
+        },
     )
 }
 

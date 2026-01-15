@@ -87,6 +87,8 @@ import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.station_map.BuildConfig
 import com.gasguru.feature.station_map.R
+import com.gasguru.navigation.LocalNavigationManager
+import com.gasguru.navigation.manager.NavigationDestination
 import com.gasguru.navigation.models.RoutePlanArgs
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
@@ -108,21 +110,32 @@ import com.gasguru.core.uikit.R as RUikit
 @Composable
 fun StationMapScreenRoute(
     routePlanner: RoutePlanArgs?,
-    navigateToDetail: (Int) -> Unit = {},
-    navigateToRoutePlanner: () -> Unit = {},
+    onRoutePlanConsumed: () -> Unit = {},
     viewModel: StationMapViewModel = hiltViewModel(),
 ) {
+    val navigationManager = LocalNavigationManager.current
     val state by viewModel.state.collectAsStateWithLifecycle()
     val filterGroup by viewModel.filters.collectAsStateWithLifecycle()
     val tabState by viewModel.tabState.collectAsStateWithLifecycle()
+
     StationMapScreen(
         uiState = state,
         filterUiState = filterGroup,
         tabState = tabState,
         routePlanner = routePlanner,
+        onRoutePlanConsumed = onRoutePlanConsumed,
         event = viewModel::handleEvent,
-        navigateToDetail = navigateToDetail,
-        navigateToRoutePlanner = navigateToRoutePlanner
+        navigateToDetail = { stationId ->
+            navigationManager.navigateTo(
+                destination = NavigationDestination.DetailStation(
+                    idServiceStation = stationId,
+                    presentAsDialog = true,
+                )
+            )
+        },
+        navigateToRoutePlanner = {
+            navigationManager.navigateTo(destination = NavigationDestination.RoutePlanner)
+        },
     )
 }
 
@@ -133,6 +146,7 @@ internal fun StationMapScreen(
     filterUiState: FilterUiState,
     tabState: SelectedTabUiState,
     routePlanner: RoutePlanArgs?,
+    onRoutePlanConsumed: () -> Unit = {},
     event: (StationMapEvent) -> Unit = {},
     navigateToDetail: (Int) -> Unit = {},
     navigateToRoutePlanner: () -> Unit = {},
@@ -163,6 +177,7 @@ internal fun StationMapScreen(
                     destinationName = routePlanner.destinationName,
                 )
             )
+            onRoutePlanConsumed()
         }
     }
 
