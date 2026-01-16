@@ -1,6 +1,5 @@
 package com.gasguru.core.model.data
 
-import android.location.Location
 import java.util.Locale
 
 const val DISTANCE_KM_IN_METERS = 1000
@@ -15,7 +14,7 @@ data class FuelStation(
     val idServiceStation: Int,
     val idMunicipality: String,
     val idProvince: String,
-    val location: Location,
+    val location: LatLng,
     val locality: String,
     val margin: String,
     val municipality: String,
@@ -70,7 +69,7 @@ fun previewFuelStationDomain(idServiceStation: Int = 0) = FuelStation(
     idServiceStation = idServiceStation,
     idMunicipality = "",
     idProvince = "",
-    location = Location(""),
+    location = LatLng(0.0, 0.0),
     locality = "",
     margin = "",
     municipality = "Talavera de la Reina",

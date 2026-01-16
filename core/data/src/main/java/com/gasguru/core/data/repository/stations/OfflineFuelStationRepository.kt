@@ -1,10 +1,9 @@
 package com.gasguru.core.data.repository.stations
 
-import android.location.Location
 import com.gasguru.core.common.CommonUtils.isStationOpen
 import com.gasguru.core.common.DefaultDispatcher
 import com.gasguru.core.common.IoDispatcher
-import com.gasguru.core.common.toLocation
+import com.gasguru.core.common.distanceTo
 import com.gasguru.core.data.mapper.asEntity
 import com.gasguru.core.data.mapper.calculateFuelPrices
 import com.gasguru.core.data.mapper.getPriceCategory
@@ -14,7 +13,7 @@ import com.gasguru.core.database.dao.FuelStationDao
 import com.gasguru.core.database.dao.PriceAlertDao
 import com.gasguru.core.database.model.FuelStationEntity
 import com.gasguru.core.database.model.asExternalModel
-import com.gasguru.core.database.model.getLocation
+import com.gasguru.core.database.model.toLatLng
 import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.OpeningHours
@@ -63,7 +62,7 @@ class OfflineFuelStationRepository @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getFuelStationByLocation(
-        userLocation: Location,
+        userLocation: LatLng,
         maxStations: Int,
         brands: List<String>,
         schedule: OpeningHours,
@@ -75,10 +74,10 @@ class OfflineFuelStationRepository @Inject constructor(
             ).map { items ->
                 val externalModel = items
                     .sortedBy {
-                        Location("").apply {
-                            latitude = it.latitude
-                            longitude = it.longitudeWGS84
-                        }.distanceTo(userLocation)
+                        LatLng(
+                            latitude = it.latitude,
+                            longitude = it.longitudeWGS84,
+                        ).distanceTo(userLocation)
                     }
                     .take(maxStations)
                     .map(FuelStationEntity::asExternalModel)
@@ -109,7 +108,7 @@ class OfflineFuelStationRepository @Inject constructor(
         }.flowOn(defaultDispatcher)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getFuelStationById(id: Int, userLocation: Location): Flow<FuelStation> =
+    override fun getFuelStationById(id: Int, userLocation: LatLng): Flow<FuelStation> =
         combine(
             fuelStationDao.getFuelStationById(id),
             favoriteStationDao.getFavoriteStationIds(),
@@ -117,11 +116,12 @@ class OfflineFuelStationRepository @Inject constructor(
         ) { station, favoriteIds, alertEntities ->
             val isFavorite = favoriteIds.contains(station.idServiceStation)
             val hasPriceAlert = alertEntities.any { it.stationId == station.idServiceStation }
+            val stationModel = station.asExternalModel()
 
-            station.asExternalModel().copy(
+            stationModel.copy(
                 isFavorite = isFavorite,
                 hasPriceAlert = hasPriceAlert,
-                distance = station.getLocation().distanceTo(userLocation)
+                distance = stationModel.location.distanceTo(userLocation)
             )
         }.flowOn(ioDispatcher)
 
@@ -138,9 +138,7 @@ class OfflineFuelStationRepository @Inject constructor(
         val allStations = mutableSetOf<FuelStationEntity>()
 
         val reducedPoints = points.filterIndexed { index, _ -> index % 2 == 0 }
-        val pointsWithLocations = reducedPoints.map { point -> point to point.toLocation() }
-
-        pointsWithLocations.forEach { (point, pointLocation) ->
+        reducedPoints.forEach { point ->
             val bounds = calculateBoundingBox(point, radiusKm)
 
             val stationsInBounds = fuelStationDao.getFuelStationsInBounds(
@@ -152,7 +150,7 @@ class OfflineFuelStationRepository @Inject constructor(
             )
 
             stationsInBounds.forEach { station ->
-                val distance = station.getLocation().distanceTo(pointLocation)
+                val distance = station.toLatLng().distanceTo(point)
                 if (distance <= radiusMeters) {
                     allStations.add(station)
                 }
@@ -161,8 +159,6 @@ class OfflineFuelStationRepository @Inject constructor(
 
         val externalModel = allStations.map(FuelStationEntity::asExternalModel)
         val (minPrice, maxPrice) = externalModel.calculateFuelPrices(fuelType = userData.fuelSelection)
-        val originLocation = origin.toLocation()
-
         return externalModel.map { fuelStation ->
             val priceCategory = fuelStation.getPriceCategory(
                 fuelType = userData.fuelSelection,
@@ -171,7 +167,7 @@ class OfflineFuelStationRepository @Inject constructor(
             )
             fuelStation.copy(
                 priceCategory = priceCategory,
-                distance = fuelStation.location.distanceTo(originLocation)
+                distance = fuelStation.location.distanceTo(origin)
             )
         }
     }
