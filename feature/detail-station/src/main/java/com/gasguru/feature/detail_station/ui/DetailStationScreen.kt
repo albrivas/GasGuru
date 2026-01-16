@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Location
 import android.os.Build
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -67,6 +66,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.gasguru.core.model.data.FuelStationBrandsType
+import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.previewFuelStationDomain
 import com.gasguru.core.ui.iconTint
 import com.gasguru.core.ui.review.findActivity
@@ -84,13 +84,14 @@ import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.detail_station.R
 import com.gasguru.feature.detail_station.formatSchedule
 import com.gasguru.feature.detail_station.getTimeElapsedString
+import com.gasguru.navigation.LocalNavigationManager
 import kotlinx.coroutines.launch
 
 @Composable
 internal fun DetailStationScreenRoute(
-    onBack: () -> Unit,
     viewModel: DetailStationViewModel = hiltViewModel(),
 ) {
+    val navigationManager = LocalNavigationManager.current
     val uiState by viewModel.fuelStation.collectAsStateWithLifecycle()
     val staticMapUrl by viewModel.staticMapUrl.collectAsStateWithLifecycle()
     val lastUpdate by viewModel.lastUpdate.collectAsStateWithLifecycle()
@@ -99,8 +100,8 @@ internal fun DetailStationScreenRoute(
         uiState = uiState,
         staticMapUrl = staticMapUrl,
         lastUpdate = lastUpdate,
-        onBack = onBack,
-        onEvent = viewModel::onEvent
+        onBack = { navigationManager.navigateBack() },
+        onEvent = viewModel::onEvent,
     )
 }
 
@@ -471,7 +472,7 @@ fun HeaderStation(
 }
 
 @SuppressLint("QueryPermissionsNeeded")
-private fun startRoute(context: Context, location: Location) {
+private fun startRoute(context: Context, location: LatLng) {
     val lat = location.latitude
     val lng = location.longitude
 

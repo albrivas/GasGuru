@@ -1,6 +1,6 @@
 package com.gasguru.core.data.repository.user
 
-import android.location.Location
+import com.gasguru.core.common.distanceTo
 import com.gasguru.core.data.mapper.asEntity
 import com.gasguru.core.data.mapper.calculateFuelPrices
 import com.gasguru.core.data.mapper.getPriceCategory
@@ -8,6 +8,7 @@ import com.gasguru.core.database.dao.FavoriteStationDao
 import com.gasguru.core.database.dao.UserDataDao
 import com.gasguru.core.database.model.asExternalModel
 import com.gasguru.core.model.data.FuelType
+import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.PriceCategory
 import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.model.data.UserData
@@ -49,7 +50,7 @@ class OfflineUserDataRepository @Inject constructor(
         favoriteStationDao.removeFavoriteStation(stationId)
     }
 
-    override fun getUserWithFavoriteStations(userLocation: Location): Flow<UserWithFavoriteStations> =
+    override fun getUserWithFavoriteStations(userLocation: LatLng): Flow<UserWithFavoriteStations> =
         combine(
             userData,
             favoriteStationDao.getFavoriteStations()

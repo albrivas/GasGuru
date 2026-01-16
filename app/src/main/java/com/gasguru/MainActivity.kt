@@ -19,7 +19,8 @@ import com.gasguru.core.data.util.NetworkMonitor
 import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.feature.onboarding_welcome.navigation.OnboardingRoutes
-import com.gasguru.navigation.DeepLinkManager
+import com.gasguru.navigation.manager.NavigationDestination
+import com.gasguru.navigation.manager.NavigationManager
 import com.gasguru.navigation.navigationbar.route.NavigationBarRoute
 import com.gasguru.ui.GasGuruApp
 import com.gasguru.ui.rememberGasGuruAppState
@@ -39,7 +40,7 @@ class MainActivity : ComponentActivity() {
     lateinit var networkMonitor: NetworkMonitor
 
     @Inject
-    lateinit var deepLinkManager: DeepLinkManager
+    lateinit var navigationManager: NavigationManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splash = installSplashScreen()
@@ -78,7 +79,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        // Handle deep links after splash screen is dismissed and UI is ready
+        // Handle push navigation after splash screen is dismissed and UI is ready
         splash.setOnExitAnimationListener { splashScreenView ->
             splashScreenView.remove()
             handleIntent(intent = intent)
@@ -99,18 +100,18 @@ class MainActivity : ComponentActivity() {
                 when (val state = uiState) {
                     is SplashUiState.Success -> GasGuruApp(
                         appState = appState,
-                        deepLinkManager = deepLinkManager,
+                        navigationManager = navigationManager,
                         startDestination = if (state.isOnboardingSuccess) {
                             NavigationBarRoute
                         } else {
                             OnboardingRoutes.OnboardingWelcomeRoute
-                        }
+                        },
                     )
 
                     SplashUiState.Error -> GasGuruApp(
                         appState = appState,
-                        deepLinkManager = deepLinkManager,
-                        startDestination = OnboardingRoutes.OnboardingWelcomeRoute
+                        navigationManager = navigationManager,
+                        startDestination = OnboardingRoutes.OnboardingWelcomeRoute,
                     )
 
                     else -> Unit
@@ -122,8 +123,12 @@ class MainActivity : ComponentActivity() {
     private fun handleIntent(intent: Intent) {
         val stationId = intent.getStringExtra("station_id")?.toIntOrNull()
         stationId?.let {
-            deepLinkManager.navigateToDetailStation(stationId = it)
-            return
+            navigationManager.navigateTo(
+                destination = NavigationDestination.DetailStation(
+                    idServiceStation = it,
+                    presentAsDialog = true,
+                ),
+            )
         }
     }
 
