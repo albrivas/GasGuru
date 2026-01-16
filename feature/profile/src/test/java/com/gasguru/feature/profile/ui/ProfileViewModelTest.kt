@@ -9,7 +9,6 @@ import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.model.data.UserData
 import com.gasguru.core.testing.CoroutinesTestExtension
 import com.gasguru.core.ui.R
-import com.gasguru.core.ui.models.toUi
 import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
