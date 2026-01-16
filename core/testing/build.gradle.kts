@@ -9,6 +9,7 @@ android {
 
 dependencies {
     api(projects.core.data)
+    api(projects.core.model)
     api(libs.junit)
     api(libs.androidx.test.core)
     api(libs.kotlinx.coroutines.test)
