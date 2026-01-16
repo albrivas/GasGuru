@@ -6,6 +6,8 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.util.Log
+import com.gasguru.core.common.toDomainLatLng
+import com.gasguru.core.model.data.LatLng
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.Priority
@@ -24,11 +26,11 @@ class LocationTrackerRepository @Inject constructor(
 ) : LocationTracker {
 
     @SuppressLint("MissingPermission")
-    override suspend fun getCurrentLocation(): Location? =
+    override suspend fun getCurrentLocation(): LatLng? =
         locationClient.getCurrentLocation(
             Priority.PRIORITY_HIGH_ACCURACY,
             CancellationTokenSource().token
-        ).await()
+        ).await()?.toDomainLatLng()
 
     @SuppressLint("MissingPermission")
     override val isLocationEnabled: Flow<Boolean> = callbackFlow {
@@ -63,14 +65,14 @@ class LocationTrackerRepository @Inject constructor(
         }
     }
 
-    override val getCurrentLocationFlow: Flow<Location?>
+    override val getCurrentLocationFlow: Flow<LatLng?>
         @SuppressLint("MissingPermission")
         get() = flow {
             try {
                 val location = locationClient.getCurrentLocation(
                     Priority.PRIORITY_HIGH_ACCURACY,
                     CancellationTokenSource().token
-                ).await()
+                ).await()?.toDomainLatLng()
                 emit(location)
             } catch (e: SecurityException) {
                 Log.e("LocationTracker", "Security exception in getCurrentLocationFlow", e)
@@ -80,11 +82,11 @@ class LocationTrackerRepository @Inject constructor(
                 emit(null)
             }
         }
-    override val getLastKnownLocation: Flow<Location?>
+    override val getLastKnownLocation: Flow<LatLng?>
         @SuppressLint("MissingPermission")
         get() = flow {
             try {
-                val lastKnownLocation = locationClient.lastLocation.await()
+                val lastKnownLocation = locationClient.lastLocation.await()?.toDomainLatLng()
                 if (lastKnownLocation != null) {
                     emit(lastKnownLocation)
                 } else {

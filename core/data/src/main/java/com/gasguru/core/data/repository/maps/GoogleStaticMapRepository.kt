@@ -1,6 +1,6 @@
 package com.gasguru.core.data.repository.maps
 
-import android.location.Location
+import com.gasguru.core.model.data.LatLng
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -9,7 +9,7 @@ class GoogleStaticMapRepository @Inject constructor(
 ) : StaticMapRepository {
 
     override fun generateStaticMapUrl(
-        location: Location,
+        location: LatLng,
         zoom: Int,
         width: Int,
         height: Int,
