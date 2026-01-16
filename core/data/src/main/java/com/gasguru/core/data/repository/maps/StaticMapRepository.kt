@@ -1,10 +1,10 @@
 package com.gasguru.core.data.repository.maps
 
-import android.location.Location
+import com.gasguru.core.model.data.LatLng
 
 interface StaticMapRepository {
     fun generateStaticMapUrl(
-        location: Location,
+        location: LatLng,
         zoom: Int,
         width: Int,
         height: Int,

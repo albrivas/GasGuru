@@ -6,5 +6,5 @@ import javax.inject.Inject
 class ClearRecentSearchQueriesUseCase @Inject constructor(
     private val recentSearchRepository: OfflineRecentSearchRepository,
 ) {
-    suspend operator fun invoke() = recentSearchRepository.clearRecentSearches()
+    suspend operator fun invoke(): Unit = recentSearchRepository.clearRecentSearches()
 }

@@ -31,7 +31,7 @@ Create conventional commits following strict guidelines with **separate commits 
 4. **Craft the Commit Message**:
     - **Subject line** (required): `type: brief description in lowercase`
     - **Body** (optional): ONLY if needed for context
-        - Keep body SHORT (1-2 lines maximum)
+        - Keep body SHORT (8-12 words maximum)
         - Explain WHAT changed and WHY
         - Use imperative mood ("add", "fix", not "added", "fixed")
 

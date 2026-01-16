@@ -6,6 +6,6 @@ import javax.inject.Inject
 class SaveFavoriteStationUseCase @Inject constructor(
     private val offlineRepository: UserDataRepository,
 ) {
-    suspend operator fun invoke(stationId: Int) =
+    suspend operator fun invoke(stationId: Int): Unit =
         offlineRepository.addFavoriteStation(stationId = stationId)
 }
