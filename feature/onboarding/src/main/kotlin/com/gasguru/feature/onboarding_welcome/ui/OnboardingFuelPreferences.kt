@@ -32,16 +32,21 @@ import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.onboarding.R
 import com.gasguru.feature.onboarding_welcome.viewmodel.OnboardingUiState
 import com.gasguru.feature.onboarding_welcome.viewmodel.OnboardingViewModel
+import com.gasguru.navigation.LocalNavigationManager
+import com.gasguru.navigation.manager.NavigationDestination
 
 @Composable
 internal fun OnboardingFuelPreferencesRoute(
-    navigateToHome: () -> Unit,
     viewModel: OnboardingViewModel = hiltViewModel(),
 ) {
+    val navigationManager = LocalNavigationManager.current
+
     OnboardingFuelPreferences(
-        navigateToHome = navigateToHome,
+        navigateToHome = {
+            navigationManager.navigateTo(NavigationDestination.Home)
+        },
         saveSelection = viewModel::saveSelectedFuel,
-        uiState = viewModel.state
+        uiState = viewModel.state,
     )
 }
 

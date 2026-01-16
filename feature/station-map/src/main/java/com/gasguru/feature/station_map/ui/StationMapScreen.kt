@@ -1,5 +1,9 @@
 package com.gasguru.feature.station_map.ui
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -50,8 +54,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.gasguru.core.common.centerOnLocation
+import com.gasguru.core.common.toGoogleLatLng
 import com.gasguru.core.common.centerOnMap
-import com.gasguru.core.common.toLatLng
 import com.gasguru.core.components.searchbar.GasGuruSearchBar
 import com.gasguru.core.components.searchbar.GasGuruSearchBarModel
 import com.gasguru.core.model.data.FuelStationBrandsType
@@ -75,11 +80,15 @@ import com.gasguru.core.uikit.components.loading.GasGuruLoading
 import com.gasguru.core.uikit.components.loading.GasGuruLoadingModel
 import com.gasguru.core.uikit.components.marker.StationMarker
 import com.gasguru.core.uikit.components.marker.StationMarkerModel
+import com.gasguru.core.uikit.components.route_navigation_card.RouteNavigationCard
+import com.gasguru.core.uikit.components.route_navigation_card.RouteNavigationCardModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.station_map.BuildConfig
 import com.gasguru.feature.station_map.R
+import com.gasguru.navigation.LocalNavigationManager
+import com.gasguru.navigation.manager.NavigationDestination
 import com.gasguru.navigation.models.RoutePlanArgs
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
@@ -101,21 +110,32 @@ import com.gasguru.core.uikit.R as RUikit
 @Composable
 fun StationMapScreenRoute(
     routePlanner: RoutePlanArgs?,
-    navigateToDetail: (Int) -> Unit = {},
-    navigateToRoutePlanner: () -> Unit = {},
+    onRoutePlanConsumed: () -> Unit = {},
     viewModel: StationMapViewModel = hiltViewModel(),
 ) {
+    val navigationManager = LocalNavigationManager.current
     val state by viewModel.state.collectAsStateWithLifecycle()
     val filterGroup by viewModel.filters.collectAsStateWithLifecycle()
     val tabState by viewModel.tabState.collectAsStateWithLifecycle()
+
     StationMapScreen(
         uiState = state,
         filterUiState = filterGroup,
         tabState = tabState,
         routePlanner = routePlanner,
+        onRoutePlanConsumed = onRoutePlanConsumed,
         event = viewModel::handleEvent,
-        navigateToDetail = navigateToDetail,
-        navigateToRoutePlanner = navigateToRoutePlanner
+        navigateToDetail = { stationId ->
+            navigationManager.navigateTo(
+                destination = NavigationDestination.DetailStation(
+                    idServiceStation = stationId,
+                    presentAsDialog = true,
+                )
+            )
+        },
+        navigateToRoutePlanner = {
+            navigationManager.navigateTo(destination = NavigationDestination.RoutePlanner)
+        },
     )
 }
 
@@ -126,6 +146,7 @@ internal fun StationMapScreen(
     filterUiState: FilterUiState,
     tabState: SelectedTabUiState,
     routePlanner: RoutePlanArgs?,
+    onRoutePlanConsumed: () -> Unit = {},
     event: (StationMapEvent) -> Unit = {},
     navigateToDetail: (Int) -> Unit = {},
     navigateToRoutePlanner: () -> Unit = {},
@@ -136,6 +157,7 @@ internal fun StationMapScreen(
 
     val peekHeight = 60.dp
     var isSearchActive by remember { mutableStateOf(false) }
+    val isRouteActive = route != null || (loading && routeDestinationName != null)
 
     val maxHeightSheetDp = calculateMaxSheetHeight(peekHeight = peekHeight)
 
@@ -151,9 +173,18 @@ internal fun StationMapScreen(
             event(
                 StationMapEvent.StartRoute(
                     originId = routePlanner.originId,
-                    destinationId = routePlanner.destinationId
+                    destinationId = routePlanner.destinationId,
+                    destinationName = routePlanner.destinationName,
                 )
             )
+            onRoutePlanConsumed()
+        }
+    }
+
+    LaunchedEffect(userLocationToCenter) {
+        if (userLocationToCenter != null) {
+            cameraState.centerOnLocation(location = userLocationToCenter)
+            event(StationMapEvent.OnUserLocationCentered)
         }
     }
 
@@ -239,34 +270,53 @@ internal fun StationMapScreen(
                     navigateToDetail = navigateToDetail,
                     modifier = Modifier.fillMaxSize()
                 )
-                Column(
+                AnimatedContent(
+                    targetState = isRouteActive,
+                    transitionSpec = { fadeIn() togetherWith fadeOut() },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .align(Alignment.TopStart)
-                ) {
-                    GasGuruSearchBar(
-                        model = GasGuruSearchBarModel(
-                            onActiveChange = { isSearchActive = it },
-                            onPlaceSelected = { place ->
-                                event(StationMapEvent.GetStationByPlace(place.id))
-                            },
-                            onRecentSearchClicked = { place ->
-                                event(StationMapEvent.GetStationByPlace(place.id))
-                            },
+                        .align(Alignment.TopStart),
+                    label = "route_content_animation",
+                ) { isActive ->
+                    if (isActive) {
+                        RouteNavigationCard(
+                            model = RouteNavigationCardModel(
+                                destination = routeDestinationName.orEmpty(),
+                                stationCount = mapStations.size,
+                                distance = route?.distanceText,
+                                duration = route?.durationText,
+                                onClose = { event(StationMapEvent.CancelRoute) },
+                            ),
+                            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 48.dp, bottom = 16.dp),
                         )
-                    )
-                    FilterGroup(
-                        modifier = Modifier,
-                        event = event,
-                        onHeight = { },
-                        filterUiState = filterUiState,
-                    )
+                    } else {
+                        Column {
+                            GasGuruSearchBar(
+                                model = GasGuruSearchBarModel(
+                                    onActiveChange = { isSearchActive = it },
+                                    onPlaceSelected = { place ->
+                                        event(StationMapEvent.GetStationByPlace(place.id))
+                                    },
+                                    onRecentSearchClicked = { place ->
+                                        event(StationMapEvent.GetStationByPlace(place.id))
+                                    },
+                                )
+                            )
+                            FilterGroup(
+                                modifier = Modifier,
+                                event = event,
+                                onHeight = { },
+                                filterUiState = filterUiState,
+                            )
+                        }
+                    }
                 }
-                FABLocation(
+                FloatingButtons(
                     modifier = Modifier.align(Alignment.BottomEnd),
                     isVisible = !isSearchActive,
+                    showRoutePlannerButton = !isRouteActive,
                     event = event,
-                    navigateToRoutePlanner = navigateToRoutePlanner
+                    navigateToRoutePlanner = navigateToRoutePlanner,
                 )
             }
         }
@@ -344,7 +394,7 @@ fun MapView(
             stations.forEach { station ->
                 val priceCategoryColor = station.fuelStation.priceCategory.toColor()
                 val state = remember(station.fuelStation.idServiceStation) {
-                    MarkerState(position = station.fuelStation.location.toLatLng())
+                    MarkerState(position = station.fuelStation.location.toGoogleLatLng())
                 }
                 val isSelected = selectedLocation == station.fuelStation.idServiceStation
 
@@ -385,9 +435,10 @@ fun MapView(
 }
 
 @Composable
-fun FABLocation(
+fun FloatingButtons(
     modifier: Modifier,
     isVisible: Boolean = true,
+    showRoutePlannerButton: Boolean = true,
     event: (StationMapEvent) -> Unit = {},
     navigateToRoutePlanner: () -> Unit = {},
 ) {
@@ -412,17 +463,19 @@ fun FABLocation(
                 )
             }
 
-            FloatingActionButton(
-                onClick = navigateToRoutePlanner,
-                modifier = modifier,
-                containerColor = GasGuruTheme.colors.primary100,
-                contentColor = GasGuruTheme.colors.neutralBlack,
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Directions,
-                    tint = GasGuruTheme.colors.textSubtle,
-                    contentDescription = "Create route",
-                )
+            if (showRoutePlannerButton) {
+                FloatingActionButton(
+                    onClick = navigateToRoutePlanner,
+                    modifier = modifier,
+                    containerColor = GasGuruTheme.colors.primary100,
+                    contentColor = GasGuruTheme.colors.neutralBlack,
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Directions,
+                        tint = GasGuruTheme.colors.textSubtle,
+                        contentDescription = "Create route",
+                    )
+                }
             }
         }
     }

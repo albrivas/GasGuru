@@ -31,10 +31,13 @@ import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.onboarding.R
+import com.gasguru.navigation.LocalNavigationManager
+import com.gasguru.navigation.manager.NavigationDestination
 import com.gasguru.core.uikit.R as RUikit
 
 @Composable
-fun OnboardingWelcomeScreenRoute(navigateToSelectFuel: () -> Unit) {
+fun OnboardingWelcomeScreenRoute() {
+    val navigationManager = LocalNavigationManager.current
     var locationPermissionGranted by remember { mutableStateOf(false) }
 
     val requestMultiplePermissionsLauncher =
@@ -43,16 +46,21 @@ fun OnboardingWelcomeScreenRoute(navigateToSelectFuel: () -> Unit) {
             onResult = { permissions ->
                 locationPermissionGranted =
                     permissions[ACCESS_FINE_LOCATION] == true || permissions[ACCESS_COARSE_LOCATION] == true
-            }
+            },
         )
 
     LaunchedEffect(Unit) {
         requestMultiplePermissionsLauncher.launch(
-            arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)
+            arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION),
         )
     }
 
-    OnboardingWelcomeScreen(navigateToSelectFuel, locationPermissionGranted)
+    OnboardingWelcomeScreen(
+        navigateToSelectFuel = {
+            navigationManager.navigateTo(NavigationDestination.OnboardingFuelPreferences)
+        },
+        isPermissionGranted = locationPermissionGranted,
+    )
 }
 
 @Composable

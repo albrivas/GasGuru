@@ -39,18 +39,27 @@ import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.favorite_list_station.R
+import com.gasguru.navigation.LocalNavigationManager
+import com.gasguru.navigation.manager.NavigationDestination
 
 @Composable
 fun FavoriteListStationScreenRoute(
-    navigateToDetail: (Int) -> Unit,
     viewModel: FavoriteListStationViewModel = hiltViewModel(),
 ) {
+    val navigationManager = LocalNavigationManager.current
     val state by viewModel.favoriteStations.collectAsStateWithLifecycle()
     val tabState by viewModel.tabState.collectAsStateWithLifecycle()
     FavoriteListStationScreen(
         uiState = state,
         tabState = tabState,
-        navigateToDetail = navigateToDetail,
+        navigateToDetail = { stationId ->
+            navigationManager.navigateTo(
+                destination = NavigationDestination.DetailStation(
+                    idServiceStation = stationId,
+                    presentAsDialog = true,
+                ),
+            )
+        },
         event = viewModel::handleEvents
     )
 }

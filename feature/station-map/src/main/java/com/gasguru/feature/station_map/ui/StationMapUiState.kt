@@ -16,6 +16,8 @@ data class StationMapUiState(
     val shouldCenterMap: Boolean = false,
     val startRoute: Boolean = false,
     val route: Route? = null,
+    val routeDestinationName: String? = null,
+    val userLocationToCenter: com.google.android.gms.maps.model.LatLng? = null,
 )
 
 data class SelectedTabUiState(

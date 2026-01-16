@@ -1,10 +1,9 @@
 package com.gasguru.feature.station_map.ui
 
-import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gasguru.core.common.DefaultDispatcher
-import com.gasguru.core.common.toLatLng
+import com.gasguru.core.common.toGoogleLatLng
 import com.gasguru.core.domain.filters.GetFiltersUseCase
 import com.gasguru.core.domain.filters.SaveFilterUseCase
 import com.gasguru.core.domain.fuelstation.FuelStationByLocationUseCase
@@ -64,90 +63,126 @@ class StationMapViewModel @Inject constructor(
     fun handleEvent(event: StationMapEvent) {
         when (event) {
             is StationMapEvent.GetStationByCurrentLocation -> getStationByCurrentLocation()
-            is StationMapEvent.GetStationByPlace -> getStationByPlace(event.placeId)
+            is StationMapEvent.GetStationByPlace -> getStationByPlace(placeId = event.placeId)
             is StationMapEvent.ShowListStations -> showListStation(event.show)
-            is StationMapEvent.UpdateBrandFilter -> updateFilterBrand(event.selected)
-            is StationMapEvent.UpdateNearbyFilter -> updateFilterNearby(event.number)
-            is StationMapEvent.UpdateScheduleFilter -> updateFilterSchedule(event.schedule)
+            is StationMapEvent.UpdateBrandFilter -> updateFilterBrand(stationsSelected = event.selected)
+            is StationMapEvent.UpdateNearbyFilter -> updateFilterNearby(numberSelected = event.number)
+            is StationMapEvent.UpdateScheduleFilter -> updateFilterSchedule(scheduleSelected = event.schedule)
             is StationMapEvent.OnMapCentered -> markMapAsCentered()
-            is StationMapEvent.StartRoute -> startRoute(event.originId, event.destinationId)
-            is StationMapEvent.ChangeTab -> changeTab(event.selected)
+            is StationMapEvent.OnUserLocationCentered -> markUserLocationCentered()
+            is StationMapEvent.StartRoute -> startRoute(
+                originId = event.originId,
+                destinationId = event.destinationId,
+                destinationName = event.destinationName,
+            )
+            is StationMapEvent.CancelRoute -> cancelRoute()
+            is StationMapEvent.ChangeTab -> changeTab(selectedTab = event.selected)
         }
     }
 
-    private fun startRoute(originId: String?, destinationId: String?) = viewModelScope.launch {
-        _state.update { it.copy(loading = true, listStations = emptyList()) }
+    private suspend fun getLocationById(placeId: String?): LatLng {
+        return if (placeId != null) {
+            getLocationPlaceUseCase(placeId = placeId).first()
+        } else {
+            getCurrentLocationUseCase() ?: throw Exception("Error to access location")
+        }
+    }
+
+    private suspend fun getRouteLocations(
+        originId: String?,
+        destinationId: String?
+    ): Pair<LatLng, LatLng> = coroutineScope {
+        val originDeferred = async { getLocationById(placeId = originId) }
+        val destinationDeferred = async { getLocationById(placeId = destinationId) }
+        val locations = awaitAll(originDeferred, destinationDeferred)
+        locations[0] to locations[1]
+    }
+
+    private fun handleRouteError(error: Exception) {
+        _state.update {
+            it.copy(
+                error = error,
+                loading = false,
+                routeDestinationName = null
+            )
+        }
+    }
+
+    private suspend fun processRouteStations(
+        origin: LatLng,
+        route: com.gasguru.core.model.data.Route,
+        destinationLocation: LatLng,
+        destinationName: String?
+    ) {
+        try {
+            val routeFuelStations = getFuelStationsInRouteUseCase(
+                origin = origin,
+                routePoints = route.route
+            )
+            val bounds = calculateRouteBounds(
+                origin = origin,
+                destination = destinationLocation
+            )
+            val userData = getUserDataUseCase().first()
+            val tabState = _tabState.value
+            val uiStations = routeFuelStations.map { it.toUiModel() }
+            val sortedStations = sortStationsByTab(
+                stations = uiStations,
+                selectedTab = tabState.selectedTab,
+                userData = userData
+            )
+
+            _state.update {
+                it.copy(
+                    mapStations = uiStations,
+                    listStations = sortedStations,
+                    route = route,
+                    routeDestinationName = destinationName,
+                    mapBounds = bounds,
+                    shouldCenterMap = true,
+                    loading = false,
+                )
+            }
+        } catch (error: Exception) {
+            handleRouteError(error = error)
+        }
+    }
+
+    private fun startRoute(
+        originId: String?,
+        destinationId: String?,
+        destinationName: String?
+    ) = viewModelScope.launch {
+        _state.update {
+            it.copy(
+                loading = true,
+                listStations = emptyList(),
+                routeDestinationName = destinationName
+            )
+        }
 
         try {
-            val (originLocation, destinationLocation) = coroutineScope {
-                val originDeferred = async {
-                    if (originId != null) {
-                        getLocationPlaceUseCase(placeId = originId).first()
-                    } else {
-                        getCurrentLocationUseCase() ?: throw Exception("Error to access location")
-                    }
-                }
-                val destinationDeferred = async {
-                    if (destinationId != null) {
-                        getLocationPlaceUseCase(placeId = destinationId).first()
-                    } else {
-                        getCurrentLocationUseCase() ?: throw Exception("Error to access location")
-                    }
-                }
-
-                awaitAll(originDeferred, destinationDeferred)
-            }
-
-            val origin = LatLng(
-                originLocation.latitude,
-                originLocation.longitude
+            val (originLocation, destinationLocation) = getRouteLocations(
+                originId = originId,
+                destinationId = destinationId
             )
-            getRouteUseCase(
-                origin = origin,
-                destination = LatLng(
-                    destinationLocation.latitude,
-                    destinationLocation.longitude
-                )
-            ).collect { route ->
+            val origin = originLocation
+            val destination = destinationLocation
 
+            getRouteUseCase(origin = origin, destination = destination).collect { route ->
                 route?.let { routeData ->
                     launch(defaultDispatcher) {
-                        try {
-                            val routeFuelStations =
-                                getFuelStationsInRouteUseCase(
-                                    origin = origin,
-                                    routePoints = routeData.route
-                                )
-                            val bounds = calculateRouteBounds(
-                                origin = originLocation,
-                                destination = destinationLocation
-                            )
-                            val userData = getUserDataUseCase().first()
-                            val tabState = _tabState.value
-                            val uiStations = routeFuelStations.map { station -> station.toUiModel() }
-                            val sortedStations = sortStationsByTab(
-                                stations = uiStations,
-                                selectedTab = tabState.selectedTab,
-                                userData = userData
-                            )
-                            _state.update {
-                                it.copy(
-                                    mapStations = uiStations,
-                                    listStations = sortedStations,
-                                    route = route,
-                                    mapBounds = bounds,
-                                    shouldCenterMap = true,
-                                    loading = false
-                                )
-                            }
-                        } catch (error: Exception) {
-                            _state.update { it.copy(error = error, loading = false) }
-                        }
+                        processRouteStations(
+                            origin = origin,
+                            route = routeData,
+                            destinationLocation = destinationLocation,
+                            destinationName = destinationName
+                        )
                     }
                 }
             }
         } catch (error: Exception) {
-            _state.update { it.copy(error = error, loading = false) }
+            handleRouteError(error = error)
         }
     }
 
@@ -155,12 +190,31 @@ class StationMapViewModel @Inject constructor(
         _state.update { it.copy(shouldCenterMap = false) }
     }
 
+    private fun markUserLocationCentered() {
+        _state.update { it.copy(userLocationToCenter = null) }
+    }
+
+    private fun cancelRoute() {
+        _state.update { it.copy(route = null, routeDestinationName = null) }
+        getStationByCurrentLocation()
+    }
+
     private fun getStationByCurrentLocation() {
         viewModelScope.launch {
-            _state.update { it.copy(loading = true, route = null, listStations = emptyList()) }
             getCurrentLocationUseCase()?.let { location ->
-                getStationByLocation(location)
+                if (_state.value.route != null) {
+                    centerMapOnLocation(location = location)
+                } else {
+                    _state.update { it.copy(loading = true, listStations = emptyList()) }
+                    getStationByLocation(location = location)
+                }
             }
+        }
+    }
+
+    private fun centerMapOnLocation(location: LatLng) {
+        _state.update {
+            it.copy(userLocationToCenter = location.toGoogleLatLng())
         }
     }
 
@@ -174,7 +228,7 @@ class StationMapViewModel @Inject constructor(
                 }
         }
 
-    private fun getStationByLocation(location: Location) {
+    private fun getStationByLocation(location: LatLng) {
         viewModelScope.launch {
             combine(
                 filters,
@@ -211,19 +265,19 @@ class StationMapViewModel @Inject constructor(
         }
     }
 
-    private fun calculateBounds(fuelStations: List<Location>, location: Location): LatLngBounds {
+    private fun calculateBounds(fuelStations: List<LatLng>, location: LatLng): LatLngBounds {
         val allLocations =
-            fuelStations.map { it.toLatLng() } + location.toLatLng()
+            fuelStations.map { it.toGoogleLatLng() } + location.toGoogleLatLng()
         val boundsBuilder = LatLngBounds.Builder()
         allLocations.forEach { boundsBuilder.include(it) }
         return boundsBuilder.build()
     }
 
     private fun calculateRouteBounds(
-        origin: Location,
-        destination: Location
+        origin: LatLng,
+        destination: LatLng
     ): LatLngBounds {
-        val allLocations = listOf(origin.toLatLng(), destination.toLatLng())
+        val allLocations = listOf(origin.toGoogleLatLng(), destination.toGoogleLatLng())
         val boundsBuilder = LatLngBounds.Builder()
         allLocations.forEach { boundsBuilder.include(it) }
         return boundsBuilder.build()

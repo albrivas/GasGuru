@@ -1,6 +1,6 @@
 package com.gasguru.core.domain.fuelstation
 
-import android.location.Location
+import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.data.repository.stations.OfflineFuelStationRepository
 import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.OpeningHours
@@ -11,7 +11,7 @@ class FuelStationByLocationUseCase @Inject constructor(
     private val repository: OfflineFuelStationRepository,
 ) {
     operator fun invoke(
-        userLocation: Location,
+        userLocation: LatLng,
         maxStations: Int,
         brands: List<String>,
         schedule: OpeningHours,
