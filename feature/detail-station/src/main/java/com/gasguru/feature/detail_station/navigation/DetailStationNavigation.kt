@@ -44,15 +44,3 @@ fun NavGraphBuilder.detailStationScreenDialog() {
         DetailStationScreenRoute()
     }
 }
-
-fun NavGraphBuilder.detailStationScreenDialog(onBack: () -> Unit) {
-    dialog<DetailStationDialogRoute>(
-        dialogProperties = DialogProperties(
-            usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = false
-        ),
-    ) {
-        ConfigureDialogSystemBars(invertColors = true)
-        DetailStationScreenRoute(onBack = onBack)
-    }
-}

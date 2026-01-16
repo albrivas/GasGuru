@@ -25,7 +25,6 @@ import com.gasguru.core.uikit.components.divider.GasGuruDividerModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.feature.favorite_list_station.navigation.favoriteGraph
 import com.gasguru.feature.profile.navigation.profileScreen
-import com.gasguru.feature.search.navigation.navigateToSearch
 import com.gasguru.feature.station_map.navigation.route.StationMapGraph
 import com.gasguru.feature.station_map.ui.StationMapScreenRoute
 import com.gasguru.navigation.models.RoutePlanArgs
