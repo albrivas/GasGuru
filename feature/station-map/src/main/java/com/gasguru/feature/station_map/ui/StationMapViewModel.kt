@@ -1,10 +1,9 @@
 package com.gasguru.feature.station_map.ui
 
-import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gasguru.core.common.DefaultDispatcher
-import com.gasguru.core.common.toLatLng
+import com.gasguru.core.common.toGoogleLatLng
 import com.gasguru.core.domain.filters.GetFiltersUseCase
 import com.gasguru.core.domain.filters.SaveFilterUseCase
 import com.gasguru.core.domain.fuelstation.FuelStationByLocationUseCase
@@ -81,7 +80,7 @@ class StationMapViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getLocationById(placeId: String?): Location {
+    private suspend fun getLocationById(placeId: String?): LatLng {
         return if (placeId != null) {
             getLocationPlaceUseCase(placeId = placeId).first()
         } else {
@@ -92,7 +91,7 @@ class StationMapViewModel @Inject constructor(
     private suspend fun getRouteLocations(
         originId: String?,
         destinationId: String?
-    ): Pair<Location, Location> = coroutineScope {
+    ): Pair<LatLng, LatLng> = coroutineScope {
         val originDeferred = async { getLocationById(placeId = originId) }
         val destinationDeferred = async { getLocationById(placeId = destinationId) }
         val locations = awaitAll(originDeferred, destinationDeferred)
@@ -112,7 +111,7 @@ class StationMapViewModel @Inject constructor(
     private suspend fun processRouteStations(
         origin: LatLng,
         route: com.gasguru.core.model.data.Route,
-        destinationLocation: Location,
+        destinationLocation: LatLng,
         destinationName: String?
     ) {
         try {
@@ -121,10 +120,7 @@ class StationMapViewModel @Inject constructor(
                 routePoints = route.route
             )
             val bounds = calculateRouteBounds(
-                origin = Location("").apply {
-                    latitude = origin.latitude
-                    longitude = origin.longitude
-                },
+                origin = origin,
                 destination = destinationLocation
             )
             val userData = getUserDataUseCase().first()
@@ -170,8 +166,8 @@ class StationMapViewModel @Inject constructor(
                 originId = originId,
                 destinationId = destinationId
             )
-            val origin = LatLng(originLocation.latitude, originLocation.longitude)
-            val destination = LatLng(destinationLocation.latitude, destinationLocation.longitude)
+            val origin = originLocation
+            val destination = destinationLocation
 
             getRouteUseCase(origin = origin, destination = destination).collect { route ->
                 route?.let { routeData ->
@@ -216,9 +212,9 @@ class StationMapViewModel @Inject constructor(
         }
     }
 
-    private fun centerMapOnLocation(location: Location) {
+    private fun centerMapOnLocation(location: LatLng) {
         _state.update {
-            it.copy(userLocationToCenter = location.toLatLng())
+            it.copy(userLocationToCenter = location.toGoogleLatLng())
         }
     }
 
@@ -232,7 +228,7 @@ class StationMapViewModel @Inject constructor(
                 }
         }
 
-    private fun getStationByLocation(location: Location) {
+    private fun getStationByLocation(location: LatLng) {
         viewModelScope.launch {
             combine(
                 filters,
@@ -269,19 +265,19 @@ class StationMapViewModel @Inject constructor(
         }
     }
 
-    private fun calculateBounds(fuelStations: List<Location>, location: Location): LatLngBounds {
+    private fun calculateBounds(fuelStations: List<LatLng>, location: LatLng): LatLngBounds {
         val allLocations =
-            fuelStations.map { it.toLatLng() } + location.toLatLng()
+            fuelStations.map { it.toGoogleLatLng() } + location.toGoogleLatLng()
         val boundsBuilder = LatLngBounds.Builder()
         allLocations.forEach { boundsBuilder.include(it) }
         return boundsBuilder.build()
     }
 
     private fun calculateRouteBounds(
-        origin: Location,
-        destination: Location
+        origin: LatLng,
+        destination: LatLng
     ): LatLngBounds {
-        val allLocations = listOf(origin.toLatLng(), destination.toLatLng())
+        val allLocations = listOf(origin.toGoogleLatLng(), destination.toGoogleLatLng())
         val boundsBuilder = LatLngBounds.Builder()
         allLocations.forEach { boundsBuilder.include(it) }
         return boundsBuilder.build()

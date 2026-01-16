@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Location
 import android.os.Build
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -67,6 +66,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.gasguru.core.model.data.FuelStationBrandsType
+import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.previewFuelStationDomain
 import com.gasguru.core.ui.iconTint
 import com.gasguru.core.ui.review.findActivity
@@ -473,7 +473,7 @@ fun HeaderStation(
 }
 
 @SuppressLint("QueryPermissionsNeeded")
-private fun startRoute(context: Context, location: Location) {
+private fun startRoute(context: Context, location: LatLng) {
     val lat = location.latitude
     val lng = location.longitude
 
