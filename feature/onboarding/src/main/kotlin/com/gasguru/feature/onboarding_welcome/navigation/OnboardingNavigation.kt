@@ -16,19 +16,15 @@ fun NavController.navigateToOnboardingFuelPreferencesRoute(navOptions: NavOption
     this.navigate(OnboardingRoutes.OnboardingFuelPreferencesRoute, navOptions)
 }
 
-fun NavGraphBuilder.onboardingWelcomeScreen(navigateToSelectFuel: () -> Unit) {
+fun NavGraphBuilder.onboardingWelcomeScreen() {
     composable<OnboardingRoutes.OnboardingWelcomeRoute> {
-        OnboardingWelcomeScreenRoute(
-            navigateToSelectFuel = navigateToSelectFuel
-        )
+        OnboardingWelcomeScreenRoute()
     }
 }
 
-fun NavGraphBuilder.onboardingFuelPreferencesScreen(navigateToHome: () -> Unit) {
+fun NavGraphBuilder.onboardingFuelPreferencesScreen() {
     composable<OnboardingRoutes.OnboardingFuelPreferencesRoute> {
-        OnboardingFuelPreferencesRoute(
-            navigateToHome = navigateToHome
-        )
+        OnboardingFuelPreferencesRoute()
     }
 }
 
