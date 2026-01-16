@@ -6,7 +6,6 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.util.Log
-import com.gasguru.core.common.toDomainLatLng
 import com.gasguru.core.model.data.LatLng
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -101,3 +100,6 @@ class LocationTrackerRepository @Inject constructor(
             }
         }
 }
+
+fun Location.toDomainLatLng(): LatLng =
+    LatLng(latitude = latitude, longitude = longitude)

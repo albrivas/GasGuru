@@ -14,12 +14,6 @@ import com.google.android.gms.maps.model.LatLng as GoogleLatLng
 
 fun LatLng.toGoogleLatLng(): GoogleLatLng = GoogleLatLng(latitude, longitude)
 
-fun LatLng?.toGoogleLatLngOrZero(): GoogleLatLng =
-    this?.toGoogleLatLng() ?: GoogleLatLng(0.0, 0.0)
-
-fun android.location.Location.toDomainLatLng(): LatLng =
-    LatLng(latitude = latitude, longitude = longitude)
-
 fun Int.dpToPx() = (this * Resources.getSystem().displayMetrics.density).toInt()
 
 suspend fun CameraPositionState.centerOnMap(bounds: LatLngBounds, padding: Int) =
