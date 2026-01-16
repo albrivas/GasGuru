@@ -23,14 +23,18 @@ class FakeUserDataRepository(
 
     val removedFavoriteStations = mutableListOf<Int>()
     val addedFavoriteStations = mutableListOf<Int>()
+    val updatedFuelSelections = mutableListOf<FuelType>()
+    val updatedThemeModes = mutableListOf<ThemeMode>()
 
     override val userData: Flow<UserData> = userDataFlow
 
     override suspend fun updateSelectionFuel(fuelType: FuelType) {
+        updatedFuelSelections.add(fuelType)
         userDataFlow.update { it.copy(fuelSelection = fuelType) }
     }
 
     override suspend fun updateThemeMode(themeMode: ThemeMode) {
+        updatedThemeModes.add(themeMode)
         userDataFlow.update { it.copy(themeMode = themeMode) }
     }
 
