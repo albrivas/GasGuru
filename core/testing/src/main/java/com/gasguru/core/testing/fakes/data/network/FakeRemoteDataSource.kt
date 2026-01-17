@@ -9,5 +9,11 @@ class FakeRemoteDataSource(
     var result: Either<NetworkError, NetworkFuelStation> =
         Either.Right(NetworkFuelStation(date = "", listPriceFuelStation = emptyList()))
 ) : RemoteDataSource {
-    override suspend fun getListFuelStations(): Either<NetworkError, NetworkFuelStation> = result
+    var getListFuelStationsCalls = 0
+        private set
+
+    override suspend fun getListFuelStations(): Either<NetworkError, NetworkFuelStation> {
+        getListFuelStationsCalls += 1
+        return result
+    }
 }
