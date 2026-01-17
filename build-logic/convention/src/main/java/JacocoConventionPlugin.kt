@@ -27,7 +27,7 @@ class JacocoConventionPlugin : Plugin<Project> {
                 val debugClassesDir = layout.buildDirectory.dir("intermediates/classes/debug")
                 val execDataFile = layout.buildDirectory.file("jacoco/testProdDebugUnitTest.exec")
 
-                dependsOn("testDebugUnitTest")
+                dependsOn("testProdDebugUnitTest")
 
                 reports {
                     xml.required.set(true)
