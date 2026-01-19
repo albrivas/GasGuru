@@ -17,12 +17,6 @@ class SonarConventionPlugin : Plugin<Project> {
                     property("sonar.language", "kotlin")
                     property("sonar.sourceEncoding", "UTF-8")
                     property(
-                        "sonar.projectVersion",
-                        System.getenv("GITHUB_SHA")
-                            ?: System.getenv("GITHUB_RUN_NUMBER")
-                            ?: "local",
-                    )
-                    property(
                         "sonar.coverage.jacoco.xmlReportPaths",
                         "${rootProject.layout.buildDirectory.get()}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml",
                     )
