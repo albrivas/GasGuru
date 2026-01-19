@@ -89,7 +89,6 @@ jobs:
         run: |
           ./gradlew sonar --info \
             -Dsonar.gradle.skipCompile=true \
-            -Dsonar.coverage.jacoco.xmlReportPaths=build/reports/jacoco/jacocoRootReport/jacocoRootReport.xml \
             -Dsonar.pullrequest.key="$PR_NUMBER" \
             -Dsonar.pullrequest.branch="$PR_BRANCH" \
             -Dsonar.pullrequest.base="$PR_BASE"
