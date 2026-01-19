@@ -27,6 +27,7 @@ dependencies {
     compileOnly(libs.room.gradlePlugin)
     compileOnly(libs.secrets.gradlePlugin)
     compileOnly(libs.detekt.gradlePlugin)
+    compileOnly(libs.sonarqube.gradlePlugin)
 }
 
 tasks {
@@ -77,6 +78,10 @@ gradlePlugin {
         register("proguard") {
             id = libs.plugins.gasguru.proguard.get().pluginId
             implementationClass = "ProguardConventionPlugin"
+        }
+        register("sonar") {
+            id = libs.plugins.gasguru.sonar.get().pluginId
+            implementationClass = "SonarConventionPlugin"
         }
     }
 }

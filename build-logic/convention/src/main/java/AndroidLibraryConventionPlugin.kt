@@ -16,6 +16,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
         with(target) {
             apply(plugin = "com.android.library")
             apply(plugin = "org.jetbrains.kotlin.android")
+            apply(plugin = "gasguru.jacoco")
 
             tasks.withType<Test>().configureEach {
                 useJUnitPlatform()
