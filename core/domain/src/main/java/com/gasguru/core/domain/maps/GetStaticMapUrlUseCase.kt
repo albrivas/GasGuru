@@ -1,7 +1,7 @@
 package com.gasguru.core.domain.maps
 
-import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.data.repository.maps.StaticMapRepository
+import com.gasguru.core.model.data.LatLng
 import javax.inject.Inject
 
 class GetStaticMapUrlUseCase @Inject constructor(

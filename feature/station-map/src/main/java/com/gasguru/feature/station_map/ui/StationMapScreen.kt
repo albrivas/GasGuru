@@ -55,8 +55,8 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.common.centerOnLocation
-import com.gasguru.core.common.toGoogleLatLng
 import com.gasguru.core.common.centerOnMap
+import com.gasguru.core.common.toGoogleLatLng
 import com.gasguru.core.components.searchbar.GasGuruSearchBar
 import com.gasguru.core.components.searchbar.GasGuruSearchBarModel
 import com.gasguru.core.model.data.FuelStationBrandsType
