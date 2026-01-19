@@ -14,6 +14,12 @@ class SonarConventionPlugin : Plugin<Project> {
                 properties {
                     property("sonar.projectKey", "albrivas_FuelPump")
                     property("sonar.organization", "fuel-pump")
+                    property("sonar.language", "kotlin")
+                    property("sonar.sourceEncoding", "UTF-8")
+                    property(
+                        "sonar.coverage.jacoco.xmlReportPaths",
+                        "${rootProject.layout.buildDirectory.get()}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml",
+                    )
                 }
             }
         }
