@@ -79,11 +79,12 @@ jobs:
         run: ./gradlew test -x :app:test :app:testProdDebugUnitTest jacocoRootReport
         working-directory: ./
 
-      - name: Build and analyze (SonarCloud)
+      - name: Analyze with SonarCloud
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          ./gradlew build sonar --info \
+          ./gradlew sonar --info \
+            -Dsonar.gradle.skipCompile=true \
             -Dsonar.coverage.jacoco.xmlReportPaths=build/reports/jacoco/jacocoRootReport/jacocoRootReport.xml
         working-directory: ./
 
