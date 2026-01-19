@@ -55,5 +55,5 @@ Se usan secrets en GitHub Actions:
 ## Notas de cobertura
 Para que Sonar muestre cobertura real en PRs:
 - Generar JaCoCo antes del scan.
-- Pasar la ruta del XML en el scan:
-  `build/reports/jacoco/jacocoRootReport/jacocoRootReport.xml`
+- La ruta del XML se define en el plugin de Sonar (no hace falta pasarla en el workflow).
+  `build-logic/convention/src/main/java/SonarConventionPlugin.kt`
