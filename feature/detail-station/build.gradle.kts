@@ -18,6 +18,12 @@ dependencies {
     implementation(projects.navigation)
     implementation(libs.constraint.layout)
 
+    testImplementation(projects.core.testing)
+    testImplementation(libs.junit5.api)
+    testImplementation(libs.junit5.extensions)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testRuntimeOnly(libs.junit5.engine)
+
     androidTestImplementation(projects.core.testing)
     androidTestImplementation(projects.core.ui)
     androidTestImplementation(libs.junit5.api)

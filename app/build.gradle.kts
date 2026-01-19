@@ -14,6 +14,10 @@ plugins {
     alias(libs.plugins.kotlin.parcelize)
 }
 
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
+}
+
 val localProperties = gradleLocalProperties(rootDir, providers)
 val alias: String = localProperties.getProperty("keyAlias")
 val storepass: String = localProperties.getProperty("storePassword")
@@ -125,4 +129,7 @@ dependencies {
     // Analytics
     implementation(libs.mixpanel)
     implementation(libs.onesignal)
+
+    testImplementation(projects.core.testing)
+    testRuntimeOnly(libs.junit5.engine)
 }
