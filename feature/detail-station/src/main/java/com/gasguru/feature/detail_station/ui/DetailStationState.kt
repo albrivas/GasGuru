@@ -8,10 +8,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toLowerCase
 import com.gasguru.core.common.CommonUtils.isStationOpen
+import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.ui.models.FuelStationUiModel
 import com.gasguru.core.ui.models.FuelTypeUiModel
 import com.gasguru.core.ui.models.PriceUiModel
-import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.uikit.components.price.PriceItemModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.feature.detail_station.R
