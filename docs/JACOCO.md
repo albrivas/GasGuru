@@ -1,5 +1,7 @@
 # JaCoCo Coverage
 
+> **NOTA IMPORTANTE:** si un modulo NO aplica `gasguru.jacoco`, no genera archivos `.exec` y el reporte agregado sale vacio o se salta. Verifica que los modulos con tests tengan aplicado `gasguru.jacoco` (via conventional plugin)
+
 ## Objetivo
 Generar un reporte agregado de cobertura de tests unitarios para todo el proyecto, usando la variante **prodDebug** en `:app` y los tests JVM en el resto de modulos.
 
@@ -33,11 +35,13 @@ Si usas la action de SonarCloud, pasa esa misma propiedad en `args`.
 ## Configuracion
 El plugin de Jacoco vive en:
 - `build-logic/convention/src/main/java/JacocoConventionPlugin.kt`
+- Se aplica a los modulos library desde el plugin de convenciones: `build-logic/convention/src/main/java/AndroidLibraryConventionPlugin.kt`
 
 El reporte agregado:
 - Se registra en el **root** con la tarea `jacocoRootReport`.
 - Solo incluye `:app:testProdDebugUnitTest` para evitar `mock`.
 - Agrega classDirectories, sources y exec data de todos los modulos (excepto los excluidos).
+ - Nota: cada modulo debe aplicar `gasguru.jacoco` para generar sus `.exec`. Sin eso, el agregado no tendra datos.
 
 ## Excludes comunes
 Para reducir ruido, se excluyen clases generadas y carpetas no relevantes:
