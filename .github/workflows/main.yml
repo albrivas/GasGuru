@@ -79,13 +79,13 @@ jobs:
         run: ./gradlew test -x :app:test :app:testProdDebugUnitTest jacocoRootReport
         working-directory: ./
 
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2
+      - name: Build and analyze (SonarCloud)
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          args: >
+        run: |
+          ./gradlew build sonar --info \
             -Dsonar.coverage.jacoco.xmlReportPaths=build/reports/jacoco/jacocoRootReport/jacocoRootReport.xml
+        working-directory: ./
 
       - name: Enable KVM group perms
         run: |
