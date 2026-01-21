@@ -23,12 +23,12 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
 import org.junit.jupiter.api.extension.ExtendWith
 
-@ExtendWith(CoroutinesTestExtension::class)
-@ExtendWith(MockKExtension::class)
-@TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 /**
  * Used "OrderAnnotation" only for testing
  */
+@ExtendWith(CoroutinesTestExtension::class)
+@ExtendWith(MockKExtension::class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class PlacesDataSourceTest {
 
     private lateinit var sut: PlacesDataSourceImp
@@ -55,7 +55,6 @@ class PlacesDataSourceTest {
 
         val result = sut.getPlaces("Talavera", "ES").first()
         Assertions.assertEquals(expectedList, result)
-
     }
 
     @Test

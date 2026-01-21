@@ -2,15 +2,11 @@ plugins {
     alias(libs.plugins.gasguru.android.library)
     alias(libs.plugins.gasguru.hilt)
     alias(libs.plugins.gasguru.compose.library)
-    alias(libs.plugins.secrets)
+    alias(libs.plugins.gasguru.proguard)
 }
 
 android {
     namespace = "com.gasguru.feature.detail_station"
-
-    buildFeatures {
-        buildConfig = true
-    }
 }
 
 dependencies {
@@ -19,9 +15,17 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.uikit)
     implementation(projects.core.common)
+    implementation(projects.navigation)
     implementation(libs.constraint.layout)
 
+    testImplementation(projects.core.testing)
+    testImplementation(libs.junit5.api)
+    testImplementation(libs.junit5.extensions)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testRuntimeOnly(libs.junit5.engine)
+
     androidTestImplementation(projects.core.testing)
+    androidTestImplementation(projects.core.ui)
     androidTestImplementation(libs.junit5.api)
     androidTestImplementation(libs.junit5.extensions)
 }

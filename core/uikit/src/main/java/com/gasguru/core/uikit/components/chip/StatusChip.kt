@@ -6,11 +6,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
+import com.gasguru.core.uikit.theme.ThemePreviews
 
 @Composable
 fun StatusChip(model: StatusChipModel, modifier: Modifier = Modifier) = with(model) {
@@ -28,14 +27,14 @@ fun StatusChip(model: StatusChipModel, modifier: Modifier = Modifier) = with(mod
     }
 }
 
-@Preview
 @Composable
+@ThemePreviews
 private fun StatusChipPreview() {
     MyApplicationTheme {
         StatusChip(
             model = StatusChipModel(
                 text = "Open",
-                color = Color.Green,
+                color = GasGuruTheme.colors.accentGreen,
             )
         )
     }

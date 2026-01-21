@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="permission_required_title">Location permission required</string>
+    <string name="permission_required_message">Accept location permissions inside the app</string>
+    <string name="grant_permissions">Try again</string>
+    <string name="onboarding_required_title">Onboarding required</string>
+    <string name="onboarding_required_message">Complete the fuel selection in the phone app to continue</string>
+    <string name="complete_onboarding">Refresh</string>
+    <string name="location_disabled_title">Location disabled</string>
+    <string name="location_disabled_message">Enable phone location to find gas stations</string>
+    <string name="enable_location">Refresh</string>
+    <string name="app_title">GasGuru Finder</string>
+</resources>

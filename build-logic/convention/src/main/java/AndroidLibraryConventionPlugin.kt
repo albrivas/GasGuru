@@ -16,6 +16,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
         with(target) {
             apply(plugin = "com.android.library")
             apply(plugin = "org.jetbrains.kotlin.android")
+            apply(plugin = "gasguru.jacoco")
 
             tasks.withType<Test>().configureEach {
                 useJUnitPlatform()
@@ -26,7 +27,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                 configureDetekt(this)
 
                 defaultConfig.apply {
-                    targetSdk = 35
+                    targetSdk = 36
                     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
                     testInstrumentationRunnerArguments["runnerBuilder"] =
                         "de.mannodermaus.junit5.AndroidJUnit5Builder"

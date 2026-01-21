@@ -1,4 +1,4 @@
-name: Push
+name: CI - Pull Request to Develop
 
 on:
   pull_request:
@@ -6,20 +6,47 @@ on:
 
 jobs:
   build:
-    if: ${{ github.actor != 'dependabot[bot]' }}
+    if: ${{ github.actor != 'dependabot[bot]' && !startsWith(github.head_ref, 'sync/') && !startsWith(github.head_ref, 'docs/')}}
     name: Build
     runs-on: ubuntu-22.04
     steps:
-      - run: echo "The job was automatically triggered by a ${{ github.event_name }} event"
+
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: false
+          dotnet: true
+          haskell: true
+          large-packages: false
+          docker-images: true
+          swap-storage: true
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '17'
           distribution: 'zulu'
           cache: gradle
+
+      - name: Cache SonarQube packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: ${{ runner.os }}-gradle
 
       - name: Generate local.properties
         run: |
@@ -28,6 +55,12 @@ jobs:
           echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> local.properties
           echo "keyAlias=${{ secrets.KEYSTORE_ALIAS }}" >> local.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> local.properties
+          echo "onesignalAppId=${{ secrets.ONE_SIGNAL }}" >> local.properties
+          echo "mixpanelProjectToken=${{ secrets.MIXPANEL }}" >> local.properties
+          echo "sha1Debug=${{ secrets.SHA1_DEBUG }}" >> local.properties
+          echo "sha1PlayStore=${{ secrets.SHA1_PLAY_STORE }}" >> local.properties
+          echo "supabaseUrl=${{ secrets.SUPABASE_URL }}" >> local.properties
+          echo "supabaseKey=${{ secrets.SUPABASE_API_KEY }}" >> local.properties
 
       - name: Create google-services.json
         env:
@@ -42,6 +75,25 @@ jobs:
         run: ./gradlew codeCheck
         working-directory: ./
 
+      - name: Run unit tests + JaCoCo (prod)
+        run: ./gradlew test -x :app:test :app:testProdDebugUnitTest jacocoRootReport
+        working-directory: ./
+
+      - name: Analyze with SonarCloud
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_BRANCH: ${{ github.head_ref }}
+          PR_BASE: ${{ github.base_ref }}
+        run: |
+          ./gradlew sonar --info \
+            -Dsonar.gradle.skipCompile=true \
+            -Dsonar.pullrequest.key="$PR_NUMBER" \
+            -Dsonar.pullrequest.branch="$PR_BRANCH" \
+            -Dsonar.pullrequest.base="$PR_BASE"
+        working-directory: ./
+
       - name: Enable KVM group perms
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -54,7 +106,7 @@ jobs:
           echo "$HOME/.maestro/bin" >> $GITHUB_PATH
 
       - name: Start Android Emulator
-        uses: ReactiveCircus/android-emulator-runner@v2.34.0
+        uses: ReactiveCircus/android-emulator-runner@v2.35.0
         with:
           api-level: 34
           target: google_apis
@@ -66,13 +118,13 @@ jobs:
             ./gradlew connectedCheck
             
             # Assemble APK for Maestro
-            ./gradlew assembleProdDebug
+            ./gradlew assembleProdRelease
             
             # Wait for emulator to be ready
             adb wait-for-device
             
             # Install APK in the emulator
-            adb install app/build/outputs/apk/prod/debug/app-prod-debug.apk
+            adb install app/build/outputs/apk/prod/release/app-prod-release.apk
             
             # Execute test with maestro
             maestro test .maestro/config.yaml

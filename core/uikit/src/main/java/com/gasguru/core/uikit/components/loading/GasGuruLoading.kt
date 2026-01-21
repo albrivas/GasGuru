@@ -1,5 +1,6 @@
 package com.gasguru.core.uikit.components.loading
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -7,9 +8,9 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
-import com.gasguru.core.uikit.theme.Primary800
+import com.gasguru.core.uikit.theme.ThemePreviews
 
 @Composable
 fun GasGuruLoading(
@@ -17,7 +18,7 @@ fun GasGuruLoading(
     model: GasGuruLoadingModel,
 ) = with(model) {
     Box(
-        modifier = modifier,
+        modifier = modifier.background(color = GasGuruTheme.colors.neutral100),
         contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator(
@@ -27,15 +28,15 @@ fun GasGuruLoading(
     }
 }
 
-@Preview(showBackground = true)
 @Composable
+@ThemePreviews
 private fun GasGuruLoadingPreview() {
     MyApplicationTheme {
         GasGuruLoading(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding(),
-            model = GasGuruLoadingModel(color = Primary800)
+            model = GasGuruLoadingModel(color = GasGuruTheme.colors.primary800)
         )
     }
 }
