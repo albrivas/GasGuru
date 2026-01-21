@@ -1,2 +1,4 @@
-- Improve in filters
-- Improved application stability.
+- Added AdBlue as a new selectable fuel type
+- Improved push notification handling
+- Updated dependencies for better performance
+- Bug fixes and stability improvements

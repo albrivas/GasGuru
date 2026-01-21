@@ -2,7 +2,6 @@ package com.gasguru.feature.profile.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,16 +9,12 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Surface
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -28,30 +23,33 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.common.CommonUtils.getAppVersion
 import com.gasguru.core.model.data.FuelType
-import com.gasguru.core.model.data.UserData
-import com.gasguru.core.ui.getIcon
+import com.gasguru.core.ui.models.FuelTypeUiModel
+import com.gasguru.core.ui.models.ThemeModeUi
 import com.gasguru.core.ui.toFuelType
-import com.gasguru.core.ui.translation
+import com.gasguru.core.uikit.components.drag_handle.DragHandle
+import com.gasguru.core.uikit.components.filter_sheet.FilterSheet
+import com.gasguru.core.uikit.components.filter_sheet.FilterSheetModel
+import com.gasguru.core.uikit.components.filter_sheet.FilterSheetType
 import com.gasguru.core.uikit.components.fuel_list.FuelListSelection
 import com.gasguru.core.uikit.components.fuel_list.FuelListSelectionModel
+import com.gasguru.core.uikit.components.loading.GasGuruLoading
+import com.gasguru.core.uikit.components.loading.GasGuruLoadingModel
 import com.gasguru.core.uikit.components.settings.SettingItem
+import com.gasguru.core.uikit.components.settings.SettingItemModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
-import com.gasguru.core.uikit.theme.Neutral100
-import com.gasguru.core.uikit.theme.TextMain
-import com.gasguru.core.uikit.theme.TextSubtle
+import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.profile.R
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import com.gasguru.core.ui.R as RUi
 import com.gasguru.core.uikit.R as RUikit
@@ -65,32 +63,25 @@ internal fun ProfileScreenRoute(viewModel: ProfileViewModel = hiltViewModel()) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ProfileScreen(uiState: ProfileUiState, event: (ProfileEvents) -> Unit) {
-    var showSheet by remember { mutableStateOf(false) }
+    var activeSheet by remember { mutableStateOf<ProfileSheet>(ProfileSheet.None) }
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
-    var selectedFuel by remember { mutableStateOf<Int?>(null) }
 
     when (uiState) {
         is ProfileUiState.Loading -> {
-            Box(
+            GasGuruLoading(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.White)
                     .statusBarsPadding()
                     .testTag("loading"),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            }
+                model = GasGuruLoadingModel(color = GasGuruTheme.colors.primary800)
+            )
         }
 
         is ProfileUiState.Success -> {
-            selectedFuel = uiState.userData.fuelSelection.translation()
             SuccessContent(
-                userData = uiState.userData,
-                showSheet = {
-                    showSheet = true
-                }
+                content = uiState.content,
+                onSheetRequest = { sheet -> activeSheet = sheet }
             )
         }
 
@@ -99,71 +90,68 @@ internal fun ProfileScreen(uiState: ProfileUiState, event: (ProfileEvents) -> Un
         }
     }
 
-    if (showSheet) {
-        ModalBottomSheet(
-            modifier = Modifier
-                .navigationBarsPadding()
-                .testTag("bottom_sheet_fuel"),
-            onDismissRequest = {
-                showSheet = false
-            },
-            dragHandle = {
-                Surface(
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    color = Color.LightGray,
-                    shape = MaterialTheme.shapes.extraLarge
-                ) {
-                    Box(
-                        modifier = Modifier.size(
-                            width = 32.dp,
-                            height = 4.0.dp
-                        )
-                    )
-                }
-            },
-            shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
+    if (uiState is ProfileUiState.Success) {
+        ProfileSheetHandler(
+            activeSheet = activeSheet,
+            onDismiss = { activeSheet = ProfileSheet.None },
+            onEvent = event,
+            content = uiState.content,
             sheetState = sheetState,
-            containerColor = Neutral100,
-            contentColor = Neutral100,
-            contentWindowInsets = { WindowInsets.navigationBars }
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Text(
-                    text = stringResource(id = RUi.string.select_fuel_preference),
-                    style = GasGuruTheme.typography.baseBold,
-                    color = TextMain
-                )
-                val list = FuelType.entries.map { Pair(it.getIcon(), it.translation()) }
-                FuelListSelection(
-                    model = FuelListSelectionModel(
-                        list = list,
-                        selected = selectedFuel,
-                        onItemSelected = { fuel ->
-                            selectedFuel = fuel
-                            event(ProfileEvents.Fuel(fuel.toFuelType()))
-                            scope.launch { sheetState.hide() }.invokeOnCompletion {
-                                if (!sheetState.isVisible) {
-                                    showSheet = false
-                                }
-                            }
+            scope = scope
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ProfileSheetHandler(
+    activeSheet: ProfileSheet,
+    onDismiss: () -> Unit,
+    onEvent: (ProfileEvents) -> Unit,
+    content: ProfileContentUi,
+    sheetState: SheetState,
+    scope: CoroutineScope,
+) {
+    when (activeSheet) {
+        ProfileSheet.None -> {
+            Unit
+        }
+
+        ProfileSheet.Theme -> {
+            ThemeModeSheet(
+                selectedTheme = content.themeUi,
+                allThemesUi = content.allThemesUi,
+                onDismiss = onDismiss,
+                onThemeSelected = { theme ->
+                    onEvent(ProfileEvents.Theme(theme))
+                    onDismiss()
+                }
+            )
+        }
+
+        ProfileSheet.Fuel -> {
+            FuelSelectionSheet(
+                selectedFuel = content.fuelTranslation,
+                onDismiss = onDismiss,
+                onFuelSelected = { fuel ->
+                    onEvent(ProfileEvents.Fuel(fuel.toFuelType()))
+                    scope.launch { sheetState.hide() }.invokeOnCompletion {
+                        if (!sheetState.isVisible) {
+                            onDismiss()
                         }
-                    )
-                )
-            }
+                    }
+                },
+                sheetState = sheetState
+            )
         }
     }
 }
 
 @Composable
-fun SuccessContent(userData: UserData, showSheet: () -> Unit) {
+fun SuccessContent(content: ProfileContentUi, onSheetRequest: (ProfileSheet) -> Unit) {
     Column(
         modifier = Modifier
-            .background(color = Neutral100)
+            .background(color = GasGuruTheme.colors.neutral100)
             .fillMaxSize()
             .statusBarsPadding()
             .padding(start = 16.dp, end = 16.dp, top = 32.dp),
@@ -172,20 +160,103 @@ fun SuccessContent(userData: UserData, showSheet: () -> Unit) {
         Text(
             modifier = Modifier,
             text = stringResource(id = R.string.profile),
-            style = GasGuruTheme.typography.h5
+            style = GasGuruTheme.typography.h5,
+            color = GasGuruTheme.colors.textMain
         )
         SettingItem(
-            model = com.gasguru.core.uikit.components.settings.SettingItemModel(
+            model = SettingItemModel(
                 title = stringResource(id = R.string.fuel_selection),
-                selection = stringResource(id = userData.fuelSelection.translation()),
+                selection = stringResource(id = content.fuelTranslation),
                 icon = RUikit.drawable.ic_fuel_station,
-                onClick = { showSheet() },
+                onClick = { onSheetRequest(ProfileSheet.Fuel) },
             ),
             modifier = Modifier.testTag("fuel_setting_item")
+        )
+        SettingItem(
+            model = SettingItemModel(
+                title = stringResource(id = R.string.theme_mode),
+                selection = stringResource(id = content.themeUi.titleRes),
+                icon = content.themeUi.iconRes,
+                onClick = { onSheetRequest(ProfileSheet.Theme) },
+            ),
+            modifier = Modifier.testTag("theme_setting_item")
         )
         Spacer(modifier = Modifier.weight(1f))
         VersionAppInfo(modifier = Modifier.padding(bottom = 12.dp))
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FuelSelectionSheet(
+    selectedFuel: Int,
+    onDismiss: () -> Unit,
+    onFuelSelected: (Int) -> Unit,
+    sheetState: SheetState,
+) {
+    ModalBottomSheet(
+        modifier = Modifier
+            .testTag("bottom_sheet_fuel"),
+        onDismissRequest = onDismiss,
+        dragHandle = { DragHandle() },
+        shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
+        sheetState = sheetState,
+        containerColor = GasGuruTheme.colors.neutral100,
+        contentColor = GasGuruTheme.colors.neutral100,
+        contentWindowInsets = { WindowInsets.navigationBars }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                text = stringResource(id = RUi.string.select_fuel_preference),
+                style = GasGuruTheme.typography.baseBold,
+                color = GasGuruTheme.colors.textMain
+            )
+            val list = FuelType.entries.map {
+                val fuelUiModel = FuelTypeUiModel.fromFuelType(it)
+                Pair(fuelUiModel.iconRes, fuelUiModel.translationRes)
+            }
+            FuelListSelection(
+                model = FuelListSelectionModel(
+                    list = list,
+                    selected = selectedFuel,
+                    onItemSelected = onFuelSelected
+                )
+            )
+        }
+    }
+}
+
+@Composable
+fun ThemeModeSheet(
+    selectedTheme: ThemeModeUi,
+    allThemesUi: List<ThemeModeUi>,
+    onDismiss: () -> Unit,
+    onThemeSelected: (ThemeModeUi) -> Unit,
+) {
+    val themeOptions = allThemesUi.map { stringResource(it.titleRes) }
+    val selectedOption = stringResource(selectedTheme.titleRes)
+
+    FilterSheet(
+        model = FilterSheetModel(
+            title = stringResource(R.string.theme_mode),
+            buttonText = "Save",
+            isMultiOption = false,
+            isMustSelection = true,
+            options = themeOptions,
+            optionsSelected = listOf(selectedOption),
+            onDismiss = onDismiss,
+            onSaveButton = { selectedOptions ->
+                val selectedIndex = themeOptions.indexOf(selectedOptions.first())
+                onThemeSelected(allThemesUi[selectedIndex])
+            },
+            type = FilterSheetType.NORMAL,
+        )
+    )
 }
 
 @Composable
@@ -198,29 +269,26 @@ fun VersionAppInfo(modifier: Modifier = Modifier) {
                 getAppVersion()
             ),
             style = GasGuruTheme.typography.captionRegular,
-            color = TextSubtle
+            color = GasGuruTheme.colors.textSubtle
         )
     }
 }
 
-@Preview
 @Composable
-private fun ProfileScreenPreview() {
+@ThemePreviews
+private fun ProfileScreenPreview(
+    @PreviewParameter(ProfileContentUiPreviewParameterProvider::class) content: ProfileContentUi,
+) {
     MyApplicationTheme {
         ProfileScreen(
-            uiState = ProfileUiState.Success(
-                userData = UserData(
-                    fuelSelection = FuelType.GASOLINE_95,
-                    lastUpdate = 0L,
-                )
-            ),
+            uiState = ProfileUiState.Success(content = content),
             event = { }
         )
     }
 }
 
-@Preview
 @Composable
+@ThemePreviews
 private fun ProfileScreenLoadingPreview() {
     MyApplicationTheme {
         ProfileScreen(uiState = ProfileUiState.Loading, event = {})

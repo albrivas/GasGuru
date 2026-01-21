@@ -1,10 +1,13 @@
 package com.gasguru
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -13,8 +16,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.gasguru.core.data.util.NetworkMonitor
+import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.feature.onboarding_welcome.navigation.OnboardingRoutes
+import com.gasguru.navigation.manager.NavigationDestination
+import com.gasguru.navigation.manager.NavigationManager
 import com.gasguru.navigation.navigationbar.route.NavigationBarRoute
 import com.gasguru.ui.GasGuruApp
 import com.gasguru.ui.rememberGasGuruAppState
@@ -32,6 +38,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var networkMonitor: NetworkMonitor
+
+    @Inject
+    lateinit var navigationManager: NavigationManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splash = installSplashScreen()
@@ -70,30 +79,65 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        // Handle push navigation after splash screen is dismissed and UI is ready
+        splash.setOnExitAnimationListener { splashScreenView ->
+            splashScreenView.remove()
+            handleIntent(intent = intent)
+        }
+
         enableEdgeToEdge()
         setContent {
             val appState = rememberGasGuruAppState(networkMonitor)
+            val themeMode by viewModel.themeMode.collectAsState()
 
-            MyApplicationTheme(darkTheme = false) {
+            val darkTheme = when (themeMode) {
+                ThemeMode.LIGHT -> false
+                ThemeMode.DARK -> true
+                ThemeMode.SYSTEM -> isSystemInDarkTheme()
+            }
+
+            MyApplicationTheme(darkTheme = darkTheme) {
                 when (val state = uiState) {
                     is SplashUiState.Success -> GasGuruApp(
                         appState = appState,
+                        navigationManager = navigationManager,
                         startDestination = if (state.isOnboardingSuccess) {
                             NavigationBarRoute
                         } else {
                             OnboardingRoutes.OnboardingWelcomeRoute
-                        }
+                        },
                     )
 
                     SplashUiState.Error -> GasGuruApp(
                         appState = appState,
-                        startDestination = OnboardingRoutes.OnboardingWelcomeRoute
+                        navigationManager = navigationManager,
+                        startDestination = OnboardingRoutes.OnboardingWelcomeRoute,
                     )
 
                     else -> Unit
                 }
             }
         }
+    }
+
+    private fun handleIntent(intent: Intent) {
+        val stationId = intent.getStringExtra("station_id")?.toIntOrNull()
+        stationId?.let {
+            navigationManager.navigateTo(
+                destination = NavigationDestination.DetailStation(
+                    idServiceStation = it,
+                    presentAsDialog = true,
+                ),
+            )
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+
+        // Handle push (app in foreground and background)
+        handleIntent(intent)
     }
 
     override fun onStop() {

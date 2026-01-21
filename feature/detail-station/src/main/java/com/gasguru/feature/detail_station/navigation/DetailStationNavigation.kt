@@ -1,32 +1,46 @@
 package com.gasguru.feature.detail_station.navigation
 
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.core.tween
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.dialog
+import com.gasguru.core.ui.ConfigureDialogSystemBars
 import com.gasguru.feature.detail_station.ui.DetailStationScreenRoute
 
 fun NavController.navigateToDetailStation(idServiceStation: Int, navOptions: NavOptions? = null) {
     navigate(DetailStationRoute(idServiceStation), navOptions)
 }
 
-fun NavGraphBuilder.detailStationScreen(onBack: () -> Unit) {
+fun NavController.navigateToDetailStationAsDialog(
+    idServiceStation: Int,
+    navOptions: NavOptions? = null,
+) {
+    navigate(DetailStationDialogRoute(idServiceStation), navOptions)
+}
+
+fun NavGraphBuilder.detailStationScreen() {
     composable<DetailStationRoute>(
         enterTransition = {
-            return@composable slideIntoContainer(
-                AnimatedContentTransitionScope.SlideDirection.Start,
-                tween(700)
-            )
+            null
         },
         popExitTransition = {
-            return@composable slideOutOfContainer(
-                AnimatedContentTransitionScope.SlideDirection.End,
-                tween(700)
-            )
+            null
         },
     ) {
-        DetailStationScreenRoute(onBack = onBack)
+        DetailStationScreenRoute()
+    }
+}
+
+fun NavGraphBuilder.detailStationScreenDialog() {
+    dialog<DetailStationDialogRoute>(
+        dialogProperties = DialogProperties(
+            usePlatformDefaultWidth = false,
+            decorFitsSystemWindows = false,
+        ),
+    ) {
+        ConfigureDialogSystemBars(invertColors = true)
+        DetailStationScreenRoute()
     }
 }

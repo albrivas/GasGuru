@@ -14,25 +14,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.R
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
-import com.gasguru.core.uikit.theme.Neutral300
-import com.gasguru.core.uikit.theme.TextSubtle
+import com.gasguru.core.uikit.theme.ThemePreviews
 
 @Composable
 fun PriceItem(model: PriceItemModel) = with(model) {
     Row(
         modifier = Modifier
             .clip(RoundedCornerShape(8.dp))
-            .background(color = Color.White)
-            .border(1.dp, Neutral300, RoundedCornerShape(8.dp))
+            .background(color = GasGuruTheme.colors.neutralWhite)
+            .border(1.dp, GasGuruTheme.colors.neutral300, RoundedCornerShape(8.dp))
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -54,20 +51,21 @@ fun PriceItem(model: PriceItemModel) = with(model) {
                 style = GasGuruTheme.typography.smallRegular,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                color = TextSubtle
+                color = GasGuruTheme.colors.textSubtle
             )
             Text(
                 text = price,
                 style = GasGuruTheme.typography.baseRegular,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                color = GasGuruTheme.colors.neutralBlack
             )
         }
     }
 }
 
-@Preview(showBackground = true)
 @Composable
+@ThemePreviews
 private fun PriceItemPreview() {
     MyApplicationTheme {
         PriceItem(

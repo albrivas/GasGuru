@@ -7,6 +7,6 @@ import javax.inject.Inject
 class SaveFuelSelectionUseCase @Inject constructor(
     private val userDataRepository: UserDataRepository,
 ) {
-    suspend operator fun invoke(fuelType: FuelType) =
+    suspend operator fun invoke(fuelType: FuelType): Unit =
         userDataRepository.updateSelectionFuel(fuelType = fuelType)
 }
