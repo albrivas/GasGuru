@@ -5,7 +5,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.dialog
-import com.gasguru.core.model.data.SearchPlace
 import com.gasguru.core.ui.ConfigureDialogSystemBars
 import com.gasguru.feature.search.ui.SearchScreenRoute
 
@@ -13,10 +12,7 @@ fun NavController.navigateToSearch(navOptions: NavOptions? = null) {
     navigate(SearchScreenRoute, navOptions)
 }
 
-fun NavGraphBuilder.searchScreen(
-    onPlaceSelected: (SearchPlace) -> Unit,
-    onBackPressed: () -> Unit
-) {
+fun NavGraphBuilder.searchScreen() {
     dialog<SearchScreenRoute>(
         dialogProperties = DialogProperties(
             usePlatformDefaultWidth = false,
@@ -25,11 +21,6 @@ fun NavGraphBuilder.searchScreen(
     ) {
         ConfigureDialogSystemBars()
 
-        SearchScreenRoute(
-            onPlaceSelected = { place ->
-                onPlaceSelected(place)
-            },
-            onBackPressed = onBackPressed
-        )
+        SearchScreenRoute()
     }
 }

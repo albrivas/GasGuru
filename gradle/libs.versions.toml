@@ -50,10 +50,12 @@ constraintLayout = "1.1.0"
 mapsUtil = "3.8.2"
 androidTools = "31.7.3"
 androidxCarApp = "1.7.0"
-onesignal = "5.1.35"
+onesignal = "5.4.1"
 mixpanel = "7.+"
 supabase = "3.2.5"
 ktor = "3.3.1"
+playReview = "2.0.1"
+sonar="7.2.2.6593"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
@@ -126,6 +128,7 @@ mixpanel = { module = "com.mixpanel.android:mixpanel-android", version.ref = "mi
 supabase-bom = { module = "io.github.jan-tennert.supabase:bom", version.ref = "supabase" }
 supabase-postgrest = { module = "io.github.jan-tennert.supabase:postgrest-kt" }
 ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
+play-review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "playReview" }
 
 
 # Dependencies of the included build-logic
@@ -138,6 +141,7 @@ ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devto
 room-gradlePlugin = { group = "androidx.room", name = "room-gradle-plugin", version.ref = "androidx-room" }
 secrets-gradlePlugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "secrets" }
 detekt-gradlePlugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
+sonarqube-gradlePlugin = { module = "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin", version.ref = "sonar" }
 
 [bundles]
 com-squareup-retrofit2 = [
@@ -171,6 +175,7 @@ secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugi
 junit5 = { id = "de.mannodermaus.android-junit5", version.ref = "junit5Plugin" }
 room = { id = "androidx.room", version.ref = "androidx-room" }
 kotlin-parcelize = { id = "kotlin-parcelize" }
+sonarqube = { id = "org.sonarqube", version.ref="sonar" }
 
 gasguru-android-application = { id = "gasguru.android.application" }
 gasguru-android-library = { id = "gasguru.android.library" }
@@ -182,3 +187,4 @@ gasguru-flavors = { id = "gasguru.flavors" }
 gasguru-jacoco = { id = "gasguru.jacoco" }
 gasguru-secrets-google = { id = "gasguru.secrets.google" }
 gasguru-proguard = { id = "gasguru.proguard" }
+gasguru-sonar = { id = "gasguru.sonar" }

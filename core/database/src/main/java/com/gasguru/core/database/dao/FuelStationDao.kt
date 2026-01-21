@@ -29,7 +29,8 @@ interface FuelStationDao {
             "(:fuelType = 'GASOLINE_98_PREMIUM' AND priceGasoline98E10 > 0) OR " +
             "(:fuelType = 'DIESEL' AND priceGasoilA > 0) OR " +
             "(:fuelType = 'DIESEL_PLUS' AND priceGasoilPremium > 0) OR " +
-            "(:fuelType = 'GASOIL_B' AND priceGasoilB > 0)" +
+            "(:fuelType = 'GASOIL_B' AND priceGasoilB > 0) OR " +
+            "(:fuelType = 'ADBLUE' AND priceAdblue > 0)" +
             ")"
     )
     fun getFuelStationsWithoutBrandFilter(fuelType: String): Flow<List<FuelStationEntity>>
@@ -44,7 +45,8 @@ interface FuelStationDao {
             "(:fuelType = 'GASOLINE_98_PREMIUM' AND priceGasoline98E10 > 0) OR " +
             "(:fuelType = 'DIESEL' AND priceGasoilA > 0) OR " +
             "(:fuelType = 'DIESEL_PLUS' AND priceGasoilPremium > 0) OR " +
-            "(:fuelType = 'GASOIL_B' AND priceGasoilB > 0)" +
+            "(:fuelType = 'GASOIL_B' AND priceGasoilB > 0) OR " +
+            "(:fuelType = 'ADBLUE' AND priceAdblue > 0)" +
             ")" +
             "AND brandStation IN (:brands) COLLATE NOCASE"
     )
@@ -68,7 +70,8 @@ interface FuelStationDao {
             "(:fuelType = 'GASOLINE_98_PREMIUM' AND priceGasoline98E10 > 0) OR " +
             "(:fuelType = 'DIESEL' AND priceGasoilA > 0) OR " +
             "(:fuelType = 'DIESEL_PLUS' AND priceGasoilPremium > 0) OR " +
-            "(:fuelType = 'GASOIL_B' AND priceGasoilB > 0)" +
+            "(:fuelType = 'GASOIL_B' AND priceGasoilB > 0) OR " +
+            "(:fuelType = 'ADBLUE' AND priceAdblue > 0)" +
             ")"
     )
     suspend fun getFuelStationsInBounds(
@@ -76,6 +79,6 @@ interface FuelStationDao {
         maxLat: Double,
         minLng: Double,
         maxLng: Double,
-        fuelType: String
+        fuelType: String,
     ): List<FuelStationEntity>
 }

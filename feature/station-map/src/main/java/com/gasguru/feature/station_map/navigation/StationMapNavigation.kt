@@ -5,20 +5,13 @@ import androidx.navigation.compose.composable
 import com.gasguru.feature.station_map.navigation.route.StationMapGraph
 import com.gasguru.feature.station_map.ui.StationMapScreenRoute
 
-fun NavGraphBuilder.stationMapScreen(
-    navigateToDetail: (Int) -> Unit,
-    navigateToRoutePlanner: () -> Unit = {},
-) {
+fun NavGraphBuilder.stationMapScreen() {
     composable<StationMapGraph.StationMapRoute>(
         enterTransition = { null },
         exitTransition = { null },
         popEnterTransition = { null },
-        popExitTransition = { null }
+        popExitTransition = { null },
     ) {
-        StationMapScreenRoute(
-            routePlanner = null,
-            navigateToDetail = navigateToDetail,
-            navigateToRoutePlanner = navigateToRoutePlanner
-        )
+        StationMapScreenRoute(routePlanner = null)
     }
 }

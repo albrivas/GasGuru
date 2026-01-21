@@ -1,10 +1,13 @@
 package com.gasguru.core.domain.places
 
 import com.gasguru.core.data.repository.places.PlacesRepository
+import com.gasguru.core.model.data.LatLng
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class GetLocationPlaceUseCase @Inject constructor(
     private val placesRepository: PlacesRepository
 ) {
-    operator fun invoke(placeId: String) = placesRepository.getLocationPlace(placeId)
+    operator fun invoke(placeId: String): Flow<LatLng> =
+        placesRepository.getLocationPlace(placeId)
 }

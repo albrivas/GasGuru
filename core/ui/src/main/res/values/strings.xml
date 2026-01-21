@@ -9,6 +9,7 @@
     <string name="gasoline_95_e10">SP 95 E10</string>
     <string name="gasoline_98_premium">SP 98 E10</string>
     <string name="gasoil_b">Gasoil B</string>
+    <string name="adblue">AdBlue</string>
     <string name="select_fuel_preference">Elige tu tipo de combustible</string>
     <string name="sin_sp95">Without SP 95</string>
     <string name="sin_sp98">Without SP 98</string>
@@ -18,6 +19,7 @@
     <string name="sin_sp95_e10">Without SP 95 E10</string>
     <string name="sin_sp98_premium">Without SP 98 Premium</string>
     <string name="sin_gasoleo_b">Without Gasoil B</string>
+    <string name="sin_adblue">Without AdBlue</string>
     <string name="theme_mode_light">Light</string>
     <string name="theme_mode_dark">Dark</string>
     <string name="theme_mode_system">System default</string>

@@ -1,6 +1,5 @@
 package com.gasguru.feature.detail_station.ui
 
-import android.location.Location
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
@@ -9,6 +8,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toLowerCase
 import com.gasguru.core.common.CommonUtils.isStationOpen
+import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.ui.models.FuelStationUiModel
 import com.gasguru.core.ui.models.FuelTypeUiModel
 import com.gasguru.core.ui.models.PriceUiModel
@@ -80,7 +80,7 @@ class DetailStationState(internal val station: FuelStationUiModel) {
     internal val hasPriceAlert: Boolean
         get() = station.fuelStation.hasPriceAlert
 
-    internal val location: Location
+    internal val location: LatLng
         get() = station.fuelStation.location
 
     internal val schedule: String
