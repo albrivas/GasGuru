@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.gasguru.core.common.IoDispatcher
 import com.gasguru.core.domain.fuelstation.GetFuelStationUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
+import com.gasguru.core.model.data.ThemeMode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.SharingStarted
@@ -49,6 +50,14 @@ class SplashViewModel @Inject constructor(
         .stateIn(
             scope = viewModelScope,
             initialValue = Result.success(SplashUiState.Loading),
+            started = SharingStarted.WhileSubscribed(5_000),
+        )
+
+    val themeMode: StateFlow<ThemeMode> = userData()
+        .map { it.themeMode }
+        .stateIn(
+            scope = viewModelScope,
+            initialValue = ThemeMode.SYSTEM,
             started = SharingStarted.WhileSubscribed(5_000),
         )
 

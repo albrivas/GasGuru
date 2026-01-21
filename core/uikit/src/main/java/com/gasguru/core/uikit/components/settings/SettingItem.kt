@@ -19,36 +19,36 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.R
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
-import com.gasguru.core.uikit.theme.Neutral300
-import com.gasguru.core.uikit.theme.Neutral500
-import com.gasguru.core.uikit.theme.TextSubtle
+import com.gasguru.core.uikit.theme.ThemePreviews
 
 @Composable
 fun SettingItem(
-    model: com.gasguru.core.uikit.components.settings.SettingItemModel,
-    modifier: Modifier = Modifier
+    model: SettingItemModel,
+    modifier: Modifier = Modifier,
 ) = with(model) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
-            .background(color = Color.White)
+            .background(color = GasGuruTheme.colors.neutralWhite)
             .clickable { onClick() }
-            .border(1.dp, Neutral300, RoundedCornerShape(8.dp))
+            .border(1.dp, GasGuruTheme.colors.neutral300, RoundedCornerShape(8.dp))
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
             modifier = Modifier.size(32.dp),
             painter = painterResource(id = icon),
-            contentDescription = "fuel setting"
+            contentDescription = "fuel setting",
+            colorFilter = ColorFilter.tint(
+                color = GasGuruTheme.colors.neutralBlack
+            )
         )
 
         Column(
@@ -60,27 +60,28 @@ fun SettingItem(
             Text(
                 style = GasGuruTheme.typography.baseRegular,
                 text = title,
+                color = GasGuruTheme.colors.textMain
             )
             Text(
                 text = selection,
-                color = TextSubtle,
+                color = GasGuruTheme.colors.textSubtle,
                 style = GasGuruTheme.typography.smallRegular
             )
         }
         Icon(
             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = "chevron right",
-            tint = Neutral500
+            tint = GasGuruTheme.colors.neutral500
         )
     }
 }
 
-@Preview(showBackground = true)
 @Composable
+@ThemePreviews
 private fun SettingItemPreview() {
     MyApplicationTheme {
         SettingItem(
-            model = com.gasguru.core.uikit.components.settings.SettingItemModel(
+            model = SettingItemModel(
                 title = "Combustible seleccionado",
                 selection = "Gasolina 95",
                 icon = R.drawable.ic_map

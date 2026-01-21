@@ -9,10 +9,9 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.theme.GasGuruTheme
-import com.gasguru.core.uikit.theme.Primary500
+import com.gasguru.core.uikit.theme.ThemePreviews
 
 @Composable
 fun GasGuruButton(
@@ -31,7 +30,9 @@ fun GasGuruButton(
         enabled = enabled,
         contentPadding = contentPadding,
         colors = ButtonDefaults.buttonColors(
-            containerColor = Primary500
+            containerColor = GasGuruTheme.colors.primary500,
+            disabledContentColor = GasGuruTheme.colors.neutral700,
+            disabledContainerColor = GasGuruTheme.colors.neutral400
         )
     ) {
         Text(
@@ -41,8 +42,14 @@ fun GasGuruButton(
     }
 }
 
-@Preview
 @Composable
+@ThemePreviews
 private fun GasGuruButtonPreview() {
-    GasGuruButton(onClick = {}, text = "Siguiente")
+    GasGuruButton(onClick = {}, text = "Siguiente", enabled = false)
+}
+
+@Composable
+@ThemePreviews
+private fun GasGuruButtonEnabledPreview() {
+    GasGuruButton(onClick = {}, text = "Siguiente", enabled = true)
 }

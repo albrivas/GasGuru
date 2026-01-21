@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="label_empty_suggestions">No suggestions for this search</string>
-    <string name="label_empty_recents">No recent searches</string>
-    <string name="label_suggestion">Suggestions</string>
-    <string name="label_recent">Recent</string>
-    <string name="hint_search_bar">Search by locations</string>
-    <string name="sheet_title">Nearby stations</string>
     <string name="sheet_button">Show list</string>
     <string name="filter_brand_number">Brands (%1$s)</string>
     <string name="filter_brand">Brands</string>

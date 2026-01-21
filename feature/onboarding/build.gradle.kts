@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.gasguru.android.library)
     alias(libs.plugins.gasguru.hilt)
     alias(libs.plugins.gasguru.compose.library)
-    alias(libs.plugins.secrets)
+    alias(libs.plugins.gasguru.proguard)
 }
 
 android {
@@ -14,6 +14,7 @@ dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.model)
     implementation(projects.core.uikit)
+    implementation(projects.navigation)
 
     androidTestImplementation(projects.core.testing)
     androidTestImplementation(projects.core.testing)

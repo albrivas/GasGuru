@@ -1,13 +1,19 @@
 package com.gasguru.core.data.di
 
+import com.gasguru.core.data.repository.alerts.PriceAlertRepository
+import com.gasguru.core.data.repository.alerts.PriceAlertRepositoryImpl
 import com.gasguru.core.data.repository.filter.FilterRepository
 import com.gasguru.core.data.repository.filter.FilterRepositoryImpl
 import com.gasguru.core.data.repository.geocoder.GeocoderAddress
 import com.gasguru.core.data.repository.geocoder.GeocoderAddressImpl
 import com.gasguru.core.data.repository.location.LocationTracker
 import com.gasguru.core.data.repository.location.LocationTrackerRepository
+import com.gasguru.core.data.repository.maps.GoogleStaticMapRepository
+import com.gasguru.core.data.repository.maps.StaticMapRepository
 import com.gasguru.core.data.repository.places.PlacesRepository
 import com.gasguru.core.data.repository.places.PlacesRepositoryImp
+import com.gasguru.core.data.repository.route.RoutesRepository
+import com.gasguru.core.data.repository.route.RoutesRepositoryImpl
 import com.gasguru.core.data.repository.search.OfflineRecentSearchRepository
 import com.gasguru.core.data.repository.search.OfflineRecentSearchRepositoryImp
 import com.gasguru.core.data.repository.stations.FuelStationRepository
@@ -18,6 +24,8 @@ import com.gasguru.core.data.util.ConnectivityManagerNetworkMonitor
 import com.gasguru.core.data.util.NetworkMonitor
 import com.gasguru.core.network.datasource.PlacesDataSource
 import com.gasguru.core.network.datasource.PlacesDataSourceImp
+import com.gasguru.core.network.datasource.RoutesDataSource
+import com.gasguru.core.network.datasource.RoutesDataSourceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -31,6 +39,11 @@ interface DataModule {
     fun bindsFuelStationRepository(
         fuelStationRepository: OfflineFuelStationRepository,
     ): FuelStationRepository
+
+    @Binds
+    fun bindRouteDataSourceImp(
+        routesDataSource: RoutesDataSourceImpl
+    ): RoutesDataSource
 
     @Binds
     fun bindUserDataRepository(
@@ -71,4 +84,19 @@ interface DataModule {
     fun bindConnectivityManager(
         connectivityManagerNetworkMonitor: ConnectivityManagerNetworkMonitor,
     ): NetworkMonitor
+
+    @Binds
+    fun bindStaticMapRepository(
+        googleStaticMapRepository: GoogleStaticMapRepository,
+    ): StaticMapRepository
+
+    @Binds
+    fun bindRoutesRepository(
+        routesRepository: RoutesRepositoryImpl
+    ): RoutesRepository
+
+    @Binds
+    fun bindPriceAlertRepository(
+        priceAlertRepository: PriceAlertRepositoryImpl
+    ): PriceAlertRepository
 }

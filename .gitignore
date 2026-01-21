@@ -90,6 +90,9 @@ lint/tmp/
 # Android Profiling
 *.hprof
 
+# Kotlin compiler artifacts
+kotlin-compiler*
+
 ### Android Patch ###
 gen-external-apklibs
 output.json
@@ -221,5 +224,10 @@ google-services.json
 # Kotlin kompiler
 .kotlin/*
 
+# Database schema files
+core/database/schemas/
+
 .gitconfig
 sonar-project.properties
+
+.claude/settings.local.json

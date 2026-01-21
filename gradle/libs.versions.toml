@@ -1,55 +1,61 @@
 [versions]
-androidGradlePlugin = "8.11.1"
+androidGradlePlugin = "8.13.0"
 androidx-room = "2.7.1"
-androidxActivity = "1.10.1"
+androidxActivity = "1.12.1"
 androidxComposeCompiler = "1.5.14"
 androidxComposeMaterial3 = "1.3.1"
 androidxComposeUi = "1.8.1"
 androidxCore = "1.16.0"
 androidxEspresso = "3.6.1"
 androidxHilt = "1.2.0"
-androidxLifecycle = "2.9.0"
-androidxNavigation = "2.9.0-rc01"
+androidxLifecycle = "2.9.4"
+androidxNavigation = "2.9.6"
 androidxTestCore = "1.6.1"
 androidxTestExt = "1.2.1"
 androidxTestRules = "1.6.1"
 androidxTestRunner = "1.6.2"
 com-squareup-retrofit2 = "2.11.0"
-coroutines = "1.10.1"
-firebase-bom = "32.1.1"
+coroutines = "1.10.2"
+firebase-bom = "34.1.0"
 firebase-crashlytics-gradle = "3.0.3"
-hilt = "2.56.2"
+hilt = "2.57.1"
 junit = "4.13.2"
-kotlin = "2.2.0"
+kotlin = "2.2.21"
 kotlinxSerializationJson = "1.8.1"
-ksp = "2.1.21-2.0.1"
+ksp = "2.3.3"
 mock-webserver = "4.11.0"
 mockk = "1.13.5"
 moshi = "1.15.2"
-moshi-converter = "2.11.0"
+moshi-converter = "3.0.0"
 turbine = "1.2.0"
 googleAccompanist = "0.37.0"
 loggingInterceptor = "4.12.0"
-appcompat = "1.7.0"
-material = "1.12.0"
+appcompat = "1.7.1"
+material = "1.13.0"
 playServicesLocation = "21.3.0"
 lottie = "6.6.2"
 googleGmsGoogleServices = "4.4.2"
 detekt = "1.23.8"
-mapsCompose = "6.4.0"
+mapsCompose = "6.7.1"
 playServicesMaps = "19.2.0"
 secrets = "2.0.1"
-places = "4.1.0"
+places = "4.4.1"
 coil = "2.7.0"
-splashScreen = "1.0.1"
+splashScreen = "1.2.0"
 junit5Api = "5.12.0"
 junit5Extensions = "1.7.0"
 junit5Plugin = "1.11.3.0"
 materialIcons = "1.7.8"
 constraintLayout = "1.1.0"
-androidTools = "31.7.3"
-androidxCarApp = "1.4.0"
-
+mapsUtil = "3.8.2"
+androidTools = "31.13.2"
+androidxCarApp = "1.7.0"
+onesignal = "5.4.1"
+mixpanel = "7.+"
+supabase = "3.2.6"
+ktor = "3.3.1"
+playReview = "2.0.1"
+sonar="7.2.2.6593"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
@@ -103,6 +109,7 @@ kotlin-coroutines-play = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-pl
 lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
+maps-utils = { module = "com.google.maps.android:android-maps-utils", version.ref = "mapsUtil" }
 play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
 places = { module = "com.google.android.libraries.places:places", version.ref = "places" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
@@ -113,9 +120,16 @@ junit5-compose = { module = "de.mannodermaus.junit5:android-test-compose", versi
 junit5-runner = { module = "de.mannodermaus.junit5:android-test-runner", version.ref = "junit5Extensions" }
 junit5-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit5Api" }
 material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIcons" }
-constraint-layout = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintLayout"}
+constraint-layout = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintLayout" }
 androidx-car-app = { module = "androidx.car.app:app", version.ref = "androidxCarApp" }
 androidx-auto = { module = "androidx.car.app:app-projected", version.ref = "androidxCarApp" }
+onesignal = { module = "com.onesignal:OneSignal", version.ref = "onesignal" }
+mixpanel = { module = "com.mixpanel.android:mixpanel-android", version.ref = "mixpanel" }
+supabase-bom = { module = "io.github.jan-tennert.supabase:bom", version.ref = "supabase" }
+supabase-postgrest = { module = "io.github.jan-tennert.supabase:postgrest-kt" }
+ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
+play-review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "playReview" }
+
 
 # Dependencies of the included build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
@@ -127,6 +141,7 @@ ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devto
 room-gradlePlugin = { group = "androidx.room", name = "room-gradle-plugin", version.ref = "androidx-room" }
 secrets-gradlePlugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "secrets" }
 detekt-gradlePlugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
+sonarqube-gradlePlugin = { module = "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin", version.ref = "sonar" }
 
 [bundles]
 com-squareup-retrofit2 = [
@@ -159,6 +174,8 @@ detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets" }
 junit5 = { id = "de.mannodermaus.android-junit5", version.ref = "junit5Plugin" }
 room = { id = "androidx.room", version.ref = "androidx-room" }
+kotlin-parcelize = { id = "kotlin-parcelize" }
+sonarqube = { id = "org.sonarqube", version.ref="sonar" }
 
 gasguru-android-application = { id = "gasguru.android.application" }
 gasguru-android-library = { id = "gasguru.android.library" }
@@ -166,3 +183,8 @@ gasguru-hilt = { id = "gasguru.hilt" }
 gasguru-compose-library = { id = "gasguru.android.library.compose" }
 gasguru-room = { id = "gasguru.room" }
 gasguru-firebase = { id = "gasguru.firebase" }
+gasguru-flavors = { id = "gasguru.flavors" }
+gasguru-jacoco = { id = "gasguru.jacoco" }
+gasguru-secrets-google = { id = "gasguru.secrets.google" }
+gasguru-proguard = { id = "gasguru.proguard" }
+gasguru-sonar = { id = "gasguru.sonar" }

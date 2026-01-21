@@ -8,6 +8,7 @@ import android.os.Build
 import com.gasguru.core.common.IoDispatcher
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -22,6 +23,7 @@ class GeocoderAddressImpl @Inject constructor(
     @ApplicationContext private val context: Context,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : GeocoderAddress {
+    @OptIn(FlowPreview::class)
     override fun getAddressFromLocation(latitude: Double, longitude: Double): Flow<String?> = flow {
         val geocoder = Geocoder(context, Locale.getDefault())
 

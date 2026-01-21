@@ -14,7 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -23,11 +22,16 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.gasguru.core.uikit.R
 import com.gasguru.core.uikit.components.fuelItem.FuelStationItem
 import com.gasguru.core.uikit.components.fuelItem.FuelStationItemModel
+import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
-import com.gasguru.core.uikit.theme.Red500
+import com.gasguru.core.uikit.theme.ThemePreviews
 
 @Composable
-fun SwipeItem(modifier: Modifier = Modifier, model: SwipeItemModel) = with(model) {
+fun SwipeItem(
+    modifier: Modifier = Modifier,
+    model: SwipeItemModel,
+    content: @Composable () -> Unit
+) = with(model) {
     val swipeState = rememberSwipeToDismissBoxState(confirmValueChange = { value ->
         when (value) {
             SwipeToDismissBoxValue.StartToEnd,
@@ -92,30 +96,30 @@ fun SwipeItem(modifier: Modifier = Modifier, model: SwipeItemModel) = with(model
     }
 }
 
-@Preview
 @Composable
+@ThemePreviews
 private fun SwipeItemPreview() {
     MyApplicationTheme {
         SwipeItem(
             model = SwipeItemModel(
                 iconAnimated = 0,
                 backgroundColor = Color.Red,
-                onClick = {},
-                content = {
-                    FuelStationItem(
-                        model = FuelStationItemModel(
-                            idServiceStation = 1,
-                            icon = R.drawable.ic_logo_repsol,
-                            name = "EDAN REPSOL",
-                            distance = "567 m",
-                            price = "1.75 €/l",
-                            index = 3686,
-                            categoryColor = Red500,
-                            onItemClick = {}
-                        )
-                    )
-                }
+                onClick = {}
             )
-        )
+        ) {
+            FuelStationItem(
+                model = FuelStationItemModel(
+                    idServiceStation = 1,
+                    icon = R.drawable.ic_logo_repsol,
+                    name = "EDAN REPSOL",
+                    distance = "567 m",
+                    price = "1.75 €/l",
+                    index = 3686,
+                    categoryColor = GasGuruTheme.colors.red500,
+                    onItemClick = {}
+                ),
+                isLastItem = false
+            )
+        }
     }
 }

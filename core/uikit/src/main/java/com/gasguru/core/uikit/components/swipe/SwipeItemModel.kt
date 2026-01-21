@@ -1,6 +1,5 @@
 package com.gasguru.core.uikit.components.swipe
 
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 data class SwipeItemModel(
@@ -8,6 +7,5 @@ data class SwipeItemModel(
     val backgroundColor: Color,
     val onClick: () -> Unit,
     val enableDismissFromEndToStart: Boolean = true,
-    val enableDismissFromStartToEnd: Boolean = true,
-    val content: @Composable () -> Unit
+    val enableDismissFromStartToEnd: Boolean = true
 )

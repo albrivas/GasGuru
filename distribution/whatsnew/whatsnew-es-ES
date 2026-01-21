@@ -1,2 +1,4 @@
-- Mejora en los filtros
-- Mejora en la estabilidad de la aplicación.
+- Añadido AdBlue como nuevo tipo de combustible seleccionable
+- Mejoras en la gestión de notificaciones push
+- Dependencias actualizadas para mejor rendimiento
+- Corrección de errores y mejoras de estabilidad
