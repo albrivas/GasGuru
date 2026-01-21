@@ -10,9 +10,11 @@ jobs:
     name: Build
     runs-on: ubuntu-22.04
     steps:
-      - run: echo "The job was automatically triggered by a ${{ github.event_name }} event"
+
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Free disk space
         uses: jlumbroso/free-disk-space@main
@@ -31,6 +33,20 @@ jobs:
           java-version: '17'
           distribution: 'zulu'
           cache: gradle
+
+      - name: Cache SonarQube packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: ${{ runner.os }}-gradle
 
       - name: Generate local.properties
         run: |
@@ -57,6 +73,25 @@ jobs:
 
       - name: Run detekt
         run: ./gradlew codeCheck
+        working-directory: ./
+
+      - name: Run unit tests + JaCoCo (prod)
+        run: ./gradlew test -x :app:test :app:testProdDebugUnitTest jacocoRootReport
+        working-directory: ./
+
+      - name: Analyze with SonarCloud
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_BRANCH: ${{ github.head_ref }}
+          PR_BASE: ${{ github.base_ref }}
+        run: |
+          ./gradlew sonar --info \
+            -Dsonar.gradle.skipCompile=true \
+            -Dsonar.pullrequest.key="$PR_NUMBER" \
+            -Dsonar.pullrequest.branch="$PR_BRANCH" \
+            -Dsonar.pullrequest.base="$PR_BASE"
         working-directory: ./
 
       - name: Enable KVM group perms

@@ -15,7 +15,7 @@ class OneSignalManagerImpl @Inject constructor() : OneSignalManager {
         OneSignal.User.addTag(ENABLE_STATIONS_ALERTS, "$enable")
     }
 
-    override suspend fun getPlayerId(): String? {
+    override suspend fun getPlayerId(): String {
         return OneSignal.User.pushSubscription.id
     }
 }
