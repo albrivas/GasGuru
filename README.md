@@ -3,7 +3,6 @@
 [![Release](https://img.shields.io/github/v/release/albrivas/FuelPump?display_name=tag&sort=semver)](https://github.com/albrivas/FuelPump/releases)
 [![CI](https://github.com/albrivas/FuelPump/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/albrivas/FuelPump/actions/workflows/main.yml?query=branch%3Amain)
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=albrivas_FuelPump&metric=alert_status&branch=main)](https://sonarcloud.io/summary/new_code?id=albrivas_FuelPump)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=albrivas_FuelPump&metric=coverage&branch=main)](https://sonarcloud.io/summary/new_code?id=albrivas_FuelPump)
 [![Google Play](https://img.shields.io/badge/Google%20Play-available-34A853?logo=google-play&logoColor=white)](https://play.google.com/store/apps/details?id=com.gasguru)
 
 GasGuru is an app to check fuel prices at all gas stations in Spain
