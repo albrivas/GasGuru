@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.zIndex
@@ -26,16 +25,8 @@ import com.gasguru.core.uikit.components.divider.GasGuruDividerModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.feature.favorite_list_station.navigation.favoriteGraph
 import com.gasguru.feature.profile.navigation.profileScreen
-import com.gasguru.feature.search.navigation.navigateToSearch
 import com.gasguru.feature.station_map.navigation.route.StationMapGraph
 import com.gasguru.feature.station_map.ui.StationMapScreenRoute
-import com.gasguru.navigation.constants.NavigationKeys
-import com.gasguru.navigation.extensions.getPreviousResult
-import com.gasguru.navigation.extensions.removePreviousResult
-import com.gasguru.navigation.extensions.setPreviousResult
-import com.gasguru.navigation.graphs.navigateToRouteSearchGraph
-import com.gasguru.navigation.graphs.routeSearchGraph
-import com.gasguru.navigation.models.PlaceArgs
 import com.gasguru.navigation.models.RoutePlanArgs
 import com.gasguru.navigation.navigationbar.NavigationBarState
 import com.gasguru.navigation.navigationbar.NavigationBottomBar
@@ -43,21 +34,21 @@ import com.gasguru.navigation.navigationbar.rememberNavigationBarState
 
 @Composable
 fun NavigationBarScreenRoute(
-    navigateToDetail: (Int) -> Unit,
-    navigateToDetailAsDialog: (Int) -> Unit = navigateToDetail,
+    routePlanner: RoutePlanArgs? = null,
+    onRoutePlanConsumed: () -> Unit = {},
 ) {
     NavigationBarScreen(
         navController = rememberNavController(),
-        navigateToDetail = navigateToDetail,
-        navigateToDetailAsDialog = navigateToDetailAsDialog
+        routePlanner = routePlanner,
+        onRoutePlanConsumed = onRoutePlanConsumed,
     )
 }
 
 @Composable
 internal fun NavigationBarScreen(
     navController: NavHostController,
-    navigateToDetail: (Int) -> Unit,
-    navigateToDetailAsDialog: (Int) -> Unit,
+    routePlanner: RoutePlanArgs? = null,
+    onRoutePlanConsumed: () -> Unit = {},
     state: NavigationBarState = rememberNavigationBarState(navController),
 ) {
     val backStack by navController.currentBackStackEntryAsState()
@@ -84,20 +75,9 @@ internal fun NavigationBarScreen(
                 .padding(innerPadding)
                 .background(GasGuruTheme.colors.neutral100)
         ) {
-            val routePlanArgs = navController.currentBackStackEntry?.getPreviousResult<RoutePlanArgs>(
-                NavigationKeys.ROUTE_PLANNER
-            )
-
-            LaunchedEffect(routePlanArgs) {
-                if (routePlanArgs != null) {
-                    navController.currentBackStackEntry?.removePreviousResult(key = NavigationKeys.ROUTE_PLANNER)
-                }
-            }
-
             StationMapScreenRoute(
-                routePlanner = routePlanArgs,
-                navigateToDetail = navigateToDetailAsDialog,
-                navigateToRoutePlanner = navController::navigateToRouteSearchGraph
+                routePlanner = routePlanner,
+                onRoutePlanConsumed = onRoutePlanConsumed,
             )
 
             if (!onMap) {
@@ -117,26 +97,8 @@ internal fun NavigationBarScreen(
                     startDestination = StationMapGraph.StationMapRoute
                 ) {
                     composable<StationMapGraph.StationMapRoute> { /* no-op */ }
-                    favoriteGraph(navigateToDetail = navigateToDetailAsDialog)
+                    favoriteGraph()
                     profileScreen()
-                    routeSearchGraph(
-                        onBack = navController::popBackStack,
-                        navigateToSearch = navController::navigateToSearch,
-                        popBackToRoutePlanner = { place ->
-                            navController.setPreviousResult(
-                                key = "selected_place",
-                                value = PlaceArgs(name = place.name, id = place.id)
-                            )
-                            navController.popBackStack()
-                        },
-                        popBackToMapScreen = { route ->
-                            navController.setPreviousResult(
-                                key = "route_planner",
-                                value = route
-                            )
-                            navController.popBackStack()
-                        }
-                    )
                 }
             }
         }

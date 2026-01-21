@@ -7,6 +7,6 @@ import javax.inject.Inject
 class SaveThemeModeUseCase @Inject constructor(
     private val userDataRepository: UserDataRepository,
 ) {
-    suspend operator fun invoke(themeMode: ThemeMode) =
+    suspend operator fun invoke(themeMode: ThemeMode): Unit =
         userDataRepository.updateThemeMode(themeMode = themeMode)
 }

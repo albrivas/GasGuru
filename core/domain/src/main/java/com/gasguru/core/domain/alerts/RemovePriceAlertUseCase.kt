@@ -6,6 +6,6 @@ import javax.inject.Inject
 class RemovePriceAlertUseCase @Inject constructor(
     private val priceAlertRepository: PriceAlertRepository,
 ) {
-    suspend operator fun invoke(stationId: Int) =
+    suspend operator fun invoke(stationId: Int): Unit =
         priceAlertRepository.removePriceAlert(stationId = stationId)
 }

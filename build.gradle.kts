@@ -15,6 +15,9 @@ plugins {
     alias(libs.plugins.secrets) apply false
     alias(libs.plugins.junit5) apply false
     alias(libs.plugins.room) apply false
+    alias(libs.plugins.sonarqube) apply false
+    alias(libs.plugins.gasguru.jacoco)
+    alias(libs.plugins.gasguru.sonar)
 }
 
 allprojects {

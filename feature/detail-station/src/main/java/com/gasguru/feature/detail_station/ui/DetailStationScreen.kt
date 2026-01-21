@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Location
 import android.os.Build
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -46,6 +45,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -66,8 +66,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.gasguru.core.model.data.FuelStationBrandsType
+import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.previewFuelStationDomain
 import com.gasguru.core.ui.iconTint
+import com.gasguru.core.ui.review.findActivity
+import com.gasguru.core.ui.review.rememberInAppReviewManager
 import com.gasguru.core.ui.toUiModel
 import com.gasguru.core.uikit.components.information_card.InformationCard
 import com.gasguru.core.uikit.components.information_card.InformationCardModel
@@ -81,12 +84,14 @@ import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.detail_station.R
 import com.gasguru.feature.detail_station.formatSchedule
 import com.gasguru.feature.detail_station.getTimeElapsedString
+import com.gasguru.navigation.LocalNavigationManager
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun DetailStationScreenRoute(
-    onBack: () -> Unit,
     viewModel: DetailStationViewModel = hiltViewModel(),
 ) {
+    val navigationManager = LocalNavigationManager.current
     val uiState by viewModel.fuelStation.collectAsStateWithLifecycle()
     val staticMapUrl by viewModel.staticMapUrl.collectAsStateWithLifecycle()
     val lastUpdate by viewModel.lastUpdate.collectAsStateWithLifecycle()
@@ -95,8 +100,8 @@ internal fun DetailStationScreenRoute(
         uiState = uiState,
         staticMapUrl = staticMapUrl,
         lastUpdate = lastUpdate,
-        onBack = onBack,
-        onEvent = viewModel::onEvent
+        onBack = { navigationManager.navigateBack() },
+        onEvent = viewModel::onEvent,
     )
 }
 
@@ -365,6 +370,10 @@ fun HeaderStation(
     onPriceAlertClick: () -> Unit,
     onEvent: (DetailStationEvent) -> Unit,
 ) {
+    val context = LocalContext.current
+    val reviewManager = rememberInAppReviewManager()
+    val coroutineScope = rememberCoroutineScope()
+
     Box(modifier = Modifier.fillMaxWidth()) {
         AsyncImage(
             modifier = Modifier
@@ -426,7 +435,24 @@ fun HeaderStation(
                 modifier = Modifier
                     .clip(CircleShape)
                     .testTag("button_favorite"),
-                onClick = { onEvent(DetailStationEvent.ToggleFavorite(!stationState.isFavorite)) },
+                onClick = {
+                    val wasNotFavorite = !stationState.isFavorite
+                    onEvent(DetailStationEvent.ToggleFavorite(wasNotFavorite))
+
+                    if (wasNotFavorite) {
+                        coroutineScope.launch {
+                            context.findActivity()?.let { activity ->
+                                reviewManager.launchReviewFlow(
+                                    activity = activity,
+                                    onReviewCompleted = {
+                                    },
+                                    onReviewFailed = { _ ->
+                                    }
+                                )
+                            }
+                        }
+                    }
+                },
                 colors = IconButtonDefaults.iconButtonColors(containerColor = GasGuruTheme.colors.neutralWhite)
             ) {
                 val accentRed = GasGuruTheme.colors.accentRed
@@ -447,7 +473,7 @@ fun HeaderStation(
 }
 
 @SuppressLint("QueryPermissionsNeeded")
-private fun startRoute(context: Context, location: Location) {
+private fun startRoute(context: Context, location: LatLng) {
     val lat = location.latitude
     val lng = location.longitude
 

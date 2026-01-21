@@ -9,15 +9,21 @@ import com.gasguru.core.components.searchbar.GasGuruSearchBar
 import com.gasguru.core.components.searchbar.GasGuruSearchBarModel
 import com.gasguru.core.model.data.SearchPlace
 import com.gasguru.core.uikit.theme.GasGuruTheme
+import com.gasguru.navigation.LocalNavigationManager
+import com.gasguru.navigation.constants.NavigationKeys
+import com.gasguru.navigation.models.PlaceArgs
 
 @Composable
-fun SearchScreenRoute(
-    onPlaceSelected: (SearchPlace) -> Unit,
-    onBackPressed: () -> Unit = {},
-) {
+fun SearchScreenRoute() {
+    val navigationManager = LocalNavigationManager.current
     SearchScreen(
-        onPlaceSelected = onPlaceSelected,
-        onBackPressed = onBackPressed
+        onPlaceSelected = { place ->
+            navigationManager.navigateBackWithData(
+                key = NavigationKeys.SELECTED_PLACE,
+                value = PlaceArgs(name = place.name, id = place.id)
+            )
+        },
+        onBackPressed = { navigationManager.navigateBack() }
     )
 }
 

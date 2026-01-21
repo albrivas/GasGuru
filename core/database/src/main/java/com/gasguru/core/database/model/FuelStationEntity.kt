@@ -1,12 +1,12 @@
 package com.gasguru.core.database.model
 
-import android.location.Location
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.FuelStationBrandsType
+import com.gasguru.core.model.data.LatLng
 
 @Entity(
     tableName = "fuel-station",
@@ -44,6 +44,8 @@ data class FuelStationEntity(
     val priceGasoline98E10: Double,
     val priceGasoline98E5: Double,
     val priceHydrogen: Double,
+    @ColumnInfo(defaultValue = "0.0")
+    val priceAdblue: Double,
     val province: String,
     val referral: String,
     val brandStation: String,
@@ -64,7 +66,7 @@ fun FuelStationEntity.asExternalModel() = FuelStation(
     idServiceStation = idServiceStation,
     idMunicipality = idMunicipality,
     idProvince = idProvince,
-    location = getLocation(),
+    location = toLatLng(),
     locality = locality,
     margin = margin,
     municipality = municipality,
@@ -77,6 +79,7 @@ fun FuelStationEntity.asExternalModel() = FuelStation(
     priceGasoline98E10 = priceGasoline98E10,
     priceGasoline98E5 = priceGasoline98E5,
     priceHydrogen = priceHydrogen,
+    priceAdblue = priceAdblue,
     province = province,
     referral = referral,
     brandStationName = brandStation,
@@ -132,7 +135,7 @@ fun String.toBrandStation(): FuelStationBrandsType {
     return FuelStationBrandsType.UNKNOWN
 }
 
-fun FuelStationEntity.getLocation() = Location("").apply {
-    latitude = this@getLocation.latitude
-    longitude = this@getLocation.longitudeWGS84
-}
+fun FuelStationEntity.toLatLng() = LatLng(
+    latitude = latitude,
+    longitude = longitudeWGS84,
+)
