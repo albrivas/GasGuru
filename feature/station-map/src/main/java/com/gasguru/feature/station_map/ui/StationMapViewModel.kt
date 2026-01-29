@@ -18,6 +18,7 @@ import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.UserData
 import com.gasguru.core.ui.models.FuelStationUiModel
 import com.gasguru.core.ui.toUiModel
+import com.gasguru.feature.station_map.ui.models.toUiModel
 import com.google.android.gms.maps.model.LatLngBounds
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -77,6 +78,7 @@ class StationMapViewModel @Inject constructor(
             )
             is StationMapEvent.CancelRoute -> cancelRoute()
             is StationMapEvent.ChangeTab -> changeTab(selectedTab = event.selected)
+            is StationMapEvent.SelectStation -> selectStation(stationId = event.stationId)
         }
     }
 
@@ -136,7 +138,7 @@ class StationMapViewModel @Inject constructor(
                 it.copy(
                     mapStations = uiStations,
                     listStations = sortedStations,
-                    route = route,
+                    route = route.toUiModel(),
                     routeDestinationName = destinationName,
                     mapBounds = bounds,
                     shouldCenterMap = true,
@@ -166,14 +168,12 @@ class StationMapViewModel @Inject constructor(
                 originId = originId,
                 destinationId = destinationId
             )
-            val origin = originLocation
-            val destination = destinationLocation
 
-            getRouteUseCase(origin = origin, destination = destination).collect { route ->
+            getRouteUseCase(origin = originLocation, destination = destinationLocation).collect { route ->
                 route?.let { routeData ->
                     launch(defaultDispatcher) {
                         processRouteStations(
-                            origin = origin,
+                            origin = originLocation,
                             route = routeData,
                             destinationLocation = destinationLocation,
                             destinationName = destinationName
@@ -315,6 +315,8 @@ class StationMapViewModel @Inject constructor(
         }
 
     private fun showListStation(show: Boolean) = _state.update { it.copy(showListStations = show) }
+
+    private fun selectStation(stationId: Int) = _state.update { it.copy(selectedStationId = stationId) }
 
     private fun changeTab(selectedTab: StationSortTab) {
         _tabState.update { it.copy(selectedTab = selectedTab) }
