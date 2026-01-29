@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
-
 /**
  * Holds pending deep link navigation state.
  * Used when a push notification is tapped but the app needs to load first.
