@@ -28,13 +28,11 @@ import com.gasguru.R
 import com.gasguru.core.uikit.components.alert_bar.AlertBar
 import com.gasguru.core.uikit.components.alert_bar.AlertBarModel
 import com.gasguru.feature.onboarding_welcome.navigation.OnboardingRoutes
-import com.gasguru.navigation.manager.NavigationManager
 import com.gasguru.navigation.root.GasGuruNavHost
 
 @Composable
 fun GasGuruApp(
     appState: GasGuruAppState,
-    navigationManager: NavigationManager,
     startDestination: Any = OnboardingRoutes.OnboardingWelcomeRoute,
 ) {
     val isOffline by appState.isOffline.collectAsStateWithLifecycle()
@@ -46,7 +44,6 @@ fun GasGuruApp(
 
     Box(Modifier.fillMaxSize()) {
         GasGuruNavHost(
-            navigationManager = navigationManager,
             startDestination = startDestination,
         )
 
