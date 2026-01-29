@@ -1,6 +1,7 @@
 package com.gasguru.navigation
 
 import androidx.compose.runtime.staticCompositionLocalOf
+import com.gasguru.navigation.deeplink.DeepLinkStateHolder
 import com.gasguru.navigation.manager.NavigationManager
 
 /**
@@ -22,4 +23,11 @@ import com.gasguru.navigation.manager.NavigationManager
  */
 val LocalNavigationManager = staticCompositionLocalOf<NavigationManager> {
     error("NavigationManager not provided. Make sure you wrap your NavHost in CompositionLocalProvider.")
+}
+
+/**
+ * CompositionLocal for accessing [DeepLinkStateHolder] without parameter passing.
+ */
+val LocalDeepLinkStateHolder = staticCompositionLocalOf<DeepLinkStateHolder> {
+    error("DeepLinkStateHolder not provided")
 }
