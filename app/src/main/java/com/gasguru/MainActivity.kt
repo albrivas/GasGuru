@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,7 +18,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.gasguru.core.data.util.NetworkMonitor
 import com.gasguru.core.model.data.ThemeMode
-import androidx.compose.runtime.CompositionLocalProvider
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.feature.onboarding_welcome.navigation.OnboardingRoutes
 import com.gasguru.navigation.LocalDeepLinkStateHolder
