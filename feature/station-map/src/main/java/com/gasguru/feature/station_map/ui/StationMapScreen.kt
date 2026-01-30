@@ -84,6 +84,7 @@ import com.gasguru.core.uikit.components.route_navigation_card.RouteNavigationCa
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
+import com.gasguru.core.uikit.utils.maestroTestTag
 import com.gasguru.feature.station_map.BuildConfig
 import com.gasguru.feature.station_map.R
 import com.gasguru.feature.station_map.ui.models.RouteUiModel
