@@ -388,7 +388,8 @@ fun MapView(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(GasGuruTheme.colors.neutralBlack.copy(alpha = 0.5f))
-                    .zIndex(1f),
+                    .zIndex(1f)
+                    .maestroTestTag("loading_map"),
                 model = GasGuruLoadingModel(color = GasGuruTheme.colors.primary800)
             )
         }
