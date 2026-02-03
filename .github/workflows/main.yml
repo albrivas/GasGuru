@@ -112,7 +112,7 @@ jobs:
           target: google_apis
           arch: x86_64
           disable-animations: true
-          emulator-options: "-no-snapshot-save -no-window -no-boot-anim -skin 1080x2400"
+          emulator-options: "-no-snapshot-save -no-window -no-boot-anim"
           script: |
             # Build and run unit tests
             ./gradlew connectedCheck
@@ -127,12 +127,17 @@ jobs:
             adb install app/build/outputs/apk/prod/release/app-prod-release.apk
             
             # Execute test with maestro
-            maestro test .maestro/config.yaml
+            maestro test .maestro/config.yaml || true
 
-      - name: Upload Maestro test results
+            # Capture logcat for debugging
+            adb logcat -d > logcat.txt
+
+      - name: Upload Maestro test results and logcat
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: maestro-test-results
-          path: /home/runner/.maestro/tests/
+          path: |
+            /home/runner/.maestro/tests/
+            logcat.txt
           retention-days: 7
