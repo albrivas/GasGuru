@@ -111,6 +111,7 @@ jobs:
           api-level: 34
           target: google_apis
           arch: x86_64
+          profile: pixel_7_pro
           disable-animations: true
           emulator-options: "-no-snapshot-save -no-window -no-boot-anim"
           script: |
