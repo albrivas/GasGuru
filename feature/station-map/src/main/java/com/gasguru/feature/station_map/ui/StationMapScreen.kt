@@ -62,10 +62,10 @@ import com.gasguru.core.components.searchbar.GasGuruSearchBarModel
 import com.gasguru.core.model.data.FuelStationBrandsType
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.ui.getPrice
-import com.gasguru.core.ui.models.FuelStationBrandsUiModel
 import com.gasguru.core.ui.models.FuelStationUiModel
+import com.gasguru.core.ui.mapper.toUiModel
 import com.gasguru.core.ui.toColor
-import com.gasguru.core.ui.toStationListItems
+import com.gasguru.core.ui.mapper.toStationListItems
 import com.gasguru.core.uikit.components.chip.FilterType
 import com.gasguru.core.uikit.components.chip.SelectableFilter
 import com.gasguru.core.uikit.components.chip.SelectableFilterModel
@@ -602,7 +602,7 @@ fun ShowFilterSheet(
                     onSaveButton = { event(StationMapEvent.UpdateBrandFilter(it)) },
                     type = FilterSheetType.ICON,
                     iconMap = brands.associate {
-                        it.value to FuelStationBrandsUiModel.fromBrandType(it).iconRes
+                        it.value to it.toUiModel().iconRes
                     }
                 )
             )

@@ -7,7 +7,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.testing.BaseTest
-import com.gasguru.core.ui.models.toUi
+import com.gasguru.core.ui.mapper.toUi
 import com.gasguru.feature.profile.R
 import com.gasguru.feature.profile.ui.ProfileContentUi
 import com.gasguru.feature.profile.ui.ProfileScreen
