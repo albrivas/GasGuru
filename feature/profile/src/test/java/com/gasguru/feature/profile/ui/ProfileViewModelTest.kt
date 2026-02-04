@@ -10,7 +10,6 @@ import com.gasguru.core.model.data.UserData
 import com.gasguru.core.testing.CoroutinesTestExtension
 import com.gasguru.core.testing.fakes.data.user.FakeUserDataRepository
 import com.gasguru.core.ui.R
-import com.gasguru.core.ui.models.FuelTypeUiModel
 import com.gasguru.core.ui.mapper.toUi
 import com.gasguru.core.ui.mapper.toUiModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
