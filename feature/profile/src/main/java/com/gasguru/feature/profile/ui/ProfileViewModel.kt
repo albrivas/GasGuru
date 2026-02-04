@@ -9,7 +9,6 @@ import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.ui.mapper.toUi
 import com.gasguru.core.ui.mapper.toUiModel
-import com.gasguru.core.ui.models.FuelTypeUiModel
 import com.gasguru.core.ui.models.ThemeModeUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
