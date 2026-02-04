@@ -3,7 +3,6 @@ package com.gasguru.core.ui.models
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.ui.mapper.toUiModel
 import java.text.DecimalFormat
