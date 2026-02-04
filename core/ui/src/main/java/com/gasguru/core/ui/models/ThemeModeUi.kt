@@ -15,9 +15,3 @@ data class ThemeModeUi(
 ) {
     val id: Int get() = mode.id
 }
-
-fun ThemeMode.toUi(): ThemeModeUi = when (this) {
-    ThemeMode.DARK -> ThemeModeUi(this, R.string.theme_mode_dark, RUikit.drawable.ic_dark_mode)
-    ThemeMode.LIGHT -> ThemeModeUi(this, R.string.theme_mode_light, RUikit.drawable.ic_light_mode)
-    ThemeMode.SYSTEM -> ThemeModeUi(this, R.string.theme_mode_system, RUikit.drawable.ic_system_mode)
-}

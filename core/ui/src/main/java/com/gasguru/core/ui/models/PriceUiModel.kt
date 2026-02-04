@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.FuelType
+import com.gasguru.core.ui.mapper.toUiModel
 import java.text.DecimalFormat
 
 data class PriceUiModel(
@@ -25,7 +26,7 @@ data class PriceUiModel(
         return if (hasPrice) {
             formattedPrice
         } else {
-            context.getString(FuelTypeUiModel.fromFuelType(fuelType).noPriceRes)
+            context.getString(fuelType.toUiModel().noPriceRes)
         }
     }
 
@@ -34,16 +35,7 @@ data class PriceUiModel(
         return if (hasPrice) {
             formattedPrice
         } else {
-            stringResource(id = FuelTypeUiModel.fromFuelType(fuelType).noPriceRes)
-        }
-    }
-
-    companion object {
-        fun from(fuelType: FuelType, fuelStation: FuelStation): PriceUiModel {
-            return PriceUiModel(
-                rawPrice = fuelType.extractPrice(fuelStation),
-                fuelType = fuelType
-            )
+            stringResource(id = fuelType.toUiModel().noPriceRes)
         }
     }
 }
