@@ -21,7 +21,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.gasguru.core.model.data.FuelType
-import com.gasguru.core.ui.models.FuelTypeUiModel
+import com.gasguru.core.ui.mapper.toFuelItem
+import com.gasguru.core.ui.mapper.toUiModel
 import com.gasguru.core.ui.toFuelType
 import com.gasguru.core.uikit.components.GasGuruButton
 import com.gasguru.core.uikit.components.fuel_list.FuelListSelection
@@ -75,10 +76,7 @@ internal fun OnboardingFuelPreferences(
                     modifier = Modifier.padding(0.dp, 30.dp, 0.dp, 0.dp)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                val list = uiState.list.map {
-                    val fuelUiModel = FuelTypeUiModel.fromFuelType(it)
-                    Pair(fuelUiModel.iconRes, fuelUiModel.translationRes)
-                }
+                val list = uiState.list.map { it.toUiModel().toFuelItem() }
                 FuelListSelection(
                     modifier = Modifier.weight(1f),
                     model = FuelListSelectionModel(

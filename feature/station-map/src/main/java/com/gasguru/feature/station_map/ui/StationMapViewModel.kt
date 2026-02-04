@@ -17,7 +17,7 @@ import com.gasguru.core.model.data.FilterType
 import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.UserData
 import com.gasguru.core.ui.models.FuelStationUiModel
-import com.gasguru.core.ui.toUiModel
+import com.gasguru.core.ui.mapper.toUiModel
 import com.gasguru.feature.station_map.ui.models.toUiModel
 import com.google.android.gms.maps.model.LatLngBounds
 import dagger.hilt.android.lifecycle.HiltViewModel

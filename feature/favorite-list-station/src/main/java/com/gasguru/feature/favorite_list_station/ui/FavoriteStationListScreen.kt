@@ -25,9 +25,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.previewFuelStationDomain
+import com.gasguru.core.ui.mapper.toStationListItems
+import com.gasguru.core.ui.mapper.toUiModel
 import com.gasguru.core.ui.models.FuelStationUiModel
-import com.gasguru.core.ui.toStationListItems
-import com.gasguru.core.ui.toUiModel
 import com.gasguru.core.uikit.components.alert.AlertTemplate
 import com.gasguru.core.uikit.components.alert.AlertTemplateModel
 import com.gasguru.core.uikit.components.filterable_station_list.FilterableStationList

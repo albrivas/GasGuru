@@ -10,7 +10,7 @@ import androidx.compose.ui.test.swipeLeft
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.previewFuelStationDomain
 import com.gasguru.core.testing.BaseTest
-import com.gasguru.core.ui.toUiModel
+import com.gasguru.core.ui.mapper.toUiModel
 import com.gasguru.feature.favorite_list_station.R
 import com.gasguru.feature.favorite_list_station.ui.FavoriteListStationScreen
 import com.gasguru.feature.favorite_list_station.ui.FavoriteStationListUiState
