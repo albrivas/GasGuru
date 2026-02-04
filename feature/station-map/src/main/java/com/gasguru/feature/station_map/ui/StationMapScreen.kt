@@ -61,7 +61,6 @@ import com.gasguru.core.components.searchbar.GasGuruSearchBar
 import com.gasguru.core.components.searchbar.GasGuruSearchBarModel
 import com.gasguru.core.model.data.FuelStationBrandsType
 import com.gasguru.core.model.data.FuelType
-import com.gasguru.core.model.data.Route
 import com.gasguru.core.ui.getPrice
 import com.gasguru.core.ui.models.FuelStationBrandsUiModel
 import com.gasguru.core.ui.models.FuelStationUiModel
@@ -85,8 +84,11 @@ import com.gasguru.core.uikit.components.route_navigation_card.RouteNavigationCa
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
+import com.gasguru.core.uikit.utils.maestroTestTag
 import com.gasguru.feature.station_map.BuildConfig
 import com.gasguru.feature.station_map.R
+import com.gasguru.feature.station_map.ui.models.RouteUiModel
+import com.gasguru.navigation.LocalDeepLinkStateHolder
 import com.gasguru.navigation.LocalNavigationManager
 import com.gasguru.navigation.manager.NavigationDestination
 import com.gasguru.navigation.models.RoutePlanArgs
@@ -117,6 +119,24 @@ fun StationMapScreenRoute(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val filterGroup by viewModel.filters.collectAsStateWithLifecycle()
     val tabState by viewModel.tabState.collectAsStateWithLifecycle()
+
+    // Access DeepLinkStateHolder via CompositionLocal
+    val deepLinkStateHolder = LocalDeepLinkStateHolder.current
+    val pendingStationId by deepLinkStateHolder.pendingStationId.collectAsStateWithLifecycle()
+
+    LaunchedEffect(key1 = state.loading, key2 = pendingStationId, key3 = state.mapStations) {
+        if (!state.loading && state.mapStations.isNotEmpty()) {
+            pendingStationId?.let { stationId ->
+                deepLinkStateHolder.clear()
+                navigationManager.navigateTo(
+                    destination = NavigationDestination.DetailStation(
+                        idServiceStation = stationId,
+                        presentAsDialog = true,
+                    ),
+                )
+            }
+        }
+    }
 
     StationMapScreen(
         uiState = state,
@@ -267,7 +287,9 @@ internal fun StationMapScreen(
                     userSelectedFuelType = selectedType,
                     loading = loading,
                     route = route,
+                    selectedStationId = selectedStationId,
                     navigateToDetail = navigateToDetail,
+                    event = event,
                     modifier = Modifier.fillMaxSize()
                 )
                 AnimatedContent(
@@ -334,12 +356,13 @@ fun MapView(
     cameraState: CameraPositionState,
     userSelectedFuelType: FuelType?,
     loading: Boolean,
-    route: Route?,
+    route: RouteUiModel?,
+    selectedStationId: Int,
     modifier: Modifier = Modifier,
     navigateToDetail: (Int) -> Unit = {},
+    event: (StationMapEvent) -> Unit = {},
 ) {
     val context = LocalContext.current
-    var selectedLocation by remember { mutableStateOf<Int?>(null) }
     val uiSettings by remember {
         mutableStateOf(
             MapUiSettings(
@@ -366,7 +389,8 @@ fun MapView(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(GasGuruTheme.colors.neutralBlack.copy(alpha = 0.5f))
-                    .zIndex(1f),
+                    .zIndex(1f)
+                    .maestroTestTag("loading_map"),
                 model = GasGuruLoadingModel(color = GasGuruTheme.colors.primary800)
             )
         }
@@ -396,7 +420,7 @@ fun MapView(
                 val state = remember(station.fuelStation.idServiceStation) {
                     MarkerState(position = station.fuelStation.location.toGoogleLatLng())
                 }
-                val isSelected = selectedLocation == station.fuelStation.idServiceStation
+                val isSelected = selectedStationId == station.fuelStation.idServiceStation
 
                 val price by remember(userSelectedFuelType, station) {
                     derivedStateOf {
@@ -414,7 +438,7 @@ fun MapView(
                     keys = arrayOf(station.fuelStation.idServiceStation, price, color),
                     state = state,
                     onClick = {
-                        selectedLocation = station.fuelStation.idServiceStation
+                        event(StationMapEvent.SelectStation(stationId = station.fuelStation.idServiceStation))
                         navigateToDetail(station.fuelStation.idServiceStation)
                         false
                     },
@@ -423,8 +447,8 @@ fun MapView(
                     StationMarker(
                         model = StationMarkerModel(
                             icon = station.brandIcon,
-                            price = userSelectedFuelType.getPrice(fuelStation = station.fuelStation),
-                            color = station.fuelStation.priceCategory.toColor(),
+                            price = price,
+                            color = color,
                             isSelected = isSelected,
                         )
                     )

@@ -128,3 +128,11 @@ jobs:
             
             # Execute test with maestro
             maestro test .maestro/config.yaml
+
+      - name: Upload Maestro test results and logcat
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maestro-test-results
+          path: /home/runner/.maestro/tests/
+          retention-days: 7
