@@ -57,11 +57,11 @@ $ANDROID_HOME/emulator/emulator -avd <emulator_name> -no-snapshot-save -no-windo
 ```
 3. Build the debug APK:
 ```bash
-./gradlew assembleDebug
+./gradlew assembleProdDebug
 ```
 4. Install APK on the emulator:
 ```bash
-adb install app/build/outputs/apk/debug/app-debug.apk
+adb install app/build/outputs/apk/debug/app-prod-debug.apk
 ```
 5. Execute the E2E test with Maestro:
 ```bash
