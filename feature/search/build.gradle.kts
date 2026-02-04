@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.gasguru.compose.library)
     alias(libs.plugins.gasguru.secrets.google)
     alias(libs.plugins.gasguru.proguard)
+    alias(libs.plugins.stability.analyzer)
 }
 
 android {
