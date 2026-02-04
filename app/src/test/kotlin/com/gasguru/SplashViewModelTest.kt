@@ -83,7 +83,7 @@ class SplashViewModelTest {
     @DisplayName("GIVEN user data WHEN collecting themeMode THEN emits user theme")
     fun emitsThemeMode() = runTest {
         sut.themeMode.test {
-            when(val state = awaitItem()) {
+            when (val state = awaitItem()) {
                 ThemeMode.SYSTEM -> {
                     assertEquals(ThemeMode.DARK, awaitItem())
                 }
