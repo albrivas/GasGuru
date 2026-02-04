@@ -12,6 +12,7 @@ plugins {
     alias(libs.plugins.gasguru.jacoco)
     alias(libs.plugins.gasguru.secrets.google)
     alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.stability.analyzer)
 }
 
 tasks.withType<Test>().configureEach {
