@@ -107,6 +107,7 @@ class JacocoConventionPlugin : Plugin<Project> {
         "**/R\\$*.class",
         "**/*Test*.*",
         "**/model/**",
+        "**/mapper/**",
         "**/navigation/**",
         "**/Manifest*.*",
         "**/*_Factory.*",
