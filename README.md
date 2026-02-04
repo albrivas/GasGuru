@@ -15,6 +15,21 @@ To analyze the code with [Detekt](https://detekt.dev/) and check for code style 
 ./gradlew codeCheck
 ```
 
+## Documentation
+
+| Topic | Description |
+|-------|-------------|
+| [Adding Fuel Types](docs/ADDING_FUEL_TYPE.md) | Guide for adding new fuel types |
+| [CI/CD](docs/CICD.md) | Continuous integration and deployment |
+| [GitFlow](docs/GITFLOW.md) | Git workflow and branching strategy |
+| [JaCoCo](docs/JACOCO.md) | Code coverage reports |
+| [Navigation](docs/NAVIGATION.md) | Navigation architecture |
+| [Obfuscation](docs/OBFUSCATION.md) | Code obfuscation configuration |
+| [Price Alerts](docs/PRICE_ALERTS.md) | Price alert functionality |
+| [Recomposition Optimizations](docs/RECOMPOSITION_OPTIMIZATIONS.md) | Compose recomposition best practices |
+| [Testing](docs/TESTING.md) | Testing strategy and guidelines |
+| [UI Mappers](docs/UI_MAPPERS.md) | UI mapper architecture |
+
 # Running Tests Locally
 
 ## Requirements
@@ -69,7 +84,3 @@ maestro test .maestro/config.yaml
 # Record test in local
 maestro record --local config.yaml
 ```
-
-## GitFlow followed
-
-📄 [docs/GITFLOW.md](docs/GITFLOW.md)
