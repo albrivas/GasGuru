@@ -26,17 +26,15 @@ fun FuelListSelection(model: FuelListSelectionModel, modifier: Modifier = Modifi
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         itemsIndexed(list) { index, fuel ->
-            val image = fuel.first
-            val name = fuel.second
             BasicSelectedItem(
                 modifier = Modifier.testTag("list_item_$index"),
                 model = BasicSelectedItemModel(
-                    title = name,
-                    isSelected = name == selectedFuel,
-                    image = image,
+                    title = fuel.nameRes,
+                    isSelected = fuel.nameRes == selectedFuel,
+                    image = fuel.iconRes,
                     onItemSelected = {
-                        selectedFuel = name
-                        onItemSelected(name)
+                        selectedFuel = fuel.nameRes
+                        onItemSelected(fuel.nameRes)
                     }
                 ),
             )
@@ -51,9 +49,9 @@ private fun FuelListSelectionPreview() {
         FuelListSelection(
             model = FuelListSelectionModel(
                 list = listOf(
-                    Pair(
-                        R.drawable.ic_gasoline_95,
-                        R.string.preview_fuel_type
+                    FuelItemModel(
+                        iconRes = R.drawable.ic_gasoline_95,
+                        nameRes = R.string.preview_fuel_type
                     )
                 ),
                 selected = R.string.preview_fuel_type,
