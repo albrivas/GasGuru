@@ -1,8 +1,10 @@
-package com.gasguru.core.ui
+package com.gasguru.core.ui.mapper
 
 import androidx.compose.runtime.Composable
 import com.gasguru.core.model.data.FuelType
+import com.gasguru.core.ui.getPrice
 import com.gasguru.core.ui.models.FuelStationUiModel
+import com.gasguru.core.ui.toColor
 import com.gasguru.core.uikit.components.station_list.StationListItemModel
 
 @Composable

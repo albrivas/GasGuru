@@ -56,6 +56,7 @@ supabase = "3.2.6"
 ktor = "3.3.1"
 playReview = "2.0.1"
 sonar="7.2.2.6593"
+stabilityAnalizer="0.6.6"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
@@ -176,6 +177,7 @@ junit5 = { id = "de.mannodermaus.android-junit5", version.ref = "junit5Plugin" }
 room = { id = "androidx.room", version.ref = "androidx-room" }
 kotlin-parcelize = { id = "kotlin-parcelize" }
 sonarqube = { id = "org.sonarqube", version.ref="sonar" }
+stability-analyzer = { id = "com.github.skydoves.compose.stability.analyzer", version.ref = "stabilityAnalizer" }
 
 gasguru-android-application = { id = "gasguru.android.application" }
 gasguru-android-library = { id = "gasguru.android.library" }

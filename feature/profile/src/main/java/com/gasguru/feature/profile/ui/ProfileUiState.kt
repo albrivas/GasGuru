@@ -4,8 +4,8 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.ui.R
+import com.gasguru.core.ui.mapper.toUi
 import com.gasguru.core.ui.models.ThemeModeUi
-import com.gasguru.core.ui.models.toUi
 
 @Immutable
 data class ProfileContentUi(
