@@ -309,7 +309,7 @@ internal fun StationMapScreen(
                                 duration = route?.durationText,
                                 onClose = { event(StationMapEvent.CancelRoute) },
                             ),
-                            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 48.dp, bottom = 16.dp),
+                            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 56.dp, bottom = 16.dp),
                         )
                     } else {
                         Column {

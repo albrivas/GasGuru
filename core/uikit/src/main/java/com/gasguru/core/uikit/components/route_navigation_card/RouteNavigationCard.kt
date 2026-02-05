@@ -1,6 +1,7 @@
 package com.gasguru.core.uikit.components.route_navigation_card
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,8 +37,13 @@ fun RouteNavigationCard(
     Column(
         modifier = modifier
             .fillMaxWidth()
+            .border(
+                width = 1.dp,
+                color = GasGuruTheme.colors.neutral400,
+                shape = RoundedCornerShape(8.dp)
+            )
             .clip(RoundedCornerShape(8.dp))
-            .background(color = GasGuruTheme.colors.neutralWhite)
+            .background(color = GasGuruTheme.colors.neutral100)
             .padding(all = 12.dp),
     ) {
         ConstraintLayout(
@@ -66,7 +72,7 @@ fun RouteNavigationCard(
 
                 // Station count, distance and duration info
                 Row(
-                    modifier = Modifier.padding(top = 8.dp),
+                    modifier = Modifier.padding(top = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     if (distance != null && duration != null) {
@@ -129,7 +135,7 @@ fun RouteNavigationCard(
                     },
                 imageVector = Icons.Filled.Close,
                 contentDescription = "Close route",
-                tint = GasGuruTheme.colors.neutral500,
+                tint = GasGuruTheme.colors.neutralBlack,
             )
         }
     }
