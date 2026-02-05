@@ -30,6 +30,7 @@ import com.gasguru.core.testing.fakes.data.route.FakeRoutesRepository
 import com.gasguru.core.testing.fakes.data.user.FakeUserDataRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -260,6 +261,151 @@ class StationMapViewModelTest {
         assertNull(state.route)
         assertNull(state.routeDestinationName)
         assertEquals(1, state.mapStations.size)
+    }
+
+    @Test
+    @DisplayName("GIVEN route calculation in progress WHEN canceling THEN stops processing and clears state")
+    fun cancelRouteDuringCalculation() = runTest {
+        val route = Route(
+            route = listOf(
+                LatLng(latitude = 40.0, longitude = -3.0),
+                LatLng(latitude = 40.2, longitude = -3.2),
+            ),
+            distanceText = "10 km",
+            durationText = "15 min"
+        )
+        fakeRoutesRepository.setRoute(route)
+        fakePlacesRepository.setLocationForId(
+            placeId = "dest",
+            location = LatLng(latitude = 40.2, longitude = -3.2)
+        )
+        fakeLocationTracker.setLastKnownLocation(LatLng(latitude = 40.0, longitude = -3.0))
+        fakeFuelStationDao.setStations(
+            listOf(stationEntity(id = 1, latitude = 40.0, longitude = -3.0, price = 1.30))
+        )
+
+        sut.handleEvent(
+            StationMapEvent.StartRoute(
+                originId = null,
+                destinationId = "dest",
+                destinationName = "Madrid"
+            )
+        )
+
+        advanceTimeBy(timeMillis = 50)
+
+        val stateBeforeCancel = sut.state.value
+        assertEquals(true, stateBeforeCancel.loading)
+        assertEquals("Madrid", stateBeforeCancel.routeDestinationName)
+
+        sut.handleEvent(StationMapEvent.CancelRoute)
+
+        advanceUntilIdle()
+
+        val state = sut.state.value
+        assertNull(state.route)
+        assertNull(state.routeDestinationName)
+        assertFalse(state.loading)
+    }
+
+    @Test
+    @DisplayName("GIVEN route calculation WHEN starting new route THEN cancels previous and starts new")
+    fun multipleConsecutiveRouteStarts() = runTest {
+        val route1 = Route(
+            route = listOf(
+                LatLng(latitude = 40.0, longitude = -3.0),
+                LatLng(latitude = 40.1, longitude = -3.1)
+            ),
+            distanceText = "5 km",
+            durationText = "10 min"
+        )
+        val route2 = Route(
+            route = listOf(
+                LatLng(latitude = 40.0, longitude = -3.0),
+                LatLng(latitude = 40.3, longitude = -3.3)
+            ),
+            distanceText = "15 km",
+            durationText = "20 min"
+        )
+
+        fakeRoutesRepository.setRoute(route1)
+        fakePlacesRepository.setLocationForId(
+            placeId = "dest1",
+            location = LatLng(latitude = 40.1, longitude = -3.1)
+        )
+        fakePlacesRepository.setLocationForId(
+            placeId = "dest2",
+            location = LatLng(latitude = 40.3, longitude = -3.3)
+        )
+        fakeLocationTracker.setLastKnownLocation(LatLng(latitude = 40.0, longitude = -3.0))
+        fakeFuelStationDao.setStations(
+            listOf(stationEntity(id = 1, latitude = 40.0, longitude = -3.0, price = 1.30))
+        )
+
+        sut.handleEvent(
+            StationMapEvent.StartRoute(
+                originId = null,
+                destinationId = "dest1",
+                destinationName = "Madrid"
+            )
+        )
+
+        advanceTimeBy(timeMillis = 50)
+
+        fakeRoutesRepository.setRoute(route2)
+        sut.handleEvent(
+            StationMapEvent.StartRoute(
+                originId = null,
+                destinationId = "dest2",
+                destinationName = "Barcelona"
+            )
+        )
+
+        advanceUntilIdle()
+
+        val state = sut.state.value
+        assertNotNull(state.route)
+        assertEquals("Barcelona", state.routeDestinationName)
+        assertEquals("15 km", state.route?.distanceText)
+    }
+
+    @Test
+    @DisplayName("GIVEN cancelled route WHEN processing completes THEN does not update state")
+    fun noStateUpdatesAfterCancellation() = runTest {
+        val route = Route(
+            route = listOf(
+                LatLng(latitude = 40.0, longitude = -3.0),
+                LatLng(latitude = 40.2, longitude = -3.2)
+            ),
+            distanceText = "10 km",
+            durationText = "15 min"
+        )
+
+        fakeRoutesRepository.setRoute(route)
+        fakePlacesRepository.setLocationForId(
+            placeId = "dest",
+            location = LatLng(latitude = 40.2, longitude = -3.2)
+        )
+        fakeLocationTracker.setLastKnownLocation(LatLng(latitude = 40.0, longitude = -3.0))
+        fakeFuelStationDao.setStations(
+            listOf(stationEntity(id = 1, latitude = 40.0, longitude = -3.0, price = 1.30))
+        )
+
+        sut.handleEvent(
+            StationMapEvent.StartRoute(
+                originId = null,
+                destinationId = "dest",
+                destinationName = "Madrid"
+            )
+        )
+
+        sut.handleEvent(StationMapEvent.CancelRoute)
+
+        advanceUntilIdle()
+
+        val state = sut.state.value
+        assertNull(state.route)
+        assertNull(state.routeDestinationName)
     }
 
     private fun createViewModel(): StationMapViewModel {
