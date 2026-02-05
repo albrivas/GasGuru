@@ -1,5 +1,5 @@
 ---
-name: viewmodel
+name: skill-create-viewmodel
 description: Generate Android ViewModels following GasGuru architecture patterns. Use when creating ViewModels with sealed UiState, events, and Hilt injection. Triggers on tasks involving new features, state management, or ViewModel creation.
 license: MIT
 metadata:
