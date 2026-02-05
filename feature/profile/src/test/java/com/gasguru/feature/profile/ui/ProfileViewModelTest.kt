@@ -10,8 +10,8 @@ import com.gasguru.core.model.data.UserData
 import com.gasguru.core.testing.CoroutinesTestExtension
 import com.gasguru.core.testing.fakes.data.user.FakeUserDataRepository
 import com.gasguru.core.ui.R
-import com.gasguru.core.ui.models.FuelTypeUiModel
-import com.gasguru.core.ui.models.toUi
+import com.gasguru.core.ui.mapper.toUi
+import com.gasguru.core.ui.mapper.toUiModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -85,7 +85,7 @@ class ProfileViewModelTest {
             advanceUntilIdle()
 
             val updated = awaitItem() as ProfileUiState.Success
-            val expectedTranslation = FuelTypeUiModel.fromFuelType(FuelType.DIESEL).translationRes
+            val expectedTranslation = FuelType.DIESEL.toUiModel().translationRes
             Assertions.assertEquals(expectedTranslation, updated.content.fuelTranslation)
             cancelAndConsumeRemainingEvents()
         }

@@ -18,6 +18,7 @@ plugins {
     alias(libs.plugins.sonarqube) apply false
     alias(libs.plugins.gasguru.jacoco)
     alias(libs.plugins.gasguru.sonar)
+    alias(libs.plugins.stability.analyzer) apply false
 }
 
 allprojects {

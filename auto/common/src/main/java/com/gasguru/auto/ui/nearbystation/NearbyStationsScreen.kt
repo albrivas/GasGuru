@@ -14,7 +14,7 @@ import com.gasguru.core.domain.fuelstation.FuelStationByLocationUseCase
 import com.gasguru.core.domain.location.GetCurrentLocationUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.model.data.OpeningHours
-import com.gasguru.core.ui.toUiModel
+import com.gasguru.core.ui.mapper.toUiModel
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
