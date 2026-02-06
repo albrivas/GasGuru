@@ -4,6 +4,7 @@ import com.gasguru.core.database.dao.FuelStationDao
 import com.gasguru.core.database.model.FuelStationEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 class FakeFuelStationDao(
@@ -11,17 +12,26 @@ class FakeFuelStationDao(
 ) : FuelStationDao {
 
     private val stationsFlow = MutableStateFlow(initialStations)
+    private var shouldThrowError = false
 
     override fun getFuelStationsWithoutBrandFilter(fuelType: String): Flow<List<FuelStationEntity>> =
-        stationsFlow
+        if (shouldThrowError) {
+            flow { throw Exception("Error getting fuel stations") }
+        } else {
+            stationsFlow
+        }
 
     override fun getFuelStationsWithBrandFilter(
         fuelType: String,
         brands: List<String>,
     ): Flow<List<FuelStationEntity>> =
-        stationsFlow.map { stations ->
-            stations.filter { station ->
-                brands.any { brand -> station.brandStation.equals(brand, ignoreCase = true) }
+        if (shouldThrowError) {
+            flow { throw Exception("Error getting fuel stations") }
+        } else {
+            stationsFlow.map { stations ->
+                stations.filter { station ->
+                    brands.any { brand -> station.brandStation.equals(brand, ignoreCase = true) }
+                }
             }
         }
 
@@ -45,5 +55,9 @@ class FakeFuelStationDao(
 
     fun setStations(stations: List<FuelStationEntity>) {
         stationsFlow.value = stations
+    }
+
+    fun setShouldThrowError(shouldThrow: Boolean) {
+        shouldThrowError = shouldThrow
     }
 }
