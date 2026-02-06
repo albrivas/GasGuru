@@ -43,15 +43,63 @@ El reporte agregado:
 - Agrega classDirectories, sources y exec data de todos los modulos (excepto los excluidos).
  - Nota: cada modulo debe aplicar `gasguru.jacoco` para generar sus `.exec`. Sin eso, el agregado no tendra datos.
 
-## Excludes comunes
-Para reducir ruido, se excluyen clases generadas y carpetas no relevantes:
-- Hilt/Dagger (`*Hilt*`, `*Dagger*`, `*_Factory`, `*_MembersInjector`, etc.)
-- `BuildConfig`, `R`, `Manifest`
-- Previews y generated (`*Preview*`, `*ComposableSingletons*`, `*JsonAdapter*`)
-- Tests (`*Test*`)
-- Paquetes: `ui`, `uikit`, `model`, `navigation`
+## Exclusiones
 
-Si quieres volver a incluir algo, ajusta `jacocoExcludes` en el plugin.
+Todas las exclusiones estan centralizadas en:
+- `build-logic/convention/src/main/java/CoverageExclusions.kt`
+
+Este objeto lo consumen tanto JaCoCo como Sonar, asi que cualquier cambio se aplica a ambos.
+
+### Modulos excluidos
+Se excluyen modulos completos que no contienen logica de negocio testeable:
+
+| Modulo | Motivo |
+|--------|--------|
+| `:core:testing` | Fakes, test rules y utilidades de testing |
+| `:core:uikit` | Componentes UI reutilizables (se testean con tests de componentes) |
+| `:core:ui` | Tema, colores y utilidades UI |
+| `:navigation` | Grafo de navegacion |
+| `:mocknetwork` | Mock de red para desarrollo |
+
+### Patrones de archivos excluidos
+Aplican a todos los modulos no excluidos:
+
+| Patron | Motivo |
+|--------|--------|
+| `**/di/**` | Modulos de inyeccion de dependencias |
+| `**/BuildConfig.*`, `**/R.class`, `**/R$*`, `**/Manifest*.*` | Clases generadas por Android |
+| `**/*Test*.*` | Clases de test |
+| `**/model/**`, `**/mapper/**` | Data classes y mappers |
+| `**/navigation/**` | Navegacion |
+| `**/*_Factory.*`, `**/*_MembersInjector.*`, `**/*_HiltModules*.*`, `**/Hilt_*.*`, `**/*Hilt*.*`, `**/*Dagger*.*` | Generados por Hilt/Dagger |
+| `**/*AssistedFactory*.*`, `**/*AssistedInject*.*` | Assisted injection |
+| `**/*_Impl*.*` | Implementaciones generadas (Room, etc.) |
+| `**/*JsonAdapter*.*`, `**/*MapperImpl*.*` | Adaptadores JSON y mappers generados |
+| `**/*ComposableSingletons*.*`, `**/*Preview*.*` | Generados por Compose |
+| `**/*$*$*.*` | Clases internas/lambdas de Kotlin |
+| `**/*UiState*.*` | Sealed classes de estado UI |
+| `**/*Screen*.*` | Screens de Compose (se testean componentes individuales, no screens completas) |
+
+Para modificar exclusiones, edita `CoverageExclusions.kt`. Los cambios se aplican automaticamente a JaCoCo y Sonar.
+
+### Propiedades de exclusion en Sonar
+
+Sonar tiene dos propiedades de exclusion distintas que se configuran en `SonarConventionPlugin.kt`:
+
+| Propiedad | Que hace |
+|-----------|----------|
+| `sonar.coverage.exclusions` | Excluye archivos **solo del calculo de cobertura**, pero Sonar los sigue analizando (code smells, duplicacion, etc.) y **aparecen en la UI** con "0 lines to cover" |
+| `sonar.exclusions` | Excluye archivos de **todo el analisis** de Sonar. No aparecen en la UI ni se analizan para nada |
+
+En este proyecto usamos **ambas** con los mismos patrones para que los archivos excluidos no aparezcan en la UI de Sonar ni contaminen las metricas:
+
+```kotlin
+// SonarConventionPlugin.kt
+property("sonar.exclusions", CoverageExclusions.sonarCoverageExclusions)
+property("sonar.coverage.exclusions", CoverageExclusions.sonarCoverageExclusions)
+```
+
+> **Nota:** si solo usaras `sonar.coverage.exclusions`, los archivos excluidos seguirian apareciendo en la UI de Sonar con "0 lines to cover", lo que puede generar confusion sobre si realmente estan excluidos.
 
 ## Por que pueden salir duplicados
 JaCoCo falla si analiza la **misma clase dos veces** desde diferentes carpetas.
