@@ -32,6 +32,7 @@ object CoverageExclusions {
         "**/*Preview*.*",
         "**/*\$*\$*.*",
         "**/*UiState*.*",
+        "**/*Screen*.*",
     )
 
     /**
