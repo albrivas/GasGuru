@@ -21,13 +21,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import com.gasguru.core.uikit.R
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
+import com.gasguru.core.uikit.utils.maestroTestTag
 
 @Composable
 fun RouteNavigationCard(
@@ -63,6 +66,7 @@ fun RouteNavigationCard(
             ) {
                 // Destination address (main/large text)
                 Text(
+                    modifier = Modifier.maestroTestTag("route-destination"),
                     text = destination,
                     style = GasGuruTheme.typography.h5,
                     overflow = TextOverflow.Ellipsis,
@@ -72,12 +76,14 @@ fun RouteNavigationCard(
 
                 // Station count, distance and duration info
                 Row(
-                    modifier = Modifier.padding(top = 16.dp),
+                    modifier = Modifier
+                        .padding(top = 16.dp)
+                        .maestroTestTag("route-info"),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     if (distance != null && duration != null) {
                         Text(
-                            text = "$stationCount gasolineras",
+                            text = stationCountText,
                             style = GasGuruTheme.typography.smallRegular,
                             color = GasGuruTheme.colors.textSubtle,
                         )
@@ -115,7 +121,8 @@ fun RouteNavigationCard(
                         )
                     } else {
                         Text(
-                            text = "Calculando ruta...",
+                            modifier = Modifier.maestroTestTag("route-loading"),
+                            text = stringResource(R.string.route_calculating),
                             style = GasGuruTheme.typography.smallRegular,
                             color = GasGuruTheme.colors.textSubtle,
                         )
@@ -129,12 +136,13 @@ fun RouteNavigationCard(
                     .size(24.dp)
                     .clip(CircleShape)
                     .clickable { onClose() }
+                    .maestroTestTag("route-close-button")
                     .constrainAs(closeIcon) {
                         top.linkTo(parent.top)
                         end.linkTo(parent.end)
                     },
                 imageVector = Icons.Filled.Close,
-                contentDescription = "Close route",
+                contentDescription = stringResource(R.string.route_close_button),
                 tint = GasGuruTheme.colors.neutralBlack,
             )
         }
@@ -148,7 +156,7 @@ private fun RouteNavigationCardPreview() {
         RouteNavigationCard(
             model = RouteNavigationCardModel(
                 destination = "Calle Gran Vía, 28, Madrid",
-                stationCount = 5,
+                stationCountText = "5 stations",
                 distance = "12,5 km",
                 duration = "25 min",
                 onClose = {},
@@ -164,7 +172,7 @@ private fun RouteNavigationCardLongDestinationPreview() {
         RouteNavigationCard(
             model = RouteNavigationCardModel(
                 destination = "Avenida de la Constitución con Plaza Mayor y Paseo de la Castellana, 123, 5º B",
-                stationCount = 15,
+                stationCountText = "15 stations",
                 distance = "45,8 km",
                 duration = "1 h 30 min",
                 onClose = {},
@@ -180,7 +188,7 @@ private fun RouteNavigationCardLoadingPreview() {
         RouteNavigationCard(
             model = RouteNavigationCardModel(
                 destination = "Calle Gran Vía, 28, Madrid",
-                stationCount = 0,
+                stationCountText = "0 stations",
                 distance = null,
                 duration = null,
                 onClose = {},

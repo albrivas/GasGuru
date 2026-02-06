@@ -304,7 +304,10 @@ internal fun StationMapScreen(
                         RouteNavigationCard(
                             model = RouteNavigationCardModel(
                                 destination = routeDestinationName.orEmpty(),
-                                stationCount = mapStations.size,
+                                stationCountText = stringResource(
+                                    id = R.string.route_station_count,
+                                    mapStations.size
+                                ),
                                 distance = route?.distanceText,
                                 duration = route?.durationText,
                                 onClose = { event(StationMapEvent.CancelRoute) },
