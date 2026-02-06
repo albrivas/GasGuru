@@ -19,6 +19,10 @@
 - Añadir nombre de los argumentos. Ejemplo: `getLocation(location = loc)
 - Eliminar imports sin usar
 
+## Documentacion
+- Al terminar cualquier tarea o funcionalidad, revisar si hay documentacion existente que deba actualizarse
+- Consultar la tabla de documentacion al final de este archivo para identificar los docs afectados
+
 ## PR Checklist
 - [ ] No hay dependencias cruzadas entre features
 - [ ] Navegación pasa IDs, no objetos complejos ni modelos de red
