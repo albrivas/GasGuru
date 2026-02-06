@@ -12,4 +12,6 @@
     <string name="search_list_clear_description">Limpiar búsquedas recientes</string>
     <string name="tab_price">Precio</string>
     <string name="tab_distance">Distancia</string>
+    <string name="route_calculating">Calculando ruta…</string>
+    <string name="route_close_button">Cerrar ruta</string>
 </resources>
