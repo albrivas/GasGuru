@@ -4,6 +4,7 @@
     <string name="welcome_text">Encuentra gasolineras cercanas al instante. Accede a precios actualizados y ahorra tiempo en tu búsqueda</string>
     <string name="welcome_permission">Concede permisos de localización para comenzar a explorar</string>
     <string name="welcome_button">Continuar</string>
-    <string name="welcome_title_fuel_preferences">Elige tu tipo de combustible</string>
-    <string name="welcome_subtitle_fuel_preferences">Seleccione una opción:</string>
+    <string name="welcome_title_fuel_preferences">¿Qué combustible usas?</string>
+    <string name="welcome_subtitle_fuel_preferences">Selecciona tu tipo de combustible para mostrarte los precios relevantes</string>
+    <string name="welcome_hint_fuel_preferences">Podrás cambiar esto más tarde en ajustes</string>
 </resources>
