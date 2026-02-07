@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="preview_fuel_type">Gasoline 95</string>
+    <string name="preview_fuel_type_2">Gasoline 98</string>
+    <string name="preview_fuel_type_3">Diesel</string>
     <string name="filter_content_desc">Filtro</string>
     <string name="content_description_fuel_item">Gasolinera %1$s</string>
     <string name="content_description_fuel_item_price_box">Color del precio de la gasolinera"</string>
