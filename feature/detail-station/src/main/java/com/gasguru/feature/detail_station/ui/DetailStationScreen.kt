@@ -36,6 +36,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material3.Icon
@@ -130,6 +131,7 @@ internal fun DetailStationScreen(
         is DetailStationUiState.Success -> {
             val stationState = rememberDetailStationState(uiState.stationModel)
             val context = LocalContext.current
+            val shareText = stationState.buildShareText(address = uiState.address)
 
             val notificationPermissionLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.RequestPermission()
@@ -147,6 +149,12 @@ internal fun DetailStationScreen(
                         stationState = stationState,
                         staticMapUrl = staticMapUrl,
                         onBack = onBack,
+                        onShareClick = {
+                            shareStation(
+                                context = context,
+                                shareText = shareText,
+                            )
+                        },
                         onPriceAlertClick = {
                             handlePriceAlertWithPermissions(
                                 context = context,
@@ -367,6 +375,7 @@ fun HeaderStation(
     stationState: DetailStationState,
     staticMapUrl: String?,
     onBack: () -> Unit,
+    onShareClick: () -> Unit,
     onPriceAlertClick: () -> Unit,
     onEvent: (DetailStationEvent) -> Unit,
 ) {
@@ -410,6 +419,20 @@ fun HeaderStation(
                 .statusBarsPadding()
                 .padding(end = 16.dp)
         ) {
+            IconButton(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .testTag("button_share"),
+                onClick = onShareClick,
+                colors = IconButtonDefaults.iconButtonColors(containerColor = GasGuruTheme.colors.neutralWhite)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Share,
+                    contentDescription = "Share station",
+                    tint = GasGuruTheme.colors.neutralBlack,
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
             IconButton(
                 modifier = Modifier
                     .clip(CircleShape)
@@ -470,6 +493,18 @@ fun HeaderStation(
             }
         }
     }
+}
+
+private fun shareStation(context: Context, shareText: String) {
+    val sendIntent = Intent(Intent.ACTION_SEND).apply {
+        putExtra(Intent.EXTRA_TEXT, shareText)
+        type = "text/plain"
+    }
+    val chooserIntent = Intent.createChooser(
+        sendIntent,
+        context.getString(R.string.share_with),
+    )
+    context.startActivity(chooserIntent)
 }
 
 @SuppressLint("QueryPermissionsNeeded")
