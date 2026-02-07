@@ -4,6 +4,7 @@
     <string name="welcome_text">Find nearby gas stations instantly. Access updated prices and save time in your search</string>
     <string name="welcome_permission">Grant location permissions to start exploring</string>
     <string name="welcome_button">Continue</string>
-    <string name="welcome_title_fuel_preferences">Choose your fuel type</string>
-    <string name="welcome_subtitle_fuel_preferences">Select an option:</string>
+    <string name="welcome_title_fuel_preferences">¿What fuel do you use?</string>
+    <string name="welcome_subtitle_fuel_preferences">Select your fuel type to show you relevant prices</string>
+    <string name="welcome_hint_fuel_preferences">You can change this later in settings</string>
 </resources>
