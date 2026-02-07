@@ -2,10 +2,9 @@ package com.gasguru.core.uikit.components.selectedItem
 
 import androidx.annotation.StringRes
 
-data class BasicSelectedItemModel(
+data class SelectedItemModel(
     @StringRes val title: Int,
     val isSelected: Boolean,
-    val isRoundedItem: Boolean = true,
     val image: Int,
-    val onItemSelected: (BasicSelectedItemModel) -> Unit = {},
+    val onItemSelected: (SelectedItemModel) -> Unit = {},
 )
