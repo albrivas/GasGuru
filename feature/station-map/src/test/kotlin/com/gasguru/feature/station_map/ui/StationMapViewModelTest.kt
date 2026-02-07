@@ -262,6 +262,214 @@ class StationMapViewModelTest {
         assertEquals(1, state.mapStations.size)
     }
 
+    @Test
+    @DisplayName("GIVEN route in progress WHEN canceling THEN clears route state and stops loading")
+    fun cancelRouteStopsLoadingAndClearsState() = runTest {
+        val route = Route(
+            route = listOf(
+                LatLng(latitude = 40.0, longitude = -3.0),
+                LatLng(latitude = 40.2, longitude = -3.2),
+            ),
+            distanceText = "10 km",
+            durationText = "15 min"
+        )
+        fakeRoutesRepository.setRoute(route)
+        fakePlacesRepository.setLocationForId(
+            placeId = "dest",
+            location = LatLng(latitude = 40.2, longitude = -3.2)
+        )
+        fakeLocationTracker.setLastKnownLocation(LatLng(latitude = 40.0, longitude = -3.0))
+        fakeFuelStationDao.setStations(
+            listOf(stationEntity(id = 1, latitude = 40.0, longitude = -3.0, price = 1.30))
+        )
+
+        sut.handleEvent(
+            StationMapEvent.StartRoute(
+                originId = null,
+                destinationId = "dest",
+                destinationName = "Madrid"
+            )
+        )
+
+        sut.handleEvent(StationMapEvent.CancelRoute)
+
+        advanceUntilIdle()
+
+        val state = sut.state.value
+        assertNull(state.route)
+        assertNull(state.routeDestinationName)
+        assertFalse(state.loading)
+    }
+
+    @Test
+    @DisplayName("GIVEN cancelled route WHEN starting new route THEN new route loads successfully")
+    fun canStartNewRouteAfterCancellation() = runTest {
+        val route1 = Route(
+            route = listOf(
+                LatLng(latitude = 40.0, longitude = -3.0),
+                LatLng(latitude = 40.1, longitude = -3.1)
+            ),
+            distanceText = "5 km",
+            durationText = "10 min"
+        )
+        val route2 = Route(
+            route = listOf(
+                LatLng(latitude = 40.0, longitude = -3.0),
+                LatLng(latitude = 40.3, longitude = -3.3)
+            ),
+            distanceText = "15 km",
+            durationText = "20 min"
+        )
+
+        fakeRoutesRepository.setRoute(route1)
+        fakePlacesRepository.setLocationForId(
+            placeId = "dest1",
+            location = LatLng(latitude = 40.1, longitude = -3.1)
+        )
+        fakePlacesRepository.setLocationForId(
+            placeId = "dest2",
+            location = LatLng(latitude = 40.3, longitude = -3.3)
+        )
+        fakeLocationTracker.setLastKnownLocation(LatLng(latitude = 40.0, longitude = -3.0))
+        fakeFuelStationDao.setStations(
+            listOf(stationEntity(id = 1, latitude = 40.0, longitude = -3.0, price = 1.30))
+        )
+
+        sut.handleEvent(
+            StationMapEvent.StartRoute(
+                originId = null,
+                destinationId = "dest1",
+                destinationName = "Madrid"
+            )
+        )
+
+        sut.handleEvent(StationMapEvent.CancelRoute)
+
+        advanceUntilIdle()
+
+        fakeRoutesRepository.setRoute(route2)
+        sut.handleEvent(
+            StationMapEvent.StartRoute(
+                originId = null,
+                destinationId = "dest2",
+                destinationName = "Barcelona"
+            )
+        )
+
+        advanceUntilIdle()
+
+        val state = sut.state.value
+        assertNotNull(state.route)
+        assertEquals("Barcelona", state.routeDestinationName)
+        assertEquals("15 km", state.route?.distanceText)
+        assertEquals(1, state.mapStations.size)
+        assertFalse(state.loading)
+    }
+
+    @Test
+    @DisplayName("GIVEN no filters WHEN observing filters THEN returns default values")
+    fun returnsDefaultFilterValues() = runTest {
+        fakeFilterRepository.clearFilters()
+        fakeLocationTracker.setLastKnownLocation(LatLng(latitude = 40.0, longitude = -3.0))
+
+        sut = createViewModel()
+
+        advanceUntilIdle()
+
+        val filterState = sut.filters.value
+        assertEquals(emptyList<String>(), filterState.filterBrand)
+        assertEquals(10, filterState.filterStationsNearby)
+        assertEquals(FilterUiState.OpeningHours.NONE, filterState.filterSchedule)
+    }
+
+    @Test
+    @DisplayName("GIVEN invalid nearby filter WHEN observing filters THEN returns default 10")
+    fun returnsDefaultNearbyWhenInvalid() = runTest {
+        fakeFilterRepository.setFilter(
+            type = FilterType.NEARBY,
+            selection = listOf("invalid")
+        )
+        fakeLocationTracker.setLastKnownLocation(LatLng(latitude = 40.0, longitude = -3.0))
+
+        sut = createViewModel()
+
+        advanceUntilIdle()
+
+        val filterState = sut.filters.value
+        assertEquals(10, filterState.filterStationsNearby)
+    }
+
+    @Test
+    @DisplayName("GIVEN no current location WHEN getting station by current location THEN handles error")
+    fun handlesNoCurrentLocation() = runTest {
+        fakeLocationTracker.setLastKnownLocation(null)
+        fakeFuelStationDao.setStations(
+            listOf(stationEntity(id = 1, latitude = 40.0, longitude = -3.0, price = 1.30))
+        )
+
+        sut = createViewModel()
+
+        advanceUntilIdle()
+
+        val state = sut.state.value
+        assertEquals(emptyList<Any>(), state.mapStations)
+    }
+
+    @Test
+    @DisplayName("GIVEN error getting route WHEN starting route THEN updates error state")
+    fun handlesRouteError() = runTest {
+        fakeLocationTracker.setLastKnownLocation(LatLng(latitude = 40.0, longitude = -3.0))
+        fakePlacesRepository.setLocationForId(
+            placeId = "dest",
+            location = LatLng(latitude = 40.2, longitude = -3.2)
+        )
+        fakeRoutesRepository.setShouldThrowError(true)
+
+        sut.handleEvent(
+            StationMapEvent.StartRoute(
+                originId = null,
+                destinationId = "dest",
+                destinationName = "Madrid"
+            )
+        )
+
+        advanceUntilIdle()
+
+        val state = sut.state.value
+        assertNotNull(state.error)
+        assertFalse(state.loading)
+        assertNull(state.routeDestinationName)
+    }
+
+    @Test
+    @DisplayName("GIVEN error getting place location WHEN getting stations THEN handles error")
+    fun handlesPlaceLocationError() = runTest {
+        fakeLocationTracker.setLastKnownLocation(LatLng(latitude = 40.0, longitude = -3.0))
+        fakePlacesRepository.setShouldThrowError(true)
+
+        sut.handleEvent(StationMapEvent.GetStationByPlace(placeId = "invalid"))
+
+        advanceUntilIdle()
+
+        val state = sut.state.value
+        assertFalse(state.loading)
+    }
+
+    @Test
+    @DisplayName("GIVEN error getting stations WHEN loading by location THEN updates error state")
+    fun handlesStationLoadingError() = runTest {
+        fakeLocationTracker.setLastKnownLocation(LatLng(latitude = 40.0, longitude = -3.0))
+        fakeFuelStationDao.setShouldThrowError(true)
+
+        sut = createViewModel()
+
+        advanceUntilIdle()
+
+        val state = sut.state.value
+        assertNotNull(state.error)
+        assertFalse(state.loading)
+    }
+
     private fun createViewModel(): StationMapViewModel {
         val offlineUserDataRepository = OfflineUserDataRepository(
             userDataDao = fakeUserDataDao,
