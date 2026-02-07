@@ -79,6 +79,7 @@ Aplican a todos los modulos no excluidos:
 | `**/*$*$*.*` | Clases internas/lambdas de Kotlin |
 | `**/*UiState*.*` | Sealed classes de estado UI |
 | `**/*Screen*.*` | Screens de Compose (se testean componentes individuales, no screens completas) |
+| `**/*State.*` | Compose state holders (`rememberXxxState`) con propiedades `@Composable` no testeables en unit tests |
 
 Para modificar exclusiones, edita `CoverageExclusions.kt`. Los cambios se aplican automaticamente a JaCoCo y Sonar.
 
