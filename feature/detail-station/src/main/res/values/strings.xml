@@ -26,4 +26,7 @@
     <string name="update_days_ago">Update %d days ago</string>
     <string name="update_long_ago">Update a long time ago</string>
     <string name="navigate_with">Navigate with:</string>
+    <string name="share_with">Share with:</string>
+    <string name="share_fuel_prices">Fuel prices</string>
+    <string name="share_download">Download GasGuru and find the cheapest gas stations</string>
 </resources>
