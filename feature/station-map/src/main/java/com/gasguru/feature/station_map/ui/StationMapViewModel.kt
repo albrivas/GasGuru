@@ -16,11 +16,14 @@ import com.gasguru.core.model.data.Filter
 import com.gasguru.core.model.data.FilterType
 import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.UserData
+import com.gasguru.core.ui.mapper.toUiModel
 import com.gasguru.core.ui.models.FuelStationUiModel
-import com.gasguru.core.ui.toUiModel
+import com.gasguru.feature.station_map.ui.models.toUiModel
 import com.google.android.gms.maps.model.LatLngBounds
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -56,6 +59,8 @@ class StationMapViewModel @Inject constructor(
     private val _tabState = MutableStateFlow(SelectedTabUiState())
     val tabState: StateFlow<SelectedTabUiState> = _tabState
 
+    private var routeCalculationJob: Job? = null
+
     init {
         getStationByCurrentLocation()
     }
@@ -77,6 +82,7 @@ class StationMapViewModel @Inject constructor(
             )
             is StationMapEvent.CancelRoute -> cancelRoute()
             is StationMapEvent.ChangeTab -> changeTab(selectedTab = event.selected)
+            is StationMapEvent.SelectStation -> selectStation(stationId = event.stationId)
         }
     }
 
@@ -136,13 +142,15 @@ class StationMapViewModel @Inject constructor(
                 it.copy(
                     mapStations = uiStations,
                     listStations = sortedStations,
-                    route = route,
+                    route = route.toUiModel(),
                     routeDestinationName = destinationName,
                     mapBounds = bounds,
                     shouldCenterMap = true,
                     loading = false,
                 )
             }
+        } catch (error: CancellationException) {
+            throw error
         } catch (error: Exception) {
             handleRouteError(error = error)
         }
@@ -152,37 +160,40 @@ class StationMapViewModel @Inject constructor(
         originId: String?,
         destinationId: String?,
         destinationName: String?
-    ) = viewModelScope.launch {
-        _state.update {
-            it.copy(
-                loading = true,
-                listStations = emptyList(),
-                routeDestinationName = destinationName
-            )
-        }
+    ) {
+        routeCalculationJob?.cancel()
+        routeCalculationJob = viewModelScope.launch {
+            _state.update {
+                it.copy(
+                    loading = true,
+                    listStations = emptyList(),
+                    routeDestinationName = destinationName
+                )
+            }
 
-        try {
-            val (originLocation, destinationLocation) = getRouteLocations(
-                originId = originId,
-                destinationId = destinationId
-            )
-            val origin = originLocation
-            val destination = destinationLocation
+            try {
+                val (originLocation, destinationLocation) = getRouteLocations(
+                    originId = originId,
+                    destinationId = destinationId
+                )
 
-            getRouteUseCase(origin = origin, destination = destination).collect { route ->
-                route?.let { routeData ->
-                    launch(defaultDispatcher) {
-                        processRouteStations(
-                            origin = origin,
-                            route = routeData,
-                            destinationLocation = destinationLocation,
-                            destinationName = destinationName
-                        )
+                getRouteUseCase(origin = originLocation, destination = destinationLocation).collect { route ->
+                    route?.let { routeData ->
+                        launch(defaultDispatcher) {
+                            processRouteStations(
+                                origin = originLocation,
+                                route = routeData,
+                                destinationLocation = destinationLocation,
+                                destinationName = destinationName
+                            )
+                        }
                     }
                 }
+            } catch (error: CancellationException) {
+                throw error
+            } catch (error: Exception) {
+                handleRouteError(error = error)
             }
-        } catch (error: Exception) {
-            handleRouteError(error = error)
         }
     }
 
@@ -195,7 +206,9 @@ class StationMapViewModel @Inject constructor(
     }
 
     private fun cancelRoute() {
-        _state.update { it.copy(route = null, routeDestinationName = null) }
+        routeCalculationJob?.cancel()
+        routeCalculationJob = null
+        _state.update { it.copy(route = null, routeDestinationName = null, loading = false) }
         getStationByCurrentLocation()
     }
 
@@ -315,6 +328,8 @@ class StationMapViewModel @Inject constructor(
         }
 
     private fun showListStation(show: Boolean) = _state.update { it.copy(showListStations = show) }
+
+    private fun selectStation(stationId: Int) = _state.update { it.copy(selectedStationId = stationId) }
 
     private fun changeTab(selectedTab: StationSortTab) {
         _tabState.update { it.copy(selectedTab = selectedTab) }
