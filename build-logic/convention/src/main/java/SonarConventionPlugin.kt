@@ -20,6 +20,13 @@ class SonarConventionPlugin : Plugin<Project> {
                         "sonar.coverage.jacoco.xmlReportPaths",
                         "${rootProject.layout.buildDirectory.get()}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml",
                     )
+                    property("sonar.exclusions",
+                        CoverageExclusions.sonarCoverageExclusions,
+                    )
+                    property(
+                        "sonar.coverage.exclusions",
+                        CoverageExclusions.sonarCoverageExclusions,
+                    )
                 }
             }
         }

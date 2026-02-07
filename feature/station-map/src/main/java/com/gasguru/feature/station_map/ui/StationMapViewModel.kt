@@ -21,7 +21,9 @@ import com.gasguru.core.ui.models.FuelStationUiModel
 import com.gasguru.feature.station_map.ui.models.toUiModel
 import com.google.android.gms.maps.model.LatLngBounds
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -56,6 +58,8 @@ class StationMapViewModel @Inject constructor(
 
     private val _tabState = MutableStateFlow(SelectedTabUiState())
     val tabState: StateFlow<SelectedTabUiState> = _tabState
+
+    private var routeCalculationJob: Job? = null
 
     init {
         getStationByCurrentLocation()
@@ -145,6 +149,8 @@ class StationMapViewModel @Inject constructor(
                     loading = false,
                 )
             }
+        } catch (error: CancellationException) {
+            throw error
         } catch (error: Exception) {
             handleRouteError(error = error)
         }
@@ -154,35 +160,40 @@ class StationMapViewModel @Inject constructor(
         originId: String?,
         destinationId: String?,
         destinationName: String?
-    ) = viewModelScope.launch {
-        _state.update {
-            it.copy(
-                loading = true,
-                listStations = emptyList(),
-                routeDestinationName = destinationName
-            )
-        }
+    ) {
+        routeCalculationJob?.cancel()
+        routeCalculationJob = viewModelScope.launch {
+            _state.update {
+                it.copy(
+                    loading = true,
+                    listStations = emptyList(),
+                    routeDestinationName = destinationName
+                )
+            }
 
-        try {
-            val (originLocation, destinationLocation) = getRouteLocations(
-                originId = originId,
-                destinationId = destinationId
-            )
+            try {
+                val (originLocation, destinationLocation) = getRouteLocations(
+                    originId = originId,
+                    destinationId = destinationId
+                )
 
-            getRouteUseCase(origin = originLocation, destination = destinationLocation).collect { route ->
-                route?.let { routeData ->
-                    launch(defaultDispatcher) {
-                        processRouteStations(
-                            origin = originLocation,
-                            route = routeData,
-                            destinationLocation = destinationLocation,
-                            destinationName = destinationName
-                        )
+                getRouteUseCase(origin = originLocation, destination = destinationLocation).collect { route ->
+                    route?.let { routeData ->
+                        launch(defaultDispatcher) {
+                            processRouteStations(
+                                origin = originLocation,
+                                route = routeData,
+                                destinationLocation = destinationLocation,
+                                destinationName = destinationName
+                            )
+                        }
                     }
                 }
+            } catch (error: CancellationException) {
+                throw error
+            } catch (error: Exception) {
+                handleRouteError(error = error)
             }
-        } catch (error: Exception) {
-            handleRouteError(error = error)
         }
     }
 
@@ -195,7 +206,9 @@ class StationMapViewModel @Inject constructor(
     }
 
     private fun cancelRoute() {
-        _state.update { it.copy(route = null, routeDestinationName = null) }
+        routeCalculationJob?.cancel()
+        routeCalculationJob = null
+        _state.update { it.copy(route = null, routeDestinationName = null, loading = false) }
         getStationByCurrentLocation()
     }
 

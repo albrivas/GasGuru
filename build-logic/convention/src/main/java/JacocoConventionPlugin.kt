@@ -21,13 +21,7 @@ class JacocoConventionPlugin : Plugin<Project> {
                     description = "Generates aggregated JaCoCo report for all modules."
 
                     val subprojectsWithTests = rootProject.subprojects.filterNot { project ->
-                        project.path in setOf(
-                            ":core:testing",
-                            ":core:uikit",
-                            ":core:ui",
-                            ":navigation",
-                            ":mocknetwork",
-                        )
+                        project.path in CoverageExclusions.excludedModules
                     }
 
                     val testTasks = subprojectsWithTests.flatMap { project ->
@@ -100,32 +94,7 @@ class JacocoConventionPlugin : Plugin<Project> {
         }
     }
 
-    private val jacocoExcludes = listOf(
-        "**/di/**",
-        "**/BuildConfig.*",
-        "**/R.class",
-        "**/R\\$*.class",
-        "**/*Test*.*",
-        "**/model/**",
-        "**/mapper/**",
-        "**/navigation/**",
-        "**/Manifest*.*",
-        "**/*_Factory.*",
-        "**/*_MembersInjector.*",
-        "**/*_HiltModules*.*",
-        "**/Hilt_*.*",
-        "**/*Hilt*.*",
-        "**/*Dagger*.*",
-        "**/*AssistedFactory*.*",
-        "**/*AssistedInject*.*",
-        "**/*_Impl*.*",
-        "**/*JsonAdapter*.*",
-        "**/*MapperImpl*.*",
-        "**/*ComposableSingletons*.*",
-        "**/*Preview*.*",
-        "**/*\$*\$*.*",
-        "**/*UiState*.*",
-    )
+    private val jacocoExcludes = CoverageExclusions.excludedFilePatterns
 
     private fun Project.jacocoClassDirectories() =
         if (path == ":app") {

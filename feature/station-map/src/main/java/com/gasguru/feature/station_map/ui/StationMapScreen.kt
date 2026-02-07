@@ -304,12 +304,15 @@ internal fun StationMapScreen(
                         RouteNavigationCard(
                             model = RouteNavigationCardModel(
                                 destination = routeDestinationName.orEmpty(),
-                                stationCount = mapStations.size,
+                                stationCountText = stringResource(
+                                    id = R.string.route_station_count,
+                                    mapStations.size
+                                ),
                                 distance = route?.distanceText,
                                 duration = route?.durationText,
                                 onClose = { event(StationMapEvent.CancelRoute) },
                             ),
-                            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 48.dp, bottom = 16.dp),
+                            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 56.dp, bottom = 16.dp),
                         )
                     } else {
                         Column {
