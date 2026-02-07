@@ -32,7 +32,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.common.CommonUtils.getAppVersion
 import com.gasguru.core.model.data.FuelType
-import com.gasguru.core.ui.models.FuelTypeUiModel
+import com.gasguru.core.ui.mapper.toFuelItem
+import com.gasguru.core.ui.mapper.toUiModel
 import com.gasguru.core.ui.models.ThemeModeUi
 import com.gasguru.core.ui.toFuelType
 import com.gasguru.core.uikit.components.drag_handle.DragHandle
@@ -216,10 +217,7 @@ fun FuelSelectionSheet(
                 style = GasGuruTheme.typography.baseBold,
                 color = GasGuruTheme.colors.textMain
             )
-            val list = FuelType.entries.map {
-                val fuelUiModel = FuelTypeUiModel.fromFuelType(it)
-                Pair(fuelUiModel.iconRes, fuelUiModel.translationRes)
-            }
+            val list = FuelType.entries.map { it.toUiModel().toFuelItem() }
             FuelListSelection(
                 model = FuelListSelectionModel(
                     list = list,

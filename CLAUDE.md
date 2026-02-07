@@ -19,6 +19,10 @@
 - Añadir nombre de los argumentos. Ejemplo: `getLocation(location = loc)
 - Eliminar imports sin usar
 
+## Documentacion
+- Al terminar cualquier tarea o funcionalidad, revisar si hay documentacion existente que deba actualizarse
+- Consultar la tabla de documentacion al final de este archivo para identificar los docs afectados
+
 ## PR Checklist
 - [ ] No hay dependencias cruzadas entre features
 - [ ] Navegación pasa IDs, no objetos complejos ni modelos de red
@@ -92,3 +96,18 @@ gh pr create --base main --title "Release - vX.X.X" --body ""
 - Siempre que añadas dependencias deben ir en el libs.versions.toml y luego referenciarlas en los build.gradle que necesiten esas depdencias. Lo mismo para los plugins. Todas las dependencias se centralizan en lisb.versions.toml
 - Usar trailling comma siempre que se pueda
 - Con el MCP de mobilenext usa como primera opcion la de listar elementos
+
+## Documentación
+
+| Tema | Descripción |
+|------|-------------|
+| [Adding Fuel Types](docs/ADDING_FUEL_TYPE.md) | Guía para añadir nuevos tipos de combustible |
+| [CI/CD](docs/CICD.md) | Integración y despliegue continuo |
+| [GitFlow](docs/GITFLOW.md) | Estrategia de branching y flujo de trabajo |
+| [JaCoCo](docs/JACOCO.md) | Reportes de cobertura de código |
+| [Navigation](docs/NAVIGATION.md) | Arquitectura de navegación |
+| [Obfuscation](docs/OBFUSCATION.md) | Configuración de ofuscación de código |
+| [Price Alerts](docs/PRICE_ALERTS.md) | Funcionalidad de alertas de precio |
+| [Recomposition Optimizations](docs/RECOMPOSITION_OPTIMIZATIONS.md) | Optimizaciones de recomposición en Compose |
+| [Testing](docs/TESTING.md) | Estrategia y guías de testing |
+| [UI Mappers](docs/UI_MAPPERS.md) | Arquitectura de mappers UI |

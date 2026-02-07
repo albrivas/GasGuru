@@ -12,7 +12,6 @@ updates:
       interval: "weekly"
     target-branch: "dependencies"
     registries: "*"
-    labels: [ "version update" ]
     groups:
       kotlin-ksp-compose:
         patterns:
