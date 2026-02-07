@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.R
-import com.gasguru.core.uikit.components.selectedItem.BasicSelectedItem
+import com.gasguru.core.uikit.components.selectedItem.SelectedItem
 import com.gasguru.core.uikit.components.selectedItem.SelectedItemModel
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
@@ -32,7 +32,7 @@ fun FuelListSelection(
         contentPadding = contentPadding,
     ) {
         itemsIndexed(list) { index, fuel ->
-            BasicSelectedItem(
+            SelectedItem(
                 modifier = Modifier.testTag("list_item_$index"),
                 model = SelectedItemModel(
                     title = fuel.nameRes,

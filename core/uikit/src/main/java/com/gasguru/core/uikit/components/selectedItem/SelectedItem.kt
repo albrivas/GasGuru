@@ -20,15 +20,17 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.R
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
+import com.gasguru.core.uikit.utils.backgroundColor
 
 @Composable
-fun BasicSelectedItem(
+fun SelectedItem(
     modifier: Modifier = Modifier,
     model: SelectedItemModel,
 ) = with(model) {
@@ -43,6 +45,7 @@ fun BasicSelectedItem(
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
             .background(color = backgroundColor)
+            .semantics { this.backgroundColor = backgroundColor }
             .selectable(
                 selected = isSelected,
                 onClick = { onItemSelected(model) },
@@ -81,10 +84,10 @@ fun BasicSelectedItem(
 
 @Composable
 @ThemePreviews
-private fun BasicSelectedItemPreview() {
+private fun SelectedItemPreview() {
     MyApplicationTheme {
         Column(modifier = Modifier.background(GasGuruTheme.colors.neutral100)) {
-            BasicSelectedItem(
+            SelectedItem(
                 model = SelectedItemModel(
                     title = R.string.preview_fuel_type,
                     isSelected = true,
@@ -97,10 +100,10 @@ private fun BasicSelectedItemPreview() {
 
 @Composable
 @ThemePreviews
-private fun BasicItemPreview() {
+private fun ItemPreview() {
     MyApplicationTheme {
         Column(modifier = Modifier.background(GasGuruTheme.colors.neutral100)) {
-            BasicSelectedItem(
+            SelectedItem(
                 model = SelectedItemModel(
                     title = R.string.preview_fuel_type,
                     isSelected = false,
