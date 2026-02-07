@@ -2,7 +2,7 @@ package com.gasguru.core.uikit.components.selectedItem
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,97 +20,96 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.R
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
+import com.gasguru.core.uikit.utils.backgroundColor
 
 @Composable
-fun BasicSelectedItem(
+fun SelectedItem(
     modifier: Modifier = Modifier,
-    model: BasicSelectedItemModel,
+    model: SelectedItemModel,
 ) = with(model) {
+    val backgroundColor = if (isSelected) {
+        GasGuruTheme.colors.accentGreen.copy(alpha = 0.2f)
+    } else {
+        GasGuruTheme.colors.neutral200
+    }
+
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .then(if (model.isRoundedItem) Modifier.clip(RoundedCornerShape(8.dp)) else Modifier)
-            .background(color = GasGuruTheme.colors.neutralWhite)
+            .clip(RoundedCornerShape(16.dp))
+            .background(color = backgroundColor)
+            .semantics { this.backgroundColor = backgroundColor }
             .selectable(
-                selected = true,
-                onClick = { onItemSelected(model) }
+                selected = isSelected,
+                onClick = { onItemSelected(model) },
             )
-            .then(
-                if (model.isRoundedItem) {
-                    Modifier.border(
-                        width = if (isSelected) 2.dp else 0.5.dp,
-                        color = if (isSelected) GasGuruTheme.colors.primary600 else GasGuruTheme.colors.neutral300,
-                        shape = RoundedCornerShape(8.dp)
-                    )
-                } else {
-                    Modifier
-                }
-            )
-            .padding(8.dp),
+            .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Image(
             modifier = Modifier
-                .size(48.dp)
-                .clip(RoundedCornerShape(8.dp)),
+                .size(44.dp)
+                .clip(RoundedCornerShape(12.dp)),
             painter = painterResource(id = image),
             contentScale = ContentScale.Crop,
-            contentDescription = "Icon fuel"
+            contentDescription = "Icon fuel",
         )
         Text(
             modifier = Modifier
                 .weight(1f)
-                .padding(start = 8.dp),
+                .padding(start = 14.dp),
             style = if (isSelected) GasGuruTheme.typography.baseBold else GasGuruTheme.typography.baseRegular,
             color = GasGuruTheme.colors.neutralBlack,
             textAlign = TextAlign.Start,
             text = stringResource(id = title),
         )
-
         RadioButton(
             selected = isSelected,
             onClick = { onItemSelected(model) },
             colors = RadioButtonDefaults.colors(
-                selectedColor = GasGuruTheme.colors.primary600,
-                unselectedColor = GasGuruTheme.colors.neutral500
+                selectedColor = GasGuruTheme.colors.accentGreen,
+                unselectedColor = GasGuruTheme.colors.neutral400,
             ),
-            modifier = Modifier.testTag("radio_button_$title")
+            modifier = Modifier.testTag("radio_button_$title"),
         )
     }
 }
 
 @Composable
 @ThemePreviews
-private fun BasicSelectedItemPreview() {
+private fun SelectedItemPreview() {
     MyApplicationTheme {
-        BasicSelectedItem(
-            model = BasicSelectedItemModel(
-                title = R.string.preview_fuel_type,
-                isSelected = true,
-                isRoundedItem = true,
-                image = R.drawable.ic_gasoline_95
+        Column(modifier = Modifier.background(GasGuruTheme.colors.neutral100)) {
+            SelectedItem(
+                model = SelectedItemModel(
+                    title = R.string.preview_fuel_type,
+                    isSelected = true,
+                    image = R.drawable.ic_gasoline_95,
+                ),
             )
-        )
+        }
     }
 }
 
 @Composable
 @ThemePreviews
-private fun BasicItemPreview() {
+private fun ItemPreview() {
     MyApplicationTheme {
-        BasicSelectedItem(
-            model = BasicSelectedItemModel(
-                title = R.string.preview_fuel_type,
-                isSelected = false,
-                isRoundedItem = true,
-                image = R.drawable.ic_gasoline_95
+        Column(modifier = Modifier.background(GasGuruTheme.colors.neutral100)) {
+            SelectedItem(
+                model = SelectedItemModel(
+                    title = R.string.preview_fuel_type,
+                    isSelected = false,
+                    image = R.drawable.ic_gasoline_95,
+                ),
             )
-        )
+        }
     }
 }
