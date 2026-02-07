@@ -33,6 +33,7 @@ object CoverageExclusions {
         "**/*\$*\$*.*",
         "**/*UiState*.*",
         "**/*Screen*.*",
+        "**/*State.*",
         "**/res/**",
     )
 
