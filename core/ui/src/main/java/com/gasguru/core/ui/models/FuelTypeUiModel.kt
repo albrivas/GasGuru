@@ -69,8 +69,5 @@ data class FuelTypeUiModel(
                 noPriceRes = R.string.sin_adblue
             ),
         )
-
-        fun fromFuelType(fuelType: FuelType): FuelTypeUiModel =
-            ALL_FUELS.first { it.type == fuelType }
     }
 }

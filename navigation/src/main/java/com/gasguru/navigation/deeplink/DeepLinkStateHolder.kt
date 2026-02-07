@@ -1,0 +1,25 @@
+package com.gasguru.navigation.deeplink
+
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import javax.inject.Inject
+import javax.inject.Singleton
+/**
+ * Holds pending deep link navigation state.
+ * Used when a push notification is tapped but the app needs to load first.
+ */
+@Singleton
+class DeepLinkStateHolder @Inject constructor() {
+
+    private val _pendingStationId = MutableStateFlow<Int?>(null)
+    val pendingStationId: StateFlow<Int?> = _pendingStationId.asStateFlow()
+
+    fun setPendingStationId(stationId: Int) {
+        _pendingStationId.value = stationId
+    }
+
+    fun clear() {
+        _pendingStationId.value = null
+    }
+}

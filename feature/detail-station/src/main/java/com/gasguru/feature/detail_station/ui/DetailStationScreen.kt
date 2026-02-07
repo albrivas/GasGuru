@@ -69,9 +69,9 @@ import com.gasguru.core.model.data.FuelStationBrandsType
 import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.previewFuelStationDomain
 import com.gasguru.core.ui.iconTint
+import com.gasguru.core.ui.mapper.toUiModel
 import com.gasguru.core.ui.review.findActivity
 import com.gasguru.core.ui.review.rememberInAppReviewManager
-import com.gasguru.core.ui.toUiModel
 import com.gasguru.core.uikit.components.information_card.InformationCard
 import com.gasguru.core.uikit.components.information_card.InformationCardModel
 import com.gasguru.core.uikit.components.loading.GasGuruLoading
@@ -126,6 +126,7 @@ internal fun DetailStationScreen(
                 model = GasGuruLoadingModel(color = GasGuruTheme.colors.primary800)
             )
         }
+
         is DetailStationUiState.Success -> {
             val stationState = rememberDetailStationState(uiState.stationModel)
             val context = LocalContext.current

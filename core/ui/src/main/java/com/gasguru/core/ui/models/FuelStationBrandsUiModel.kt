@@ -197,8 +197,5 @@ data class FuelStationBrandsUiModel(
                 iconRes = FuelStationIcons.Valcarce
             )
         )
-
-        fun fromBrandType(brandType: FuelStationBrandsType): FuelStationBrandsUiModel =
-            ALL_BRANDS.first { it.type == brandType }
     }
 }
