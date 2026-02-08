@@ -9,6 +9,10 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
@@ -19,25 +23,32 @@ fun GasGuruButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     text: String,
+    containerColor: Color = GasGuruTheme.colors.primary500,
+    contentColor: Color = GasGuruTheme.colors.textContrast,
+    shape: Shape = RoundedCornerShape(size = 8.dp),
+    height: Dp = 50.dp,
+    textStyle: TextStyle = GasGuruTheme.typography.baseBold,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
 ) {
     Button(
         onClick = onClick,
-        shape = RoundedCornerShape(8.dp),
+        shape = shape,
         modifier = modifier
             .fillMaxWidth()
-            .height(50.dp),
+            .height(height = height),
         enabled = enabled,
         contentPadding = contentPadding,
         colors = ButtonDefaults.buttonColors(
-            containerColor = GasGuruTheme.colors.primary500,
+            containerColor = containerColor,
+            contentColor = contentColor,
             disabledContentColor = GasGuruTheme.colors.neutral700,
-            disabledContainerColor = GasGuruTheme.colors.neutral400
-        )
+            disabledContainerColor = GasGuruTheme.colors.neutral400,
+        ),
     ) {
         Text(
             text = text,
-            style = GasGuruTheme.typography.baseBold
+            style = textStyle,
+            color = contentColor,
         )
     }
 }
