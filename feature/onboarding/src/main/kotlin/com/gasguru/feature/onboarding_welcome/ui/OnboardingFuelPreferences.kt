@@ -136,7 +136,7 @@ internal fun OnboardingFuelPreferences(
                             navigateToHome()
                         },
                         enabled = selectedFuel != null,
-                        text = stringResource(id = R.string.welcome_button),
+                        text = stringResource(id = R.string.onboarding_continue),
                         modifier = Modifier.testTag("button_next_onboarding"),
                     )
                     Spacer(modifier = Modifier.height(8.dp))
