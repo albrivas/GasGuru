@@ -12,6 +12,7 @@ dependencies {
     api(projects.core.database)
     api(projects.core.network)
     api(projects.core.model)
+    api(projects.navigation)
     api(libs.io.arrow.kt.arrow.core)
     api(libs.junit)
     api(libs.androidx.test.core)
