@@ -18,11 +18,6 @@ sealed interface NavigationDestination {
     ) : NavigationDestination
 
     /**
-     * Navigate to onboarding welcome screen.
-     */
-    data object OnboardingWelcome : NavigationDestination
-
-    /**
      * Navigate to onboarding fuel preferences screen.
      */
     data object OnboardingFuelPreferences : NavigationDestination
@@ -42,4 +37,9 @@ sealed interface NavigationDestination {
      * Navigate to route planner screen.
      */
     data object RoutePlanner : NavigationDestination
+
+    /**
+     * Navigate to the new onboarding carousel screen.
+     */
+    data object NewOnboarding : NavigationDestination
 }
