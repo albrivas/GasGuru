@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="welcome">Welcome!</string>
-    <string name="welcome_text">Find nearby gas stations instantly. Access updated prices and save time in your search</string>
-    <string name="welcome_permission">Grant location permissions to start exploring</string>
-    <string name="welcome_button">Continue</string>
     <string name="welcome_title_fuel_preferences">¿What fuel do you use?</string>
     <string name="welcome_subtitle_fuel_preferences">Select your fuel type to show you relevant prices</string>
     <string name="welcome_hint_fuel_preferences">You can change this later in settings</string>
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_continue">Continue</string>
+    <string name="onboarding_back">Back</string>
+    <string name="onboarding_start">Start</string>
+    <string name="onboarding_title_stations">Find gas stations</string>
+    <string name="onboarding_desc_stations">Discover all nearby gas stations with updated prices in real time</string>
+    <string name="onboarding_title_routes">Plan your routes</string>
+    <string name="onboarding_desc_routes">Calculate the best route to the cheapest or nearest gas station</string>
+    <string name="onboarding_title_alerts">Price alerts</string>
+    <string name="onboarding_desc_alerts">Receive notifications when prices drop at your favorite gas stations</string>
+    <string name="onboarding_title_offline">Works offline</string>
+    <string name="onboarding_desc_offline">Access your favorite gas stations and saved routes even without internet</string>
 </resources>
