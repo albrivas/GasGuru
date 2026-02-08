@@ -113,13 +113,13 @@ class MainActivity : ComponentActivity() {
                             startDestination = if (state.isOnboardingSuccess) {
                                 NavigationBarRoute
                             } else {
-                                OnboardingRoutes.OnboardingWelcomeRoute
+                                OnboardingRoutes.NewOnboardingRoute
                             },
                         )
 
                         SplashUiState.Error -> GasGuruApp(
                             appState = appState,
-                            startDestination = OnboardingRoutes.OnboardingWelcomeRoute,
+                            startDestination = OnboardingRoutes.NewOnboardingRoute,
                         )
 
                         else -> Unit

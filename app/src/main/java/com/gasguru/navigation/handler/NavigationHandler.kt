@@ -5,8 +5,8 @@ import androidx.navigation.NavOptions
 import com.gasguru.feature.detail_station.navigation.navigateToDetailStation
 import com.gasguru.feature.detail_station.navigation.navigateToDetailStationAsDialog
 import com.gasguru.feature.onboarding_welcome.navigation.OnboardingRoutes
+import com.gasguru.feature.onboarding_welcome.navigation.navigateToNewOnboardingRoute
 import com.gasguru.feature.onboarding_welcome.navigation.navigateToOnboardingFuelPreferencesRoute
-import com.gasguru.feature.onboarding_welcome.navigation.navigateToOnboardingWelcomeRoute
 import com.gasguru.feature.route_planner.navigation.navigateToRoutePlannerScreen
 import com.gasguru.feature.search.navigation.navigateToSearch
 import com.gasguru.navigation.extensions.setPreviousResult
@@ -43,10 +43,6 @@ class NavigationHandler(private val navController: NavController) {
                     }
                 }
 
-                is NavigationDestination.OnboardingWelcome -> {
-                    navController.navigateToOnboardingWelcomeRoute()
-                }
-
                 is NavigationDestination.OnboardingFuelPreferences -> {
                     navController.navigateToOnboardingFuelPreferencesRoute()
                 }
@@ -54,11 +50,15 @@ class NavigationHandler(private val navController: NavController) {
                 is NavigationDestination.Home -> {
                     val navOptions = NavOptions.Builder()
                         .setPopUpTo(
-                            route = OnboardingRoutes.OnboardingWelcomeRoute,
+                            route = OnboardingRoutes.NewOnboardingRoute,
                             inclusive = true,
                         )
                         .build()
                     navController.navigateToNavigationBar(navOptions = navOptions)
+                }
+
+                is NavigationDestination.NewOnboarding -> {
+                    navController.navigateToNewOnboardingRoute()
                 }
 
                 is NavigationDestination.Search -> {
