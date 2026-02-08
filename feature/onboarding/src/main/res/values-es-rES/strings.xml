@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="welcome">¡Bienvenido!</string>
-    <string name="welcome_text">Encuentra gasolineras cercanas al instante. Accede a precios actualizados y ahorra tiempo en tu búsqueda</string>
-    <string name="welcome_permission">Concede permisos de localización para comenzar a explorar</string>
-    <string name="welcome_button">Continuar</string>
     <string name="welcome_title_fuel_preferences">¿Qué combustible usas?</string>
     <string name="welcome_subtitle_fuel_preferences">Selecciona tu tipo de combustible para mostrarte los precios relevantes</string>
     <string name="welcome_hint_fuel_preferences">Podrás cambiar esto más tarde en ajustes</string>
+    <string name="onboarding_skip">Saltar</string>
+    <string name="onboarding_continue">Continuar</string>
+    <string name="onboarding_back">Atrás</string>
+    <string name="onboarding_start">Empezar</string>
+    <string name="onboarding_title_stations">Encuentra gasolineras</string>
+    <string name="onboarding_desc_stations">Descubre todas las gasolineras cercanas con precios actualizados en tiempo real</string>
+    <string name="onboarding_title_routes">Planifica tus rutas</string>
+    <string name="onboarding_desc_routes">Calcula la mejor ruta hacia la gasolinera más barata o más cercana</string>
+    <string name="onboarding_title_alerts">Alertas de precios</string>
+    <string name="onboarding_desc_alerts">Recibe notificaciones cuando baje el precio en tus gasolineras favoritas</string>
+    <string name="onboarding_title_offline">Funciona sin conexión</string>
+    <string name="onboarding_desc_offline">Accede a tus gasolineras favoritas y rutas guardadas incluso sin internet</string>
 </resources>
