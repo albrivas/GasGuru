@@ -33,7 +33,7 @@ import com.gasguru.navigation.root.GasGuruNavHost
 @Composable
 fun GasGuruApp(
     appState: GasGuruAppState,
-    startDestination: Any = OnboardingRoutes.OnboardingWelcomeRoute,
+    startDestination: Any = OnboardingRoutes.NewOnboardingRoute,
 ) {
     val isOffline by appState.isOffline.collectAsStateWithLifecycle()
     var showOfflineAlert by remember { mutableStateOf(false) }
