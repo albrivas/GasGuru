@@ -61,10 +61,6 @@ class StationMapViewModel @Inject constructor(
 
     private var routeCalculationJob: Job? = null
 
-    init {
-        getStationByCurrentLocation()
-    }
-
     fun handleEvent(event: StationMapEvent) {
         when (event) {
             is StationMapEvent.GetStationByCurrentLocation -> getStationByCurrentLocation()

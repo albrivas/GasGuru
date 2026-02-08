@@ -25,4 +25,11 @@
     <string name="theme_mode_system">System default</string>
     <string name="nearby_stations">Nearby stations</string>
     <string name="favorites">Favorites</string>
+    <string name="alert_location_rationale_title">Location permission</string>
+    <string name="alert_location_rationale_description">We need access to your location to show nearby gas stations and their prices.</string>
+    <string name="alert_location_rationale_primary_button">Continue</string>
+    <string name="alert_permission_denied_title">Location permission denied</string>
+    <string name="alert_permission_denied_description">We need access to your location to show nearby gas stations. You can enable it in the app settings.</string>
+    <string name="alert_permission_denied_primary_button">Go to Settings</string>
+    <string name="alert_dismiss_button">Not now</string>
 </resources>
