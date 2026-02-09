@@ -28,8 +28,6 @@ import com.gasguru.core.model.data.previewFuelStationDomain
 import com.gasguru.core.ui.mapper.toStationListItems
 import com.gasguru.core.ui.mapper.toUiModel
 import com.gasguru.core.ui.models.FuelStationUiModel
-import com.gasguru.core.uikit.components.alert.AlertTemplate
-import com.gasguru.core.uikit.components.alert.AlertTemplateModel
 import com.gasguru.core.uikit.components.filterable_station_list.FilterableStationList
 import com.gasguru.core.uikit.components.filterable_station_list.FilterableStationListModel
 import com.gasguru.core.uikit.components.loading.GasGuruLoading
@@ -96,13 +94,6 @@ internal fun FavoriteListStationScreen(
                 navigateToDetail = navigateToDetail,
                 selectedTab = tabState.selectedTab,
                 event = event
-            )
-
-            FavoriteStationListUiState.DisableLocation -> AlertTemplate(
-                model = AlertTemplateModel(
-                    animation = com.gasguru.core.ui.R.raw.enable_location,
-                    description = stringResource(id = R.string.location_disable_description),
-                )
             )
 
             is FavoriteStationListUiState.EmptyFavorites -> {
