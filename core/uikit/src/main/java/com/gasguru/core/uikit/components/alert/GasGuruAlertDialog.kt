@@ -35,7 +35,7 @@ fun GasGuruAlertDialog(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(color = Color.Black.copy(alpha = 0.5f)),
+            .background(color = Color.Transparent.copy(alpha = 0.5f)),
         contentAlignment = Alignment.Center,
     ) {
         Column(
