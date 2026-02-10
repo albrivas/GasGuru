@@ -8,6 +8,7 @@ import android.content.IntentFilter
 import android.location.Location
 import android.location.LocationManager
 import android.util.Log
+import androidx.core.content.ContextCompat
 import com.gasguru.core.model.data.LatLng
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -33,6 +34,7 @@ class LocationTrackerRepository @Inject constructor(
             CancellationTokenSource().token
         ).await()?.toDomainLatLng()
 
+    @SuppressLint("WrongConstant")
     override val isLocationEnabled: Flow<Boolean> = callbackFlow {
         val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
@@ -48,9 +50,11 @@ class LocationTrackerRepository @Inject constructor(
             }
         }
 
-        context.registerReceiver(
+        ContextCompat.registerReceiver(
+            context,
             receiver,
             IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION),
+            ContextCompat.RECEIVER_NOT_EXPORTED,
         )
 
         awaitClose { context.unregisterReceiver(receiver) }
