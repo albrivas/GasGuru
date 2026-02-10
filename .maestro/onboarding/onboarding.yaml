@@ -3,6 +3,9 @@ appId: com.gasguru
 name: "Onboarding flow - Select fuel"
 ---
 - tapOn: "Continue"
+- tapOn: "Continue"
+- tapOn: "Continue"
+- tapOn: "Continue"
 - tapOn: "SP 95"
 - tapOn: "Continue"
 - waitForAnimationToEnd
