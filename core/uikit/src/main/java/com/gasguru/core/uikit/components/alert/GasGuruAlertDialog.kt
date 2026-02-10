@@ -90,7 +90,7 @@ fun GasGuruAlertDialog(
                     height = 52.dp,
                 )
 
-                if(model.secondaryButtonText != null) {
+                if (model.secondaryButtonText != null) {
                     GasGuruButton(
                         onClick = onSecondaryButtonClick,
                         text = model.secondaryButtonText,
