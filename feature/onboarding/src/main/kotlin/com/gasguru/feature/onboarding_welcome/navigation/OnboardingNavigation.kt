@@ -1,5 +1,7 @@
 package com.gasguru.feature.onboarding_welcome.navigation
 
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -13,7 +15,10 @@ fun NavController.navigateToOnboardingFuelPreferencesRoute(navOptions: NavOption
 }
 
 fun NavGraphBuilder.onboardingFuelPreferencesScreen() {
-    composable<OnboardingRoutes.OnboardingFuelPreferencesRoute> {
+    composable<OnboardingRoutes.OnboardingFuelPreferencesRoute>(
+        enterTransition = { slideInHorizontally { it } },
+        popExitTransition = { slideOutHorizontally { it } },
+    ) {
         OnboardingFuelPreferencesRoute()
     }
 }
@@ -23,7 +28,10 @@ fun NavController.navigateToNewOnboardingRoute(navOptions: NavOptions? = null) {
 }
 
 fun NavGraphBuilder.newOnboardingScreen() {
-    composable<OnboardingRoutes.NewOnboardingRoute> {
+    composable<OnboardingRoutes.NewOnboardingRoute>(
+        exitTransition = { slideOutHorizontally { -it } },
+        popEnterTransition = { slideInHorizontally { -it } },
+    ) {
         NewOnboardingScreenRoute()
     }
 }
