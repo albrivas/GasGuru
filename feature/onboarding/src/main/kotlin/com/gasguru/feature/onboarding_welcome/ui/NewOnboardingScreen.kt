@@ -2,6 +2,7 @@ package com.gasguru.feature.onboarding_welcome.ui
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -69,7 +70,10 @@ internal fun NewOnboardingScreen(
 
     LaunchedEffect(uiState.currentPage) {
         if (pagerState.settledPage != uiState.currentPage) {
-            pagerState.animateScrollToPage(uiState.currentPage)
+            pagerState.animateScrollToPage(
+                page = uiState.currentPage,
+                animationSpec = tween(durationMillis = 450),
+            )
         }
     }
 
@@ -158,7 +162,6 @@ private fun OnboardingPageContent(page: OnboardingPage) {
         modifier = Modifier
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceAround
     ) {
         Spacer(modifier = Modifier.weight(2f))
 
@@ -168,7 +171,7 @@ private fun OnboardingPageContent(page: OnboardingPage) {
             modifier = Modifier
                 .heightIn(max = 180.dp)
                 .wrapContentWidth()
-                .padding(horizontal = 64.dp),
+                .padding(horizontal = 80.dp),
         )
 
         Spacer(modifier = Modifier.height(24.dp))
