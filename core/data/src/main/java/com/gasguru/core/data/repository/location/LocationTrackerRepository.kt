@@ -1,9 +1,11 @@
 package com.gasguru.core.data.repository.location
 
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.location.Location
-import android.location.LocationListener
 import android.location.LocationManager
 import android.util.Log
 import com.gasguru.core.model.data.LatLng
@@ -31,37 +33,27 @@ class LocationTrackerRepository @Inject constructor(
             CancellationTokenSource().token
         ).await()?.toDomainLatLng()
 
-    @SuppressLint("MissingPermission")
     override val isLocationEnabled: Flow<Boolean> = callbackFlow {
         val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-        trySend(
+        fun isEnabled() =
             locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
-                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-        )
+                    locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
 
-        val locationListener = object : LocationListener {
-            override fun onProviderEnabled(provider: String) {
-                trySend(true)
+        trySend(isEnabled())
+
+        val receiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                trySend(isEnabled())
             }
-
-            override fun onProviderDisabled(provider: String) {
-                trySend(false)
-            }
-
-            override fun onLocationChanged(location: Location) = Unit
         }
 
-        locationManager.requestLocationUpdates(
-            LocationManager.GPS_PROVIDER,
-            0L,
-            0f,
-            locationListener
+        context.registerReceiver(
+            receiver,
+            IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION),
         )
 
-        awaitClose {
-            locationManager.removeUpdates(locationListener)
-        }
+        awaitClose { context.unregisterReceiver(receiver) }
     }
 
     override val getCurrentLocationFlow: Flow<LatLng?>
