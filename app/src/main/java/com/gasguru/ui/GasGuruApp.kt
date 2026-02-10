@@ -64,7 +64,9 @@ fun GasGuruApp(
                     iconBackgroundColor = GasGuruTheme.colors.accentOrange.copy(alpha = 0.2f),
                     title = stringResource(id = com.gasguru.core.ui.R.string.alert_location_disabled_title),
                     description = stringResource(id = com.gasguru.core.ui.R.string.alert_location_disabled_description),
-                    primaryButtonText = stringResource(id = com.gasguru.core.ui.R.string.alert_location_disabled_primary_button),
+                    primaryButtonText = stringResource(
+                        id = com.gasguru.core.ui.R.string.alert_location_disabled_primary_button
+                    ),
                 ),
                 onPrimaryButtonClick = {
                     context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))

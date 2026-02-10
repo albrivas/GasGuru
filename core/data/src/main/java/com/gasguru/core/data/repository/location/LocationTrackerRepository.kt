@@ -38,7 +38,7 @@ class LocationTrackerRepository @Inject constructor(
 
         fun isEnabled() =
             locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
-                    locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
 
         trySend(isEnabled())
 
