@@ -7,12 +7,12 @@
     <string name="onboarding_continue">Continuar</string>
     <string name="onboarding_back">Atrás</string>
     <string name="onboarding_start">Empezar</string>
-    <string name="onboarding_title_stations">Encuentra gasolineras</string>
-    <string name="onboarding_desc_stations">Descubre todas las gasolineras cercanas con precios actualizados en tiempo real</string>
-    <string name="onboarding_title_routes">Planifica tus rutas</string>
-    <string name="onboarding_desc_routes">Calcula la mejor ruta hacia la gasolinera más barata o más cercana</string>
-    <string name="onboarding_title_alerts">Alertas de precios</string>
-    <string name="onboarding_desc_alerts">Recibe notificaciones cuando baje el precio en tus gasolineras favoritas</string>
-    <string name="onboarding_title_offline">Funciona sin conexión</string>
-    <string name="onboarding_desc_offline">Accede a tus gasolineras favoritas y rutas guardadas incluso sin internet</string>
+    <string name="onboarding_title_stations">Ahorra desde la próxima salida</string>
+    <string name="onboarding_desc_stations">Mira las gasolineras cerca de ti y compara precios al instante. Reposta donde más te convenga, no donde te toque</string>
+    <string name="onboarding_title_routes">Tu ruta, con los mejores precios</string>
+    <string name="onboarding_desc_routes">Marca origen y destino y descubre todas las estaciones en tu camino (y alrededor) para elegir la mejor parada</string>
+    <string name="onboarding_title_alerts">Caza el mejor precio</string>
+    <string name="onboarding_desc_alerts">Te avisamos si una estación baja el precio para que repostes antes de que vuelva a subir</string>
+    <string name="onboarding_title_offline">Sin cobertura, sin problema</string>
+    <string name="onboarding_desc_offline">La app funciona offline para que sigas viendo la info en carretera, incluso si pierdes la conexión</string>
 </resources>
