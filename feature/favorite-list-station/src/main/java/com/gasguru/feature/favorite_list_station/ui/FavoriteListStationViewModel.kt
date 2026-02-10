@@ -68,7 +68,6 @@ class FavoriteListStationViewModel @Inject constructor(
                     }
                 }
             }
-
             .catch {
                 emit(FavoriteStationListUiState.Error)
             }

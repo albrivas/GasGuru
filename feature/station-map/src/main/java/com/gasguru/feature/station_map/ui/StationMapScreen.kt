@@ -162,10 +162,10 @@ fun StationMapScreenRoute(
             context,
             ACCESS_FINE_LOCATION,
         ) == PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(
-                    context,
-                    ACCESS_COARSE_LOCATION,
-                ) == PackageManager.PERMISSION_GRANTED
+            ContextCompat.checkSelfPermission(
+                context,
+                ACCESS_COARSE_LOCATION,
+            ) == PackageManager.PERMISSION_GRANTED
 
     var locationPermissionGranted by remember { mutableStateOf(hasLocationPermission()) }
     var permissionDenied by remember { mutableStateOf(false) }
@@ -207,7 +207,9 @@ fun StationMapScreenRoute(
                     iconBackgroundColor = GasGuruTheme.colors.red500.copy(alpha = 0.2f),
                     title = stringResource(id = com.gasguru.core.ui.R.string.alert_permission_denied_title),
                     description = stringResource(id = com.gasguru.core.ui.R.string.alert_permission_denied_description),
-                    primaryButtonText = stringResource(id = com.gasguru.core.ui.R.string.alert_permission_denied_primary_button),
+                    primaryButtonText = stringResource(
+                        id = com.gasguru.core.ui.R.string.alert_permission_denied_primary_button
+                    ),
                 ),
                 onPrimaryButtonClick = {
                     val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
@@ -223,8 +225,12 @@ fun StationMapScreenRoute(
                     iconTint = Color(0xFF3B82F6),
                     iconBackgroundColor = Color(0xFFEFF6FF),
                     title = stringResource(id = com.gasguru.core.ui.R.string.alert_location_rationale_title),
-                    description = stringResource(id = com.gasguru.core.ui.R.string.alert_location_rationale_description),
-                    primaryButtonText = stringResource(id = com.gasguru.core.ui.R.string.alert_location_rationale_primary_button),
+                    description = stringResource(
+                        id = com.gasguru.core.ui.R.string.alert_location_rationale_description
+                    ),
+                    primaryButtonText = stringResource(
+                        id = com.gasguru.core.ui.R.string.alert_location_rationale_primary_button
+                    ),
                 ),
                 onPrimaryButtonClick = {
                     permissionLauncher.launch(
