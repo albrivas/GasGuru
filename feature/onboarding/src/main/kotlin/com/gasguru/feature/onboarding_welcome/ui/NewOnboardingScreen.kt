@@ -13,10 +13,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -157,13 +158,17 @@ private fun OnboardingPageContent(page: OnboardingPage) {
         modifier = Modifier
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceAround
     ) {
         Spacer(modifier = Modifier.weight(2f))
 
         Image(
             painter = painterResource(id = page.iconRes),
             contentDescription = null,
-            modifier = Modifier.size(240.dp),
+            modifier = Modifier
+                .heightIn(max = 180.dp)
+                .wrapContentWidth()
+                .padding(horizontal = 64.dp),
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -173,6 +178,7 @@ private fun OnboardingPageContent(page: OnboardingPage) {
             color = GasGuruTheme.colors.neutralBlack,
             style = GasGuruTheme.typography.h3,
             textAlign = TextAlign.Center,
+            modifier = Modifier.padding(horizontal = 16.dp),
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -185,7 +191,7 @@ private fun OnboardingPageContent(page: OnboardingPage) {
             modifier = Modifier.padding(horizontal = 16.dp),
         )
 
-        Spacer(modifier = Modifier.weight(3f))
+        Spacer(modifier = Modifier.weight(4f))
     }
 }
 
@@ -293,7 +299,7 @@ private fun NewOnboardingScreenPreview() {
 private fun NewOnboardingScreenLastPagePreview() {
     MyApplicationTheme {
         NewOnboardingScreen(
-            uiState = NewOnboardingUiState(currentPage = 3),
+            uiState = NewOnboardingUiState(currentPage = 4),
             onEvent = {},
         )
     }

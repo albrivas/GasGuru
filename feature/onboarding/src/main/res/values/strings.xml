@@ -7,12 +7,12 @@
     <string name="onboarding_continue">Continue</string>
     <string name="onboarding_back">Back</string>
     <string name="onboarding_start">Start</string>
-    <string name="onboarding_title_stations">Find gas stations</string>
-    <string name="onboarding_desc_stations">Discover all nearby gas stations with updated prices in real time</string>
-    <string name="onboarding_title_routes">Plan your routes</string>
-    <string name="onboarding_desc_routes">Calculate the best route to the cheapest or nearest gas station</string>
-    <string name="onboarding_title_alerts">Price alerts</string>
-    <string name="onboarding_desc_alerts">Receive notifications when prices drop at your favorite gas stations</string>
-    <string name="onboarding_title_offline">Works offline</string>
-    <string name="onboarding_desc_offline">Access your favorite gas stations and saved routes even without internet</string>
+    <string name="onboarding_title_stations">Save from the next exit</string>
+    <string name="onboarding_desc_stations">See nearby gas stations and compare prices instantly. Fill up where it suits you best—not where you have to</string>
+    <string name="onboarding_title_routes">Your route, with the best prices</string>
+    <string name="onboarding_desc_routes">Set your origin and destination and discover all the stations along your route (and nearby) to choose the best stop</string>
+    <string name="onboarding_title_alerts">Catch the best price</string>
+    <string name="onboarding_desc_alerts">We’ll notify you if a station drops its price so you can fill up before it goes back up</string>
+    <string name="onboarding_title_offline">No signal, no problem</string>
+    <string name="onboarding_desc_offline">The app works offline so you can keep checking info on the road, even if you lose connection</string>
 </resources>
