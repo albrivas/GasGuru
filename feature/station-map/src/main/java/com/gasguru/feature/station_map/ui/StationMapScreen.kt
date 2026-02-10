@@ -43,6 +43,7 @@ import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -65,6 +66,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.common.centerOnLocation
 import com.gasguru.core.common.centerOnMap
@@ -135,35 +139,60 @@ fun StationMapScreenRoute(
     val filterGroup by viewModel.filters.collectAsStateWithLifecycle()
     val tabState by viewModel.tabState.collectAsStateWithLifecycle()
 
-    var locationPermissionGranted by remember {
-        mutableStateOf(
-            ContextCompat.checkSelfPermission(
-                context,
-                ACCESS_FINE_LOCATION,
-            ) == PackageManager.PERMISSION_GRANTED ||
-                    ContextCompat.checkSelfPermission(
-                        context,
-                        ACCESS_COARSE_LOCATION,
-                    ) == PackageManager.PERMISSION_GRANTED,
-        )
+    // Access DeepLinkStateHolder via CompositionLocal
+    val deepLinkStateHolder = LocalDeepLinkStateHolder.current
+    val pendingStationId by deepLinkStateHolder.pendingStationId.collectAsStateWithLifecycle()
+
+    LaunchedEffect(key1 = state.loading, key2 = pendingStationId, key3 = state.mapStations) {
+        if (!state.loading && state.mapStations.isNotEmpty()) {
+            pendingStationId?.let { stationId ->
+                deepLinkStateHolder.clear()
+                navigationManager.navigateTo(
+                    destination = NavigationDestination.DetailStation(
+                        idServiceStation = stationId,
+                        presentAsDialog = true,
+                    ),
+                )
+            }
+        }
     }
 
+    fun hasLocationPermission(): Boolean =
+        ContextCompat.checkSelfPermission(
+            context,
+            ACCESS_FINE_LOCATION,
+        ) == PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(
+                    context,
+                    ACCESS_COARSE_LOCATION,
+                ) == PackageManager.PERMISSION_GRANTED
+
+    var locationPermissionGranted by remember { mutableStateOf(hasLocationPermission()) }
     var permissionDenied by remember { mutableStateOf(false) }
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                locationPermissionGranted = hasLocationPermission()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions(),
         onResult = { permissions ->
             locationPermissionGranted =
                 permissions[ACCESS_FINE_LOCATION] == true || permissions[ACCESS_COARSE_LOCATION] == true
-            if (locationPermissionGranted) {
-                viewModel.handleEvent(event = StationMapEvent.GetStationByCurrentLocation)
-            } else {
+            if (!locationPermissionGranted) {
                 permissionDenied = true
             }
         },
     )
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(locationPermissionGranted) {
         if (locationPermissionGranted) {
             viewModel.handleEvent(event = StationMapEvent.GetStationByCurrentLocation)
         }
@@ -205,24 +234,6 @@ fun StationMapScreenRoute(
             )
         }
         return
-    }
-
-    // Access DeepLinkStateHolder via CompositionLocal
-    val deepLinkStateHolder = LocalDeepLinkStateHolder.current
-    val pendingStationId by deepLinkStateHolder.pendingStationId.collectAsStateWithLifecycle()
-
-    LaunchedEffect(key1 = state.loading, key2 = pendingStationId, key3 = state.mapStations) {
-        if (!state.loading && state.mapStations.isNotEmpty()) {
-            pendingStationId?.let { stationId ->
-                deepLinkStateHolder.clear()
-                navigationManager.navigateTo(
-                    destination = NavigationDestination.DetailStation(
-                        idServiceStation = stationId,
-                        presentAsDialog = true,
-                    ),
-                )
-            }
-        }
     }
 
     StationMapScreen(
