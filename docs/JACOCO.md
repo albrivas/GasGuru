@@ -78,8 +78,17 @@ Aplican a todos los modulos no excluidos:
 | `**/*ComposableSingletons*.*`, `**/*Preview*.*` | Generados por Compose |
 | `**/*$*$*.*` | Clases internas/lambdas de Kotlin |
 | `**/*UiState*.*` | Sealed classes de estado UI |
+| `**/*UiModel*.*` | Data classes de modelo UI |
 | `**/*Screen*.*` | Screens de Compose (se testean componentes individuales, no screens completas) |
 | `**/*State.*` | Compose state holders (`rememberXxxState`) con propiedades `@Composable` no testeables en unit tests |
+| `**/*Event*.*` | Clases de eventos UI (sealed classes de one-shot events) |
+| `**/*Page.*` | Modelos de pagina de onboarding/pagers |
+| `**/*App.*` | Clases Application y entry points de la app |
+| `**/*Preferences.*` | Clases de preferencias de usuario |
+| `**/*Activity.*` | Activities de Android (boilerplate del framework) |
+| `**/*Application.*` | Clases Application de Android (boilerplate del framework) |
+| `**/*.gradle.kts` | Archivos de configuracion de Gradle (Sonar los detecta como Kotlin) |
+| `**/res/**` | Recursos de Android (XML, drawables, etc.) |
 
 Para modificar exclusiones, edita `CoverageExclusions.kt`. Los cambios se aplican automaticamente a JaCoCo y Sonar.
 

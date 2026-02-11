@@ -4,7 +4,6 @@ import app.cash.turbine.test
 import com.gasguru.core.domain.fuelstation.GetFavoriteStationsUseCase
 import com.gasguru.core.domain.fuelstation.RemoveFavoriteStationUseCase
 import com.gasguru.core.domain.location.GetLastKnownLocationUseCase
-import com.gasguru.core.domain.location.IsLocationEnabledUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.FuelType
@@ -40,7 +39,6 @@ class FavoriteListStationViewModelTest {
         return FavoriteListStationViewModel(
             getUserDataUseCase = GetUserDataUseCase(fakeUserDataRepository),
             getFavoriteStationsUseCase = GetFavoriteStationsUseCase(fakeUserDataRepository),
-            isLocationEnabledUseCase = IsLocationEnabledUseCase(fakeLocationTracker),
             getLastKnownLocationUseCase = GetLastKnownLocationUseCase(fakeLocationTracker),
             removeFavoriteStationUseCase = RemoveFavoriteStationUseCase(fakeUserDataRepository),
         )
@@ -55,7 +53,6 @@ class FavoriteListStationViewModelTest {
         viewModel.favoriteStations.test {
             advanceUntilIdle()
             assertEquals(FavoriteStationListUiState.Loading, awaitItem())
-            assertEquals(FavoriteStationListUiState.DisableLocation, awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }

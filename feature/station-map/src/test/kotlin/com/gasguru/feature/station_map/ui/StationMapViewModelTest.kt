@@ -80,8 +80,8 @@ class StationMapViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN current location WHEN initialized THEN loads stations and updates state")
-    fun loadsStationsOnInit() = runTest {
+    @DisplayName("GIVEN current location WHEN requesting stations THEN loads stations and updates state")
+    fun loadsStationsByCurrentLocation() = runTest {
         val stations = listOf(
             stationEntity(id = 1, latitude = 40.0, longitude = -3.0, price = 1.50),
             stationEntity(id = 2, latitude = 40.1, longitude = -3.1, price = 1.20),
@@ -90,6 +90,7 @@ class StationMapViewModelTest {
         fakeLocationTracker.setLastKnownLocation(LatLng(latitude = 40.0, longitude = -3.0))
 
         sut = createViewModel()
+        sut.handleEvent(StationMapEvent.GetStationByCurrentLocation)
 
         advanceUntilIdle()
 
@@ -112,6 +113,7 @@ class StationMapViewModelTest {
         fakeLocationTracker.setLastKnownLocation(userLocation)
 
         sut = createViewModel()
+        sut.handleEvent(StationMapEvent.GetStationByCurrentLocation)
 
         advanceUntilIdle()
 
@@ -131,6 +133,7 @@ class StationMapViewModelTest {
         fakeLocationTracker.setLastKnownLocation(LatLng(latitude = 40.0, longitude = -3.0))
 
         sut = createViewModel()
+        sut.handleEvent(StationMapEvent.GetStationByCurrentLocation)
 
         advanceUntilIdle()
 
@@ -408,6 +411,7 @@ class StationMapViewModelTest {
         )
 
         sut = createViewModel()
+        sut.handleEvent(StationMapEvent.GetStationByCurrentLocation)
 
         advanceUntilIdle()
 
@@ -462,6 +466,7 @@ class StationMapViewModelTest {
         fakeFuelStationDao.setShouldThrowError(true)
 
         sut = createViewModel()
+        sut.handleEvent(StationMapEvent.GetStationByCurrentLocation)
 
         advanceUntilIdle()
 

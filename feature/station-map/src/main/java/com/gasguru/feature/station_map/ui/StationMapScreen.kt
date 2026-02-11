@@ -1,5 +1,13 @@
 package com.gasguru.feature.station_map.ui
 
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
+import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -24,6 +32,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Directions
+import androidx.compose.material.icons.outlined.GppBad
+import androidx.compose.material.icons.outlined.MyLocation
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,6 +43,7 @@ import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -42,6 +53,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
@@ -52,7 +64,11 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.common.centerOnLocation
 import com.gasguru.core.common.centerOnMap
@@ -66,6 +82,8 @@ import com.gasguru.core.ui.mapper.toStationListItems
 import com.gasguru.core.ui.mapper.toUiModel
 import com.gasguru.core.ui.models.FuelStationUiModel
 import com.gasguru.core.ui.toColor
+import com.gasguru.core.uikit.components.alert.GasGuruAlertDialog
+import com.gasguru.core.uikit.components.alert.GasGuruAlertDialogModel
 import com.gasguru.core.uikit.components.chip.FilterType
 import com.gasguru.core.uikit.components.chip.SelectableFilter
 import com.gasguru.core.uikit.components.chip.SelectableFilterModel
@@ -115,6 +133,7 @@ fun StationMapScreenRoute(
     onRoutePlanConsumed: () -> Unit = {},
     viewModel: StationMapViewModel = hiltViewModel(),
 ) {
+    val context = LocalContext.current
     val navigationManager = LocalNavigationManager.current
     val state by viewModel.state.collectAsStateWithLifecycle()
     val filterGroup by viewModel.filters.collectAsStateWithLifecycle()
@@ -138,12 +157,98 @@ fun StationMapScreenRoute(
         }
     }
 
+    fun hasLocationPermission(): Boolean =
+        ContextCompat.checkSelfPermission(
+            context,
+            ACCESS_FINE_LOCATION,
+        ) == PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(
+                context,
+                ACCESS_COARSE_LOCATION,
+            ) == PackageManager.PERMISSION_GRANTED
+
+    var locationPermissionGranted by remember { mutableStateOf(hasLocationPermission()) }
+    var permissionDenied by remember { mutableStateOf(false) }
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                locationPermissionGranted = hasLocationPermission()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions(),
+        onResult = { permissions ->
+            locationPermissionGranted =
+                permissions[ACCESS_FINE_LOCATION] == true || permissions[ACCESS_COARSE_LOCATION] == true
+            if (!locationPermissionGranted) {
+                permissionDenied = true
+            }
+        },
+    )
+
+    LaunchedEffect(locationPermissionGranted) {
+        if (locationPermissionGranted) {
+            viewModel.handleEvent(event = StationMapEvent.GetStationByCurrentLocation)
+        }
+    }
+
+    if (!locationPermissionGranted) {
+        if (permissionDenied) {
+            GasGuruAlertDialog(
+                model = GasGuruAlertDialogModel(
+                    icon = Icons.Outlined.GppBad,
+                    iconTint = GasGuruTheme.colors.red500,
+                    iconBackgroundColor = GasGuruTheme.colors.red500.copy(alpha = 0.2f),
+                    title = stringResource(id = com.gasguru.core.ui.R.string.alert_permission_denied_title),
+                    description = stringResource(id = com.gasguru.core.ui.R.string.alert_permission_denied_description),
+                    primaryButtonText = stringResource(
+                        id = com.gasguru.core.ui.R.string.alert_permission_denied_primary_button
+                    ),
+                ),
+                onPrimaryButtonClick = {
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = Uri.fromParts("package", context.packageName, null)
+                    }
+                    context.startActivity(intent)
+                },
+            )
+        } else {
+            GasGuruAlertDialog(
+                model = GasGuruAlertDialogModel(
+                    icon = Icons.Outlined.MyLocation,
+                    iconTint = Color(0xFF3B82F6),
+                    iconBackgroundColor = Color(0xFFEFF6FF),
+                    title = stringResource(id = com.gasguru.core.ui.R.string.alert_location_rationale_title),
+                    description = stringResource(
+                        id = com.gasguru.core.ui.R.string.alert_location_rationale_description
+                    ),
+                    primaryButtonText = stringResource(
+                        id = com.gasguru.core.ui.R.string.alert_location_rationale_primary_button
+                    ),
+                ),
+                onPrimaryButtonClick = {
+                    permissionLauncher.launch(
+                        arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION),
+                    )
+                },
+            )
+        }
+        return
+    }
+
     StationMapScreen(
         uiState = state,
         filterUiState = filterGroup,
         tabState = tabState,
         routePlanner = routePlanner,
         onRoutePlanConsumed = onRoutePlanConsumed,
+        isLocationPermissionGranted = locationPermissionGranted,
         event = viewModel::handleEvent,
         navigateToDetail = { stationId ->
             navigationManager.navigateTo(
@@ -167,6 +272,7 @@ internal fun StationMapScreen(
     tabState: SelectedTabUiState,
     routePlanner: RoutePlanArgs?,
     onRoutePlanConsumed: () -> Unit = {},
+    isLocationPermissionGranted: Boolean = false,
     event: (StationMapEvent) -> Unit = {},
     navigateToDetail: (Int) -> Unit = {},
     navigateToRoutePlanner: () -> Unit = {},
@@ -288,9 +394,10 @@ internal fun StationMapScreen(
                     loading = loading,
                     route = route,
                     selectedStationId = selectedStationId,
+                    isLocationPermissionGranted = isLocationPermissionGranted,
                     navigateToDetail = navigateToDetail,
                     event = event,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
                 )
                 AnimatedContent(
                     targetState = isRouteActive,
@@ -312,7 +419,12 @@ internal fun StationMapScreen(
                                 duration = route?.durationText,
                                 onClose = { event(StationMapEvent.CancelRoute) },
                             ),
-                            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 56.dp, bottom = 16.dp),
+                            modifier = Modifier.padding(
+                                start = 16.dp,
+                                end = 16.dp,
+                                top = 56.dp,
+                                bottom = 16.dp
+                            ),
                         )
                     } else {
                         Column {
@@ -361,6 +473,7 @@ fun MapView(
     loading: Boolean,
     route: RouteUiModel?,
     selectedStationId: Int,
+    isLocationPermissionGranted: Boolean = true,
     modifier: Modifier = Modifier,
     navigateToDetail: (Int) -> Unit = {},
     event: (StationMapEvent) -> Unit = {},
@@ -376,11 +489,9 @@ fun MapView(
             )
         )
     }
-    val mapProperties by remember {
-        mutableStateOf(
-            MapProperties(
-                isMyLocationEnabled = true,
-            )
+    val mapProperties = remember(isLocationPermissionGranted) {
+        MapProperties(
+            isMyLocationEnabled = isLocationPermissionGranted,
         )
     }
 
@@ -675,7 +786,8 @@ private fun StationMapScreenPreview() {
             filterUiState = FilterUiState(),
             tabState = SelectedTabUiState(),
             routePlanner = null,
-            navigateToDetail = {}
+            isLocationPermissionGranted = false,
+            navigateToDetail = {},
         )
     }
 }
