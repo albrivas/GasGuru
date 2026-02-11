@@ -95,7 +95,7 @@ internal fun NewOnboardingScreen(
             modifier = Modifier.weight(1f),
         ) { page ->
             OnboardingPageContent(
-                page = OnboardingPage.entries[page],
+                page = OnboardingPageUiModel.entries[page],
             )
         }
 
@@ -157,7 +157,7 @@ private fun OnboardingTopBar(
 }
 
 @Composable
-private fun OnboardingPageContent(page: OnboardingPage) {
+private fun OnboardingPageContent(page: OnboardingPageUiModel) {
     Column(
         modifier = Modifier
             .fillMaxSize(),

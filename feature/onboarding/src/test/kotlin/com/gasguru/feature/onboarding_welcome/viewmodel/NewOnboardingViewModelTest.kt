@@ -4,7 +4,7 @@ import app.cash.turbine.test
 import com.gasguru.core.testing.CoroutinesTestExtension
 import com.gasguru.core.testing.fakes.navigation.FakeNavigationManager
 import com.gasguru.feature.onboarding_welcome.ui.NewOnboardingEvent
-import com.gasguru.feature.onboarding_welcome.ui.OnboardingPage
+import com.gasguru.feature.onboarding_welcome.ui.OnboardingPageUiModel
 import com.gasguru.navigation.manager.NavigationDestination
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -79,7 +79,7 @@ class NewOnboardingViewModelTest {
     @Test
     @DisplayName("GIVEN last page WHEN NextPage event THEN navigates to fuel preferences")
     fun nextPageOnLastPageNavigatesToFuelPreferences() = runTest {
-        val lastPageIndex = OnboardingPage.entries.size - 1
+        val lastPageIndex = OnboardingPageUiModel.entries.size - 1
         repeat(lastPageIndex) {
             sut.handleEvent(event = NewOnboardingEvent.NextPage)
         }
@@ -125,7 +125,7 @@ class NewOnboardingViewModelTest {
             assertEquals(0, initial.currentPage)
 
             sut.handleEvent(event = NewOnboardingEvent.PageChanged(page = -1))
-            sut.handleEvent(event = NewOnboardingEvent.PageChanged(page = OnboardingPage.entries.size))
+            sut.handleEvent(event = NewOnboardingEvent.PageChanged(page = OnboardingPageUiModel.entries.size))
             expectNoEvents()
         }
     }
@@ -136,7 +136,7 @@ class NewOnboardingViewModelTest {
         sut.uiState.test {
             awaitItem()
 
-            val lastPageIndex = OnboardingPage.entries.size - 1
+            val lastPageIndex = OnboardingPageUiModel.entries.size - 1
             sut.handleEvent(event = NewOnboardingEvent.PageChanged(page = lastPageIndex))
             val state = awaitItem()
             assertTrue(state.isLastPage)
