@@ -22,6 +22,10 @@
 ## Documentacion
 - Al terminar cualquier tarea o funcionalidad, revisar si hay documentacion existente que deba actualizarse
 - Consultar la tabla de documentacion al final de este archivo para identificar los docs afectados
+- Si se modifica un archivo que tiene documentacion asociada, actualizar el doc correspondiente en el mismo paso
+
+## Tests
+- Si se modifica una clase que tiene tests asociados, actualizar los tests para reflejar los cambios en el mismo paso
 
 ## PR Checklist
 - [ ] No hay dependencias cruzadas entre features
