@@ -35,8 +35,13 @@ object CoverageExclusions {
         "**/*Preview*.*",
         "**/*\$*\$*.*",
         "**/*UiState*.*",
+        "**/*UiModel*.*",
         "**/*Screen*.*",
         "**/*State.*",
+        "**/*Event*.*",
+        "**/*Page.*",
+        "**/*App.*",
+        "**/*Preferences.*",
         "**/res/**",
     )
 
