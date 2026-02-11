@@ -5,7 +5,7 @@ name: "Onboarding flow - Select fuel"
 - tapOn: "Continue"
 - tapOn: "Continue"
 - tapOn: "Continue"
-- tapOn: "Continue"
+- tapOn: "Start"
 - tapOn: "SP 95"
 - tapOn: "Continue"
 - waitForAnimationToEnd
