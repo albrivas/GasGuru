@@ -17,6 +17,9 @@ object CoverageExclusions {
         "**/mapper/**",
         "**/navigation/**",
         "**/Manifest*.*",
+        "**/*Activity.*",
+        "**/*Application.*",
+        "**/*.gradle.kts",
         "**/*_Factory.*",
         "**/*_MembersInjector.*",
         "**/*_HiltModules*.*",
@@ -32,8 +35,13 @@ object CoverageExclusions {
         "**/*Preview*.*",
         "**/*\$*\$*.*",
         "**/*UiState*.*",
+        "**/*UiModel*.*",
         "**/*Screen*.*",
         "**/*State.*",
+        "**/*Event*.*",
+        "**/*Page.*",
+        "**/*App.*",
+        "**/*Preferences.*",
         "**/res/**",
     )
 
