@@ -2,7 +2,7 @@ package com.gasguru.feature.onboarding_welcome.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.gasguru.feature.onboarding_welcome.ui.NewOnboardingEvent
-import com.gasguru.feature.onboarding_welcome.ui.OnboardingPage
+import com.gasguru.feature.onboarding_welcome.ui.OnboardingPageUiModel
 import com.gasguru.navigation.manager.NavigationDestination
 import com.gasguru.navigation.manager.NavigationManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -49,7 +49,7 @@ class NewOnboardingViewModel @Inject constructor(
     }
 
     private fun onPageChanged(page: Int) {
-        if (page in 0 until OnboardingPage.entries.size) {
+        if (page in 0 until OnboardingPageUiModel.entries.size) {
             _uiState.update { it.copy(currentPage = page) }
         }
     }

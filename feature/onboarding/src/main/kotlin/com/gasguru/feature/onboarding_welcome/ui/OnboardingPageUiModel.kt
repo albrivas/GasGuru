@@ -4,7 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.gasguru.feature.onboarding.R
 
-enum class OnboardingPage(
+enum class OnboardingPageUiModel(
     @StringRes val titleRes: Int,
     @StringRes val descriptionRes: Int,
     @DrawableRes val iconRes: Int,
