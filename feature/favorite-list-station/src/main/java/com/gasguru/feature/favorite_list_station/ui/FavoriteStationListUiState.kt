@@ -6,7 +6,6 @@ import com.gasguru.core.ui.models.FuelStationUiModel
 sealed interface FavoriteStationListUiState {
     data object Loading : FavoriteStationListUiState
     data object Error : FavoriteStationListUiState
-    data object DisableLocation : FavoriteStationListUiState
     data class Favorites(
         val favoriteStations: List<FuelStationUiModel>,
         val userSelectedFuelType: FuelType,
