@@ -17,6 +17,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.gasguru.core.data.util.NetworkMonitor
+import com.gasguru.core.domain.location.IsLocationEnabledUseCase
+import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.feature.onboarding_welcome.navigation.OnboardingRoutes
@@ -41,6 +43,12 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var networkMonitor: NetworkMonitor
+
+    @Inject
+    lateinit var isLocationEnabledUseCase: IsLocationEnabledUseCase
+
+    @Inject
+    lateinit var getUserDataUseCase: GetUserDataUseCase
 
     @Inject
     lateinit var navigationManager: NavigationManager
@@ -93,7 +101,11 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            val appState = rememberGasGuruAppState(networkMonitor)
+            val appState = rememberGasGuruAppState(
+                networkMonitor = networkMonitor,
+                isLocationEnabledUseCase = isLocationEnabledUseCase,
+                getUserDataUseCase = getUserDataUseCase,
+            )
             val themeMode by viewModel.themeMode.collectAsState()
 
             val darkTheme = when (themeMode) {
@@ -113,13 +125,13 @@ class MainActivity : ComponentActivity() {
                             startDestination = if (state.isOnboardingSuccess) {
                                 NavigationBarRoute
                             } else {
-                                OnboardingRoutes.OnboardingWelcomeRoute
+                                OnboardingRoutes.NewOnboardingRoute
                             },
                         )
 
                         SplashUiState.Error -> GasGuruApp(
                             appState = appState,
-                            startDestination = OnboardingRoutes.OnboardingWelcomeRoute,
+                            startDestination = OnboardingRoutes.NewOnboardingRoute,
                         )
 
                         else -> Unit
