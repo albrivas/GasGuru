@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="welcome">Welcome!</string>
-    <string name="welcome_text">Find nearby gas stations instantly. Access updated prices and save time in your search</string>
-    <string name="welcome_permission">Grant location permissions to start exploring</string>
-    <string name="welcome_button">Continue</string>
-    <string name="welcome_title_fuel_preferences">Choose your fuel type</string>
-    <string name="welcome_subtitle_fuel_preferences">Select an option:</string>
+    <string name="welcome_title_fuel_preferences">¿What fuel do you use?</string>
+    <string name="welcome_subtitle_fuel_preferences">Select your fuel type to show you relevant prices</string>
+    <string name="welcome_hint_fuel_preferences">You can change this later in settings</string>
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_continue">Continue</string>
+    <string name="onboarding_back">Back</string>
+    <string name="onboarding_start">Start</string>
+    <string name="onboarding_title_stations">Save from the next exit</string>
+    <string name="onboarding_desc_stations">See nearby gas stations and compare prices instantly. Fill up where it suits you best—not where you have to</string>
+    <string name="onboarding_title_routes">Your route, with the best prices</string>
+    <string name="onboarding_desc_routes">Set your origin and destination and discover all the stations along your route (and nearby) to choose the best stop</string>
+    <string name="onboarding_title_alerts">Catch the best price</string>
+    <string name="onboarding_desc_alerts">We’ll notify you if a station drops its price so you can fill up before it goes back up</string>
+    <string name="onboarding_title_offline">No signal, no problem</string>
+    <string name="onboarding_desc_offline">The app works offline so you can keep checking info on the road, even if you lose connection</string>
 </resources>

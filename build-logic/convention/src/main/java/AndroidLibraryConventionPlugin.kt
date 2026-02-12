@@ -22,10 +22,6 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                 useJUnitPlatform()
             }
 
-            tasks.withType<Test>().configureEach {
-                useJUnitPlatform()
-            }
-
             extensions.configure<LibraryExtension> {
                 configureKotlinAndroid(this)
                 configureDetekt(this)

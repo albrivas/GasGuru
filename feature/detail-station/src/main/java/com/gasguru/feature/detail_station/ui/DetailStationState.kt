@@ -85,4 +85,28 @@ class DetailStationState(internal val station: FuelStationUiModel) {
 
     internal val formattedDirection: String
         get() = station.formattedDirection
+
+    @Composable
+    internal fun buildShareText(address: String?): String {
+        val displayAddress = address ?: formattedDirection
+        val mapsUrl = "https://maps.google.com/?q=${location.latitude},${location.longitude}"
+        val playStoreUrl = "https://play.google.com/store/apps/details?id=com.gasguru"
+        val fuelPricesLabel = stringResource(id = R.string.share_fuel_prices)
+        val fuelPricesText = fuelItems.joinToString(separator = "\n") {
+            "  ${it.fuelName}: ${it.price}"
+        }
+        val downloadText = stringResource(id = R.string.share_download)
+
+        return buildString {
+            appendLine("\u26FD $formattedName")
+            appendLine("\uD83D\uDCCD $displayAddress")
+            appendLine("\uD83D\uDDFA\uFE0F $mapsUrl")
+            appendLine()
+            appendLine("\uD83D\uDCB0 $fuelPricesLabel:")
+            appendLine(fuelPricesText)
+            appendLine()
+            appendLine("\uD83D\uDCF2 $downloadText:")
+            append(playStoreUrl)
+        }
+    }
 }
