@@ -1,24 +1,24 @@
 package com.gasguru.core.network.model.route
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class NetworkLeg(
-    @Json(name = "distanceMeters")
+    @SerialName("distanceMeters")
     val distanceMeters: Int,
-    @Json(name = "duration")
+    @SerialName("duration")
     val duration: String,
-    @Json(name = "endLocation")
+    @SerialName("endLocation")
     val endLocation: NetworkEndLocation,
-    @Json(name = "localizedValues")
+    @SerialName("localizedValues")
     val localizedValues: NetworkLocalizedValues,
-    @Json(name = "polyline")
+    @SerialName("polyline")
     val polyline: NetworkPolyline,
-    @Json(name = "startLocation")
+    @SerialName("startLocation")
     val startLocation: NetworkStartLocation,
-    @Json(name = "staticDuration")
+    @SerialName("staticDuration")
     val staticDuration: String,
-    @Json(name = "steps")
-    val steps: List<NetworkStep>
+    @SerialName("steps")
+    val steps: List<NetworkStep>,
 )

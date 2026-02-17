@@ -1,12 +1,12 @@
 package com.gasguru.core.network.model.route
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class NetworkNavigationInstruction(
-    @Json(name = "instructions")
+    @SerialName("instructions")
     val instructions: String,
-    @Json(name = "maneuver")
-    val maneuver: String
+    @SerialName("maneuver")
+    val maneuver: String,
 )

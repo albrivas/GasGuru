@@ -1,12 +1,12 @@
 package com.gasguru.core.network.model
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class NetworkFuelStation(
-    @Json(name = "Fecha")
+    @SerialName("Fecha")
     val date: String,
-    @Json(name = "ListaEESSPrecio")
-    val listPriceFuelStation: List<NetworkPriceFuelStation>
+    @SerialName("ListaEESSPrecio")
+    val listPriceFuelStation: List<NetworkPriceFuelStation>,
 )

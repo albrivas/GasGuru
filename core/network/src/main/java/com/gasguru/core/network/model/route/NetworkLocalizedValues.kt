@@ -1,14 +1,14 @@
 package com.gasguru.core.network.model.route
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class NetworkLocalizedValues(
-    @Json(name = "distance")
+    @SerialName("distance")
     val distance: NetworkDistance,
-    @Json(name = "duration")
+    @SerialName("duration")
     val duration: NetworkDuration?,
-    @Json(name = "staticDuration")
-    val staticDuration: NetworkStaticDuration
+    @SerialName("staticDuration")
+    val staticDuration: NetworkStaticDuration,
 )

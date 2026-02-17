@@ -1,73 +1,74 @@
 package com.gasguru.core.network.model
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
-@JsonClass(generateAdapter = true)
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class NetworkPriceFuelStation(
-    @Json(name = "% BioEtanol")
+    @SerialName("% BioEtanol")
     val bioEthanolPercentage: String,
-    @Json(name = "% Éster metílico")
+    @SerialName("% Éster metílico")
     val esterMethylPercentage: String,
-    @Json(name = "C.P.")
+    @SerialName("C.P.")
     val postalCode: String,
-    @Json(name = "Dirección")
+    @SerialName("Dirección")
     val direction: String,
-    @Json(name = "Horario")
+    @SerialName("Horario")
     val schedule: String,
-    @Json(name = "IDCCAA")
+    @SerialName("IDCCAA")
     val idAutonomousCommunity: String,
-    @Json(name = "IDEESS")
+    @SerialName("IDEESS")
     val idServiceStation: String,
-    @Json(name = "IDMunicipio")
+    @SerialName("IDMunicipio")
     val idMunicipality: String,
-    @Json(name = "IDProvincia")
+    @SerialName("IDProvincia")
     val idProvince: String,
-    @Json(name = "Latitud")
+    @SerialName("Latitud")
     val latitude: String,
-    @Json(name = "Localidad")
+    @SerialName("Localidad")
     val locality: String,
-    @Json(name = "Longitud (WGS84)")
+    @SerialName("Longitud (WGS84)")
     val longitudeWGS84: String,
-    @Json(name = "Margen")
+    @SerialName("Margen")
     val margin: String,
-    @Json(name = "Municipio")
+    @SerialName("Municipio")
     val municipality: String,
-    @Json(name = "Precio Biodiesel")
+    @SerialName("Precio Biodiesel")
     val priceBiodiesel: String,
-    @Json(name = "Precio Bioetanol")
+    @SerialName("Precio Bioetanol")
     val priceBioEthanol: String,
-    @Json(name = "Precio Gas Natural Comprimido")
+    @SerialName("Precio Gas Natural Comprimido")
     val priceGasNaturalCompressed: String,
-    @Json(name = "Precio Gas Natural Licuado")
+    @SerialName("Precio Gas Natural Licuado")
     val priceLiquefiedNaturalGas: String,
-    @Json(name = "Precio Gases licuados del petróleo")
+    @SerialName("Precio Gases licuados del petróleo")
     val priceLiquefiedPetroleumGas: String,
-    @Json(name = "Precio Gasoleo A")
+    @SerialName("Precio Gasoleo A")
     val priceGasoilA: String,
-    @Json(name = "Precio Gasoleo B")
+    @SerialName("Precio Gasoleo B")
     val priceGasoilB: String,
-    @Json(name = "Precio Gasoleo Premium")
+    @SerialName("Precio Gasoleo Premium")
     val priceGasoilPremium: String,
-    @Json(name = "Precio Gasolina 95 E10")
+    @SerialName("Precio Gasolina 95 E10")
     val priceGasoline95E10: String,
-    @Json(name = "Precio Gasolina 95 E5")
+    @SerialName("Precio Gasolina 95 E5")
     val priceGasoline95E5: String,
-    @Json(name = "Precio Gasolina 95 E5 Premium")
+    @SerialName("Precio Gasolina 95 E5 Premium")
     val priceGasoline95E5Premium: String,
-    @Json(name = "Precio Gasolina 98 E10")
+    @SerialName("Precio Gasolina 98 E10")
     val priceGasoline98E10: String,
-    @Json(name = "Precio Gasolina 98 E5")
+    @SerialName("Precio Gasolina 98 E5")
     val priceGasoline98E5: String,
-    @Json(name = "Precio Hidrogeno")
+    @SerialName("Precio Hidrogeno")
     val priceHydrogen: String,
-    @Json(name = "Precio Adblue")
+    @SerialName("Precio Adblue")
     val priceAdblue: String,
-    @Json(name = "Provincia")
+    @SerialName("Provincia")
     val province: String,
-    @Json(name = "Remisión")
+    @SerialName("Remisión")
     val referral: String,
-    @Json(name = "Rótulo")
+    @SerialName("Rótulo")
     val brandStation: String,
-    @Json(name = "Tipo Venta")
-    val typeSale: String
+    @SerialName("Tipo Venta")
+    val typeSale: String,
 )

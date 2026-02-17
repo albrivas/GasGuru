@@ -1,44 +1,44 @@
 package com.gasguru.core.network.request
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class RequestRoute(
-    @Json(name = "destination")
+    @SerialName("destination")
     val destination: RequestDestination,
-    @Json(name = "origin")
+    @SerialName("origin")
     val origin: RequestOrigin,
-    @Json(name = "travelMode")
+    @SerialName("travelMode")
     val travelMode: String,
-    @Json(name = "languageCode")
+    @SerialName("languageCode")
     val languageCode: String,
-    @Json(name = "computeAlternativeRoutes")
-    val computeAlternativeRoutes: String
+    @SerialName("computeAlternativeRoutes")
+    val computeAlternativeRoutes: String,
 )
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class RequestDestination(
-    @Json(name = "location")
-    val location: RequestLocation
+    @SerialName("location")
+    val location: RequestLocation,
 )
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class RequestLatLng(
-    @Json(name = "latitude")
+    @SerialName("latitude")
     val latitude: Double,
-    @Json(name = "longitude")
-    val longitude: Double
+    @SerialName("longitude")
+    val longitude: Double,
 )
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class RequestOrigin(
-    @Json(name = "location")
-    val location: RequestLocation
+    @SerialName("location")
+    val location: RequestLocation,
 )
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class RequestLocation(
-    @Json(name = "latLng")
-    val latLng: RequestLatLng
+    @SerialName("latLng")
+    val latLng: RequestLatLng,
 )

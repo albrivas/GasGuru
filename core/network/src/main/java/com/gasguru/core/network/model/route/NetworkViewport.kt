@@ -1,12 +1,12 @@
 package com.gasguru.core.network.model.route
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class NetworkViewport(
-    @Json(name = "high")
+    @SerialName("high")
     val high: NetworkHigh,
-    @Json(name = "low")
-    val low: NetworkLow
+    @SerialName("low")
+    val low: NetworkLow,
 )
