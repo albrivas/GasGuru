@@ -1,44 +1,35 @@
 package com.gasguru.core.network.mockwebserver
 
-import com.gasguru.core.network.retrofit.ApiService
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import okhttp3.OkHttpClient
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
+import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.json.Json
 import okhttp3.mockwebserver.MockWebServer
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.concurrent.TimeUnit
 
 class NetworkModuleTest {
 
     val mockWebServer: MockWebServer = MockWebServer()
 
-    val apiService: ApiService
-        get() = retrofitTest.create(ApiService::class.java)
-
-    private val endPoint: String
-        get() = "/"
-
-    private val moshi: Moshi
-        get() {
-            val moshiBuilder = Moshi.Builder()
-                .add(KotlinJsonAdapterFactory())
-            return moshiBuilder.build()
+    val httpClient: HttpClient
+        get() = HttpClient(OkHttp) {
+            install(ContentNegotiation) {
+                json(Json {
+                    ignoreUnknownKeys = true
+                    isLenient = true
+                })
+            }
+            engine {
+                config {
+                    readTimeout(1, TimeUnit.SECONDS)
+                    connectTimeout(1, TimeUnit.SECONDS)
+                    retryOnConnectionFailure(false)
+                }
+            }
+            defaultRequest {
+                url(mockWebServer.url("/").toString())
+            }
         }
-
-    private val okHttpClient: OkHttpClient
-        get() {
-            val builder = OkHttpClient.Builder()
-            builder.readTimeout(1, TimeUnit.SECONDS)
-            builder.connectTimeout(1, TimeUnit.SECONDS)
-            builder.retryOnConnectionFailure(false)
-            return builder.build()
-        }
-
-    private val retrofitTest: Retrofit
-        get() = Retrofit.Builder()
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .baseUrl(mockWebServer.url(endPoint))
-            .client(okHttpClient)
-            .build()
 }

@@ -24,7 +24,7 @@ class RemoteDataSourceTest {
     fun setUp() {
         server = networkModule.mockWebServer
         server.start()
-        sut = RemoteDataSourceImp(networkModule.apiService)
+        sut = RemoteDataSourceImp(networkModule.httpClient)
         mockApi = MockApiResponse()
     }
 
