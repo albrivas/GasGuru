@@ -11,38 +11,47 @@ import com.gasguru.core.network.request.RequestLatLng
 import com.gasguru.core.network.request.RequestLocation
 import com.gasguru.core.network.request.RequestOrigin
 import com.gasguru.core.network.request.RequestRoute
-import com.gasguru.core.network.retrofit.RouteApiServices
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import javax.inject.Inject
 
 class RoutesDataSourceImpl @Inject constructor(
-    @RouteApi private val routeApiServices: RouteApiServices,
+    @RouteApi private val httpClient: HttpClient,
 ) : RoutesDataSource {
+
     override suspend fun getRoute(
         origin: NetworkLatLng,
         destination: NetworkLatLng,
     ): Either<NetworkError, NetworkRoutes> = tryCall {
-        routeApiServices.routes(
-            RequestRoute(
-                origin = RequestOrigin(
-                    location = RequestLocation(
-                        RequestLatLng(
-                            origin.latitude,
-                            origin.longitude
-                        )
-                    )
-                ),
-                destination = RequestDestination(
-                    location = RequestLocation(
-                        RequestLatLng(
-                            destination.latitude,
-                            destination.longitude
-                        )
-                    )
-                ),
-                travelMode = "DRIVE",
-                languageCode = "es-ES",
-                computeAlternativeRoutes = "false"
+        httpClient.post("directions/v2:computeRoutes") {
+            contentType(ContentType.Application.Json)
+            setBody(
+                RequestRoute(
+                    origin = RequestOrigin(
+                        location = RequestLocation(
+                            latLng = RequestLatLng(
+                                latitude = origin.latitude,
+                                longitude = origin.longitude,
+                            ),
+                        ),
+                    ),
+                    destination = RequestDestination(
+                        location = RequestLocation(
+                            latLng = RequestLatLng(
+                                latitude = destination.latitude,
+                                longitude = destination.longitude,
+                            ),
+                        ),
+                    ),
+                    travelMode = "DRIVE",
+                    languageCode = "es-ES",
+                    computeAlternativeRoutes = "false",
+                )
             )
-        )
+        }.body()
     }
 }
