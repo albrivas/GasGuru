@@ -58,7 +58,6 @@ playReview = "2.0.1"
 sonar="7.2.2.6593"
 stabilityAnalizer="0.6.6"
 ktor = "3.4.0"
-buildkonfig = "0.15.2"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
@@ -152,7 +151,6 @@ room-gradlePlugin = { group = "androidx.room", name = "room-gradle-plugin", vers
 secrets-gradlePlugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "secrets" }
 detekt-gradlePlugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 sonarqube-gradlePlugin = { module = "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin", version.ref = "sonar" }
-buildkonfig-gradlePlugin = { module = "com.codingfeline.buildkonfig:buildkonfig-gradle-plugin", version.ref = "buildkonfig" }
 
 [bundles]
 com-squareup-retrofit2 = [
@@ -201,4 +199,3 @@ gasguru-jacoco = { id = "gasguru.jacoco" }
 gasguru-secrets-google = { id = "gasguru.secrets.google" }
 gasguru-proguard = { id = "gasguru.proguard" }
 gasguru-sonar = { id = "gasguru.sonar" }
-buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
