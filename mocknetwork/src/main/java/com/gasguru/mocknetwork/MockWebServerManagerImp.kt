@@ -2,56 +2,56 @@ package com.gasguru.mocknetwork
 
 import android.content.Context
 import com.gasguru.core.common.IoDispatcher
-import com.gasguru.core.network.retrofit.ApiService
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respond
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.headersOf
+import io.ktor.serialization.kotlinx.json.json
+import io.ktor.utils.io.ByteReadChannel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class MockWebServerManagerImp @Inject constructor(
     @ApplicationContext private val context: Context,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : MockWebServerManager {
 
-    private val mockWebServer: MockWebServer by lazy {
-        MockWebServer().apply { start() }
+    private val pendingResponses = ArrayDeque<Pair<String, Int>>()
+
+    private val engine = MockEngine { _ ->
+        val (body, code) = pendingResponses.removeFirst()
+        respond(
+            content = ByteReadChannel(body),
+            status = HttpStatusCode.fromValue(code),
+            headers = headersOf(HttpHeaders.ContentType, "application/json"),
+        )
     }
 
-    override val apiService: ApiService by lazy {
-        val baseUrl = mockWebServer.url("/").toString()
-        Retrofit.Builder()
-            .baseUrl(baseUrl)
-            .addConverterFactory(MoshiConverterFactory.create())
-            .client(OkHttpClient.Builder().build())
-            .build()
-            .create(ApiService::class.java)
+    override val httpClient: HttpClient = HttpClient(engine) {
+        install(ContentNegotiation) {
+            json(Json {
+                ignoreUnknownKeys = true
+                isLenient = true
+            })
+        }
     }
 
     override suspend fun enqueueResponse(assetFileName: String, responseCode: Int) {
         val json = withContext(ioDispatcher) {
-            readAssetFile(assetFileName)
+            context.assets.open(assetFileName).bufferedReader().use { it.readText() }
         }
-
-        val mockResponse = MockResponse()
-            .setResponseCode(responseCode)
-            .setBody(json)
-            .addHeader("Content-Type", "application/json")
-
-        mockWebServer.enqueue(mockResponse)
+        pendingResponses.addLast(json to responseCode)
     }
 
-    override fun shutdown() {
-        mockWebServer.shutdown()
-    }
-
-    private fun readAssetFile(fileName: String): String {
-        return context.assets.open(fileName).bufferedReader().use { it.readText() }
+    override fun close() {
+        httpClient.close()
     }
 }

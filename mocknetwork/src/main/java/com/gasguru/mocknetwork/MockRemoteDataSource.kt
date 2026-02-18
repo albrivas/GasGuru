@@ -5,6 +5,8 @@ import com.gasguru.core.network.common.tryCall
 import com.gasguru.core.network.datasource.RemoteDataSource
 import com.gasguru.core.network.model.NetworkError
 import com.gasguru.core.network.model.NetworkFuelStation
+import io.ktor.client.call.body
+import io.ktor.client.request.get
 import jakarta.inject.Inject
 
 class MockRemoteDataSource @Inject constructor(
@@ -13,8 +15,8 @@ class MockRemoteDataSource @Inject constructor(
     override suspend fun getListFuelStations(): Either<NetworkError, NetworkFuelStation> = tryCall {
         mockWebServerManager.enqueueResponse(
             assetFileName = "fuel-stations.json",
-            responseCode = 200
+            responseCode = 200,
         )
-        mockWebServerManager.apiService.listFuelStations()
+        mockWebServerManager.httpClient.get("fuel-stations").body()
     }
 }

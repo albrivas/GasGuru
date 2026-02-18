@@ -1,9 +1,9 @@
 package com.gasguru.mocknetwork
 
-import com.gasguru.core.network.retrofit.ApiService
+import io.ktor.client.HttpClient
 
 interface MockWebServerManager {
-    val apiService: ApiService
+    val httpClient: HttpClient
     suspend fun enqueueResponse(assetFileName: String, responseCode: Int)
-    fun shutdown()
+    fun close()
 }
