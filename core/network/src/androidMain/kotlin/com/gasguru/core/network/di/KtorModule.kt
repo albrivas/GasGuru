@@ -2,6 +2,10 @@ package com.gasguru.core.network.di
 
 import android.content.Context
 import com.gasguru.core.network.BuildConfig
+import com.gasguru.core.network.datasource.RemoteDataSource
+import com.gasguru.core.network.datasource.RemoteDataSourceImp
+import com.gasguru.core.network.datasource.RoutesDataSource
+import com.gasguru.core.network.datasource.RoutesDataSourceImpl
 import com.gasguru.core.network.routesPlugin
 import dagger.Module
 import dagger.Provides
@@ -77,4 +81,14 @@ object KtorModule {
             url(ROUTE_BASE_URL)
         }
     }
+
+    @Provides
+    @Singleton
+    fun provideRemoteDataSource(@FuelApi httpClient: HttpClient): RemoteDataSource =
+        RemoteDataSourceImp(httpClient = httpClient)
+
+    @Provides
+    @Singleton
+    fun provideRoutesDataSource(@RouteApi httpClient: HttpClient): RoutesDataSource =
+        RoutesDataSourceImpl(httpClient = httpClient)
 }

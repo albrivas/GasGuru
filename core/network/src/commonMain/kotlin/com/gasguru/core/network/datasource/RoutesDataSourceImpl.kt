@@ -2,7 +2,6 @@ package com.gasguru.core.network.datasource
 
 import arrow.core.Either
 import com.gasguru.core.network.common.tryCall
-import com.gasguru.core.network.di.RouteApi
 import com.gasguru.core.network.model.NetworkError
 import com.gasguru.core.network.model.route.NetworkLatLng
 import com.gasguru.core.network.model.route.NetworkRoutes
@@ -17,10 +16,9 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import javax.inject.Inject
 
-class RoutesDataSourceImpl @Inject constructor(
-    @RouteApi private val httpClient: HttpClient,
+class RoutesDataSourceImpl(
+    private val httpClient: HttpClient,
 ) : RoutesDataSource {
 
     override suspend fun getRoute(
