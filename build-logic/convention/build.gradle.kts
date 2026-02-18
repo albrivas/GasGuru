@@ -28,6 +28,7 @@ dependencies {
     compileOnly(libs.secrets.gradlePlugin)
     compileOnly(libs.detekt.gradlePlugin)
     compileOnly(libs.sonarqube.gradlePlugin)
+    compileOnly(libs.buildkonfig.gradlePlugin)
 }
 
 tasks {
