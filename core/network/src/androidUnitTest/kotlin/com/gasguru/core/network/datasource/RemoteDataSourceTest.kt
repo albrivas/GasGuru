@@ -1,10 +1,9 @@
 package com.gasguru.core.network.datasource
 
-import com.gasguru.core.network.mockwebserver.NetworkModuleTest
+import com.gasguru.core.network.mock.NetworkMockEngine
 import com.gasguru.core.network.stubs.MockApiResponse
 import com.gasguru.core.testing.CoroutinesTestExtension
 import kotlinx.coroutines.test.runTest
-import okhttp3.mockwebserver.MockWebServer
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -15,28 +14,25 @@ import org.junit.jupiter.api.extension.ExtendWith
 @ExtendWith(CoroutinesTestExtension::class)
 class RemoteDataSourceTest {
 
-    private val networkModule: NetworkModuleTest = NetworkModuleTest()
-    private lateinit var server: MockWebServer
+    private val mockEngine = NetworkMockEngine()
     private lateinit var sut: RemoteDataSourceImp
     private lateinit var mockApi: MockApiResponse
 
     @BeforeEach
     fun setUp() {
-        server = networkModule.mockWebServer
-        server.start()
-        sut = RemoteDataSourceImp(networkModule.httpClient)
+        sut = RemoteDataSourceImp(httpClient = mockEngine.httpClient)
         mockApi = MockApiResponse()
     }
 
     @AfterEach
     fun tearDown() {
-        server.shutdown()
+        mockEngine.close()
     }
 
     @Test
     @DisplayName("GIVEN server return success, WHEN fetching fuel stations, THEN result is right")
     fun fuelStationSuccess() = runTest {
-        server.enqueue(mockApi.listFuelStationOK())
+        mockEngine.enqueue(mockApi.listFuelStationOK())
 
         val actual = sut.getListFuelStations()
 
@@ -46,7 +42,7 @@ class RemoteDataSourceTest {
     @Test
     @DisplayName("GIVEN server return error, WHEN fetching fuel stations, THEN result is left")
     fun fuelStationError() = runTest {
-        server.enqueue(mockApi.listFuelStationKO())
+        mockEngine.enqueue(mockApi.listFuelStationKO())
 
         val actual = sut.getListFuelStations()
 
