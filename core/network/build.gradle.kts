@@ -1,9 +1,13 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.gasguru.kmp.library)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.gasguru.secrets.google)
     alias(libs.plugins.gasguru.proguard)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.buildkonfig)
 }
 
 android {
@@ -37,6 +41,20 @@ kotlin {
             implementation(libs.ktor.client.mock)
             implementation(kotlin("test"))
         }
+    }
+}
+
+val localProperties = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.exists()) load(file.inputStream())
+}
+
+buildkonfig {
+    packageName = "com.gasguru.core.network"
+    defaultConfigs {
+        buildConfigField(STRING, "googleApiKey", localProperties.getProperty("googleApiKey") ?: "")
+        buildConfigField(STRING, "sha1Debug", localProperties.getProperty("sha1Debug") ?: "")
+        buildConfigField(STRING, "sha1PlayStore", localProperties.getProperty("sha1PlayStore") ?: "")
     }
 }
 

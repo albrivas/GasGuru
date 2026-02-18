@@ -76,7 +76,7 @@ object KtorModule {
         install(Logging) {
             level = if (BuildConfig.DEBUG) LogLevel.BODY else LogLevel.NONE
         }
-        install(routesPlugin(packageName = context.packageName))
+        install(routesPlugin(packageName = context.packageName, isDebug = BuildConfig.DEBUG))
         defaultRequest {
             url(ROUTE_BASE_URL)
         }
