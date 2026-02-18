@@ -83,5 +83,9 @@ gradlePlugin {
             id = libs.plugins.gasguru.sonar.get().pluginId
             implementationClass = "SonarConventionPlugin"
         }
+        register("kmpLibrary") {
+            id = libs.plugins.gasguru.kmp.library.get().pluginId
+            implementationClass = "KmpLibraryConventionPlugin"
+        }
     }
 }
