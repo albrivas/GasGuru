@@ -79,3 +79,18 @@ Usa mocks si:
 - Usa `Turbine` para flujos.
 - Inyecta repositorios fake.
 - Verifica estado y efectos (llamadas registradas en fakes).
+
+## Dependency Injection en tests
+
+Los tests unitarios de ViewModel **no requieren Koin**. Se instancian los ViewModels directamente pasando fakes por constructor:
+
+```kotlin
+private val sut = MyViewModel(
+    myUseCase = FakeMyRepository(),
+    ioDispatcher = UnconfinedTestDispatcher(),
+)
+```
+
+Para tests de integración que necesiten el grafo completo, usar `koin-test-junit5` (disponible via `projects.core.testing`) con `KoinTest` y `checkModules()`.
+
+Ver [DEPENDENCY_INJECTION.md](DEPENDENCY_INJECTION.md) para detalles sobre la arquitectura DI.
