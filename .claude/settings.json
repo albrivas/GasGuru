@@ -14,7 +14,21 @@
       "Bash(git fetch:*)",
       "Bash(cat:*)",
       "Bash(git merge:*)",
-      "Bash(git branch:*)"
+      "Bash(git branch:*)",
+      "Bash(find:*)",
+      "Bash(for:*)",
+      "Bash(do)",
+      "Bash(if [ -f \"/Users/albertorivas/Documents/Proyectos/Personal/GasGuru/$module/build.gradle.kts\" ])",
+      "Bash(then)",
+      "Bash(echo:*)",
+      "Bash(fi)"
     ]
-  }
+  },
+
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "teammateMode": "tmux"
 }
+
+
