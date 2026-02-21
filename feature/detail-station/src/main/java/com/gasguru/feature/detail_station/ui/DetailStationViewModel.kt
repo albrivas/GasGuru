@@ -13,7 +13,6 @@ import com.gasguru.core.domain.maps.GetStaticMapUrlUseCase
 import com.gasguru.core.domain.places.GetAddressFromLocationUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.ui.mapper.toUiModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -24,10 +23,8 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class DetailStationViewModel @Inject constructor(
+class DetailStationViewModel constructor(
     savedStateHandle: SavedStateHandle,
     getFuelStationByIdUseCase: GetFuelStationByIdUseCase,
     getLastKnownLocationUseCase: GetLastKnownLocationUseCase,

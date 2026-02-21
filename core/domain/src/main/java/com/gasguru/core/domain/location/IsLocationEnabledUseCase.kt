@@ -2,9 +2,8 @@ package com.gasguru.core.domain.location
 
 import com.gasguru.core.data.repository.location.LocationTracker
 import kotlinx.coroutines.flow.Flow
-import javax.inject.Inject
 
-class IsLocationEnabledUseCase @Inject constructor(
+class IsLocationEnabledUseCase(
     private val locationTracker: LocationTracker
 ) {
     operator fun invoke(): Flow<Boolean> = locationTracker.isLocationEnabled

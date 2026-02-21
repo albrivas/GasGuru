@@ -1,13 +1,11 @@
 package com.gasguru.core.data.repository.stations
 
 import com.gasguru.core.common.CommonUtils.isStationOpen
-import com.gasguru.core.common.DefaultDispatcher
-import com.gasguru.core.common.IoDispatcher
 import com.gasguru.core.common.distanceTo
 import com.gasguru.core.data.mapper.asEntity
 import com.gasguru.core.data.mapper.calculateFuelPrices
 import com.gasguru.core.data.mapper.getPriceCategory
-import com.gasguru.core.data.repository.user.OfflineUserDataRepository
+import com.gasguru.core.data.repository.user.UserDataRepository
 import com.gasguru.core.database.dao.FavoriteStationDao
 import com.gasguru.core.database.dao.FuelStationDao
 import com.gasguru.core.database.dao.PriceAlertDao
@@ -32,15 +30,14 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.util.Locale
-import javax.inject.Inject
 import kotlin.math.cos
 
-class OfflineFuelStationRepository @Inject constructor(
+class OfflineFuelStationRepository constructor(
     private val fuelStationDao: FuelStationDao,
     private val remoteDataSource: RemoteDataSource,
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    private val offlineUserDataRepository: OfflineUserDataRepository,
+    private val defaultDispatcher: CoroutineDispatcher,
+    private val ioDispatcher: CoroutineDispatcher,
+    private val offlineUserDataRepository: UserDataRepository,
     private val favoriteStationDao: FavoriteStationDao,
     private val priceAlertDao: PriceAlertDao,
 ) : FuelStationRepository {

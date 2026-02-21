@@ -23,7 +23,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.ui.mapper.toFuelItem
 import com.gasguru.core.ui.mapper.toUiModel
@@ -39,10 +38,11 @@ import com.gasguru.feature.onboarding_welcome.viewmodel.OnboardingUiState
 import com.gasguru.feature.onboarding_welcome.viewmodel.OnboardingViewModel
 import com.gasguru.navigation.LocalNavigationManager
 import com.gasguru.navigation.manager.NavigationDestination
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 internal fun OnboardingFuelPreferencesRoute(
-    viewModel: OnboardingViewModel = hiltViewModel(),
+    viewModel: OnboardingViewModel = koinViewModel(),
 ) {
     val navigationManager = LocalNavigationManager.current
 

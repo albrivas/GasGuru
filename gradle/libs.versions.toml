@@ -4,11 +4,10 @@ kotlin = "2.3.0"
 androidx-room = "2.7.1"
 androidxActivity = "1.12.1"
 androidxComposeCompiler = "1.5.14"
-androidxComposeMaterial3 = "1.3.1"
+androidxComposeMaterial3 = "1.4.0"
 androidxComposeUi = "1.8.1"
 androidxCore = "1.17.0"
 androidxEspresso = "3.6.1"
-androidxHilt = "1.2.0"
 androidxLifecycle = "2.9.4"
 androidxNavigation = "2.9.6"
 androidxTestCore = "1.6.1"
@@ -19,7 +18,7 @@ com-squareup-retrofit2 = "2.11.0"
 coroutines = "1.10.2"
 firebase-bom = "34.1.0"
 firebase-crashlytics-gradle = "3.0.3"
-hilt = "2.58"
+koin = "4.1.1"
 junit = "4.13.2"
 kotlinxSerializationJson = "1.8.1"
 ksp = "2.3.3"
@@ -57,6 +56,7 @@ ktor = "3.3.1"
 playReview = "2.0.1"
 sonar="7.2.2.6593"
 stabilityAnalizer="0.6.6"
+arrow="2.0.1"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
@@ -68,7 +68,7 @@ androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", versi
 androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "androidxComposeUi" }
 androidx-compose-permission = { module = "com.google.accompanist:accompanist-permissions", version.ref = "googleAccompanist" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidxCore" }
-androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "androidxHilt" }
+
 androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "androidxLifecycle" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidxLifecycle" }
 androidx-lifecycle-runtimeCompose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidxLifecycle" }
@@ -87,11 +87,12 @@ com-squareup-retrofit2-retrofit = { module = "com.squareup.retrofit2:retrofit", 
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
-hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
-hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
-hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }
-hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
-io-arrow-kt-arrow-core = "io.arrow-kt:arrow-core:2.0.1"
+
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
+koin-test-junit5 = { module = "io.insert-koin:koin-test-junit5", version.ref = "koin" }
+io-arrow-kt-arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow"}
 junit = { module = "junit:junit", version.ref = "junit" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
@@ -164,7 +165,7 @@ testing = [
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 firebase-crashlitycs = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics-gradle" }
-hilt-gradle = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
@@ -181,7 +182,8 @@ stability-analyzer = { id = "com.github.skydoves.compose.stability.analyzer", ve
 
 gasguru-android-application = { id = "gasguru.android.application" }
 gasguru-android-library = { id = "gasguru.android.library" }
-gasguru-hilt = { id = "gasguru.hilt" }
+
+gasguru-koin = { id = "gasguru.koin" }
 gasguru-compose-library = { id = "gasguru.android.library.compose" }
 gasguru-room = { id = "gasguru.room" }
 gasguru-firebase = { id = "gasguru.firebase" }

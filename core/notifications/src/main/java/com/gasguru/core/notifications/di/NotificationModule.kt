@@ -2,17 +2,11 @@ package com.gasguru.core.notifications.di
 
 import com.gasguru.core.notifications.OneSignalManager
 import com.gasguru.core.notifications.OneSignalManagerImpl
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
+import com.gasguru.core.notifications.PushNotificationService
+import org.koin.android.ext.koin.androidContext
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-interface NotificationModule {
-
-    @Binds
-    fun bindOneSignalManager(
-        oneSignalManagerImpl: OneSignalManagerImpl,
-    ): OneSignalManager
+val notificationModule = module {
+    single<OneSignalManager> { OneSignalManagerImpl() }
+    single { PushNotificationService(context = androidContext()) }
 }
