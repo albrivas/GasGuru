@@ -4,15 +4,12 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Implementation of [NavigationManager].
  * Emits navigation commands through a SharedFlow that will be collected by the NavHost.
  */
-@Singleton
-class NavigationManagerImpl @Inject constructor() : NavigationManager {
+class NavigationManagerImpl : NavigationManager {
 
     private val _navigationFlow = MutableSharedFlow<NavigationCommand>(
         extraBufferCapacity = 10,
