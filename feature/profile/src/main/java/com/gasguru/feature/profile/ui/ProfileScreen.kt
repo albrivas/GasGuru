@@ -28,7 +28,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.common.CommonUtils.getAppVersion
 import com.gasguru.core.model.data.FuelType
@@ -52,11 +51,12 @@ import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.profile.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 import com.gasguru.core.ui.R as RUi
 import com.gasguru.core.uikit.R as RUikit
 
 @Composable
-internal fun ProfileScreenRoute(viewModel: ProfileViewModel = hiltViewModel()) {
+internal fun ProfileScreenRoute(viewModel: ProfileViewModel = koinViewModel()) {
     val state by viewModel.userData.collectAsStateWithLifecycle()
     return ProfileScreen(uiState = state, event = viewModel::handleEvents)
 }
@@ -197,14 +197,15 @@ fun FuelSelectionSheet(
 ) {
     ModalBottomSheet(
         modifier = Modifier
-            .testTag("bottom_sheet_fuel"),
+            .testTag("bottom_sheet_fuel")
+            .statusBarsPadding(),
         onDismissRequest = onDismiss,
         dragHandle = { DragHandle() },
         shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
         sheetState = sheetState,
         containerColor = GasGuruTheme.colors.neutral100,
         contentColor = GasGuruTheme.colors.neutral100,
-        contentWindowInsets = { WindowInsets.navigationBars }
+        contentWindowInsets = { WindowInsets.navigationBars },
     ) {
         Column(
             modifier = Modifier

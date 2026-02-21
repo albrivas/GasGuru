@@ -2,12 +2,11 @@ import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 
 plugins {
     alias(libs.plugins.gasguru.android.application)
-    alias(libs.plugins.gasguru.hilt)
+    alias(libs.plugins.gasguru.koin)
     alias(libs.plugins.gasguru.firebase)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.gms)
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.ksp)
     alias(libs.plugins.gasguru.flavors)
     alias(libs.plugins.gasguru.jacoco)
     alias(libs.plugins.gasguru.secrets.google)
@@ -86,8 +85,11 @@ dependencies {
     implementation(projects.core.uikit)
     implementation(projects.core.ui)
     implementation(projects.core.data)
+    implementation(projects.core.database)
     implementation(projects.core.domain)
     implementation(projects.core.common)
+    implementation(projects.core.components)
+    implementation(projects.core.supabase)
     implementation(projects.feature.onboarding)
     implementation(projects.feature.detailStation)
     implementation(projects.feature.favoriteListStation)
@@ -111,7 +113,7 @@ dependencies {
     // Arch Components
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.koin.androidx.compose)
 
     // Compose
     implementation(libs.androidx.compose.ui)

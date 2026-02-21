@@ -41,7 +41,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.model.data.RecentSearchQuery
 import com.gasguru.core.ui.RecentSearchQueriesUiState
@@ -63,11 +62,12 @@ import com.gasguru.navigation.constants.NavigationKeys
 import com.gasguru.navigation.manager.NavigationDestination
 import com.gasguru.navigation.models.PlaceArgs
 import com.gasguru.navigation.models.RoutePlanArgs
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun RoutePlannerScreenRoute(
     selectedPlaceId: PlaceArgs? = null,
-    viewModel: RoutePlannerViewModel = hiltViewModel(),
+    viewModel: RoutePlannerViewModel = koinViewModel(),
 ) {
     val navigationManager = LocalNavigationManager.current
     val recents by viewModel.recentSearchQueriesUiState.collectAsStateWithLifecycle()

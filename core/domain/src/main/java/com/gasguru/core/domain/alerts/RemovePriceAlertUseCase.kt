@@ -1,9 +1,8 @@
 package com.gasguru.core.domain.alerts
 
 import com.gasguru.core.data.repository.alerts.PriceAlertRepository
-import javax.inject.Inject
 
-class RemovePriceAlertUseCase @Inject constructor(
+class RemovePriceAlertUseCase(
     private val priceAlertRepository: PriceAlertRepository,
 ) {
     suspend operator fun invoke(stationId: Int): Unit =

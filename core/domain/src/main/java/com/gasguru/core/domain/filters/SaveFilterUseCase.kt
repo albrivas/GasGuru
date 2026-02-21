@@ -2,9 +2,8 @@ package com.gasguru.core.domain.filters
 
 import com.gasguru.core.data.repository.filter.FilterRepository
 import com.gasguru.core.model.data.FilterType
-import javax.inject.Inject
 
-class SaveFilterUseCase @Inject constructor(
+class SaveFilterUseCase(
     private val filterRepository: FilterRepository,
 ) {
     suspend operator fun invoke(filterType: FilterType, selection: List<String>): Unit =

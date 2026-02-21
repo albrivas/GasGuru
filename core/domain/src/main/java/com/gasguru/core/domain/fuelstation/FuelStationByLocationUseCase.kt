@@ -1,14 +1,13 @@
 package com.gasguru.core.domain.fuelstation
 
-import com.gasguru.core.data.repository.stations.OfflineFuelStationRepository
+import com.gasguru.core.data.repository.stations.FuelStationRepository
 import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.OpeningHours
 import kotlinx.coroutines.flow.Flow
-import javax.inject.Inject
 
-class FuelStationByLocationUseCase @Inject constructor(
-    private val repository: OfflineFuelStationRepository,
+class FuelStationByLocationUseCase(
+    private val repository: FuelStationRepository,
 ) {
     operator fun invoke(
         userLocation: LatLng,

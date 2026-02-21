@@ -34,7 +34,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.uikit.components.GasGuruButton
 import com.gasguru.core.uikit.theme.GasGuruTheme
@@ -43,10 +42,11 @@ import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.onboarding.R
 import com.gasguru.feature.onboarding_welcome.viewmodel.NewOnboardingUiState
 import com.gasguru.feature.onboarding_welcome.viewmodel.NewOnboardingViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun NewOnboardingScreenRoute(
-    viewModel: NewOnboardingViewModel = hiltViewModel(),
+    viewModel: NewOnboardingViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
