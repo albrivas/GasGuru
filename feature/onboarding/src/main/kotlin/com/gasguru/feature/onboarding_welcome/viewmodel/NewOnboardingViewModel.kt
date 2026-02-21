@@ -5,15 +5,12 @@ import com.gasguru.feature.onboarding_welcome.ui.NewOnboardingEvent
 import com.gasguru.feature.onboarding_welcome.ui.OnboardingPageUiModel
 import com.gasguru.navigation.manager.NavigationDestination
 import com.gasguru.navigation.manager.NavigationManager
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import javax.inject.Inject
 
-@HiltViewModel
-class NewOnboardingViewModel @Inject constructor(
+class NewOnboardingViewModel constructor(
     private val navigationManager: NavigationManager,
 ) : ViewModel() {
 

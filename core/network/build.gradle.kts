@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.gasguru.android.library)
-    alias(libs.plugins.gasguru.hilt)
+    alias(libs.plugins.gasguru.koin)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.gasguru.secrets.google)
     alias(libs.plugins.gasguru.proguard)
@@ -17,6 +18,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.common)
     implementation(libs.bundles.moshi)
     ksp(libs.moshi.codegen)
     implementation(libs.bundles.com.squareup.retrofit2)

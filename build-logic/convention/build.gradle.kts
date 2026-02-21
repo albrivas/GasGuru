@@ -51,9 +51,9 @@ gradlePlugin {
             id = libs.plugins.gasguru.android.library.get().pluginId
             implementationClass = "AndroidLibraryConventionPlugin"
         }
-        register("hilt") {
-            id = libs.plugins.gasguru.hilt.get().pluginId
-            implementationClass = "HiltConventionPlugin"
+        register("koin") {
+            id = libs.plugins.gasguru.koin.get().pluginId
+            implementationClass = "KoinConventionPlugin"
         }
         register("room") {
             id = libs.plugins.gasguru.room.get().pluginId
