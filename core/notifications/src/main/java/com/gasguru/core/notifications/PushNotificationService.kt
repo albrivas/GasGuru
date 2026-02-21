@@ -5,14 +5,10 @@ import android.content.Intent
 import com.onesignal.OneSignal
 import com.onesignal.notifications.INotificationClickEvent
 import com.onesignal.notifications.INotificationClickListener
-import dagger.hilt.android.qualifiers.ApplicationContext
 import org.json.JSONObject
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class PushNotificationService @Inject constructor(
-    @ApplicationContext private val context: Context,
+class PushNotificationService(
+    private val context: Context,
 ) {
 
     companion object {

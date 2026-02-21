@@ -1,12 +1,10 @@
 package com.gasguru.core.network
 
 import android.content.Context
-import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.Interceptor
-import javax.inject.Inject
 
-class RoutesInterceptor @Inject constructor(
-    @ApplicationContext private val context: Context
+class RoutesInterceptor(
+    private val context: Context,
 ) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): okhttp3.Response {

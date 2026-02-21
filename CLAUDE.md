@@ -107,11 +107,13 @@ gh pr create --base main --title "Release - vX.X.X" --body ""
 |------|-------------|
 | [Adding Fuel Types](docs/ADDING_FUEL_TYPE.md) | Guía para añadir nuevos tipos de combustible |
 | [CI/CD](docs/CICD.md) | Integración y despliegue continuo |
+| [Dependency Injection](docs/DEPENDENCY_INJECTION.md) | Arquitectura DI con Koin, equivalencias con Hilt, guía para añadir dependencias |
 | [GitFlow](docs/GITFLOW.md) | Estrategia de branching y flujo de trabajo |
 | [JaCoCo](docs/JACOCO.md) | Reportes de cobertura de código |
 | [Navigation](docs/NAVIGATION.md) | Arquitectura de navegación |
 | [Obfuscation](docs/OBFUSCATION.md) | Configuración de ofuscación de código |
 | [Price Alerts](docs/PRICE_ALERTS.md) | Funcionalidad de alertas de precio |
 | [Recomposition Optimizations](docs/RECOMPOSITION_OPTIMIZATIONS.md) | Optimizaciones de recomposición en Compose |
+| [Room KMP](docs/ROOM_KMP.md) | Guía de migración de core/database a Room KMP |
 | [Testing](docs/TESTING.md) | Estrategia y guías de testing |
 | [UI Mappers](docs/UI_MAPPERS.md) | Arquitectura de mappers UI |
