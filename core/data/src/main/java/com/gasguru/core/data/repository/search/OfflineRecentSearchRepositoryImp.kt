@@ -6,7 +6,7 @@ import com.gasguru.core.database.model.RecentSearchQueryEntity
 import com.gasguru.core.model.data.RecentSearchQuery
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-class OfflineRecentSearchRepositoryImp constructor(
+class OfflineRecentSearchRepositoryImp(
     private val recentSearchQueryDao: RecentSearchQueryDao,
 ) : OfflineRecentSearchRepository {
     override fun getRecentSearchQueries(limit: Int): Flow<List<RecentSearchQuery>> =

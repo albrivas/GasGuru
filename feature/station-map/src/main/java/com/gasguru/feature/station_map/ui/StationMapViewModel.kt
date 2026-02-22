@@ -37,7 +37,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class StationMapViewModel constructor(
+class StationMapViewModel(
     private val fuelStationByLocation: FuelStationByLocationUseCase,
     private val getUserDataUseCase: GetUserDataUseCase,
     private val getLocationPlaceUseCase: GetLocationPlaceUseCase,

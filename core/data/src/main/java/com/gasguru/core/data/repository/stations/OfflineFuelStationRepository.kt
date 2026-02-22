@@ -32,7 +32,7 @@ import kotlinx.coroutines.launch
 import java.util.Locale
 import kotlin.math.cos
 
-class OfflineFuelStationRepository constructor(
+class OfflineFuelStationRepository(
     private val fuelStationDao: FuelStationDao,
     private val remoteDataSource: RemoteDataSource,
     private val defaultDispatcher: CoroutineDispatcher,

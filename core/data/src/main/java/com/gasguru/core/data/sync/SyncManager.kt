@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
-class SyncManager constructor(
+class SyncManager(
     private val networkMonitor: NetworkMonitor,
     private val priceAlertRepository: PriceAlertRepository,
     private val scope: CoroutineScope,
