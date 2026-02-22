@@ -9,7 +9,7 @@ import com.gasguru.core.domain.fuelstation.SaveFuelSelectionUseCase
 import com.gasguru.core.model.data.FuelType
 import kotlinx.coroutines.launch
 
-class OnboardingViewModel constructor(
+class OnboardingViewModel(
     private val saveFuelSelectionUseCase: SaveFuelSelectionUseCase
 ) : ViewModel() {
 

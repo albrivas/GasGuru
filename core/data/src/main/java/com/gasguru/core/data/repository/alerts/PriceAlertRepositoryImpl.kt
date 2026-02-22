@@ -8,7 +8,7 @@ import com.gasguru.core.database.model.PriceAlertEntity
 import com.gasguru.core.notifications.OneSignalManager
 import com.gasguru.core.supabase.SupabaseManager
 import kotlinx.coroutines.flow.first
-class PriceAlertRepositoryImpl constructor(
+class PriceAlertRepositoryImpl(
     private val priceAlertDao: PriceAlertDao,
     private val supabaseManager: SupabaseManager,
     private val networkMonitor: NetworkMonitor,

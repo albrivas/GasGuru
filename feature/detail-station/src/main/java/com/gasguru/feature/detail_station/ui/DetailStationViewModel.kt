@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class DetailStationViewModel constructor(
+class DetailStationViewModel(
     savedStateHandle: SavedStateHandle,
     getFuelStationByIdUseCase: GetFuelStationByIdUseCase,
     getLastKnownLocationUseCase: GetLastKnownLocationUseCase,

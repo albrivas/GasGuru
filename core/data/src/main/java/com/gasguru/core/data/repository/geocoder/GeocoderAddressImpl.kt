@@ -16,7 +16,7 @@ import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.util.Locale
 
-class GeocoderAddressImpl constructor(
+class GeocoderAddressImpl(
     private val context: Context,
     private val ioDispatcher: CoroutineDispatcher,
 ) : GeocoderAddress {

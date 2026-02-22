@@ -8,7 +8,7 @@ import com.gasguru.core.model.data.FilterType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
-class FilterRepositoryImpl constructor(
+class FilterRepositoryImpl(
     private val dao: FilterDao,
 ) : FilterRepository {
     override val getFilters: Flow<List<Filter>>
