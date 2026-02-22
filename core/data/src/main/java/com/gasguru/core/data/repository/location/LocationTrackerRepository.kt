@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 
-class LocationTrackerRepository constructor(
+class LocationTrackerRepository(
     private val locationClient: FusedLocationProviderClient,
     private val context: Context,
 ) : LocationTracker {

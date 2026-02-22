@@ -2,7 +2,7 @@ package com.gasguru.core.data.repository.maps
 
 import com.gasguru.core.model.data.LatLng
 
-class GoogleStaticMapRepository constructor(
+class GoogleStaticMapRepository(
     private val apiKey: String,
 ) : StaticMapRepository {
 

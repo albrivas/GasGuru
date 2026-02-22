@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class FavoriteListStationViewModel constructor(
+class FavoriteListStationViewModel(
     private val getUserDataUseCase: GetUserDataUseCase,
     private val getFavoriteStationsUseCase: GetFavoriteStationsUseCase,
     getLastKnownLocationUseCase: GetLastKnownLocationUseCase,

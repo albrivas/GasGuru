@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.flowOn
 
-class ConnectivityManagerNetworkMonitor constructor(
+class ConnectivityManagerNetworkMonitor(
     private val context: Context,
     private val ioDispatcher: CoroutineDispatcher,
 ) : NetworkMonitor {

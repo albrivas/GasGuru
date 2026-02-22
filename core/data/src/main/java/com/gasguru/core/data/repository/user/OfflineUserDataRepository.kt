@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
-class OfflineUserDataRepository constructor(
+class OfflineUserDataRepository(
     private val userDataDao: UserDataDao,
     private val favoriteStationDao: FavoriteStationDao,
 ) : UserDataRepository {

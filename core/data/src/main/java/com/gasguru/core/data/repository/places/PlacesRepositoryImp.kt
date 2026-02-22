@@ -6,7 +6,7 @@ import com.gasguru.core.model.data.SearchPlace
 import com.gasguru.core.network.datasource.PlacesDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-class PlacesRepositoryImp constructor(
+class PlacesRepositoryImp(
     private val placesDataSource: PlacesDataSource
 ) : PlacesRepository {
     override fun getPlaces(query: String): Flow<List<SearchPlace>> =
