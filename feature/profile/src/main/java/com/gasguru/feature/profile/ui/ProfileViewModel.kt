@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import okhttp3.internal.toImmutableList
 
-class ProfileViewModel constructor(
+class ProfileViewModel(
     getUserData: GetUserDataUseCase,
     private val saveFuelSelectionUseCase: SaveFuelSelectionUseCase,
     private val saveThemeModeUseCase: SaveThemeModeUseCase,

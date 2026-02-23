@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 private const val SEARCH_QUERY = "searchQuery"
 private const val SEARCH_QUERY_MIN_LENGTH = 2
 
-class GasGuruSearchBarViewModel constructor(
+class GasGuruSearchBarViewModel(
     private val savedStateHandle: SavedStateHandle,
     private val getPlacesUseCase: GetPlacesUseCase,
     private val clearRecentSearchQueriesUseCase: ClearRecentSearchQueriesUseCase,
