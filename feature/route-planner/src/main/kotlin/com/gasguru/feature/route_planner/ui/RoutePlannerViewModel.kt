@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class RoutePlannerViewModel constructor(
+class RoutePlannerViewModel(
     private val clearRecentSearchQueriesUseCase: ClearRecentSearchQueriesUseCase,
     getRecentSearchQueryUseCase: GetRecentSearchQueryUseCase,
 ) : ViewModel() {
