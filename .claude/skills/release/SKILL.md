@@ -57,9 +57,13 @@ description: Create a GasGuru release for store deployment. Use when the user as
    - Do NOT change `versionMajor` or `versionMinor` unless explicitly requested
 
 7. Update whatsnew files:
+   - These files appear in the **app store listing** — content must be user-facing (new features, UI changes, visible fixes). Never include technical changes (refactors, dependency updates, build infra, architecture changes).
+   - Review commits since last release and identify only user-facing changes.
+   - If there are no user-facing changes, use this generic message:
+     - EN: `- Bug fixes and performance improvements`
+     - ES: `- Corrección de errores y mejoras de rendimiento`
    - Add new changes at the TOP of the file (newest first)
    - Remove the LAST line(s) to keep max 4 lines per file
-   - Ask the user what changes to include if not provided
 
 8. Commit (no Claude references):
    ```bash
