@@ -2,6 +2,7 @@ package com.gasguru.feature.favorite_list_station.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -74,7 +76,8 @@ internal fun FavoriteListStationScreen(
             .fillMaxSize()
             .background(color = GasGuruTheme.colors.neutral100)
             .padding(horizontal = 16.dp)
-            .statusBarsPadding(),
+            .statusBarsPadding()
+            .pointerInput(Unit) { detectTapGestures { } }, // For overlay map
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         when (uiState) {
