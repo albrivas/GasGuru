@@ -21,6 +21,7 @@ dependencies {
     compileOnly(libs.android.gradlePlugin)
     compileOnly(libs.android.tools.common)
     compileOnly(libs.compose.gradlePlugin)
+    compileOnly(libs.compose.multiplatform.gradlePlugin)
     compileOnly(libs.firebase.crashlytics.gradlePlugin)
     compileOnly(libs.kotlin.gradlePlugin)
     compileOnly(libs.ksp.gradlePlugin)
@@ -82,6 +83,18 @@ gradlePlugin {
         register("sonar") {
             id = libs.plugins.gasguru.sonar.get().pluginId
             implementationClass = "SonarConventionPlugin"
+        }
+        register("kmpLibrary") {
+            id = libs.plugins.gasguru.kmp.library.get().pluginId
+            implementationClass = "KmpLibraryConventionPlugin"
+        }
+        register("kmpComposeLibrary") {
+            id = libs.plugins.gasguru.kmp.compose.library.get().pluginId
+            implementationClass = "KmpComposeLibraryConventionPlugin"
+        }
+        register("kmpRoom") {
+            id = libs.plugins.gasguru.kmp.room.get().pluginId
+            implementationClass = "KmpRoomConventionPlugin"
         }
     }
 }

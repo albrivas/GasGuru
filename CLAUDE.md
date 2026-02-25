@@ -117,3 +117,5 @@ gh pr create --base main --title "Release - vX.X.X" --body ""
 | [Room KMP](docs/ROOM_KMP.md) | Guía de migración de core/database a Room KMP |
 | [Testing](docs/TESTING.md) | Estrategia y guías de testing |
 | [UI Mappers](docs/UI_MAPPERS.md) | Arquitectura de mappers UI |
+| [KMP Migration Plan](docs/KMP_MIGRATION.md) | Plan de migración a Kotlin Multiplatform: fases, checklist y estrategia de testing |
+| [KMP Phase 0](docs/KMP_PHASE0.md) | Explicación detallada de la infraestructura de build creada en Phase 0: convention plugins, source sets, dependencias |
