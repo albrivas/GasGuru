@@ -23,9 +23,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -57,15 +55,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.core.content.ContextCompat
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -125,13 +119,14 @@ import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 import com.gasguru.core.uikit.R as RUikit
 
 @Composable
 fun StationMapScreenRoute(
     routePlanner: RoutePlanArgs?,
     onRoutePlanConsumed: () -> Unit = {},
-    viewModel: StationMapViewModel = hiltViewModel(),
+    viewModel: StationMapViewModel = koinViewModel(),
 ) {
     val context = LocalContext.current
     val navigationManager = LocalNavigationManager.current
@@ -285,8 +280,6 @@ internal fun StationMapScreen(
     var isSearchActive by remember { mutableStateOf(false) }
     val isRouteActive = route != null || (loading && routeDestinationName != null)
 
-    val maxHeightSheetDp = calculateMaxSheetHeight(peekHeight = peekHeight)
-
     LaunchedEffect(mapBounds, shouldCenterMap) {
         if (mapBounds != null && shouldCenterMap) {
             cameraState.centerOnMap(bounds = mapBounds, padding = 60)
@@ -328,8 +321,7 @@ internal fun StationMapScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
-                    .heightIn(max = maxHeightSheetDp),
+                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Row(
@@ -761,20 +753,6 @@ fun ShowFilterSheet(
             )
         }
     }
-}
-
-@Composable
-internal fun calculateMaxSheetHeight(peekHeight: Dp): Dp {
-    val windowInfo = LocalWindowInfo.current
-    val density = LocalDensity.current
-    val systemBarsHeight = WindowInsets.systemBars.asPaddingValues().let {
-        it.calculateTopPadding() + it.calculateBottomPadding()
-    }
-    val appNavigationBarHeight = 80.dp
-
-    return with(density) {
-        windowInfo.containerSize.height.toDp()
-    } - systemBarsHeight - appNavigationBarHeight - peekHeight
 }
 
 @Composable

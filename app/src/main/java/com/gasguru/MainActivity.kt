@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
@@ -29,20 +28,22 @@ import com.gasguru.navigation.manager.NavigationManager
 import com.gasguru.navigation.navigationbar.route.NavigationBarRoute
 import com.gasguru.ui.GasGuruApp
 import com.gasguru.ui.rememberGasGuruAppState
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val viewModel: SplashViewModel by viewModels()
+    private val viewModel: SplashViewModel by viewModel()
     private var returnedFromBackground = false
 
-    @Inject
-    lateinit var networkMonitor: NetworkMonitor
+    private val networkMonitor: NetworkMonitor by inject()
+    private val isLocationEnabledUseCase: IsLocationEnabledUseCase by inject()
+    private val getUserDataUseCase: GetUserDataUseCase by inject()
+    private val navigationManager: NavigationManager by inject()
+    private val deepLinkStateHolder: DeepLinkStateHolder by inject()
 
     @Inject
     lateinit var isLocationEnabledUseCase: IsLocationEnabledUseCase

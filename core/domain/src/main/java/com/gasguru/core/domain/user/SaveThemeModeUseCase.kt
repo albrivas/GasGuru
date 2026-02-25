@@ -2,9 +2,8 @@ package com.gasguru.core.domain.user
 
 import com.gasguru.core.data.repository.user.UserDataRepository
 import com.gasguru.core.model.data.ThemeMode
-import javax.inject.Inject
 
-class SaveThemeModeUseCase @Inject constructor(
+class SaveThemeModeUseCase(
     private val userDataRepository: UserDataRepository,
 ) {
     suspend operator fun invoke(themeMode: ThemeMode): Unit =

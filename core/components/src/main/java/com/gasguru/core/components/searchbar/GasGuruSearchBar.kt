@@ -32,7 +32,6 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.components.R
 import com.gasguru.core.components.searchbar.state.GasGuruSearchBarEvent
@@ -52,11 +51,12 @@ import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.core.uikit.utils.maestroTestTag
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun GasGuruSearchBar(
     model: GasGuruSearchBarModel,
-    viewModel: GasGuruSearchBarViewModel = hiltViewModel(),
+    viewModel: GasGuruSearchBarViewModel = koinViewModel(),
 ) {
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val searchResultUiState by viewModel.searchResultUiState.collectAsStateWithLifecycle()

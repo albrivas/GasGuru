@@ -10,9 +10,8 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
-import javax.inject.Inject
 
-class PlacesDataSourceImp @Inject constructor(
+class PlacesDataSourceImp(
     private val placesClient: PlacesClient,
 ) : PlacesDataSource {
     override fun getPlaces(query: String, countryCode: String): Flow<List<AutocompletePrediction>> =

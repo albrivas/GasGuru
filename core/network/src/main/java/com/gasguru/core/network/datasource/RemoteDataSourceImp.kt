@@ -6,10 +6,9 @@ import com.gasguru.core.network.di.FuelApi
 import com.gasguru.core.network.model.NetworkError
 import com.gasguru.core.network.model.NetworkFuelStation
 import com.gasguru.core.network.retrofit.ApiService
-import javax.inject.Inject
 
-class RemoteDataSourceImp @Inject constructor(
-    @FuelApi private val api: ApiService
+class RemoteDataSourceImp(
+    private val api: ApiService,
 ) : RemoteDataSource {
 
     override suspend fun getListFuelStations(): Either<NetworkError, NetworkFuelStation> = tryCall {

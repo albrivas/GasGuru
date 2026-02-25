@@ -1,11 +1,8 @@
 package com.gasguru.core.notifications
 
 import com.onesignal.OneSignal
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class OneSignalManagerImpl @Inject constructor() : OneSignalManager {
+class OneSignalManagerImpl : OneSignalManager {
 
     companion object {
         private const val ENABLE_STATIONS_ALERTS = "enable_stations_alerts"
