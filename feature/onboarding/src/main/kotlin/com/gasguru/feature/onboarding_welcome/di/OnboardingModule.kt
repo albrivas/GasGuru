@@ -1,5 +1,6 @@
 package com.gasguru.feature.onboarding_welcome.di
 
+import com.gasguru.feature.onboarding_welcome.viewmodel.CapacityTankViewModel
 import com.gasguru.feature.onboarding_welcome.viewmodel.NewOnboardingViewModel
 import com.gasguru.feature.onboarding_welcome.viewmodel.OnboardingViewModel
 import org.koin.core.module.dsl.viewModel
@@ -13,6 +14,11 @@ val onboardingModule = module {
     }
     viewModel {
         NewOnboardingViewModel(
+            navigationManager = get(),
+        )
+    }
+    viewModel {
+        CapacityTankViewModel(
             navigationManager = get(),
         )
     }
