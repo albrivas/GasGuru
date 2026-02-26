@@ -63,7 +63,6 @@ internal fun OnboardingFuelPreferences(
     onSelectedFuel: (FuelType) -> Unit,
     saveSelection: (FuelType) -> Unit = {},
 ) {
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -148,7 +147,6 @@ internal fun OnboardingFuelPreferences(
         }
     }
 }
-
 
 @Composable
 @ThemePreviews
