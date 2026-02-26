@@ -4,6 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import com.gasguru.feature.detail_station.navigation.navigateToDetailStation
 import com.gasguru.feature.detail_station.navigation.navigateToDetailStationAsDialog
+import com.gasguru.feature.onboarding_welcome.navigation.navigateToCapacityTankRoute
 import com.gasguru.feature.onboarding_welcome.navigation.OnboardingRoutes
 import com.gasguru.feature.onboarding_welcome.navigation.navigateToNewOnboardingRoute
 import com.gasguru.feature.onboarding_welcome.navigation.navigateToOnboardingFuelPreferencesRoute
@@ -45,6 +46,10 @@ class NavigationHandler(private val navController: NavController) {
 
                 is NavigationDestination.OnboardingFuelPreferences -> {
                     navController.navigateToOnboardingFuelPreferencesRoute()
+                }
+
+                is NavigationDestination.OnboardingTankCapacity -> {
+                    navController.navigateToCapacityTankRoute()
                 }
 
                 is NavigationDestination.Home -> {
