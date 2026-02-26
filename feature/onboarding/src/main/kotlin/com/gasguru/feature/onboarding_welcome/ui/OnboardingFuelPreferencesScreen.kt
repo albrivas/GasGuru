@@ -13,9 +13,6 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -23,6 +20,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.ui.mapper.toFuelItem
 import com.gasguru.core.ui.mapper.toUiModel
@@ -34,7 +32,6 @@ import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.onboarding.R
-import com.gasguru.feature.onboarding_welcome.viewmodel.OnboardingUiState
 import com.gasguru.feature.onboarding_welcome.viewmodel.OnboardingViewModel
 import com.gasguru.navigation.LocalNavigationManager
 import com.gasguru.navigation.manager.NavigationDestination
@@ -45,121 +42,124 @@ internal fun OnboardingFuelPreferencesRoute(
     viewModel: OnboardingViewModel = koinViewModel(),
 ) {
     val navigationManager = LocalNavigationManager.current
+    val uiState by viewModel.state.collectAsStateWithLifecycle()
 
     OnboardingFuelPreferences(
-        navigateToHome = {
-            navigationManager.navigateTo(NavigationDestination.Home)
+        fuelList = uiState.fuelList,
+        selectedFuel = uiState.selectedFuel,
+        navigateNext = {
+            navigationManager.navigateTo(NavigationDestination.OnboardingTankCapacity)
         },
+        onSelectedFuel = viewModel::selectedFuel,
         saveSelection = viewModel::saveSelectedFuel,
-        uiState = viewModel.state,
     )
 }
 
 @Composable
 internal fun OnboardingFuelPreferences(
-    navigateToHome: () -> Unit,
+    fuelList: List<FuelType>,
+    selectedFuel: FuelType?,
+    navigateNext: () -> Unit,
+    onSelectedFuel: (FuelType) -> Unit,
     saveSelection: (FuelType) -> Unit = {},
-    uiState: OnboardingUiState,
 ) {
-    var selectedFuel by remember { mutableStateOf<Int?>(null) }
 
-    when (uiState) {
-        is OnboardingUiState.ListFuelPreferences -> {
-            Column(
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(GasGuruTheme.colors.neutral100),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 24.dp, top = 60.dp, end = 24.dp, bottom = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = stringResource(id = R.string.welcome_title_fuel_preferences),
+                style = GasGuruTheme.typography.h4,
+                color = GasGuruTheme.colors.neutralBlack,
+                textAlign = TextAlign.Center,
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                text = stringResource(id = R.string.welcome_subtitle_fuel_preferences),
+                style = GasGuruTheme.typography.smallRegular,
+                color = GasGuruTheme.colors.textSubtle,
+                textAlign = TextAlign.Center,
+            )
+        }
+
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 20.dp),
+        ) {
+            FuelListSelection(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 8.dp),
+                model = FuelListSelectionModel(
+                    list = fuelList.map { it.toUiModel().toFuelItem() },
+                    selected = null,
+                    onItemSelected = { fuel ->
+                        onSelectedFuel(fuel.toFuelType())
+                    },
+                ),
+            )
+            Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .background(GasGuruTheme.colors.neutral100),
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 24.dp, top = 60.dp, end = 24.dp, bottom = 32.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.welcome_title_fuel_preferences),
-                        style = GasGuruTheme.typography.h4,
-                        color = GasGuruTheme.colors.neutralBlack,
-                        textAlign = TextAlign.Center,
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text(
-                        text = stringResource(id = R.string.welcome_subtitle_fuel_preferences),
-                        style = GasGuruTheme.typography.smallRegular,
-                        color = GasGuruTheme.colors.textSubtle,
-                        textAlign = TextAlign.Center,
-                    )
-                }
-                val list = uiState.list.map { it.toUiModel().toFuelItem() }
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 20.dp),
-                ) {
-                    FuelListSelection(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(bottom = 8.dp),
-                        model = FuelListSelectionModel(
-                            list = list,
-                            selected = null,
-                            onItemSelected = { fuel ->
-                                selectedFuel = fuel
-                            },
-                        ),
-                    )
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(16.dp)
-                            .align(Alignment.BottomCenter)
-                            .background(
-                                brush = Brush.verticalGradient(
-                                    colors = listOf(
-                                        GasGuruTheme.colors.neutral100.copy(alpha = 0f),
-                                        GasGuruTheme.colors.neutral100,
-                                    ),
-                                ),
+                    .fillMaxWidth()
+                    .height(16.dp)
+                    .align(Alignment.BottomCenter)
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                GasGuruTheme.colors.neutral100.copy(alpha = 0f),
+                                GasGuruTheme.colors.neutral100,
                             ),
-                    )
-                }
+                        ),
+                    ),
+            )
+        }
 
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .systemBarsPadding()
-                        .padding(start = 24.dp, end = 24.dp, bottom = 16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    GasGuruButton(
-                        onClick = {
-                            selectedFuel?.let { saveSelection(it.toFuelType()) }
-                            navigateToHome()
-                        },
-                        enabled = selectedFuel != null,
-                        text = stringResource(id = R.string.onboarding_continue),
-                        modifier = Modifier.testTag("button_next_onboarding"),
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = stringResource(id = R.string.welcome_hint_fuel_preferences),
-                        style = GasGuruTheme.typography.captionRegular,
-                        color = GasGuruTheme.colors.neutral600,
-                        textAlign = TextAlign.Center,
-                    )
-                }
-            }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .systemBarsPadding()
+                .padding(start = 24.dp, end = 24.dp, bottom = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            GasGuruButton(
+                onClick = {
+                    selectedFuel?.let { saveSelection(it) }
+                    navigateNext()
+                },
+                enabled = selectedFuel != null,
+                text = stringResource(id = R.string.onboarding_continue),
+                modifier = Modifier.testTag("button_next_onboarding"),
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = stringResource(id = R.string.welcome_hint_fuel_preferences),
+                style = GasGuruTheme.typography.captionRegular,
+                color = GasGuruTheme.colors.neutral600,
+                textAlign = TextAlign.Center,
+            )
         }
     }
 }
+
 
 @Composable
 @ThemePreviews
 private fun PreviewOnboardingFuelPreferences() {
     MyApplicationTheme {
         OnboardingFuelPreferences(
-            navigateToHome = {},
+            fuelList = FuelType.entries,
+            selectedFuel = null,
+            navigateNext = {},
             saveSelection = {},
-            uiState = OnboardingUiState.ListFuelPreferences(FuelType.entries),
+            onSelectedFuel = {}
         )
     }
 }
