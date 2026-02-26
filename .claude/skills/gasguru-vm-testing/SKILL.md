@@ -1,6 +1,6 @@
 ---
 name: skill-gasguru-vm-testing
-description: Create and update GasGuru ViewModel unit tests using fakes, JUnit5, Turbine, and coroutine test rules.
+description: Create and update GasGuru ViewModel unit tests using fakes, JUnit5, Turbine, and coroutine test rules. Use when creating new tests, when modifying a ViewModel or class that already has tests, or when adding a feature to a class that should have test coverage.
 metadata:
   short-description: GasGuru VM tests with fakes
 ---
