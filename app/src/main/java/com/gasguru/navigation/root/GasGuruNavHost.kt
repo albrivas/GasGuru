@@ -7,8 +7,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.gasguru.feature.detail_station.navigation.detailStationScreen
 import com.gasguru.feature.detail_station.navigation.detailStationScreenDialog
-import com.gasguru.feature.onboarding_welcome.navigation.capacityTankScreen
 import com.gasguru.feature.onboarding_welcome.navigation.OnboardingRoutes
+import com.gasguru.feature.onboarding_welcome.navigation.capacityTankScreen
 import com.gasguru.feature.onboarding_welcome.navigation.newOnboardingScreen
 import com.gasguru.feature.onboarding_welcome.navigation.onboardingFuelPreferencesScreen
 import com.gasguru.navigation.LocalNavigationManager
