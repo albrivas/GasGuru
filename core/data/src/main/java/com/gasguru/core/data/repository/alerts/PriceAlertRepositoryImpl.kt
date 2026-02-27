@@ -2,18 +2,19 @@ package com.gasguru.core.data.repository.alerts
 
 import com.gasguru.core.data.util.NetworkMonitor
 import com.gasguru.core.database.dao.PriceAlertDao
-import com.gasguru.core.database.dao.UserDataDao
+import com.gasguru.core.database.dao.VehicleDao
 import com.gasguru.core.database.model.ModificationType
 import com.gasguru.core.database.model.PriceAlertEntity
 import com.gasguru.core.notifications.OneSignalManager
 import com.gasguru.core.supabase.SupabaseManager
 import kotlinx.coroutines.flow.first
+
 class PriceAlertRepositoryImpl(
     private val priceAlertDao: PriceAlertDao,
     private val supabaseManager: SupabaseManager,
     private val networkMonitor: NetworkMonitor,
     private val oneSignalManager: OneSignalManager,
-    private val userDataDao: UserDataDao,
+    private val vehicleDao: VehicleDao,
 ) : PriceAlertRepository {
 
     override suspend fun addPriceAlert(stationId: Int, lastNotifiedPrice: Double) {
@@ -24,14 +25,13 @@ class PriceAlertRepositoryImpl(
                 stationId = stationId,
                 lastNotifiedPrice = lastNotifiedPrice,
                 typeModification = ModificationType.INSERT,
-                isSynced = false
+                isSynced = false,
             )
         )
 
         if (networkMonitor.isOnline.first()) {
             val playerId = oneSignalManager.getPlayerId().orEmpty()
-            val userData = userDataDao.getUserData().first()
-            val fuelType = userData?.fuelSelection?.name.orEmpty()
+            val fuelType = vehicleDao.getVehiclesByUser(userId = 0).first().first().fuelType.name
 
             supabaseManager.addPriceAlert(
                 stationId = stationId,
@@ -67,7 +67,7 @@ class PriceAlertRepositoryImpl(
                     stationId = stationId,
                     lastNotifiedPrice = existingAlert.lastNotifiedPrice,
                     typeModification = ModificationType.DELETE,
-                    isSynced = false
+                    isSynced = false,
                 )
             )
         }
@@ -89,8 +89,7 @@ class PriceAlertRepositoryImpl(
     override suspend fun sync(): Boolean {
         return try {
             val playerId = oneSignalManager.getPlayerId().orEmpty()
-            val userData = userDataDao.getUserData().first()
-            val fuelType = userData?.fuelSelection?.name.orEmpty()
+            val fuelType = vehicleDao.getVehiclesByUser(userId = 0).first().first().fuelType.name
 
             val pendingInserts = priceAlertDao.getPendingInserts()
             pendingInserts.forEach { alert ->

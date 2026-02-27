@@ -12,7 +12,6 @@ import com.gasguru.core.domain.fuelstation.GetFuelStationUseCase
 import com.gasguru.core.domain.fuelstation.GetFuelStationsInRouteUseCase
 import com.gasguru.core.domain.fuelstation.RemoveFavoriteStationUseCase
 import com.gasguru.core.domain.fuelstation.SaveFavoriteStationUseCase
-import com.gasguru.core.domain.fuelstation.SaveFuelSelectionUseCase
 import com.gasguru.core.domain.location.GetCurrentLocationFlowUseCase
 import com.gasguru.core.domain.location.GetCurrentLocationUseCase
 import com.gasguru.core.domain.location.GetLastKnownLocationUseCase
@@ -27,6 +26,11 @@ import com.gasguru.core.domain.search.GetRecentSearchQueryUseCase
 import com.gasguru.core.domain.search.InsertRecentSearchQueryUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.domain.user.SaveThemeModeUseCase
+import com.gasguru.core.domain.vehicle.GetVehiclesUseCase
+import com.gasguru.core.domain.vehicle.SaveDefaultVehicleCapacityUseCase
+import com.gasguru.core.domain.vehicle.SaveDefaultVehicleFuelTypeUseCase
+import com.gasguru.core.domain.vehicle.UpdateVehicleFuelTypeUseCase
+import com.gasguru.core.domain.vehicle.UpdateVehicleTankCapacityUseCase
 import org.koin.dsl.module
 
 val domainModule = module {
@@ -49,8 +53,6 @@ val domainModule = module {
     factory { GetFavoriteStationsUseCase(repository = get()) }
     factory { SaveFavoriteStationUseCase(offlineRepository = get()) }
     factory { RemoveFavoriteStationUseCase(offlineRepository = get()) }
-    factory { SaveFuelSelectionUseCase(userDataRepository = get()) }
-
     // Location
     factory { GetCurrentLocationUseCase(locationTracker = get()) }
     factory { GetCurrentLocationFlowUseCase(locationTracker = get()) }
@@ -76,4 +78,16 @@ val domainModule = module {
     // User
     factory { GetUserDataUseCase(userDataRepository = get()) }
     factory { SaveThemeModeUseCase(userDataRepository = get()) }
+
+    // Vehicle
+    factory { GetVehiclesUseCase(vehicleRepository = get()) }
+    factory { UpdateVehicleTankCapacityUseCase(vehicleRepository = get()) }
+    factory { UpdateVehicleFuelTypeUseCase(vehicleRepository = get()) }
+    factory { SaveDefaultVehicleFuelTypeUseCase(vehicleRepository = get()) }
+    factory {
+        SaveDefaultVehicleCapacityUseCase(
+            vehicleRepository = get(),
+            userDataRepository = get(),
+        )
+    }
 }
