@@ -5,6 +5,7 @@ Historial de migraciones de la base de datos Room de GasGuru. Cada entrada expli
 **Versión actual**: 14
 **Archivo de migraciones**: `core/database/src/main/java/com/gasguru/core/database/migrations/DataBaseMigration.kt`
 **Configuración de la DB**: `core/database/src/main/java/com/gasguru/core/database/di/DatabaseModule.kt`
+**Tests de migración**: `core/database/src/androidTest/java/com/gasguru/core/database/migration/DatabaseMigrationTest.kt`
 
 ---
 
