@@ -2,17 +2,8 @@ package com.gasguru.di
 
 import com.gasguru.core.network.datasource.RemoteDataSource
 import com.gasguru.core.network.datasource.RemoteDataSourceImp
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-abstract class ProdDataSourceModule {
-
-    @Binds
-    abstract fun bindRemoteDataSourceImpl(
-        remoteDataSourceImpl: RemoteDataSourceImp
-    ): RemoteDataSource
+val remoteDataSourceModule = module {
+    single<RemoteDataSource> { RemoteDataSourceImp(api = get()) }
 }

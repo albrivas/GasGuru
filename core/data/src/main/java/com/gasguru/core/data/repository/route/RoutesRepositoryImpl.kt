@@ -1,7 +1,5 @@
 package com.gasguru.core.data.repository.route
 
-import com.gasguru.core.common.DefaultDispatcher
-import com.gasguru.core.common.IoDispatcher
 import com.gasguru.core.data.mapper.toDomainRoute
 import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.Route
@@ -12,12 +10,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
-class RoutesRepositoryImpl @Inject constructor(
+class RoutesRepositoryImpl(
     private val routesDataSource: RoutesDataSource,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
+    private val ioDispatcher: CoroutineDispatcher,
+    private val defaultDispatcher: CoroutineDispatcher,
 ) : RoutesRepository {
     override fun getRoute(origin: LatLng, destination: LatLng): Flow<Route?> = flow {
         routesDataSource.getRoute(

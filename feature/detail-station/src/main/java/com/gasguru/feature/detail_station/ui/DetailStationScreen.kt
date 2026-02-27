@@ -63,7 +63,6 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.gasguru.core.model.data.FuelStationBrandsType
@@ -87,10 +86,11 @@ import com.gasguru.feature.detail_station.formatSchedule
 import com.gasguru.feature.detail_station.getTimeElapsedString
 import com.gasguru.navigation.LocalNavigationManager
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 internal fun DetailStationScreenRoute(
-    viewModel: DetailStationViewModel = hiltViewModel(),
+    viewModel: DetailStationViewModel = koinViewModel(),
 ) {
     val navigationManager = LocalNavigationManager.current
     val uiState by viewModel.fuelStation.collectAsStateWithLifecycle()

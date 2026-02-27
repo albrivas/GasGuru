@@ -26,7 +26,7 @@ internal fun Project.configureAndroidCompose(
         add("implementation", getLibrary("androidx.activity.compose"))
         add("implementation", getLibrary("androidx.lifecycle.runtime.ktx"))
         add("implementation", getLibrary("androidx.lifecycle.viewmodel.compose"))
-        add("implementation", getLibrary("androidx.hilt.navigation.compose"))
+        add("implementation", getLibrary("koin.androidx.compose"))
         add("implementation", getLibrary("androidx.compose.ui"))
         add("implementation", getLibrary("androidx.compose.ui.tooling.preview"))
         add("implementation", getLibrary("androidx.compose.material3"))

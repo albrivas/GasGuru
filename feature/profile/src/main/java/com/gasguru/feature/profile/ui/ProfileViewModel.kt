@@ -10,17 +10,14 @@ import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.ui.mapper.toUi
 import com.gasguru.core.ui.mapper.toUiModel
 import com.gasguru.core.ui.models.ThemeModeUi
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import okhttp3.internal.toImmutableList
-import javax.inject.Inject
 
-@HiltViewModel
-class ProfileViewModel @Inject constructor(
+class ProfileViewModel(
     getUserData: GetUserDataUseCase,
     private val saveFuelSelectionUseCase: SaveFuelSelectionUseCase,
     private val saveThemeModeUseCase: SaveThemeModeUseCase,
