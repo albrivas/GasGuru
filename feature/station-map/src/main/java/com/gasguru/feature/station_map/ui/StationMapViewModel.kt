@@ -260,7 +260,7 @@ class StationMapViewModel(
                             mapStations = uiStations,
                             listStations = sortStationsByTab(uiStations, _tabState.value.selectedTab, userData),
                             loading = false,
-                            selectedType = userData.fuelSelection,
+                            selectedType = userData.vehicles.first().fuelType,
                             mapBounds = bounds,
                             shouldCenterMap = true,
                         )
@@ -341,7 +341,7 @@ class StationMapViewModel(
         selectedTab: StationSortTab,
         userData: UserData
     ) = when (selectedTab) {
-        StationSortTab.PRICE -> stations.sortedBy { userData.fuelSelection.extractPrice(it.fuelStation) }
+        StationSortTab.PRICE -> stations.sortedBy { userData.vehicles.first().fuelType.extractPrice(it.fuelStation) }
         StationSortTab.DISTANCE -> stations.sortedBy { it.fuelStation.distance }
     }
 

@@ -2,7 +2,7 @@ package com.gasguru.feature.onboarding_welcome.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gasguru.core.domain.fuelstation.SaveFuelSelectionUseCase
+import com.gasguru.core.domain.vehicle.SaveDefaultVehicleFuelTypeUseCase
 import com.gasguru.core.model.data.FuelType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class OnboardingViewModel(
-    private val saveFuelSelectionUseCase: SaveFuelSelectionUseCase
+    private val saveDefaultVehicleFuelTypeUseCase: SaveDefaultVehicleFuelTypeUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(OnboardingUiState())
@@ -22,7 +22,7 @@ class OnboardingViewModel(
 
     fun saveSelectedFuel(selectedFuel: FuelType) {
         viewModelScope.launch {
-            saveFuelSelectionUseCase(fuelType = selectedFuel)
+            saveDefaultVehicleFuelTypeUseCase(fuelType = selectedFuel)
         }
     }
 }

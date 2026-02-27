@@ -9,9 +9,10 @@ import com.gasguru.core.ui.models.ThemeModeUi
 
 @Immutable
 data class ProfileContentUi(
+    val vehicleId: Long,
     val fuelTranslation: Int,
     val themeUi: ThemeModeUi,
-    val allThemesUi: List<ThemeModeUi>
+    val allThemesUi: List<ThemeModeUi>,
 )
 
 sealed class ProfileSheet {
@@ -29,14 +30,16 @@ sealed interface ProfileUiState {
 class ProfileContentUiPreviewParameterProvider : PreviewParameterProvider<ProfileContentUi> {
     override val values = sequenceOf(
         ProfileContentUi(
+            vehicleId = 0L,
             fuelTranslation = R.string.gasoline_95,
             themeUi = ThemeMode.SYSTEM.toUi(),
-            allThemesUi = ThemeMode.entries.map { it.toUi() }
+            allThemesUi = ThemeMode.entries.map { it.toUi() },
         ),
         ProfileContentUi(
+            vehicleId = 0L,
             fuelTranslation = R.string.diesel,
             themeUi = ThemeMode.DARK.toUi(),
-            allThemesUi = ThemeMode.entries.map { it.toUi() }
+            allThemesUi = ThemeMode.entries.map { it.toUi() },
         )
     )
 }
