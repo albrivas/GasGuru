@@ -3,7 +3,6 @@ package com.gasguru.core.database.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.model.data.UserData
 
@@ -13,18 +12,16 @@ import com.gasguru.core.model.data.UserData
 data class UserDataEntity(
     @PrimaryKey(autoGenerate = false)
     val id: Long = 0,
-    val fuelSelection: FuelType,
     @ColumnInfo(defaultValue = "0")
     val lastUpdate: Long,
     @ColumnInfo(defaultValue = "0")
     val isOnboardingSuccess: Boolean,
     @ColumnInfo(defaultValue = "3")
-    val themeModeId: Int = ThemeMode.SYSTEM.id
+    val themeModeId: Int = ThemeMode.SYSTEM.id,
 )
 
 fun UserDataEntity.asExternalModel() = UserData(
-    fuelSelection = fuelSelection,
     lastUpdate = lastUpdate,
     isOnboardingSuccess = isOnboardingSuccess,
-    themeMode = ThemeMode.fromId(themeModeId)
+    themeMode = ThemeMode.fromId(themeModeId),
 )
