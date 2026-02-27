@@ -45,18 +45,6 @@ class MainActivity : ComponentActivity() {
     private val navigationManager: NavigationManager by inject()
     private val deepLinkStateHolder: DeepLinkStateHolder by inject()
 
-    @Inject
-    lateinit var isLocationEnabledUseCase: IsLocationEnabledUseCase
-
-    @Inject
-    lateinit var getUserDataUseCase: GetUserDataUseCase
-
-    @Inject
-    lateinit var navigationManager: NavigationManager
-
-    @Inject
-    lateinit var deepLinkStateHolder: DeepLinkStateHolder
-
     override fun onCreate(savedInstanceState: Bundle?) {
         val splash = installSplashScreen()
         super.onCreate(savedInstanceState)
