@@ -34,18 +34,24 @@ class OfflineUserDataRepository(
         }
 
     override suspend fun setOnboardingComplete() {
-        val user = userDataDao.getUserData().firstOrNull()?.asExternalModel() ?: UserData()
-        userDataDao.insertUserData(user.copy(isOnboardingSuccess = true).asEntity())
+        upsertUserData { it.copy(isOnboardingSuccess = true) }
     }
 
     override suspend fun updateThemeMode(themeMode: ThemeMode) {
-        val user = userDataDao.getUserData().firstOrNull()?.asExternalModel() ?: UserData()
-        userDataDao.insertUserData(user.copy(themeMode = themeMode).asEntity())
+        upsertUserData { it.copy(themeMode = themeMode) }
     }
 
     override suspend fun updateLastUpdate() {
-        val user = userDataDao.getUserData().firstOrNull()?.asExternalModel() ?: UserData()
-        userDataDao.insertUserData(user.copy(lastUpdate = System.currentTimeMillis()).asEntity())
+        upsertUserData { it.copy(lastUpdate = System.currentTimeMillis()) }
+    }
+
+    private suspend fun upsertUserData(update: (UserData) -> UserData) {
+        val existing = userDataDao.getUserData().firstOrNull()
+        val updated = update(existing?.asExternalModel() ?: UserData())
+        val inserted = userDataDao.insertUserData(updated.asEntity())
+        if (inserted == -1L) {
+            userDataDao.updateUserData(updated.asEntity())
+        }
     }
 
     override suspend fun addFavoriteStation(stationId: Int) {
