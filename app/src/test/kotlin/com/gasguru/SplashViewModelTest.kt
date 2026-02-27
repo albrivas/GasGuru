@@ -4,16 +4,19 @@ import app.cash.turbine.test
 import com.gasguru.core.data.repository.stations.OfflineFuelStationRepository
 import com.gasguru.core.data.repository.user.OfflineUserDataRepository
 import com.gasguru.core.database.model.UserDataEntity
+import com.gasguru.core.database.model.VehicleEntity
 import com.gasguru.core.domain.fuelstation.GetFuelStationUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.model.data.UserData
+import com.gasguru.core.model.data.Vehicle
 import com.gasguru.core.testing.CoroutinesTestExtension
 import com.gasguru.core.testing.fakes.data.database.FakeFavoriteStationDao
 import com.gasguru.core.testing.fakes.data.database.FakeFuelStationDao
 import com.gasguru.core.testing.fakes.data.database.FakePriceAlertDao
 import com.gasguru.core.testing.fakes.data.database.FakeUserDataDao
+import com.gasguru.core.testing.fakes.data.database.FakeVehicleDao
 import com.gasguru.core.testing.fakes.data.network.FakeRemoteDataSource
 import com.gasguru.core.testing.fakes.data.user.FakeUserDataRepository
 import kotlinx.coroutines.Dispatchers
@@ -38,6 +41,7 @@ class SplashViewModelTest {
     private lateinit var fakeFuelStationDao: FakeFuelStationDao
     private lateinit var fakeFavoriteStationDao: FakeFavoriteStationDao
     private lateinit var fakePriceAlertDao: FakePriceAlertDao
+    private lateinit var fakeVehicleDao: FakeVehicleDao
     private lateinit var fakeRemoteDataSource: FakeRemoteDataSource
 
     @BeforeEach
@@ -46,19 +50,21 @@ class SplashViewModelTest {
             initialUserData = UserData(
                 isOnboardingSuccess = true,
                 themeMode = ThemeMode.DARK,
-                fuelSelection = FuelType.GASOLINE_95
+                vehicles = listOf(Vehicle(id = 1L, fuelType = FuelType.GASOLINE_95, name = null, tankCapacity = 40)),
             )
         )
         fakeUserDataDao = FakeUserDataDao(
             initialUserData = UserDataEntity(
-                fuelSelection = FuelType.GASOLINE_95,
                 lastUpdate = 0,
-                isOnboardingSuccess = true
+                isOnboardingSuccess = true,
             )
         )
         fakeFuelStationDao = FakeFuelStationDao()
         fakeFavoriteStationDao = FakeFavoriteStationDao()
         fakePriceAlertDao = FakePriceAlertDao()
+        fakeVehicleDao = FakeVehicleDao(
+            initialVehicles = listOf(VehicleEntity(id = 1L, userId = 0L, name = null, fuelType = FuelType.GASOLINE_95, tankCapacity = 40)),
+        )
         fakeRemoteDataSource = FakeRemoteDataSource()
 
         sut = createViewModel()
@@ -102,8 +108,8 @@ class SplashViewModelTest {
             UserData(
                 isOnboardingSuccess = true,
                 themeMode = ThemeMode.DARK,
-                fuelSelection = FuelType.GASOLINE_95,
-                lastUpdate = oldTimestamp
+                vehicles = listOf(Vehicle(id = 1L, fuelType = FuelType.GASOLINE_95, name = null, tankCapacity = 40)),
+                lastUpdate = oldTimestamp,
             )
         )
 
@@ -118,7 +124,8 @@ class SplashViewModelTest {
     private fun createViewModel(): SplashViewModel {
         val offlineUserDataRepository = OfflineUserDataRepository(
             userDataDao = fakeUserDataDao,
-            favoriteStationDao = fakeFavoriteStationDao
+            favoriteStationDao = fakeFavoriteStationDao,
+            vehicleDao = fakeVehicleDao,
         )
         val offlineFuelStationRepository = OfflineFuelStationRepository(
             fuelStationDao = fakeFuelStationDao,
