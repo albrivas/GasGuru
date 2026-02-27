@@ -2,7 +2,6 @@ package com.gasguru.feature.station_map.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gasguru.core.common.DefaultDispatcher
 import com.gasguru.core.common.toGoogleLatLng
 import com.gasguru.core.domain.filters.GetFiltersUseCase
 import com.gasguru.core.domain.filters.SaveFilterUseCase
@@ -20,7 +19,6 @@ import com.gasguru.core.ui.mapper.toUiModel
 import com.gasguru.core.ui.models.FuelStationUiModel
 import com.gasguru.feature.station_map.ui.models.toUiModel
 import com.google.android.gms.maps.model.LatLngBounds
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
@@ -38,10 +36,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class StationMapViewModel @Inject constructor(
+class StationMapViewModel(
     private val fuelStationByLocation: FuelStationByLocationUseCase,
     private val getUserDataUseCase: GetUserDataUseCase,
     private val getLocationPlaceUseCase: GetLocationPlaceUseCase,
@@ -50,7 +46,7 @@ class StationMapViewModel @Inject constructor(
     private val saveFilterUseCase: SaveFilterUseCase,
     private val getRouteUseCase: GetRouteUseCase,
     private val getFuelStationsInRouteUseCase: GetFuelStationsInRouteUseCase,
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
+    private val defaultDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(StationMapUiState())

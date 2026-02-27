@@ -11,7 +11,6 @@ import com.gasguru.core.domain.search.GetRecentSearchQueryUseCase
 import com.gasguru.core.domain.search.InsertRecentSearchQueryUseCase
 import com.gasguru.core.model.data.SearchPlace
 import com.gasguru.core.ui.RecentSearchQueriesUiState
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -21,13 +20,11 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 private const val SEARCH_QUERY = "searchQuery"
 private const val SEARCH_QUERY_MIN_LENGTH = 2
 
-@HiltViewModel
-class GasGuruSearchBarViewModel @Inject constructor(
+class GasGuruSearchBarViewModel(
     private val savedStateHandle: SavedStateHandle,
     private val getPlacesUseCase: GetPlacesUseCase,
     private val clearRecentSearchQueriesUseCase: ClearRecentSearchQueriesUseCase,

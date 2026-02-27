@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.gasguru.android.library)
-    alias(libs.plugins.gasguru.hilt)
+    alias(libs.plugins.gasguru.koin)
     alias(libs.plugins.gasguru.compose.library)
     alias(libs.plugins.gasguru.proguard)
     alias(libs.plugins.stability.analyzer)
@@ -17,7 +17,7 @@ dependencies {
     implementation(projects.core.uikit)
     implementation(projects.core.common)
     implementation(projects.navigation)
-    
+    implementation(libs.koin.androidx.compose)
     implementation(libs.kotlin.coroutines.play)
     implementation(libs.places)
 

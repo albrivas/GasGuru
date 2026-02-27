@@ -7,7 +7,6 @@ import com.gasguru.core.domain.fuelstation.RemoveFavoriteStationUseCase
 import com.gasguru.core.domain.location.GetLastKnownLocationUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.ui.mapper.toUiModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,10 +19,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class FavoriteListStationViewModel @Inject constructor(
+class FavoriteListStationViewModel(
     private val getUserDataUseCase: GetUserDataUseCase,
     private val getFavoriteStationsUseCase: GetFavoriteStationsUseCase,
     getLastKnownLocationUseCase: GetLastKnownLocationUseCase,

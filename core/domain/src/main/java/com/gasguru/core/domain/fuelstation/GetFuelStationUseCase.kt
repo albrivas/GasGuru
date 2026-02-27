@@ -1,10 +1,9 @@
 package com.gasguru.core.domain.fuelstation
 
-import com.gasguru.core.data.repository.stations.OfflineFuelStationRepository
-import javax.inject.Inject
+import com.gasguru.core.data.repository.stations.FuelStationRepository
 
-class GetFuelStationUseCase @Inject constructor(
-    private val repository: OfflineFuelStationRepository
+class GetFuelStationUseCase(
+    private val repository: FuelStationRepository,
 ) {
     suspend fun getFuelInAllStations() {
         repository.addAllStations()
