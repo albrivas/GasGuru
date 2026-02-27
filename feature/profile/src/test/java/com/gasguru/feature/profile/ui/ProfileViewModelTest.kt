@@ -1,14 +1,16 @@
 package com.gasguru.feature.profile.ui
 
 import app.cash.turbine.test
-import com.gasguru.core.domain.fuelstation.SaveFuelSelectionUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.domain.user.SaveThemeModeUseCase
+import com.gasguru.core.domain.vehicle.UpdateVehicleFuelTypeUseCase
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.model.data.UserData
+import com.gasguru.core.model.data.Vehicle
 import com.gasguru.core.testing.CoroutinesTestExtension
 import com.gasguru.core.testing.fakes.data.user.FakeUserDataRepository
+import com.gasguru.core.testing.fakes.data.vehicle.FakeVehicleRepository
 import com.gasguru.core.ui.R
 import com.gasguru.core.ui.mapper.toUi
 import com.gasguru.core.ui.mapper.toUiModel
@@ -27,18 +29,23 @@ import org.junit.jupiter.api.extension.ExtendWith
 class ProfileViewModelTest {
 
     private lateinit var fakeUserDataRepository: FakeUserDataRepository
+    private lateinit var fakeVehicleRepository: FakeVehicleRepository
 
     private lateinit var sut: ProfileViewModel
 
-    private lateinit var mockUserData: UserData
-
     @BeforeEach
     fun setUp() {
-        mockUserData = UserData()
-        fakeUserDataRepository = FakeUserDataRepository(initialUserData = mockUserData)
+        fakeVehicleRepository = FakeVehicleRepository(
+            initialVehicles = listOf(Vehicle(id = 1L, userId = 0L, fuelType = FuelType.GASOLINE_95, name = null, tankCapacity = 40)),
+        )
+        fakeUserDataRepository = FakeUserDataRepository(
+            initialUserData = UserData(
+                vehicles = listOf(Vehicle(id = 1L, userId = 0L, fuelType = FuelType.GASOLINE_95, name = null, tankCapacity = 40)),
+            )
+        )
         sut = ProfileViewModel(
             getUserData = GetUserDataUseCase(fakeUserDataRepository),
-            saveFuelSelectionUseCase = SaveFuelSelectionUseCase(fakeUserDataRepository),
+            updateVehicleFuelTypeUseCase = UpdateVehicleFuelTypeUseCase(fakeVehicleRepository),
             saveThemeModeUseCase = SaveThemeModeUseCase(fakeUserDataRepository),
         )
     }
@@ -60,35 +67,20 @@ class ProfileViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    @DisplayName("GIVEN fuel selection event WHEN handleEvents THEN useCase is called with correct fuel")
+    @DisplayName("GIVEN fuel selection event WHEN handleEvents THEN vehicle repository is updated")
     fun saveSelectionFuel() = runTest {
-        val fuelType = FuelType.GASOLINE_95
+        val fuelType = FuelType.DIESEL
 
-        sut.handleEvents(ProfileEvents.Fuel(fuelType))
-
-        advanceUntilIdle()
-
-        Assertions.assertEquals(listOf(fuelType), fakeUserDataRepository.updatedFuelSelections)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    @DisplayName("GIVEN fuel change WHEN handleEvents THEN updates userData state")
-    fun fuelSelectionUpdatesUiState() = runTest {
-        val viewModel = sut
-
-        viewModel.userData.test {
-            Assertions.assertEquals(ProfileUiState.Loading, awaitItem())
+        sut.userData.test {
             awaitItem()
-
-            viewModel.handleEvents(ProfileEvents.Fuel(FuelType.DIESEL))
-            advanceUntilIdle()
-
-            val updated = awaitItem() as ProfileUiState.Success
-            val expectedTranslation = FuelType.DIESEL.toUiModel().translationRes
-            Assertions.assertEquals(expectedTranslation, updated.content.fuelTranslation)
+            awaitItem()
             cancelAndConsumeRemainingEvents()
         }
+
+        sut.handleEvents(ProfileEvents.Fuel(fuelType))
+        advanceUntilIdle()
+
+        Assertions.assertEquals(listOf(1L to fuelType), fakeVehicleRepository.updatedFuelTypes)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
