@@ -1,6 +1,8 @@
 package com.gasguru.feature.onboarding_welcome.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.gasguru.core.domain.vehicle.SaveDefaultVehicleCapacityUseCase
 import com.gasguru.feature.onboarding_welcome.ui.CapacityTankEvent
 import com.gasguru.navigation.manager.NavigationDestination
 import com.gasguru.navigation.manager.NavigationManager
@@ -8,9 +10,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class CapacityTankViewModel(
     private val navigationManager: NavigationManager,
+    private val saveDefaultVehicleCapacityUseCase: SaveDefaultVehicleCapacityUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CapacityTankUiState())
@@ -48,6 +52,10 @@ class CapacityTankViewModel(
     }
 
     private fun onContinue() {
-        navigationManager.navigateTo(destination = NavigationDestination.Home)
+        val capacity = _uiState.value.selectedCapacity ?: return
+        viewModelScope.launch {
+            saveDefaultVehicleCapacityUseCase(tankCapacity = capacity)
+            navigationManager.navigateTo(destination = NavigationDestination.Home)
+        }
     }
 }

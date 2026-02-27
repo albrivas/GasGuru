@@ -112,7 +112,7 @@ class DetailStationViewModel(
                 val userData = userDataUseCase().first()
                 val station =
                     (fuelStation.value as DetailStationUiState.Success).stationModel.fuelStation
-                val price = userData.fuelSelection.extractPrice(station)
+                val price = userData.vehicles.first().fuelType.extractPrice(station)
 
                 addPriceAlertUseCase(stationId = id, lastNotifiedPrice = price)
             }
