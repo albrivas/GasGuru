@@ -49,7 +49,7 @@ class FavoriteStationsScreen(carContext: CarContext) : Screen(carContext), KoinC
                     uiState = FavoriteStationsUiState(
                         loading = false,
                         stations = userWithFavorites.favoriteStations.map { it.toUiModel() },
-                        selectedFuel = userData.fuelSelection
+                        selectedFuel = userData.vehicles.first().fuelType
                     )
                     invalidate()
                 }.launchIn(coroutineScope)
@@ -59,7 +59,7 @@ class FavoriteStationsScreen(carContext: CarContext) : Screen(carContext), KoinC
                         uiState = FavoriteStationsUiState(
                             loading = false,
                             stations = emptyList(),
-                            selectedFuel = userData.fuelSelection
+                            selectedFuel = userData.vehicles.first().fuelType
                         )
                         invalidate()
                     }

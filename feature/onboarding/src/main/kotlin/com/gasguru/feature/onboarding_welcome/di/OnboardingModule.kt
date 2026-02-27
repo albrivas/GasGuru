@@ -9,7 +9,7 @@ import org.koin.dsl.module
 val onboardingModule = module {
     viewModel {
         OnboardingViewModel(
-            saveFuelSelectionUseCase = get(),
+            saveDefaultVehicleFuelTypeUseCase = get(),
         )
     }
     viewModel {
@@ -20,6 +20,7 @@ val onboardingModule = module {
     viewModel {
         CapacityTankViewModel(
             navigationManager = get(),
+            saveDefaultVehicleCapacityUseCase = get(),
         )
     }
 }

@@ -54,13 +54,13 @@ class FavoriteListStationViewModel(
                     } else {
                         val listUiModel = stations.favoriteStations.map { it.toUiModel() }
                         val sortedStations = when (tabState.selectedTab) {
-                            0 -> listUiModel.sortedBy { userData.fuelSelection.extractPrice(it.fuelStation) }
+                            0 -> listUiModel.sortedBy { userData.vehicles.first().fuelType.extractPrice(it.fuelStation) }
                             1 -> listUiModel.sortedBy { it.fuelStation.distance }
                             else -> listUiModel
                         }
                         FavoriteStationListUiState.Favorites(
                             favoriteStations = sortedStations,
-                            userSelectedFuelType = userData.fuelSelection
+                            userSelectedFuelType = userData.vehicles.first().fuelType
                         )
                     }
                 }
