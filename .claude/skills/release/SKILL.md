@@ -49,7 +49,29 @@ description: Create a GasGuru release for store deployment. Use when the user as
    ```bash
    git merge develop --strategy-option=theirs
    ```
-   For modify/delete conflicts (files deleted in develop but modified in main), resolve by deleting the files (`git rm <file>`), since we keep develop's changes.
+
+   **After the merge, always run these two cleanup steps:**
+
+   a) Resolve any pending modify/delete conflicts (files deleted in develop but conflicting):
+   ```bash
+   git status --short | grep "^DU\|^UD" | awk '{print $2}' | xargs -I{} git rm -f {} 2>/dev/null || true
+   ```
+
+   b) Remove files that were deleted in develop but silently kept in the release branch (git does not always auto-delete them even with `-X theirs`):
+   ```bash
+   MERGE_BASE=$(git merge-base HEAD develop)
+   git diff "$MERGE_BASE" develop --name-status | grep "^D" | awk '{print $2}' | while read f; do
+     if [ -f "$f" ]; then
+       echo "Removing file deleted in develop: $f"
+       git rm -f "$f"
+     fi
+   done
+   ```
+
+   If any files were removed in step (b), amend the merge commit:
+   ```bash
+   git diff --cached --quiet || git commit --amend --no-edit
+   ```
 
 6. Update `versions.properties`:
    - Increment `versionCode` by 1
