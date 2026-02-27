@@ -15,7 +15,7 @@ class DatabaseMigrationTest {
 
     private val helper = MigrationTestHelper(
         InstrumentationRegistry.getInstrumentation(),
-        GasGuruDatabase::class,
+        GasGuruDatabase::class.java,
     )
 
     @AfterEach
