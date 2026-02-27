@@ -21,6 +21,8 @@ import com.gasguru.core.data.repository.stations.FuelStationRepository
 import com.gasguru.core.data.repository.stations.OfflineFuelStationRepository
 import com.gasguru.core.data.repository.user.OfflineUserDataRepository
 import com.gasguru.core.data.repository.user.UserDataRepository
+import com.gasguru.core.data.repository.vehicle.OfflineVehicleRepository
+import com.gasguru.core.data.repository.vehicle.VehicleRepository
 import com.gasguru.core.data.sync.SyncManager
 import com.gasguru.core.data.util.ConnectivityManagerNetworkMonitor
 import com.gasguru.core.data.util.NetworkMonitor
@@ -37,7 +39,12 @@ val dataModule = module {
         OfflineUserDataRepository(
             userDataDao = get(),
             favoriteStationDao = get(),
+            vehicleDao = get(),
         )
+    }
+
+    single<VehicleRepository> {
+        OfflineVehicleRepository(vehicleDao = get())
     }
 
     single<FuelStationRepository> {
@@ -103,7 +110,7 @@ val dataModule = module {
             supabaseManager = get(),
             networkMonitor = get(),
             oneSignalManager = get(),
-            userDataDao = get(),
+            vehicleDao = get(),
         )
     }
 
