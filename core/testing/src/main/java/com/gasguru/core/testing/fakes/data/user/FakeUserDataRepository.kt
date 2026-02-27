@@ -2,7 +2,6 @@ package com.gasguru.core.testing.fakes.data.user
 
 import com.gasguru.core.data.repository.user.UserDataRepository
 import com.gasguru.core.model.data.FuelStation
-import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.model.data.UserData
@@ -23,14 +22,12 @@ class FakeUserDataRepository(
 
     val removedFavoriteStations = mutableListOf<Int>()
     val addedFavoriteStations = mutableListOf<Int>()
-    val updatedFuelSelections = mutableListOf<FuelType>()
     val updatedThemeModes = mutableListOf<ThemeMode>()
 
     override val userData: Flow<UserData> = userDataFlow
 
-    override suspend fun updateSelectionFuel(fuelType: FuelType) {
-        updatedFuelSelections.add(fuelType)
-        userDataFlow.update { it.copy(fuelSelection = fuelType) }
+    override suspend fun setOnboardingComplete() {
+        userDataFlow.update { it.copy(isOnboardingSuccess = true) }
     }
 
     override suspend fun updateThemeMode(themeMode: ThemeMode) {

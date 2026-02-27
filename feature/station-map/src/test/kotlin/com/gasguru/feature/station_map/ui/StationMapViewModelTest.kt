@@ -4,6 +4,7 @@ import com.gasguru.core.data.repository.stations.OfflineFuelStationRepository
 import com.gasguru.core.data.repository.user.OfflineUserDataRepository
 import com.gasguru.core.database.model.FuelStationEntity
 import com.gasguru.core.database.model.UserDataEntity
+import com.gasguru.core.database.model.VehicleEntity
 import com.gasguru.core.domain.filters.GetFiltersUseCase
 import com.gasguru.core.domain.filters.SaveFilterUseCase
 import com.gasguru.core.domain.fuelstation.FuelStationByLocationUseCase
@@ -17,11 +18,13 @@ import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.Route
 import com.gasguru.core.model.data.UserData
+import com.gasguru.core.model.data.Vehicle
 import com.gasguru.core.testing.CoroutinesTestExtension
 import com.gasguru.core.testing.fakes.data.database.FakeFavoriteStationDao
 import com.gasguru.core.testing.fakes.data.database.FakeFuelStationDao
 import com.gasguru.core.testing.fakes.data.database.FakePriceAlertDao
 import com.gasguru.core.testing.fakes.data.database.FakeUserDataDao
+import com.gasguru.core.testing.fakes.data.database.FakeVehicleDao
 import com.gasguru.core.testing.fakes.data.filter.FakeFilterRepository
 import com.gasguru.core.testing.fakes.data.location.FakeLocationTracker
 import com.gasguru.core.testing.fakes.data.network.FakeRemoteDataSource
@@ -48,6 +51,7 @@ class StationMapViewModelTest {
     private lateinit var sut: StationMapViewModel
     private lateinit var fakeUserDataRepository: FakeUserDataRepository
     private lateinit var fakeUserDataDao: FakeUserDataDao
+    private lateinit var fakeVehicleDao: FakeVehicleDao
     private lateinit var fakeFavoriteStationDao: FakeFavoriteStationDao
     private lateinit var fakeFuelStationDao: FakeFuelStationDao
     private lateinit var fakePriceAlertDao: FakePriceAlertDao
@@ -59,14 +63,16 @@ class StationMapViewModelTest {
     @BeforeEach
     fun setUp() {
         fakeUserDataRepository = FakeUserDataRepository(
-            initialUserData = UserData(fuelSelection = FuelType.GASOLINE_95)
+            initialUserData = UserData(vehicles = listOf(Vehicle(id = 1L, fuelType = FuelType.GASOLINE_95, name = null, tankCapacity = 40)))
         )
         fakeUserDataDao = FakeUserDataDao(
             initialUserData = UserDataEntity(
-                fuelSelection = FuelType.GASOLINE_95,
                 lastUpdate = 0,
-                isOnboardingSuccess = true
+                isOnboardingSuccess = true,
             )
+        )
+        fakeVehicleDao = FakeVehicleDao(
+            initialVehicles = listOf(VehicleEntity(id = 1L, userId = 0L, name = null, fuelType = FuelType.GASOLINE_95, tankCapacity = 40)),
         )
         fakeFavoriteStationDao = FakeFavoriteStationDao()
         fakeFuelStationDao = FakeFuelStationDao()
@@ -478,7 +484,8 @@ class StationMapViewModelTest {
     private fun createViewModel(): StationMapViewModel {
         val offlineUserDataRepository = OfflineUserDataRepository(
             userDataDao = fakeUserDataDao,
-            favoriteStationDao = fakeFavoriteStationDao
+            favoriteStationDao = fakeFavoriteStationDao,
+            vehicleDao = fakeVehicleDao,
         )
         val offlineFuelStationRepository = OfflineFuelStationRepository(
             fuelStationDao = fakeFuelStationDao,
