@@ -13,7 +13,6 @@ import com.gasguru.core.testing.fakes.data.user.FakeUserDataRepository
 import com.gasguru.core.testing.fakes.data.vehicle.FakeVehicleRepository
 import com.gasguru.core.ui.R
 import com.gasguru.core.ui.mapper.toUi
-import com.gasguru.core.ui.mapper.toUiModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
