@@ -80,7 +80,11 @@ class FavoriteListStationViewModelTest {
     fun sortsByPriceByDefault() = runTest {
         fakeLocationTracker.setLocationEnabled(true)
         fakeLocationTracker.setLastKnownLocation(testLocation())
-        fakeUserDataRepository.setUserData(UserData(vehicles = listOf(Vehicle(id = 1L, fuelType = FuelType.GASOLINE_95, name = null, tankCapacity = 40))))
+        fakeUserDataRepository.setUserData(
+            UserData(
+                vehicles = listOf(Vehicle(id = 1L, fuelType = FuelType.GASOLINE_95, name = null, tankCapacity = 40))
+            )
+        )
 
         val stationA = previewFuelStationDomain(idServiceStation = 1).copy(
             priceGasoline95E5 = 1.50,
@@ -109,7 +113,11 @@ class FavoriteListStationViewModelTest {
     fun changesSortingWhenTabChanges() = runTest {
         fakeLocationTracker.setLocationEnabled(true)
         fakeLocationTracker.setLastKnownLocation(testLocation())
-        fakeUserDataRepository.setUserData(UserData(vehicles = listOf(Vehicle(id = 1L, fuelType = FuelType.GASOLINE_95, name = null, tankCapacity = 40))))
+        fakeUserDataRepository.setUserData(
+            UserData(
+                vehicles = listOf(Vehicle(id = 1L, fuelType = FuelType.GASOLINE_95, name = null, tankCapacity = 40))
+            )
+        )
 
         val stationA = previewFuelStationDomain(idServiceStation = 1).copy(
             priceGasoline95E5 = 1.50,

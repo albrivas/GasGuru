@@ -43,7 +43,9 @@ val databaseModule = module {
                 override fun onCreate(db: SupportSQLiteDatabase) {
                     super.onCreate(db)
                     db.execSQL(
-                        "INSERT OR IGNORE INTO `user-data` (id, lastUpdate, isOnboardingSuccess, themeModeId) VALUES (0, 0, 0, 3)"
+                        "INSERT OR IGNORE INTO `user-data` " +
+                            "(id, lastUpdate, isOnboardingSuccess, themeModeId) " +
+                            "VALUES (0, 0, 0, 3)",
                     )
                 }
             },
