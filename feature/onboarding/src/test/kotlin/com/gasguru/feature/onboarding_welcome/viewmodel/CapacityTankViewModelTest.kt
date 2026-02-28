@@ -57,7 +57,9 @@ class CapacityTankViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN initial state WHEN collecting uiState THEN selectedCapacity is null, showPicker is false and isContinueEnabled is false")
+    @DisplayName(
+        "GIVEN initial state WHEN collecting uiState THEN selectedCapacity is null, showPicker is false and isContinueEnabled is false"
+    )
     fun initialStateIsEmpty() = runTest {
         sut.uiState.test {
             val state = awaitItem()
@@ -77,7 +79,9 @@ class CapacityTankViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN initial state WHEN SelectCommonValue event THEN selectedCapacity is updated and isContinueEnabled is true")
+    @DisplayName(
+        "GIVEN initial state WHEN SelectCommonValue event THEN selectedCapacity is updated and isContinueEnabled is true"
+    )
     fun selectCommonValueUpdatesSelectedCapacity() = runTest {
         sut.uiState.test {
             awaitItem()
@@ -91,7 +95,9 @@ class CapacityTankViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN no capacity selected WHEN OpenPicker event THEN showPicker is true and pickerValue is PICKER_MIN")
+    @DisplayName(
+        "GIVEN no capacity selected WHEN OpenPicker event THEN showPicker is true and pickerValue is PICKER_MIN"
+    )
     fun openPickerWithNoSelectionSetsPickerValueToMin() = runTest {
         sut.uiState.test {
             awaitItem()
@@ -105,7 +111,9 @@ class CapacityTankViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN capacity selected WHEN OpenPicker event THEN showPicker is true and pickerValue matches selected capacity")
+    @DisplayName(
+        "GIVEN capacity selected WHEN OpenPicker event THEN showPicker is true and pickerValue matches selected capacity"
+    )
     fun openPickerWithSelectionSetsPickerValueToSelectedCapacity() = runTest {
         sut.uiState.test {
             awaitItem()
@@ -138,7 +146,9 @@ class CapacityTankViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN picker open WHEN ConfirmPickerValue event THEN selectedCapacity is updated and showPicker is false")
+    @DisplayName(
+        "GIVEN picker open WHEN ConfirmPickerValue event THEN selectedCapacity is updated and showPicker is false"
+    )
     fun confirmPickerValueUpdatesCapacityAndClosesPicker() = runTest {
         sut.uiState.test {
             awaitItem()
@@ -155,7 +165,9 @@ class CapacityTankViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN capacity selected WHEN Continue event THEN save use case is called with correct capacity and navigates to Home")
+    @DisplayName(
+        "GIVEN capacity selected WHEN Continue event THEN save use case is called with correct capacity and navigates to Home"
+    )
     fun continueWithSelectedCapacitySavesAndNavigatesToHome() = runTest {
         sut.handleEvent(event = CapacityTankEvent.SelectCommonValue(value = 55))
 

@@ -63,7 +63,16 @@ class StationMapViewModelTest {
     @BeforeEach
     fun setUp() {
         fakeUserDataRepository = FakeUserDataRepository(
-            initialUserData = UserData(vehicles = listOf(Vehicle(id = 1L, fuelType = FuelType.GASOLINE_95, name = null, tankCapacity = 40)))
+            initialUserData = UserData(
+                vehicles = listOf(
+                    Vehicle(
+                        id = 1L,
+                        fuelType = FuelType.GASOLINE_95,
+                        name = null,
+                        tankCapacity = 40
+                    )
+                )
+            )
         )
         fakeUserDataDao = FakeUserDataDao(
             initialUserData = UserDataEntity(
@@ -72,7 +81,15 @@ class StationMapViewModelTest {
             )
         )
         fakeVehicleDao = FakeVehicleDao(
-            initialVehicles = listOf(VehicleEntity(id = 1L, userId = 0L, name = null, fuelType = FuelType.GASOLINE_95, tankCapacity = 40)),
+            initialVehicles = listOf(
+                VehicleEntity(
+                    id = 1L,
+                    userId = 0L,
+                    name = null,
+                    fuelType = FuelType.GASOLINE_95,
+                    tankCapacity = 40
+                )
+            ),
         )
         fakeFavoriteStationDao = FakeFavoriteStationDao()
         fakeFuelStationDao = FakeFuelStationDao()
@@ -505,7 +522,9 @@ class StationMapViewModelTest {
             getFiltersUseCase = GetFiltersUseCase(fakeFilterRepository),
             saveFilterUseCase = SaveFilterUseCase(fakeFilterRepository),
             getRouteUseCase = GetRouteUseCase(fakeRoutesRepository),
-            getFuelStationsInRouteUseCase = GetFuelStationsInRouteUseCase(offlineFuelStationRepository),
+            getFuelStationsInRouteUseCase = GetFuelStationsInRouteUseCase(
+                offlineFuelStationRepository
+            ),
             defaultDispatcher = Dispatchers.Main
         )
     }
@@ -515,7 +534,7 @@ class StationMapViewModelTest {
         latitude: Double,
         longitude: Double,
         price: Double,
-        brand: String = "Repsol"
+        brand: String = "Repsol",
     ): FuelStationEntity =
         FuelStationEntity(
             bioEthanolPercentage = "",
