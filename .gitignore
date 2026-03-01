@@ -224,8 +224,6 @@ google-services.json
 # Kotlin kompiler
 .kotlin/*
 
-# Database schema files
-core/database/schemas/
 
 .gitconfig
 sonar-project.properties
