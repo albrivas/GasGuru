@@ -11,6 +11,8 @@ import com.gasguru.core.testing.fakes.data.vehicle.FakeVehicleRepository
 import com.gasguru.core.testing.fakes.navigation.FakeNavigationManager
 import com.gasguru.feature.onboarding_welcome.ui.CapacityTankEvent
 import com.gasguru.navigation.manager.NavigationDestination
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -21,6 +23,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @ExtendWith(CoroutinesTestExtension::class)
 class CapacityTankViewModelTest {
 
@@ -172,6 +175,7 @@ class CapacityTankViewModelTest {
         sut.handleEvent(event = CapacityTankEvent.SelectCommonValue(value = 55))
 
         sut.handleEvent(event = CapacityTankEvent.Continue)
+        advanceUntilIdle()
 
         assertEquals(listOf(defaultVehicle.id to 55), fakeVehicleRepository.updatedTankCapacities)
         assertEquals(1, fakeNavigationManager.navigatedDestinations.size)
