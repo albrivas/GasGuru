@@ -5,7 +5,6 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.gasguru.core.database.GasGuruDatabase
 import com.gasguru.core.database.model.UserDataEntity
-import com.gasguru.core.model.data.FuelType
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.AfterEach
@@ -37,9 +36,8 @@ class UserDataDaoTest {
     fun getUserDataTest() = runTest {
         val userData = UserDataEntity(
             id = 1,
-            fuelSelection = FuelType.GASOLINE_95,
             lastUpdate = 0,
-            isOnboardingSuccess = true
+            isOnboardingSuccess = true,
         )
         userDataDao.insertUserData(userData)
         val retrievedUserData = userDataDao.getUserData().first()
@@ -51,9 +49,8 @@ class UserDataDaoTest {
     fun insertUserDataTest() = runTest {
         val userData = UserDataEntity(
             id = 1,
-            fuelSelection = FuelType.GASOLINE_95,
             lastUpdate = 0,
-            isOnboardingSuccess = true
+            isOnboardingSuccess = true,
         )
         userDataDao.insertUserData(userData)
         val retrievedUserData = userDataDao.getUserData().first()

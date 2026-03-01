@@ -7,6 +7,7 @@ import com.gasguru.core.database.dao.FuelStationDao
 import com.gasguru.core.database.dao.PriceAlertDao
 import com.gasguru.core.database.dao.RecentSearchQueryDao
 import com.gasguru.core.database.dao.UserDataDao
+import com.gasguru.core.database.dao.VehicleDao
 import org.koin.dsl.module
 
 val daoModule = module {
@@ -16,4 +17,5 @@ val daoModule = module {
     single<FilterDao> { get<GasGuruDatabase>().filterDao() }
     single<FavoriteStationDao> { get<GasGuruDatabase>().favoriteStationDao() }
     single<PriceAlertDao> { get<GasGuruDatabase>().priceAlertDao() }
+    single<VehicleDao> { get<GasGuruDatabase>().vehicleDao() }
 }
