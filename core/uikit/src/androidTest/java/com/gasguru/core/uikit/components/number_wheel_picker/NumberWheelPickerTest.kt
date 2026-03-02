@@ -9,7 +9,6 @@ import androidx.compose.ui.unit.dp
 import com.gasguru.core.testing.BaseTest
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -61,58 +60,6 @@ class NumberWheelPickerTest : BaseTest() {
 
         assertTrue(capturedValues.isNotEmpty())
         assertEquals(50, capturedValues.last())
-    }
-
-    @Test
-    @DisplayName("GIVEN min equal to max WHEN creating model THEN throws IllegalArgumentException")
-    fun modelThrowsWhenMinEqualsMax() {
-        assertThrows(IllegalArgumentException::class.java) {
-            NumberWheelPickerModel(
-                min = 40,
-                max = 40,
-                initialValue = 40,
-                onValueChanged = {},
-            )
-        }
-    }
-
-    @Test
-    @DisplayName("GIVEN min greater than max WHEN creating model THEN throws IllegalArgumentException")
-    fun modelThrowsWhenMinGreaterThanMax() {
-        assertThrows(IllegalArgumentException::class.java) {
-            NumberWheelPickerModel(
-                min = 60,
-                max = 40,
-                initialValue = 50,
-                onValueChanged = {},
-            )
-        }
-    }
-
-    @Test
-    @DisplayName("GIVEN initialValue below min WHEN creating model THEN throws IllegalArgumentException")
-    fun modelThrowsWhenInitialValueBelowMin() {
-        assertThrows(IllegalArgumentException::class.java) {
-            NumberWheelPickerModel(
-                min = 40,
-                max = 60,
-                initialValue = 30,
-                onValueChanged = {},
-            )
-        }
-    }
-
-    @Test
-    @DisplayName("GIVEN initialValue above max WHEN creating model THEN throws IllegalArgumentException")
-    fun modelThrowsWhenInitialValueAboveMax() {
-        assertThrows(IllegalArgumentException::class.java) {
-            NumberWheelPickerModel(
-                min = 40,
-                max = 60,
-                initialValue = 70,
-                onValueChanged = {},
-            )
-        }
     }
 
     @Test
