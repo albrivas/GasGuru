@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gasguru.core.uikit.R
@@ -103,6 +104,7 @@ fun TankCostCard(model: TankCostCardModel, modifier: Modifier = Modifier) = with
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Row(
+                modifier = Modifier.weight(1f),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
             ) {
@@ -117,6 +119,8 @@ fun TankCostCard(model: TankCostCardModel, modifier: Modifier = Modifier) = with
                     text = vehicleName,
                     style = GasGuruTheme.typography.captionRegular,
                     color = GasGuruTheme.colors.textSubtle,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
             Row(
