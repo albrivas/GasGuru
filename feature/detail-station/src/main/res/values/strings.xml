@@ -29,4 +29,7 @@
     <string name="share_with">Share with:</string>
     <string name="share_fuel_prices">Fuel prices</string>
     <string name="share_download">Download GasGuru and find the cheapest gas stations</string>
+    <string name="capacity_picker_title">Select capacity</string>
+    <string name="capacity_picker_range">Min 40 · Max 999</string>
+    <string name="capacity_picker_confirm">Confirm</string>
 </resources>

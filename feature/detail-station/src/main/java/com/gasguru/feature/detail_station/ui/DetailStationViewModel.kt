@@ -12,6 +12,8 @@ import com.gasguru.core.domain.location.GetLastKnownLocationUseCase
 import com.gasguru.core.domain.maps.GetStaticMapUrlUseCase
 import com.gasguru.core.domain.places.GetAddressFromLocationUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
+import com.gasguru.core.domain.vehicle.UpdateVehicleTankCapacityUseCase
+import com.gasguru.core.model.data.Vehicle
 import com.gasguru.core.ui.mapper.toUiModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
@@ -35,6 +37,7 @@ class DetailStationViewModel(
     private val getStaticMapUrlUseCase: GetStaticMapUrlUseCase,
     private val addPriceAlertUseCase: AddPriceAlertUseCase,
     private val removePriceAlertUseCase: RemovePriceAlertUseCase,
+    private val updateVehicleTankCapacityUseCase: UpdateVehicleTankCapacityUseCase,
 ) : ViewModel() {
 
     private val id: Int = checkNotNull(savedStateHandle["idServiceStation"])
@@ -96,6 +99,10 @@ class DetailStationViewModel(
             is DetailStationEvent.TogglePriceAlert -> {
                 onPriceAlertClick(event.isEnabled)
             }
+
+            is DetailStationEvent.UpdateTankCapacity -> {
+                onUpdateTankCapacity(event.capacity)
+            }
         }
     }
 
@@ -104,6 +111,11 @@ class DetailStationViewModel(
             true -> saveFavoriteStationUseCase(stationId = id)
             false -> removeFavoriteStationUseCase(stationId = id)
         }
+    }
+
+    private fun onUpdateTankCapacity(tankCapacity: Int) = viewModelScope.launch {
+        val currentVehicle = vehicle.value ?: return@launch
+        updateVehicleTankCapacityUseCase(vehicleId = currentVehicle.id, tankCapacity = tankCapacity)
     }
 
     private fun onPriceAlertClick(isEnabled: Boolean) = viewModelScope.launch {
@@ -129,5 +141,13 @@ class DetailStationViewModel(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = 0L,
+    )
+
+    val vehicle: StateFlow<Vehicle?> = userDataUseCase().map {
+        it.vehicles.firstOrNull()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = null,
     )
 }

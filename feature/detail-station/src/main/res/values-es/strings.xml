@@ -29,4 +29,7 @@
     <string name="share_with">Compartir con:</string>
     <string name="share_fuel_prices">Precios de combustible</string>
     <string name="share_download">Descarga GasGuru y encuentra las gasolineras más baratas</string>
+    <string name="capacity_picker_title">Selecciona la capacidad</string>
+    <string name="capacity_picker_range">Mínimo 40 · Máximo 999</string>
+    <string name="capacity_picker_confirm">Confirmar</string>
 </resources>
