@@ -11,7 +11,7 @@ import com.gasguru.core.ui.models.ThemeModeUi
 data class ProfileContentUi(
     val fuelTranslation: Int,
     val themeUi: ThemeModeUi,
-    val allThemesUi: List<ThemeModeUi>
+    val allThemesUi: List<ThemeModeUi>,
 )
 
 sealed class ProfileSheet {
@@ -31,12 +31,12 @@ class ProfileContentUiPreviewParameterProvider : PreviewParameterProvider<Profil
         ProfileContentUi(
             fuelTranslation = R.string.gasoline_95,
             themeUi = ThemeMode.SYSTEM.toUi(),
-            allThemesUi = ThemeMode.entries.map { it.toUi() }
+            allThemesUi = ThemeMode.entries.map { it.toUi() },
         ),
         ProfileContentUi(
             fuelTranslation = R.string.diesel,
             themeUi = ThemeMode.DARK.toUi(),
-            allThemesUi = ThemeMode.entries.map { it.toUi() }
+            allThemesUi = ThemeMode.entries.map { it.toUi() },
         )
     )
 }

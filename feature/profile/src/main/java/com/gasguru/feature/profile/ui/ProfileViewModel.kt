@@ -2,9 +2,9 @@ package com.gasguru.feature.profile.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gasguru.core.domain.fuelstation.SaveFuelSelectionUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.domain.user.SaveThemeModeUseCase
+import com.gasguru.core.domain.vehicle.UpdateVehicleFuelTypeUseCase
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.ui.mapper.toUi
@@ -19,7 +19,7 @@ import okhttp3.internal.toImmutableList
 
 class ProfileViewModel(
     getUserData: GetUserDataUseCase,
-    private val saveFuelSelectionUseCase: SaveFuelSelectionUseCase,
+    private val updateVehicleFuelTypeUseCase: UpdateVehicleFuelTypeUseCase,
     private val saveThemeModeUseCase: SaveThemeModeUseCase,
 ) : ViewModel() {
 
@@ -27,18 +27,22 @@ class ProfileViewModel(
         ThemeMode.entries.map { it.toUi() }.toImmutableList()
     }
 
+    private var currentVehicleId: Long? = null
+
     val userData: StateFlow<ProfileUiState> = getUserData().map { userData ->
+        val vehicle = userData.vehicles.first()
+        currentVehicleId = vehicle.id
         ProfileUiState.Success(
             content = ProfileContentUi(
-                fuelTranslation = userData.fuelSelection.toUiModel().translationRes,
+                fuelTranslation = vehicle.fuelType.toUiModel().translationRes,
                 themeUi = userData.themeMode.toUi(),
-                allThemesUi = allThemesUi
+                allThemesUi = allThemesUi,
             )
         )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = ProfileUiState.Loading
+        initialValue = ProfileUiState.Loading,
     )
 
     fun handleEvents(event: ProfileEvents) {
@@ -49,7 +53,8 @@ class ProfileViewModel(
     }
 
     private fun saveSelectionFuel(fuelType: FuelType) = viewModelScope.launch {
-        saveFuelSelectionUseCase(fuelType = fuelType)
+        val vehicleId = currentVehicleId ?: return@launch
+        updateVehicleFuelTypeUseCase(vehicleId = vehicleId, fuelType = fuelType)
     }
 
     private fun saveTheme(theme: ThemeModeUi) = viewModelScope.launch {

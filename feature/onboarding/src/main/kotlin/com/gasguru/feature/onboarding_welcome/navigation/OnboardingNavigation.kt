@@ -6,6 +6,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import com.gasguru.feature.onboarding_welcome.ui.CapacityTankRoute
 import com.gasguru.feature.onboarding_welcome.ui.NewOnboardingScreenRoute
 import com.gasguru.feature.onboarding_welcome.ui.OnboardingFuelPreferencesRoute
 import kotlinx.serialization.Serializable
@@ -36,6 +37,19 @@ fun NavGraphBuilder.newOnboardingScreen() {
     }
 }
 
+fun NavController.navigateToCapacityTankRoute(navOptions: NavOptions? = null) {
+    this.navigate(OnboardingRoutes.CapacityTankRoute, navOptions)
+}
+
+fun NavGraphBuilder.capacityTankScreen() {
+    composable<OnboardingRoutes.CapacityTankRoute>(
+        enterTransition = { slideInHorizontally { it } },
+        popExitTransition = { slideOutHorizontally { it } },
+    ) {
+        CapacityTankRoute()
+    }
+}
+
 @Serializable
 sealed class OnboardingRoutes {
     @Serializable
@@ -43,4 +57,7 @@ sealed class OnboardingRoutes {
 
     @Serializable
     data object NewOnboardingRoute : OnboardingRoutes()
+
+    @Serializable
+    data object CapacityTankRoute : OnboardingRoutes()
 }

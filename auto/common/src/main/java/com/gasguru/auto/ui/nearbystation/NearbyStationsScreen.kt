@@ -55,7 +55,7 @@ class NearbyStationsScreen(carContext: CarContext) : Screen(carContext), KoinCom
                     uiState = NearbyStationsUiState(
                         loading = false,
                         stations = stations.map { it.toUiModel() },
-                        selectedFuel = userData.fuelSelection
+                        selectedFuel = userData.vehicles.first().fuelType
                     )
                     invalidate()
                 }.launchIn(coroutineScope)
@@ -65,7 +65,7 @@ class NearbyStationsScreen(carContext: CarContext) : Screen(carContext), KoinCom
                         uiState = NearbyStationsUiState(
                             loading = false,
                             stations = emptyList(),
-                            selectedFuel = userData.fuelSelection,
+                            selectedFuel = userData.vehicles.first().fuelType,
                             locationDisabled = true
                         )
                         invalidate()
