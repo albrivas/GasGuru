@@ -15,4 +15,14 @@
     <string name="onboarding_desc_alerts">We’ll notify you if a station drops its price so you can fill up before it goes back up</string>
     <string name="onboarding_title_offline">No signal, no problem</string>
     <string name="onboarding_desc_offline">The app works offline so you can keep checking info on the road, even if you lose connection</string>
+    <string name="capacity_tank_title">How much does your tank hold?</string>
+    <string name="capacity_tank_subtitle">Enter your tank capacity to calculate the cost of a full fill-up</string>
+    <string name="capacity_tank_display_hint">Tap to open the selector</string>
+    <string name="capacity_tank_saved">Capacity saved</string>
+    <string name="capacity_tank_common_values">Common values</string>
+    <string name="capacity_tank_hint">You can change this later in settings</string>
+    <string name="capacity_picker_title">Select capacity</string>
+    <string name="capacity_picker_range">Min 40 · Max 999</string>
+    <string name="capacity_picker_confirm">Confirm</string>
+    <string name="vehicle_default_name">Vehicle</string>
 </resources>

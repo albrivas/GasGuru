@@ -13,7 +13,16 @@ class FakeUserDataDao(
 
     override fun getUserData(): Flow<UserDataEntity?> = userDataFlow
 
-    override suspend fun insertUserData(userData: UserDataEntity) {
+    override suspend fun insertUserData(userData: UserDataEntity): Long {
+        return if (userDataFlow.value == null) {
+            userDataFlow.value = userData
+            0L
+        } else {
+            -1L
+        }
+    }
+
+    override suspend fun updateUserData(userData: UserDataEntity) {
         userDataFlow.value = userData
     }
 }

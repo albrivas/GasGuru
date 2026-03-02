@@ -1,0 +1,360 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 11,
+    "identityHash": "8191eaf822711b44ff6da4d88c235a25",
+    "entities": [
+      {
+        "tableName": "fuel-station",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`bioEthanolPercentage` TEXT NOT NULL, `esterMethylPercentage` TEXT NOT NULL, `postalCode` TEXT NOT NULL, `direction` TEXT NOT NULL, `schedule` TEXT NOT NULL, `idAutonomousCommunity` TEXT NOT NULL, `idServiceStation` INTEGER NOT NULL, `idMunicipality` TEXT NOT NULL, `idProvince` TEXT NOT NULL, `latitude` REAL NOT NULL, `locality` TEXT NOT NULL, `longitudeWGS84` REAL NOT NULL, `margin` TEXT NOT NULL, `municipality` TEXT NOT NULL, `priceBiodiesel` REAL NOT NULL, `priceBioEthanol` REAL NOT NULL, `priceGasNaturalCompressed` REAL NOT NULL, `priceLiquefiedNaturalGas` REAL NOT NULL, `priceLiquefiedPetroleumGas` REAL NOT NULL, `priceGasoilA` REAL NOT NULL, `priceGasoilB` REAL NOT NULL, `priceGasoilPremium` REAL NOT NULL, `priceGasoline95E10` REAL NOT NULL, `priceGasoline95E5` REAL NOT NULL, `priceGasoline95E5Premium` REAL NOT NULL, `priceGasoline98E10` REAL NOT NULL, `priceGasoline98E5` REAL NOT NULL, `priceHydrogen` REAL NOT NULL, `province` TEXT NOT NULL, `referral` TEXT NOT NULL, `brandStation` TEXT NOT NULL, `typeSale` TEXT NOT NULL, `lastUpdate` INTEGER NOT NULL DEFAULT 0, `isFavorite` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`idServiceStation`))",
+        "fields": [
+          {
+            "fieldPath": "bioEthanolPercentage",
+            "columnName": "bioEthanolPercentage",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "esterMethylPercentage",
+            "columnName": "esterMethylPercentage",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "postalCode",
+            "columnName": "postalCode",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "direction",
+            "columnName": "direction",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "schedule",
+            "columnName": "schedule",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "idAutonomousCommunity",
+            "columnName": "idAutonomousCommunity",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "idServiceStation",
+            "columnName": "idServiceStation",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "idMunicipality",
+            "columnName": "idMunicipality",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "idProvince",
+            "columnName": "idProvince",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "latitude",
+            "columnName": "latitude",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "locality",
+            "columnName": "locality",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "longitudeWGS84",
+            "columnName": "longitudeWGS84",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "margin",
+            "columnName": "margin",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "municipality",
+            "columnName": "municipality",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceBiodiesel",
+            "columnName": "priceBiodiesel",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceBioEthanol",
+            "columnName": "priceBioEthanol",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceGasNaturalCompressed",
+            "columnName": "priceGasNaturalCompressed",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceLiquefiedNaturalGas",
+            "columnName": "priceLiquefiedNaturalGas",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceLiquefiedPetroleumGas",
+            "columnName": "priceLiquefiedPetroleumGas",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceGasoilA",
+            "columnName": "priceGasoilA",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceGasoilB",
+            "columnName": "priceGasoilB",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceGasoilPremium",
+            "columnName": "priceGasoilPremium",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceGasoline95E10",
+            "columnName": "priceGasoline95E10",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceGasoline95E5",
+            "columnName": "priceGasoline95E5",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceGasoline95E5Premium",
+            "columnName": "priceGasoline95E5Premium",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceGasoline98E10",
+            "columnName": "priceGasoline98E10",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceGasoline98E5",
+            "columnName": "priceGasoline98E5",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceHydrogen",
+            "columnName": "priceHydrogen",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "province",
+            "columnName": "province",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "referral",
+            "columnName": "referral",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "brandStation",
+            "columnName": "brandStation",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "typeSale",
+            "columnName": "typeSale",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastUpdate",
+            "columnName": "lastUpdate",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "isFavorite",
+            "columnName": "isFavorite",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "idServiceStation"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_location",
+            "unique": false,
+            "columnNames": [
+              "latitude",
+              "longitudeWGS84"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_location` ON `${TABLE_NAME}` (`latitude`, `longitudeWGS84`)"
+          }
+        ]
+      },
+      {
+        "tableName": "user-data",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `fuelSelection` TEXT NOT NULL, `lastUpdate` INTEGER NOT NULL DEFAULT 0, `isOnboardingSuccess` INTEGER NOT NULL DEFAULT 0, `themeModeId` INTEGER NOT NULL DEFAULT 3, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fuelSelection",
+            "columnName": "fuelSelection",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastUpdate",
+            "columnName": "lastUpdate",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "isOnboardingSuccess",
+            "columnName": "isOnboardingSuccess",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "themeModeId",
+            "columnName": "themeModeId",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "3"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "recent-search-queries",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "favorite_stations",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`idServiceStation` INTEGER NOT NULL, PRIMARY KEY(`idServiceStation`))",
+        "fields": [
+          {
+            "fieldPath": "idServiceStation",
+            "columnName": "idServiceStation",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "idServiceStation"
+          ]
+        }
+      },
+      {
+        "tableName": "filter",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `type` TEXT NOT NULL, `selection` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "selection",
+            "columnName": "selection",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8191eaf822711b44ff6da4d88c235a25')"
+    ]
+  }
+}
