@@ -16,4 +16,6 @@
     <string name="tab_distance">Distance</string>
     <string name="route_calculating">Calculating route…</string>
     <string name="route_close_button">Close route</string>
+    <string name="full_tank_cost">Full tank cost</string>
+    <string name="change_litres">Change litres</string>
 </resources>
