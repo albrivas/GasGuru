@@ -3,7 +3,6 @@ package com.gasguru.feature.onboarding_welcome.ui
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performClick
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.testing.BaseTest
 import org.junit.jupiter.api.DisplayName
@@ -37,13 +36,12 @@ class OnboardingFuelPreferencesTest : BaseTest() {
                     FuelType.DIESEL,
                     FuelType.DIESEL_PLUS,
                 ),
-                selectedFuel = null,
+                selectedFuel = FuelType.GASOLINE_95,
                 navigateNext = {},
                 onSelectedFuel = {},
                 saveSelection = {},
             )
         }
-        onNodeWithTag("list_item_1").performClick()
         onNodeWithTag("button_next_onboarding").assertIsEnabled()
     }
 }
