@@ -25,7 +25,9 @@
 - Si se modifica un archivo que tiene documentacion asociada, actualizar el doc correspondiente en el mismo paso
 
 ## Tests
+- Toda clase nueva o funcionalidad nueva debe tener tests en el mismo paso en que se crea
 - Si se modifica una clase que tiene tests asociados, actualizar los tests para reflejar los cambios en el mismo paso
+- Cada feature nueva debe alcanzar un mínimo del **65% de cobertura** de código (líneas + ramas) antes de hacer merge
 
 ## PR Checklist
 - [ ] No hay dependencias cruzadas entre features
@@ -106,6 +108,7 @@ gh pr create --base main --title "Release - vX.X.X" --body ""
 | Tema | Descripción |
 |------|-------------|
 | [Adding Fuel Types](docs/ADDING_FUEL_TYPE.md) | Guía para añadir nuevos tipos de combustible |
+| [Database Migrations](docs/DATABASE_MIGRATIONS.md) | Historial de migraciones de la DB: qué cambió y por qué en cada versión |
 | [CI/CD](docs/CICD.md) | Integración y despliegue continuo |
 | [Dependency Injection](docs/DEPENDENCY_INJECTION.md) | Arquitectura DI con Koin, equivalencias con Hilt, guía para añadir dependencias |
 | [GitFlow](docs/GITFLOW.md) | Estrategia de branching y flujo de trabajo |

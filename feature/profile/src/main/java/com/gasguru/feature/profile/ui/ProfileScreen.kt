@@ -1,6 +1,7 @@
 package com.gasguru.feature.profile.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -155,7 +157,8 @@ fun SuccessContent(content: ProfileContentUi, onSheetRequest: (ProfileSheet) -> 
             .background(color = GasGuruTheme.colors.neutral100)
             .fillMaxSize()
             .statusBarsPadding()
-            .padding(start = 16.dp, end = 16.dp, top = 32.dp),
+            .padding(start = 16.dp, end = 16.dp, top = 32.dp)
+            .pointerInput(Unit) { detectTapGestures { } }, // For overlay map
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(

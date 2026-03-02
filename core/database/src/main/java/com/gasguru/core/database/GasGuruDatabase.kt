@@ -12,12 +12,14 @@ import com.gasguru.core.database.dao.FuelStationDao
 import com.gasguru.core.database.dao.PriceAlertDao
 import com.gasguru.core.database.dao.RecentSearchQueryDao
 import com.gasguru.core.database.dao.UserDataDao
+import com.gasguru.core.database.dao.VehicleDao
 import com.gasguru.core.database.model.FavoriteStationEntity
 import com.gasguru.core.database.model.FilterEntity
 import com.gasguru.core.database.model.FuelStationEntity
 import com.gasguru.core.database.model.PriceAlertEntity
 import com.gasguru.core.database.model.RecentSearchQueryEntity
 import com.gasguru.core.database.model.UserDataEntity
+import com.gasguru.core.database.model.VehicleEntity
 
 @Database(
     entities = [
@@ -27,8 +29,9 @@ import com.gasguru.core.database.model.UserDataEntity
         FavoriteStationEntity::class,
         FilterEntity::class,
         PriceAlertEntity::class,
+        VehicleEntity::class,
     ],
-    version = 13,
+    version = 14,
     exportSchema = true,
 )
 @TypeConverters(UserDataConverters::class, ListConverters::class, FilterTypeConverter::class)
@@ -39,4 +42,5 @@ abstract class GasGuruDatabase : RoomDatabase() {
     abstract fun favoriteStationDao(): FavoriteStationDao
     abstract fun filterDao(): FilterDao
     abstract fun priceAlertDao(): PriceAlertDao
+    abstract fun vehicleDao(): VehicleDao
 }

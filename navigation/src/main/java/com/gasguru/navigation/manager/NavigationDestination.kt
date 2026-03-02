@@ -42,4 +42,9 @@ sealed interface NavigationDestination {
      * Navigate to the new onboarding carousel screen.
      */
     data object NewOnboarding : NavigationDestination
+
+    /**
+     * Navigate to tank capacity selection screen during onboarding.
+     */
+    data object OnboardingTankCapacity : NavigationDestination
 }
