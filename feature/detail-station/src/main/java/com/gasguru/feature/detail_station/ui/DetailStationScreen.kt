@@ -325,7 +325,8 @@ fun DetailStationContent(
                         totalCost = "${DecimalFormat("0.00").format(priceModel.rawPrice * currentVehicle.tankCapacity)} €",
                         litres = "${currentVehicle.tankCapacity} L",
                         pricePerLitre = priceModel.formattedPrice,
-                        vehicleName = currentVehicle.name.orEmpty(),
+                        vehicleName = currentVehicle.name.takeUnless { it.isNullOrBlank() }
+                            ?: stringResource(id = R.string.vehicle_default_name),
                         onEditClick = { showCapacitySheet = true },
                     ),
                 )
