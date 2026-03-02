@@ -27,11 +27,13 @@ class ProfileViewModel(
         ThemeMode.entries.map { it.toUi() }.toImmutableList()
     }
 
+    private var currentVehicleId: Long? = null
+
     val userData: StateFlow<ProfileUiState> = getUserData().map { userData ->
         val vehicle = userData.vehicles.first()
+        currentVehicleId = vehicle.id
         ProfileUiState.Success(
             content = ProfileContentUi(
-                vehicleId = vehicle.id,
                 fuelTranslation = vehicle.fuelType.toUiModel().translationRes,
                 themeUi = userData.themeMode.toUi(),
                 allThemesUi = allThemesUi,
@@ -51,7 +53,7 @@ class ProfileViewModel(
     }
 
     private fun saveSelectionFuel(fuelType: FuelType) = viewModelScope.launch {
-        val vehicleId = (userData.value as? ProfileUiState.Success)?.content?.vehicleId ?: return@launch
+        val vehicleId = currentVehicleId ?: return@launch
         updateVehicleFuelTypeUseCase(vehicleId = vehicleId, fuelType = fuelType)
     }
 
