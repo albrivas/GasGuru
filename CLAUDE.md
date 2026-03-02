@@ -18,6 +18,7 @@
 ## Code
 - Añadir nombre de los argumentos. Ejemplo: `getLocation(location = loc)
 - Eliminar imports sin usar
+- **Nombres de variables descriptivos**: evitar abreviaciones de una sola letra o nombres genéricos (ej: `v`, `it`, `x`). Usar nombres que expresen el dominio claramente (ej: `currentVehicle`, `selectedFuelType`, `tankCapacityLitres`)
 
 ## Documentacion
 - Al terminar cualquier tarea o funcionalidad, revisar si hay documentacion existente que deba actualizarse
