@@ -17,6 +17,7 @@ val detailStationModule = module {
             getStaticMapUrlUseCase = get(),
             addPriceAlertUseCase = get(),
             removePriceAlertUseCase = get(),
+            updateVehicleTankCapacityUseCase = get(),
         )
     }
 }
