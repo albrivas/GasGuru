@@ -1,7 +1,5 @@
 package com.gasguru.core.model.data
 
-import java.util.Locale
-
 const val DISTANCE_KM_IN_METERS = 1000
 
 data class FuelStation(
@@ -42,15 +40,15 @@ data class FuelStation(
         return when {
             distance >= DISTANCE_KM_IN_METERS -> {
                 val kilometers = distance / DISTANCE_KM_IN_METERS
-                String.format(Locale.ROOT, "%.2f Km", kilometers)
+                "%.2f Km".format(kilometers)
             }
 
             distance == distance.toInt().toFloat() -> {
-                String.format(Locale.ROOT, "%.0f m", distance)
+                "%.0f m".format(distance)
             }
 
             else -> {
-                String.format(Locale.ROOT, "%.2f m", distance)
+                "%.2f m".format(distance)
             }
         }
     }
@@ -69,7 +67,7 @@ fun previewFuelStationDomain(idServiceStation: Int = 0) = FuelStation(
     idServiceStation = idServiceStation,
     idMunicipality = "",
     idProvince = "",
-    location = LatLng(0.0, 0.0),
+    location = LatLng(latitude = 0.0, longitude = 0.0),
     locality = "",
     margin = "",
     municipality = "Talavera de la Reina",
