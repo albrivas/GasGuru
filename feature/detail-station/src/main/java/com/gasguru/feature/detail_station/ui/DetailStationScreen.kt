@@ -33,27 +33,27 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.NotificationsActive
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -82,10 +82,10 @@ import com.gasguru.core.ui.mapper.toUiModel
 import com.gasguru.core.ui.models.FuelTypeUiModel
 import com.gasguru.core.ui.review.findActivity
 import com.gasguru.core.ui.review.rememberInAppReviewManager
+import com.gasguru.core.uikit.components.GasGuruButton
 import com.gasguru.core.uikit.components.fuel_type_chip.FuelTypeChipModel
 import com.gasguru.core.uikit.components.information_card.InformationCard
 import com.gasguru.core.uikit.components.information_card.InformationCardModel
-import com.gasguru.core.uikit.components.GasGuruButton
 import com.gasguru.core.uikit.components.loading.GasGuruLoading
 import com.gasguru.core.uikit.components.loading.GasGuruLoadingModel
 import com.gasguru.core.uikit.components.number_wheel_picker.NumberWheelPicker
@@ -94,7 +94,6 @@ import com.gasguru.core.uikit.components.price.PriceItem
 import com.gasguru.core.uikit.components.price.PriceItemModel
 import com.gasguru.core.uikit.components.tank_cost_card.TankCostCard
 import com.gasguru.core.uikit.components.tank_cost_card.TankCostCardModel
-import java.text.DecimalFormat
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
@@ -104,6 +103,7 @@ import com.gasguru.feature.detail_station.getTimeElapsedString
 import com.gasguru.navigation.LocalNavigationManager
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import java.text.DecimalFormat
 
 @Composable
 internal fun DetailStationScreenRoute(
@@ -321,7 +321,9 @@ fun DetailStationContent(
                         fuelTypeChip = FuelTypeChipModel(
                             nameRes = fuelUiModel.translationRes,
                         ),
-                        totalCost = "${DecimalFormat("0.00").format(priceModel.rawPrice * currentVehicle.tankCapacity)} €",
+                        totalCost = "${DecimalFormat(
+                            "0.00"
+                        ).format(priceModel.rawPrice * currentVehicle.tankCapacity)} €",
                         litres = "${currentVehicle.tankCapacity} L",
                         pricePerLitre = priceModel.formattedPrice,
                         vehicleName = currentVehicle.name.takeUnless { it.isNullOrBlank() }
