@@ -16,7 +16,6 @@ class TankCostCardTest : BaseTest() {
 
     private fun defaultModel(onEditClick: () -> Unit = {}) = TankCostCardModel(
         fuelTypeChip = FuelTypeChipModel(
-            iconRes = R.drawable.ic_gasoline_95,
             nameRes = R.string.preview_fuel_type,
         ),
         totalCost = "86.72 €",
@@ -83,7 +82,6 @@ class TankCostCardTest : BaseTest() {
             }
         }
 
-        onNodeWithTag("fuel_type_chip_icon").assertIsDisplayed()
         onNodeWithTag("fuel_type_chip_name").assertIsDisplayed()
     }
 

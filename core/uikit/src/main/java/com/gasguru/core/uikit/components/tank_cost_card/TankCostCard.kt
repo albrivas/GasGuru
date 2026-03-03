@@ -156,7 +156,6 @@ private fun TankCostCardPreview() {
         TankCostCard(
             model = TankCostCardModel(
                 fuelTypeChip = FuelTypeChipModel(
-                    iconRes = R.drawable.ic_gasoline_95,
                     nameRes = R.string.preview_fuel_type,
                 ),
                 totalCost = "86.72 €",
