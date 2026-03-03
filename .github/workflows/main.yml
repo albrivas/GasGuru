@@ -114,7 +114,7 @@ jobs:
           disable-animations: true
           emulator-options: "-no-snapshot-save -no-window -no-boot-anim"
           script: |
-            # Build and run unit tests
+            # Run UI test
             ./gradlew connectedCheck
             
             # Assemble APK for Maestro
