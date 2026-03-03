@@ -43,12 +43,12 @@ El proyecto ya tiene un módulo KMP (`:core:network`) que sirve como referencia,
 - [ ] PR → develop y merge
 
 ### Phase 1: `:core:model`
-- [ ] Crear rama `feature/kmp-phase1-core-model` desde `develop`
-- [ ] Cambiar plugin a `gasguru.kmp.library`
-- [ ] Mover archivos a `src/commonMain/kotlin/`
-- [ ] Reemplazar `java.util.Locale` en `FuelStation.kt`
-- [ ] Reemplazar `System.currentTimeMillis()` en `UserData.kt`
-- [ ] Añadir tests en `commonTest`
+- [x] Crear rama `feature/kmp-phase1-core-model` desde `develop`
+- [x] Cambiar plugin a `gasguru.kmp.library`
+- [x] Mover archivos a `src/commonMain/kotlin/`
+- [x] Reemplazar `java.util.Locale` en `FuelStation.kt`
+- [x] Reemplazar `System.currentTimeMillis()` en `UserData.kt`
+- [x] Añadir tests en `commonTest`
 - [ ] `./gradlew :core:model:build` compila Android + iOS
 - [ ] Todos los módulos downstream compilan
 - [ ] PR → develop y merge
