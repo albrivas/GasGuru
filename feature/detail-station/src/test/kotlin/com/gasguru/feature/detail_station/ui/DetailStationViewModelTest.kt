@@ -16,6 +16,7 @@ import com.gasguru.core.domain.location.GetLastKnownLocationUseCase
 import com.gasguru.core.domain.maps.GetStaticMapUrlUseCase
 import com.gasguru.core.domain.places.GetAddressFromLocationUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
+import com.gasguru.core.domain.vehicle.UpdateVehicleTankCapacityUseCase
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.UserData
@@ -32,6 +33,7 @@ import com.gasguru.core.testing.fakes.data.location.FakeLocationTracker
 import com.gasguru.core.testing.fakes.data.maps.FakeStaticMapRepository
 import com.gasguru.core.testing.fakes.data.network.FakeRemoteDataSource
 import com.gasguru.core.testing.fakes.data.user.FakeUserDataRepository
+import com.gasguru.core.testing.fakes.data.vehicle.FakeVehicleRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -57,6 +59,7 @@ class DetailStationViewModelTest {
     private lateinit var fakeGeocoderAddress: FakeGeocoderAddress
     private lateinit var fakeStaticMapRepository: FakeStaticMapRepository
     private lateinit var fakePriceAlertRepository: FakePriceAlertRepository
+    private lateinit var fakeVehicleRepository: FakeVehicleRepository
 
     @BeforeEach
     fun setUp() {
@@ -82,6 +85,9 @@ class DetailStationViewModelTest {
         fakeGeocoderAddress = FakeGeocoderAddress(address = "Calle Mayor 1")
         fakeStaticMapRepository = FakeStaticMapRepository()
         fakePriceAlertRepository = FakePriceAlertRepository()
+        fakeVehicleRepository = FakeVehicleRepository(
+            initialVehicles = listOf(Vehicle(id = 1L, fuelType = FuelType.GASOLINE_95, name = null, tankCapacity = 40)),
+        )
 
         sut = createViewModel()
     }
@@ -175,6 +181,20 @@ class DetailStationViewModelTest {
     }
 
     @Test
+    @DisplayName("GIVEN vehicle in state WHEN UpdateTankCapacity event THEN updates vehicle tank capacity")
+    fun updatesTankCapacity() = runTest {
+        sut.vehicle.test {
+            awaitItem() // null (initial value)
+            awaitItem() // Vehicle loaded from repository
+        }
+
+        sut.onEvent(DetailStationEvent.UpdateTankCapacity(capacity = 60))
+        advanceUntilIdle()
+
+        assertEquals(listOf(1L to 60), fakeVehicleRepository.updatedTankCapacities)
+    }
+
+    @Test
     @DisplayName("GIVEN user data WHEN collecting lastUpdate THEN emits value")
     fun emitsLastUpdate() = runTest {
         sut.lastUpdate.test {
@@ -209,7 +229,8 @@ class DetailStationViewModelTest {
             getAddressFromLocationUseCase = GetAddressFromLocationUseCase(fakeGeocoderAddress),
             getStaticMapUrlUseCase = GetStaticMapUrlUseCase(fakeStaticMapRepository),
             addPriceAlertUseCase = AddPriceAlertUseCase(fakePriceAlertRepository),
-            removePriceAlertUseCase = RemovePriceAlertUseCase(fakePriceAlertRepository)
+            removePriceAlertUseCase = RemovePriceAlertUseCase(fakePriceAlertRepository),
+            updateVehicleTankCapacityUseCase = UpdateVehicleTankCapacityUseCase(fakeVehicleRepository),
         )
     }
 
