@@ -319,7 +319,6 @@ fun DetailStationContent(
                 TankCostCard(
                     model = TankCostCardModel(
                         fuelTypeChip = FuelTypeChipModel(
-                            iconRes = fuelUiModel.iconRes,
                             nameRes = fuelUiModel.translationRes,
                         ),
                         totalCost = "${DecimalFormat("0.00").format(priceModel.rawPrice * currentVehicle.tankCapacity)} €",
