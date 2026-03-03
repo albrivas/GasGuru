@@ -12,21 +12,8 @@ import org.junit.jupiter.api.Test
 class FuelTypeChipTest : BaseTest() {
 
     private val defaultModel = FuelTypeChipModel(
-        iconRes = R.drawable.ic_gasoline_95,
         nameRes = R.string.preview_fuel_type,
     )
-
-    @Test
-    @DisplayName("GIVEN chip model WHEN rendered THEN icon is displayed")
-    fun iconIsDisplayed() = extension.use {
-        setContent {
-            MyApplicationTheme {
-                FuelTypeChip(model = defaultModel)
-            }
-        }
-
-        onNodeWithTag("fuel_type_chip_icon").assertIsDisplayed()
-    }
 
     @Test
     @DisplayName("GIVEN chip model WHEN rendered THEN fuel name text is displayed")
@@ -50,7 +37,6 @@ class FuelTypeChipTest : BaseTest() {
             }
         }
 
-        onNodeWithTag("fuel_type_chip_icon").assertIsDisplayed()
         onNodeWithTag("fuel_type_chip_name").assertIsDisplayed()
     }
 
@@ -63,7 +49,6 @@ class FuelTypeChipTest : BaseTest() {
             }
         }
 
-        onNodeWithTag("fuel_type_chip_icon").assertIsDisplayed()
         onNodeWithTag("fuel_type_chip_name").assertIsDisplayed()
     }
 }

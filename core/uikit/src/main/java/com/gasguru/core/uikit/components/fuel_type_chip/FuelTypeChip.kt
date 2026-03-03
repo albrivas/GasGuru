@@ -1,12 +1,10 @@
 package com.gasguru.core.uikit.components.fuel_type_chip
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -14,7 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.R
@@ -33,14 +30,6 @@ fun FuelTypeChip(model: FuelTypeChipModel, modifier: Modifier = Modifier) = with
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        Image(
-            modifier = Modifier
-                .size(22.dp)
-                .clip(RoundedCornerShape(5.dp))
-                .testTag("fuel_type_chip_icon"),
-            painter = painterResource(id = iconRes),
-            contentDescription = null,
-        )
         Text(
             modifier = Modifier.testTag("fuel_type_chip_name"),
             text = stringResource(id = nameRes),
@@ -56,7 +45,6 @@ private fun FuelTypeChipPreview() {
     MyApplicationTheme {
         FuelTypeChip(
             model = FuelTypeChipModel(
-                iconRes = R.drawable.ic_gasoline_95,
                 nameRes = R.string.preview_fuel_type,
             ),
         )
