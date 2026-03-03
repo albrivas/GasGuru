@@ -9,5 +9,5 @@ enum class OpeningHours {
      */
     NONE,
     OPEN_NOW,
-    OPEN_24H
+    OPEN_24H,
 }
