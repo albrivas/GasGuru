@@ -1,6 +1,5 @@
 package com.gasguru.feature.detail_station.di
 
-import com.gasguru.core.domain.vehicle.UpdateVehicleTankCapacityUseCase
 import com.gasguru.feature.detail_station.ui.DetailStationViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
