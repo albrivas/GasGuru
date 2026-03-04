@@ -1,6 +1,6 @@
 package com.gasguru.core.model.data
 
-import java.util.Locale
+import kotlin.math.roundToInt
 
 const val DISTANCE_KM_IN_METERS = 1000
 
@@ -39,19 +39,14 @@ data class FuelStation(
     val hasPriceAlert: Boolean = false,
 ) {
     fun formatDistance(): String {
+        fun Float.fmt(): String {
+            val n = (this * 100).roundToInt()
+            return "${n / 100}.${(n % 100).toString().padStart(2, '0')}"
+        }
         return when {
-            distance >= DISTANCE_KM_IN_METERS -> {
-                val kilometers = distance / DISTANCE_KM_IN_METERS
-                String.format(Locale.ROOT, "%.2f Km", kilometers)
-            }
-
-            distance == distance.toInt().toFloat() -> {
-                String.format(Locale.ROOT, "%.0f m", distance)
-            }
-
-            else -> {
-                String.format(Locale.ROOT, "%.2f m", distance)
-            }
+            distance >= DISTANCE_KM_IN_METERS -> "${(distance / DISTANCE_KM_IN_METERS).fmt()} Km"
+            distance == distance.toInt().toFloat() -> "${distance.toInt()} m"
+            else -> "${distance.fmt()} m"
         }
     }
 
@@ -69,7 +64,7 @@ fun previewFuelStationDomain(idServiceStation: Int = 0) = FuelStation(
     idServiceStation = idServiceStation,
     idMunicipality = "",
     idProvince = "",
-    location = LatLng(0.0, 0.0),
+    location = LatLng(latitude = 0.0, longitude = 0.0),
     locality = "",
     margin = "",
     municipality = "Talavera de la Reina",

@@ -4,5 +4,5 @@ enum class PriceCategory {
     NONE,
     CHEAP,
     NORMAL,
-    EXPENSIVE
+    EXPENSIVE,
 }

@@ -8,5 +8,5 @@ data class Route(
 
 data class LatLng(
     val latitude: Double,
-    val longitude: Double
+    val longitude: Double,
 )
