@@ -12,13 +12,15 @@ class KmpLibraryConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             with(pluginManager) {
-                apply("com.android.kotlin.multiplatform.library")
+                apply("org.jetbrains.kotlin.multiplatform")
+                apply("com.android.library")
                 apply("gasguru.jacoco")
             }
             extensions.configure<LibraryExtension> {
                 configureKotlinAndroid(this)
             }
             extensions.configure<KotlinMultiplatformExtension> {
+                androidTarget()
                 iosX64()
                 iosArm64()
                 iosSimulatorArm64()
