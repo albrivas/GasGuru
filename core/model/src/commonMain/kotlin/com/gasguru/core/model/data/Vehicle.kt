@@ -6,4 +6,6 @@ data class Vehicle(
     val name: String?,
     val fuelType: FuelType,
     val tankCapacity: Int,
+    val vehicleType: VehicleType,
+    val isPrincipal: Boolean,
 )
