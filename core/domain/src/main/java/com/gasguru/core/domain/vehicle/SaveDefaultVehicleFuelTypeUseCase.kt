@@ -3,6 +3,7 @@ package com.gasguru.core.domain.vehicle
 import com.gasguru.core.data.repository.vehicle.VehicleRepository
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.Vehicle
+import com.gasguru.core.model.data.VehicleType
 
 class SaveDefaultVehicleFuelTypeUseCase(
     private val vehicleRepository: VehicleRepository,
@@ -14,6 +15,8 @@ class SaveDefaultVehicleFuelTypeUseCase(
                 name = null,
                 fuelType = fuelType,
                 tankCapacity = 40,
+                vehicleType = VehicleType.CAR,
+                isPrincipal = true,
             ),
         )
     }
