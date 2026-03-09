@@ -21,6 +21,7 @@ import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.UserData
 import com.gasguru.core.model.data.Vehicle
+import com.gasguru.core.model.data.VehicleType
 import com.gasguru.core.testing.CoroutinesTestExtension
 import com.gasguru.core.testing.fakes.data.alerts.FakePriceAlertRepository
 import com.gasguru.core.testing.fakes.data.database.FakeFavoriteStationDao
@@ -70,7 +71,7 @@ class DetailStationViewModelTest {
         fakeUserDataRepository = FakeUserDataRepository(
             initialUserData = UserData(
                 lastUpdate = 123L,
-                vehicles = listOf(Vehicle(id = 1L, fuelType = FuelType.GASOLINE_95, name = null, tankCapacity = 40)),
+                vehicles = listOf(Vehicle(id = 1L, fuelType = FuelType.GASOLINE_95, name = null, tankCapacity = 40, vehicleType = VehicleType.CAR, isPrincipal = true)),
             )
         )
         fakeUserDataDao = FakeUserDataDao(
@@ -80,13 +81,13 @@ class DetailStationViewModelTest {
             )
         )
         fakeVehicleDao = FakeVehicleDao(
-            initialVehicles = listOf(VehicleEntity(id = 1L, userId = 0L, name = null, fuelType = FuelType.GASOLINE_95, tankCapacity = 40)),
+            initialVehicles = listOf(VehicleEntity(id = 1L, userId = 0L, name = null, fuelType = FuelType.GASOLINE_95, tankCapacity = 40, vehicleType = VehicleType.CAR, isPrincipal = true)),
         )
         fakeGeocoderAddress = FakeGeocoderAddress(address = "Calle Mayor 1")
         fakeStaticMapRepository = FakeStaticMapRepository()
         fakePriceAlertRepository = FakePriceAlertRepository()
         fakeVehicleRepository = FakeVehicleRepository(
-            initialVehicles = listOf(Vehicle(id = 1L, fuelType = FuelType.GASOLINE_95, name = null, tankCapacity = 40)),
+            initialVehicles = listOf(Vehicle(id = 1L, fuelType = FuelType.GASOLINE_95, name = null, tankCapacity = 40, vehicleType = VehicleType.CAR, isPrincipal = true)),
         )
 
         sut = createViewModel()
