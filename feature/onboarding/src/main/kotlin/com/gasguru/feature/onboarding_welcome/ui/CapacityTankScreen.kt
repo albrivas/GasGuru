@@ -18,16 +18,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,8 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.uikit.components.GasGuruButton
-import com.gasguru.core.uikit.components.number_wheel_picker.NumberWheelPicker
-import com.gasguru.core.uikit.components.number_wheel_picker.NumberWheelPickerModel
+import com.gasguru.core.uikit.components.capacity_picker.CapacityPickerBottomSheet
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
@@ -67,6 +60,11 @@ internal fun CapacityTankScreen(
 ) {
     if (uiState.showPicker) {
         CapacityPickerBottomSheet(
+            title = stringResource(id = R.string.capacity_picker_title),
+            subtitle = stringResource(id = R.string.capacity_picker_range),
+            confirmButtonText = stringResource(id = R.string.capacity_picker_confirm),
+            min = CapacityTankUiState.PICKER_MIN,
+            max = CapacityTankUiState.PICKER_MAX,
             initialValue = uiState.pickerValue,
             onDismiss = { onEvent(CapacityTankEvent.ClosePicker) },
             onConfirm = { value -> onEvent(CapacityTankEvent.ConfirmPickerValue(value = value)) },
@@ -304,60 +302,6 @@ private fun CapacityValueChip(
             style = GasGuruTheme.typography.baseBold,
             color = textColor,
         )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun CapacityPickerBottomSheet(
-    initialValue: Int,
-    onDismiss: () -> Unit,
-    onConfirm: (Int) -> Unit,
-) {
-    var currentValue by remember { mutableIntStateOf(value = initialValue) }
-
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = GasGuruTheme.colors.neutralWhite,
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-                .padding(bottom = 32.dp),
-        ) {
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = stringResource(id = R.string.capacity_picker_title),
-                style = GasGuruTheme.typography.h5,
-                color = GasGuruTheme.colors.neutralBlack,
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = stringResource(id = R.string.capacity_picker_range),
-                style = GasGuruTheme.typography.captionRegular,
-                color = GasGuruTheme.colors.neutral600,
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            NumberWheelPicker(
-                model = NumberWheelPickerModel(
-                    min = CapacityTankUiState.PICKER_MIN,
-                    max = CapacityTankUiState.PICKER_MAX,
-                    initialValue = initialValue,
-                    onValueChanged = { value -> currentValue = value },
-                ),
-                modifier = Modifier
-                    .height(156.dp)
-                    .fillMaxWidth(),
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            GasGuruButton(
-                onClick = { onConfirm(currentValue) },
-                text = stringResource(id = R.string.capacity_picker_confirm),
-            )
-        }
     }
 }
 

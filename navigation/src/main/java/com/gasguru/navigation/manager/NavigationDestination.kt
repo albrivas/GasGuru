@@ -47,4 +47,9 @@ sealed interface NavigationDestination {
      * Navigate to tank capacity selection screen during onboarding.
      */
     data object OnboardingTankCapacity : NavigationDestination
+
+    /**
+     * Navigate to add vehicle screen.
+     */
+    data object AddVehicle : NavigationDestination
 }
