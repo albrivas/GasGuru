@@ -91,6 +91,7 @@ dependencies {
     implementation(projects.core.components)
     implementation(projects.core.supabase)
     implementation(projects.feature.onboarding)
+    implementation(projects.feature.vehicle)
     implementation(projects.feature.detailStation)
     implementation(projects.feature.favoriteListStation)
     implementation(projects.feature.stationMap)

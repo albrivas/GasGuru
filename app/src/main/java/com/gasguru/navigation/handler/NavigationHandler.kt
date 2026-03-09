@@ -6,6 +6,7 @@ import com.gasguru.feature.detail_station.navigation.navigateToDetailStation
 import com.gasguru.feature.detail_station.navigation.navigateToDetailStationAsDialog
 import com.gasguru.feature.onboarding_welcome.navigation.OnboardingRoutes
 import com.gasguru.feature.onboarding_welcome.navigation.navigateToCapacityTankRoute
+import com.gasguru.feature.vehicle.navigation.navigateToAddVehicle
 import com.gasguru.feature.onboarding_welcome.navigation.navigateToNewOnboardingRoute
 import com.gasguru.feature.onboarding_welcome.navigation.navigateToOnboardingFuelPreferencesRoute
 import com.gasguru.feature.route_planner.navigation.navigateToRoutePlannerScreen
@@ -72,6 +73,10 @@ class NavigationHandler(private val navController: NavController) {
 
                 is NavigationDestination.RoutePlanner -> {
                     navController.navigateToRoutePlannerScreen()
+                }
+
+                is NavigationDestination.AddVehicle -> {
+                    navController.navigateToAddVehicle()
                 }
             }
 

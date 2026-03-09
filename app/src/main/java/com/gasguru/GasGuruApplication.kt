@@ -19,6 +19,7 @@ import com.gasguru.di.remoteDataSourceModule
 import com.gasguru.feature.detail_station.di.detailStationModule
 import com.gasguru.feature.favorite_list_station.di.favoriteListStationModule
 import com.gasguru.feature.onboarding_welcome.di.onboardingModule
+import com.gasguru.feature.vehicle.di.vehicleModule
 import com.gasguru.feature.profile.di.profileModule
 import com.gasguru.feature.route_planner.di.routePlannerModule
 import com.gasguru.feature.station_map.di.stationMapModule
@@ -91,6 +92,7 @@ class GasGuruApplication : Application() {
                 profileModule,
                 routePlannerModule,
                 onboardingModule,
+                vehicleModule,
                 searchBarModule,
             )
         }
