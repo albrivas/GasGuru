@@ -3,6 +3,7 @@ package com.gasguru.core.database.converters
 import androidx.room.TypeConverter
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.ThemeMode
+import com.gasguru.core.model.data.VehicleType
 
 internal class UserDataConverters {
     @TypeConverter
@@ -22,6 +23,16 @@ internal class UserDataConverters {
 
     @TypeConverter
     fun toThemeMode(value: String): ThemeMode {
+        return enumValueOf(value)
+    }
+
+    @TypeConverter
+    fun fromVehicleType(vehicleType: VehicleType): String {
+        return vehicleType.name
+    }
+
+    @TypeConverter
+    fun toVehicleType(value: String): VehicleType {
         return enumValueOf(value)
     }
 }
