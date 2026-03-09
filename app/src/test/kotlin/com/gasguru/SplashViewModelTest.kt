@@ -11,6 +11,7 @@ import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.model.data.UserData
 import com.gasguru.core.model.data.Vehicle
+import com.gasguru.core.model.data.VehicleType
 import com.gasguru.core.testing.CoroutinesTestExtension
 import com.gasguru.core.testing.fakes.data.database.FakeFavoriteStationDao
 import com.gasguru.core.testing.fakes.data.database.FakeFuelStationDao
@@ -50,7 +51,7 @@ class SplashViewModelTest {
             initialUserData = UserData(
                 isOnboardingSuccess = true,
                 themeMode = ThemeMode.DARK,
-                vehicles = listOf(Vehicle(id = 1L, fuelType = FuelType.GASOLINE_95, name = null, tankCapacity = 40)),
+                vehicles = listOf(Vehicle(id = 1L, fuelType = FuelType.GASOLINE_95, name = null, tankCapacity = 40, vehicleType = VehicleType.CAR, isPrincipal = true)),
             )
         )
         fakeUserDataDao = FakeUserDataDao(
@@ -63,7 +64,7 @@ class SplashViewModelTest {
         fakeFavoriteStationDao = FakeFavoriteStationDao()
         fakePriceAlertDao = FakePriceAlertDao()
         fakeVehicleDao = FakeVehicleDao(
-            initialVehicles = listOf(VehicleEntity(id = 1L, userId = 0L, name = null, fuelType = FuelType.GASOLINE_95, tankCapacity = 40)),
+            initialVehicles = listOf(VehicleEntity(id = 1L, userId = 0L, name = null, fuelType = FuelType.GASOLINE_95, tankCapacity = 40, vehicleType = VehicleType.CAR, isPrincipal = true)),
         )
         fakeRemoteDataSource = FakeRemoteDataSource()
 
@@ -108,7 +109,7 @@ class SplashViewModelTest {
             UserData(
                 isOnboardingSuccess = true,
                 themeMode = ThemeMode.DARK,
-                vehicles = listOf(Vehicle(id = 1L, fuelType = FuelType.GASOLINE_95, name = null, tankCapacity = 40)),
+                vehicles = listOf(Vehicle(id = 1L, fuelType = FuelType.GASOLINE_95, name = null, tankCapacity = 40, vehicleType = VehicleType.CAR, isPrincipal = true)),
                 lastUpdate = oldTimestamp,
             )
         )

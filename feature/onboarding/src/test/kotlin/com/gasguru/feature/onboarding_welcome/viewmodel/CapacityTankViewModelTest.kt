@@ -5,6 +5,7 @@ import com.gasguru.core.domain.vehicle.SaveDefaultVehicleCapacityUseCase
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.UserData
 import com.gasguru.core.model.data.Vehicle
+import com.gasguru.core.model.data.VehicleType
 import com.gasguru.core.testing.CoroutinesTestExtension
 import com.gasguru.core.testing.fakes.data.user.FakeUserDataRepository
 import com.gasguru.core.testing.fakes.data.vehicle.FakeVehicleRepository
@@ -38,6 +39,8 @@ class CapacityTankViewModelTest {
         name = null,
         fuelType = FuelType.GASOLINE_95,
         tankCapacity = 50,
+        vehicleType = VehicleType.CAR,
+        isPrincipal = true,
     )
 
     @BeforeEach
