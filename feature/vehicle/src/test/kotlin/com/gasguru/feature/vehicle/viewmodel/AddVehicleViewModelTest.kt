@@ -11,6 +11,7 @@ import com.gasguru.core.testing.fakes.data.user.FakeUserDataRepository
 import com.gasguru.core.testing.fakes.data.vehicle.FakeVehicleRepository
 import com.gasguru.core.testing.fakes.navigation.FakeNavigationManager
 import com.gasguru.feature.vehicle.ui.AddVehicleEvent
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -283,6 +284,7 @@ class AddVehicleViewModelTest {
         sut.handleEvent(event = AddVehicleEvent.ToggleMainVehicle)
 
         sut.handleEvent(event = AddVehicleEvent.SaveVehicle)
+        advanceUntilIdle()
 
         val savedVehicles = fakeVehicleRepository.getVehiclesForUser(userId = 0L)
         savedVehicles.test {
@@ -308,6 +310,7 @@ class AddVehicleViewModelTest {
         sut.handleEvent(event = AddVehicleEvent.ConfirmCapacityValue(value = 40))
 
         sut.handleEvent(event = AddVehicleEvent.SaveVehicle)
+        advanceUntilIdle()
 
         val savedVehicles = fakeVehicleRepository.getVehiclesForUser(userId = 0L)
         savedVehicles.test {
@@ -325,6 +328,7 @@ class AddVehicleViewModelTest {
         sut.handleEvent(event = AddVehicleEvent.ConfirmCapacityValue(value = 50))
 
         sut.handleEvent(event = AddVehicleEvent.SaveVehicle)
+        advanceUntilIdle()
 
         val savedVehicles = fakeVehicleRepository.getVehiclesForUser(userId = 0L)
         savedVehicles.test {
