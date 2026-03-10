@@ -1,10 +1,15 @@
 package com.gasguru.feature.vehicle.viewmodel
 
 import app.cash.turbine.test
+import com.gasguru.core.domain.user.GetUserDataUseCase
+import com.gasguru.core.domain.vehicle.AddVehicleUseCase
+import com.gasguru.core.model.data.FuelType
+import com.gasguru.core.model.data.UserData
 import com.gasguru.core.model.data.VehicleType
 import com.gasguru.core.testing.CoroutinesTestExtension
+import com.gasguru.core.testing.fakes.data.user.FakeUserDataRepository
+import com.gasguru.core.testing.fakes.data.vehicle.FakeVehicleRepository
 import com.gasguru.core.testing.fakes.navigation.FakeNavigationManager
-import com.gasguru.core.ui.models.FuelTypeUiModel
 import com.gasguru.feature.vehicle.ui.AddVehicleEvent
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -21,11 +26,23 @@ class AddVehicleViewModelTest {
 
     private lateinit var sut: AddVehicleViewModel
     private lateinit var fakeNavigationManager: FakeNavigationManager
+    private lateinit var fakeVehicleRepository: FakeVehicleRepository
+    private lateinit var fakeUserDataRepository: FakeUserDataRepository
+    private lateinit var addVehicleUseCase: AddVehicleUseCase
+    private lateinit var getUserDataUseCase: GetUserDataUseCase
 
     @BeforeEach
     fun setUp() {
         fakeNavigationManager = FakeNavigationManager()
-        sut = AddVehicleViewModel(navigationManager = fakeNavigationManager)
+        fakeVehicleRepository = FakeVehicleRepository()
+        fakeUserDataRepository = FakeUserDataRepository(initialUserData = UserData(userId = 0L))
+        addVehicleUseCase = AddVehicleUseCase(vehicleRepository = fakeVehicleRepository)
+        getUserDataUseCase = GetUserDataUseCase(userDataRepository = fakeUserDataRepository)
+        sut = AddVehicleViewModel(
+            navigationManager = fakeNavigationManager,
+            addVehicleUseCase = addVehicleUseCase,
+            getUserDataUseCase = getUserDataUseCase,
+        )
     }
 
     @Test
@@ -37,7 +54,7 @@ class AddVehicleViewModelTest {
             val state = awaitItem()
             assertNull(state.selectedVehicleType)
             assertEquals("", state.vehicleName)
-            assertNull(state.selectedFuelTypeNameRes)
+            assertNull(state.selectedFuelType)
             assertNull(state.selectedCapacity)
             assertFalse(state.isMainVehicle)
             assertFalse(state.showCapacityPicker)
@@ -77,17 +94,16 @@ class AddVehicleViewModelTest {
 
     @Test
     @DisplayName(
-        "GIVEN initial state WHEN SelectFuelType event THEN selectedFuelTypeNameRes is updated"
+        "GIVEN initial state WHEN SelectFuelType event THEN selectedFuelType is updated"
     )
     fun selectFuelTypeUpdatesState() = runTest {
-        val fuelNameRes = FuelTypeUiModel.ALL_FUELS.first().translationRes
         sut.uiState.test {
             awaitItem()
 
-            sut.handleEvent(event = AddVehicleEvent.SelectFuelType(fuelTypeNameRes = fuelNameRes))
+            sut.handleEvent(event = AddVehicleEvent.SelectFuelType(fuelType = FuelType.GASOLINE_95))
             val state = awaitItem()
 
-            assertEquals(fuelNameRes, state.selectedFuelTypeNameRes)
+            assertEquals(FuelType.GASOLINE_95, state.selectedFuelType)
         }
     }
 
@@ -212,11 +228,10 @@ class AddVehicleViewModelTest {
         "GIVEN fuelType selected but no capacity THEN isSaveEnabled is false"
     )
     fun isSaveEnabledFalseWhenOnlyFuelSelected() = runTest {
-        val fuelNameRes = FuelTypeUiModel.ALL_FUELS.first().translationRes
         sut.uiState.test {
             awaitItem()
 
-            sut.handleEvent(event = AddVehicleEvent.SelectFuelType(fuelTypeNameRes = fuelNameRes))
+            sut.handleEvent(event = AddVehicleEvent.SelectFuelType(fuelType = FuelType.GASOLINE_95))
             val state = awaitItem()
 
             assertFalse(state.isSaveEnabled)
@@ -243,11 +258,10 @@ class AddVehicleViewModelTest {
         "GIVEN fuelType and capacity both selected THEN isSaveEnabled is true"
     )
     fun isSaveEnabledTrueWhenBothSet() = runTest {
-        val fuelNameRes = FuelTypeUiModel.ALL_FUELS.first().translationRes
         sut.uiState.test {
             awaitItem()
 
-            sut.handleEvent(event = AddVehicleEvent.SelectFuelType(fuelTypeNameRes = fuelNameRes))
+            sut.handleEvent(event = AddVehicleEvent.SelectFuelType(fuelType = FuelType.GASOLINE_95))
             awaitItem()
 
             sut.handleEvent(event = AddVehicleEvent.ConfirmCapacityValue(value = 50))
@@ -259,16 +273,63 @@ class AddVehicleViewModelTest {
 
     @Test
     @DisplayName(
-        "GIVEN any state WHEN SaveVehicle event THEN no state change occurs and no crash"
+        "GIVEN fuelType and capacity set WHEN SaveVehicle event THEN vehicle is saved with correct userId and navigation goes back"
     )
-    fun saveVehicleIsNoOp() = runTest {
-        sut.uiState.test {
-            val initialState = awaitItem()
+    fun saveVehiclePersistsVehicleWithCorrectUserIdAndNavigatesBack() = runTest {
+        sut.handleEvent(event = AddVehicleEvent.SelectVehicleType(vehicleType = VehicleType.CAR))
+        sut.handleEvent(event = AddVehicleEvent.UpdateVehicleName(name = "Golf VII"))
+        sut.handleEvent(event = AddVehicleEvent.SelectFuelType(fuelType = FuelType.GASOLINE_95))
+        sut.handleEvent(event = AddVehicleEvent.ConfirmCapacityValue(value = 55))
+        sut.handleEvent(event = AddVehicleEvent.ToggleMainVehicle)
 
-            sut.handleEvent(event = AddVehicleEvent.SaveVehicle)
+        sut.handleEvent(event = AddVehicleEvent.SaveVehicle)
 
-            expectNoEvents()
-            assertEquals(initialState, sut.uiState.value)
+        val savedVehicles = fakeVehicleRepository.getVehiclesForUser(userId = 0L)
+        savedVehicles.test {
+            val vehicles = awaitItem()
+            assertEquals(1, vehicles.size)
+            val savedVehicle = vehicles.first()
+            assertEquals(0L, savedVehicle.userId)
+            assertEquals("Golf VII", savedVehicle.name)
+            assertEquals(FuelType.GASOLINE_95, savedVehicle.fuelType)
+            assertEquals(55, savedVehicle.tankCapacity)
+            assertEquals(VehicleType.CAR, savedVehicle.vehicleType)
+            assertTrue(savedVehicle.isPrincipal)
+        }
+        assertTrue(fakeNavigationManager.navigateBackCalled)
+    }
+
+    @Test
+    @DisplayName(
+        "GIVEN fuelType and capacity set but no name WHEN SaveVehicle event THEN vehicle is saved with null name"
+    )
+    fun saveVehicleWithBlankNameStoresNullName() = runTest {
+        sut.handleEvent(event = AddVehicleEvent.SelectFuelType(fuelType = FuelType.DIESEL))
+        sut.handleEvent(event = AddVehicleEvent.ConfirmCapacityValue(value = 40))
+
+        sut.handleEvent(event = AddVehicleEvent.SaveVehicle)
+
+        val savedVehicles = fakeVehicleRepository.getVehiclesForUser(userId = 0L)
+        savedVehicles.test {
+            val vehicles = awaitItem()
+            assertNull(vehicles.first().name)
+        }
+    }
+
+    @Test
+    @DisplayName(
+        "GIVEN no vehicleType selected WHEN SaveVehicle event THEN vehicle defaults to CAR type"
+    )
+    fun saveVehicleWithNoVehicleTypeDefaultsToCar() = runTest {
+        sut.handleEvent(event = AddVehicleEvent.SelectFuelType(fuelType = FuelType.GASOLINE_95))
+        sut.handleEvent(event = AddVehicleEvent.ConfirmCapacityValue(value = 50))
+
+        sut.handleEvent(event = AddVehicleEvent.SaveVehicle)
+
+        val savedVehicles = fakeVehicleRepository.getVehiclesForUser(userId = 0L)
+        savedVehicles.test {
+            val vehicles = awaitItem()
+            assertEquals(VehicleType.CAR, vehicles.first().vehicleType)
         }
     }
 
