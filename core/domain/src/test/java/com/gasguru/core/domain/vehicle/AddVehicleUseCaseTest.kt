@@ -52,6 +52,7 @@ class AddVehicleUseCaseTest {
     )
     fun addMultipleVehiclesPersistsAll() = runTest {
         val firstVehicle = Vehicle(
+            id = 1L,
             userId = 0L,
             name = "Golf VII",
             fuelType = FuelType.GASOLINE_95,
@@ -60,6 +61,7 @@ class AddVehicleUseCaseTest {
             isPrincipal = true,
         )
         val secondVehicle = Vehicle(
+            id = 2L,
             userId = 0L,
             name = "Honda CB500",
             fuelType = FuelType.GASOLINE_98,
