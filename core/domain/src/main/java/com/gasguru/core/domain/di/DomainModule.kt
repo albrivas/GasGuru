@@ -26,11 +26,13 @@ import com.gasguru.core.domain.search.GetRecentSearchQueryUseCase
 import com.gasguru.core.domain.search.InsertRecentSearchQueryUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.domain.user.SaveThemeModeUseCase
+import com.gasguru.core.domain.vehicle.AddVehicleUseCase
 import com.gasguru.core.domain.vehicle.GetVehiclesUseCase
 import com.gasguru.core.domain.vehicle.SaveDefaultVehicleCapacityUseCase
 import com.gasguru.core.domain.vehicle.SaveDefaultVehicleFuelTypeUseCase
 import com.gasguru.core.domain.vehicle.UpdateVehicleFuelTypeUseCase
 import com.gasguru.core.domain.vehicle.UpdateVehicleTankCapacityUseCase
+import com.gasguru.core.domain.vehicle.UpdateVehicleUseCase
 import org.koin.dsl.module
 
 val domainModule = module {
@@ -80,6 +82,8 @@ val domainModule = module {
     factory { SaveThemeModeUseCase(userDataRepository = get()) }
 
     // Vehicle
+    factory { AddVehicleUseCase(vehicleRepository = get()) }
+    factory { UpdateVehicleUseCase(vehicleRepository = get()) }
     factory { GetVehiclesUseCase(vehicleRepository = get()) }
     factory { UpdateVehicleTankCapacityUseCase(vehicleRepository = get()) }
     factory { UpdateVehicleFuelTypeUseCase(vehicleRepository = get()) }
