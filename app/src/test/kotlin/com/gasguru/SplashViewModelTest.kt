@@ -109,7 +109,16 @@ class SplashViewModelTest {
             UserData(
                 isOnboardingSuccess = true,
                 themeMode = ThemeMode.DARK,
-                vehicles = listOf(Vehicle(id = 1L, fuelType = FuelType.GASOLINE_95, name = null, tankCapacity = 40, vehicleType = VehicleType.CAR, isPrincipal = true)),
+                vehicles = listOf(
+                    Vehicle(
+                        id = 1L,
+                        fuelType = FuelType.GASOLINE_95,
+                        name = null,
+                        tankCapacity = 40,
+                        vehicleType = VehicleType.CAR,
+                        isPrincipal = true
+                    )
+                ),
                 lastUpdate = oldTimestamp,
             )
         )

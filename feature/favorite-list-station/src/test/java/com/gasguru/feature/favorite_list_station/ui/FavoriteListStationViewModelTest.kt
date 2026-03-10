@@ -83,7 +83,16 @@ class FavoriteListStationViewModelTest {
         fakeLocationTracker.setLastKnownLocation(testLocation())
         fakeUserDataRepository.setUserData(
             UserData(
-                vehicles = listOf(Vehicle(id = 1L, fuelType = FuelType.GASOLINE_95, name = null, tankCapacity = 40, vehicleType = VehicleType.CAR, isPrincipal = true))
+                vehicles = listOf(
+                    Vehicle(
+                        id = 1L,
+                        fuelType = FuelType.GASOLINE_95,
+                        name = null,
+                        tankCapacity = 40,
+                        vehicleType = VehicleType.CAR,
+                        isPrincipal = true
+                    )
+                )
             )
         )
 
@@ -116,7 +125,16 @@ class FavoriteListStationViewModelTest {
         fakeLocationTracker.setLastKnownLocation(testLocation())
         fakeUserDataRepository.setUserData(
             UserData(
-                vehicles = listOf(Vehicle(id = 1L, fuelType = FuelType.GASOLINE_95, name = null, tankCapacity = 40, vehicleType = VehicleType.CAR, isPrincipal = true))
+                vehicles = listOf(
+                    Vehicle(
+                        id = 1L,
+                        fuelType = FuelType.GASOLINE_95,
+                        name = null,
+                        tankCapacity = 40,
+                        vehicleType = VehicleType.CAR,
+                        isPrincipal = true
+                    )
+                )
             )
         )
 
