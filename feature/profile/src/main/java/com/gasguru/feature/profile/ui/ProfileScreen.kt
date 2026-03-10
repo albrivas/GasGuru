@@ -51,6 +51,8 @@ import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.profile.R
+import com.gasguru.navigation.LocalNavigationManager
+import com.gasguru.navigation.manager.NavigationDestination
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -152,6 +154,7 @@ private fun ProfileSheetHandler(
 
 @Composable
 fun SuccessContent(content: ProfileContentUi, onSheetRequest: (ProfileSheet) -> Unit) {
+    val navigationManager = LocalNavigationManager.current
     Column(
         modifier = Modifier
             .background(color = GasGuruTheme.colors.neutral100)
@@ -184,6 +187,14 @@ fun SuccessContent(content: ProfileContentUi, onSheetRequest: (ProfileSheet) -> 
                 onClick = { onSheetRequest(ProfileSheet.Theme) },
             ),
             modifier = Modifier.testTag("theme_setting_item")
+        )
+        SettingItem(
+            model = SettingItemModel(
+                title = "Añadir vehículo",
+                selection = "",
+                icon = RUikit.drawable.ic_fuel_station,
+                onClick = { navigationManager.navigateTo(destination = NavigationDestination.AddVehicle) },
+            ),
         )
         Spacer(modifier = Modifier.weight(1f))
         VersionAppInfo(modifier = Modifier.padding(bottom = 12.dp))
