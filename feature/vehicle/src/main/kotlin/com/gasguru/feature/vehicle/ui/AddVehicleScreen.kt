@@ -15,9 +15,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.Icon
@@ -121,30 +122,36 @@ internal fun AddVehicleScreen(
                 FuelSectionHeader()
             }
 
-            itemsIndexed(
-                items = uiState.fuelTypes,
-                key = { _, fuelTypeUiModel -> fuelTypeUiModel.type.name },
-            ) { index, fuelTypeUiModel ->
-                SelectedItem(
+            item {
+                Column(
                     modifier = Modifier
+                        .height(height = 300.dp)
                         .fillMaxWidth()
-                        .padding(horizontal = 20.dp)
-                        .then(
-                            if (index < uiState.fuelTypes.lastIndex) {
-                                Modifier.padding(bottom = 10.dp)
-                            } else {
-                                Modifier
-                            },
-                        ),
-                    model = SelectedItemModel(
-                        title = fuelTypeUiModel.translationRes,
-                        isSelected = fuelTypeUiModel.translationRes == uiState.selectedFuelTypeNameRes,
-                        image = fuelTypeUiModel.iconRes,
-                        onItemSelected = {
-                            onEvent(AddVehicleEvent.SelectFuelType(fuelTypeNameRes = fuelTypeUiModel.translationRes))
-                        },
-                    ),
-                )
+                        .verticalScroll(state = rememberScrollState()),
+                ) {
+                    uiState.fuelTypes.forEachIndexed { index, fuelTypeUiModel ->
+                        SelectedItem(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 20.dp)
+                                .then(
+                                    if (index < uiState.fuelTypes.lastIndex) {
+                                        Modifier.padding(bottom = 10.dp)
+                                    } else {
+                                        Modifier
+                                    },
+                                ),
+                            model = SelectedItemModel(
+                                title = fuelTypeUiModel.translationRes,
+                                isSelected = fuelTypeUiModel.type == uiState.selectedFuelType,
+                                image = fuelTypeUiModel.iconRes,
+                                onItemSelected = {
+                                    onEvent(AddVehicleEvent.SelectFuelType(fuelType = fuelTypeUiModel.type))
+                                },
+                            ),
+                        )
+                    }
+                }
             }
 
             item {
@@ -170,7 +177,7 @@ internal fun AddVehicleScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(color = GasGuruTheme.colors.neutral100)
-                .padding(horizontal = 24.dp, vertical = 16.dp),
+                .padding(horizontal = 24.dp, vertical = 32.dp),
         ) {
             GasGuruButton(
                 onClick = { onEvent(AddVehicleEvent.SaveVehicle) },
@@ -394,7 +401,14 @@ private fun MainVehicleSection(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
-            .padding(top = 16.dp, bottom = 8.dp),
+            .padding(top = 16.dp, bottom = 8.dp)
+            .clip(shape = RoundedCornerShape(size = 12.dp))
+            .border(
+                width = 1.dp,
+                color = GasGuruTheme.colors.neutral300,
+                shape = RoundedCornerShape(size = 12.dp)
+            )
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(modifier = Modifier.weight(weight = 1f)) {
@@ -443,7 +457,7 @@ private fun PreviewAddVehicleScreenFilled() {
         AddVehicleScreen(
             uiState = AddVehicleUiState(
                 selectedVehicleType = VehicleType.MOTORCYCLE,
-                selectedFuelTypeNameRes = FuelTypeUiModel.ALL_FUELS.first().translationRes,
+                selectedFuelType = FuelTypeUiModel.ALL_FUELS.first().type,
                 selectedCapacity = 55,
                 isMainVehicle = true,
             ),
