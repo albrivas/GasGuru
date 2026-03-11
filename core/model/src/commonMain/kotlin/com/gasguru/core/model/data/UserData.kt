@@ -7,3 +7,6 @@ data class UserData(
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
     val vehicles: List<Vehicle> = emptyList(),
 )
+
+fun UserData.principalVehicle(): Vehicle =
+    vehicles.firstOrNull { it.isPrincipal } ?: vehicles.first()

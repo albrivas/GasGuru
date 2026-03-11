@@ -13,6 +13,7 @@ import com.gasguru.core.model.data.PriceCategory
 import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.model.data.UserData
 import com.gasguru.core.model.data.UserWithFavoriteStations
+import com.gasguru.core.model.data.principalVehicle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
@@ -68,7 +69,7 @@ class OfflineUserDataRepository(
             favoriteStationDao.getFavoriteStations(),
         ) { user, favoriteStationEntities ->
             val favoriteStations = favoriteStationEntities.map { it.asExternalModel() }
-            val fuelType = user.vehicles.first().fuelType
+            val fuelType = user.principalVehicle().fuelType
 
             val updatedStations = if (favoriteStations.size <= 1) {
                 favoriteStations.map { station ->
