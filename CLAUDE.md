@@ -4,6 +4,7 @@
 - Permitido: `feature → core`, `app → features/core`
 - Prohibido: `feature ↔ feature`, `UI ↔ data sources directos`
 - Navegación: pasar IDs y cargar datos en ViewModel vía UseCases
+- Cuando una pantalla recibe un ID por navegación, leerlo en el ViewModel con `savedStateHandle.toRoute<MyRoute>().myParam` en el bloque `init {}`. La ruta debe ser una `@Serializable data class`. Inyectar `SavedStateHandle` vía Koin con `get()`. En tests, pasar `SavedStateHandle(mapOf("myParam" to value))`.
 
 ## Compose & Estado
 - VM expone: `UiState` sellada + `events`
