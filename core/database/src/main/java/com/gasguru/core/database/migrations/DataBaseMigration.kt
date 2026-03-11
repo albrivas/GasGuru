@@ -130,6 +130,7 @@ internal val MIGRATION_12_13 = object : Migration(DB_VERSION_12, DB_VERSION_13) 
 }
 
 const val DB_VERSION_14 = 14
+const val DB_VERSION_15 = 15
 
 internal val MIGRATION_13_14 = object : Migration(DB_VERSION_13, DB_VERSION_14) {
     override fun migrate(db: SupportSQLiteDatabase) {
@@ -179,5 +180,12 @@ internal val MIGRATION_13_14 = object : Migration(DB_VERSION_13, DB_VERSION_14) 
         )
         db.execSQL("DROP TABLE `user-data`")
         db.execSQL("ALTER TABLE `user-data_new` RENAME TO `user-data`")
+    }
+}
+
+internal val MIGRATION_14_15 = object : Migration(DB_VERSION_14, DB_VERSION_15) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE `vehicles` ADD COLUMN `vehicleType` TEXT NOT NULL DEFAULT 'CAR'")
+        db.execSQL("ALTER TABLE `vehicles` ADD COLUMN `isPrincipal` INTEGER NOT NULL DEFAULT 0")
     }
 }

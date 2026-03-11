@@ -22,6 +22,7 @@ import com.gasguru.feature.onboarding_welcome.di.onboardingModule
 import com.gasguru.feature.profile.di.profileModule
 import com.gasguru.feature.route_planner.di.routePlannerModule
 import com.gasguru.feature.station_map.di.stationMapModule
+import com.gasguru.feature.vehicle.di.vehicleModule
 import com.gasguru.navigation.di.navigationModule
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.onesignal.OneSignal
@@ -91,6 +92,7 @@ class GasGuruApplication : Application() {
                 profileModule,
                 routePlannerModule,
                 onboardingModule,
+                vehicleModule,
                 searchBarModule,
             )
         }

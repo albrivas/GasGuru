@@ -9,4 +9,6 @@ fun Vehicle.asEntity() = VehicleEntity(
     name = name,
     fuelType = fuelType,
     tankCapacity = tankCapacity,
+    vehicleType = vehicleType,
+    isPrincipal = isPrincipal,
 )
