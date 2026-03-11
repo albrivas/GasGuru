@@ -1,16 +1,20 @@
 package com.gasguru.feature.vehicle.viewmodel
 
+import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.gasguru.core.domain.user.GetUserDataUseCase
-import com.gasguru.core.domain.vehicle.AddVehicleUseCase
+import com.gasguru.core.domain.vehicle.GetVehicleByIdUseCase
+import com.gasguru.core.domain.vehicle.SaveVehicleUseCase
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.UserData
+import com.gasguru.core.model.data.Vehicle
 import com.gasguru.core.model.data.VehicleType
 import com.gasguru.core.testing.CoroutinesTestExtension
 import com.gasguru.core.testing.fakes.data.user.FakeUserDataRepository
 import com.gasguru.core.testing.fakes.data.vehicle.FakeVehicleRepository
 import com.gasguru.core.testing.fakes.navigation.FakeNavigationManager
 import com.gasguru.feature.vehicle.ui.AddVehicleEvent
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -22,6 +26,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @ExtendWith(CoroutinesTestExtension::class)
 class AddVehicleViewModelTest {
 
@@ -29,7 +34,8 @@ class AddVehicleViewModelTest {
     private lateinit var fakeNavigationManager: FakeNavigationManager
     private lateinit var fakeVehicleRepository: FakeVehicleRepository
     private lateinit var fakeUserDataRepository: FakeUserDataRepository
-    private lateinit var addVehicleUseCase: AddVehicleUseCase
+    private lateinit var saveVehicleUseCase: SaveVehicleUseCase
+    private lateinit var getVehicleByIdUseCase: GetVehicleByIdUseCase
     private lateinit var getUserDataUseCase: GetUserDataUseCase
 
     @BeforeEach
@@ -37,11 +43,23 @@ class AddVehicleViewModelTest {
         fakeNavigationManager = FakeNavigationManager()
         fakeVehicleRepository = FakeVehicleRepository()
         fakeUserDataRepository = FakeUserDataRepository(initialUserData = UserData(userId = 0L))
-        addVehicleUseCase = AddVehicleUseCase(vehicleRepository = fakeVehicleRepository)
+        saveVehicleUseCase = SaveVehicleUseCase(vehicleRepository = fakeVehicleRepository)
+        getVehicleByIdUseCase = GetVehicleByIdUseCase(vehicleRepository = fakeVehicleRepository)
         getUserDataUseCase = GetUserDataUseCase(userDataRepository = fakeUserDataRepository)
-        sut = AddVehicleViewModel(
+        sut = buildViewModel()
+    }
+
+    private fun buildViewModel(vehicleId: Long? = null): AddVehicleViewModel {
+        val savedStateHandle = if (vehicleId != null) {
+            SavedStateHandle(mapOf("vehicleId" to vehicleId))
+        } else {
+            SavedStateHandle()
+        }
+        return AddVehicleViewModel(
+            savedStateHandle = savedStateHandle,
             navigationManager = fakeNavigationManager,
-            addVehicleUseCase = addVehicleUseCase,
+            saveVehicleUseCase = saveVehicleUseCase,
+            getVehicleByIdUseCase = getVehicleByIdUseCase,
             getUserDataUseCase = getUserDataUseCase,
         )
     }
@@ -345,5 +363,97 @@ class AddVehicleViewModelTest {
         sut.handleEvent(event = AddVehicleEvent.Back)
 
         assertTrue(fakeNavigationManager.navigateBackCalled)
+    }
+
+    @Test
+    @DisplayName(
+        "GIVEN vehicleId in SavedStateHandle WHEN ViewModel is created THEN state is pre-filled with vehicle data and isEditMode is true"
+    )
+    fun savedStateHandleWithVehicleIdPreFillsStateAndSetsEditMode() = runTest {
+        val existingVehicle = Vehicle(
+            id = 5L,
+            userId = 0L,
+            name = "Golf VII",
+            fuelType = FuelType.GASOLINE_95,
+            tankCapacity = 55,
+            vehicleType = VehicleType.CAR,
+            isPrincipal = false,
+        )
+        fakeVehicleRepository.upsertVehicle(vehicle = existingVehicle)
+        val viewModel = buildViewModel(vehicleId = 5L)
+
+        viewModel.uiState.test {
+            awaitItem() // initial state (may or may not be pre-filled yet)
+            advanceUntilIdle()
+
+            val state = viewModel.uiState.value
+            assertTrue(state.isEditMode)
+            assertEquals(5L, state.vehicleId)
+            assertEquals("Golf VII", state.vehicleName)
+            assertEquals(FuelType.GASOLINE_95, state.selectedFuelType)
+            assertEquals(55, state.selectedCapacity)
+            assertEquals(VehicleType.CAR, state.selectedVehicleType)
+            assertFalse(state.isMainVehicle)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    @DisplayName(
+        "GIVEN vehicleId in SavedStateHandle WHEN SaveVehicle event THEN vehicle is updated with same id"
+    )
+    fun saveVehicleInEditModeUpdatesExistingVehicle() = runTest {
+        val existingVehicle = Vehicle(
+            id = 5L,
+            userId = 0L,
+            name = "Golf VII",
+            fuelType = FuelType.GASOLINE_95,
+            tankCapacity = 55,
+            vehicleType = VehicleType.CAR,
+            isPrincipal = false,
+        )
+        fakeVehicleRepository.upsertVehicle(vehicle = existingVehicle)
+        val viewModel = buildViewModel(vehicleId = 5L)
+
+        advanceUntilIdle()
+        viewModel.handleEvent(event = AddVehicleEvent.UpdateVehicleName(name = "Golf VIII"))
+        viewModel.handleEvent(event = AddVehicleEvent.SaveVehicle)
+        advanceUntilIdle()
+
+        val vehicles = fakeVehicleRepository.getVehiclesForUser(userId = 0L)
+        vehicles.test {
+            val vehicleList = awaitItem()
+            val updatedVehicle = vehicleList.first { it.id == 5L }
+            assertEquals("Golf VIII", updatedVehicle.name)
+        }
+    }
+
+    @Test
+    @DisplayName(
+        "GIVEN existing principal vehicle WHEN saving new vehicle with isPrincipal=true THEN only one vehicle is principal"
+    )
+    fun savingPrincipalVehicleClearsOtherPrincipals() = runTest {
+        val existingPrincipal = Vehicle(
+            id = 1L,
+            userId = 0L,
+            name = "Golf VII",
+            fuelType = FuelType.GASOLINE_95,
+            tankCapacity = 55,
+            vehicleType = VehicleType.CAR,
+            isPrincipal = true,
+        )
+        fakeVehicleRepository.upsertVehicle(vehicle = existingPrincipal)
+
+        sut.handleEvent(event = AddVehicleEvent.SelectFuelType(fuelType = FuelType.DIESEL))
+        sut.handleEvent(event = AddVehicleEvent.ConfirmCapacityValue(value = 40))
+        sut.handleEvent(event = AddVehicleEvent.ToggleMainVehicle) // set as principal
+        sut.handleEvent(event = AddVehicleEvent.SaveVehicle)
+        advanceUntilIdle()
+
+        val vehicles = fakeVehicleRepository.getVehiclesForUser(userId = 0L)
+        vehicles.test {
+            val vehicleList = awaitItem()
+            assertEquals(1, vehicleList.count { it.isPrincipal })
+        }
     }
 }
