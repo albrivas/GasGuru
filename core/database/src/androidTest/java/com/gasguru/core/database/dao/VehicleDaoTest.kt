@@ -7,6 +7,7 @@ import com.gasguru.core.database.GasGuruDatabase
 import com.gasguru.core.database.model.UserDataEntity
 import com.gasguru.core.database.model.VehicleEntity
 import com.gasguru.core.model.data.FuelType
+import com.gasguru.core.model.data.VehicleType
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.AfterEach
@@ -57,6 +58,8 @@ class VehicleDaoTest {
             name = null,
             fuelType = FuelType.GASOLINE_95,
             tankCapacity = 50,
+            vehicleType = VehicleType.CAR,
+            isPrincipal = true,
         )
 
         val id = vehicleDao.upsertVehicle(vehicle = vehicle)
@@ -77,6 +80,8 @@ class VehicleDaoTest {
                 name = null,
                 fuelType = FuelType.GASOLINE_95,
                 tankCapacity = 40,
+                vehicleType = VehicleType.CAR,
+                isPrincipal = true,
             ),
         )
 
@@ -96,6 +101,8 @@ class VehicleDaoTest {
                 name = null,
                 fuelType = FuelType.GASOLINE_95,
                 tankCapacity = 50,
+                vehicleType = VehicleType.CAR,
+                isPrincipal = true,
             ),
         )
 
@@ -115,6 +122,8 @@ class VehicleDaoTest {
                 name = null,
                 fuelType = FuelType.DIESEL,
                 tankCapacity = 60,
+                vehicleType = VehicleType.CAR,
+                isPrincipal = true,
             ),
         )
 

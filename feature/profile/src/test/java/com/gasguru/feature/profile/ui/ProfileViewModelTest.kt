@@ -8,6 +8,7 @@ import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.model.data.UserData
 import com.gasguru.core.model.data.Vehicle
+import com.gasguru.core.model.data.VehicleType
 import com.gasguru.core.testing.CoroutinesTestExtension
 import com.gasguru.core.testing.fakes.data.user.FakeUserDataRepository
 import com.gasguru.core.testing.fakes.data.vehicle.FakeVehicleRepository
@@ -35,11 +36,11 @@ class ProfileViewModelTest {
     @BeforeEach
     fun setUp() {
         fakeVehicleRepository = FakeVehicleRepository(
-            initialVehicles = listOf(Vehicle(id = 1L, userId = 0L, fuelType = FuelType.GASOLINE_95, name = null, tankCapacity = 40)),
+            initialVehicles = listOf(Vehicle(id = 1L, userId = 0L, fuelType = FuelType.GASOLINE_95, name = null, tankCapacity = 40, vehicleType = VehicleType.CAR, isPrincipal = true)),
         )
         fakeUserDataRepository = FakeUserDataRepository(
             initialUserData = UserData(
-                vehicles = listOf(Vehicle(id = 1L, userId = 0L, fuelType = FuelType.GASOLINE_95, name = null, tankCapacity = 40)),
+                vehicles = listOf(Vehicle(id = 1L, userId = 0L, fuelType = FuelType.GASOLINE_95, name = null, tankCapacity = 40, vehicleType = VehicleType.CAR, isPrincipal = true)),
             )
         )
         sut = ProfileViewModel(

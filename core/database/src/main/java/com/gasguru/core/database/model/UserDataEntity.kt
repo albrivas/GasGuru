@@ -21,6 +21,7 @@ data class UserDataEntity(
 )
 
 fun UserDataEntity.asExternalModel() = UserData(
+    userId = id,
     lastUpdate = lastUpdate,
     isOnboardingSuccess = isOnboardingSuccess,
     themeMode = ThemeMode.fromId(themeModeId),

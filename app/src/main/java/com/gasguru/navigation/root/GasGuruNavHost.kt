@@ -11,6 +11,7 @@ import com.gasguru.feature.onboarding_welcome.navigation.OnboardingRoutes
 import com.gasguru.feature.onboarding_welcome.navigation.capacityTankScreen
 import com.gasguru.feature.onboarding_welcome.navigation.newOnboardingScreen
 import com.gasguru.feature.onboarding_welcome.navigation.onboardingFuelPreferencesScreen
+import com.gasguru.feature.vehicle.navigation.addVehicleScreen
 import com.gasguru.navigation.LocalNavigationManager
 import com.gasguru.navigation.graphs.routeSearchGraph
 import com.gasguru.navigation.handler.NavigationHandler
@@ -41,5 +42,6 @@ fun GasGuruNavHost(
         detailStationScreen()
         detailStationScreenDialog()
         routeSearchGraph()
+        addVehicleScreen()
     }
 }

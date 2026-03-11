@@ -19,6 +19,7 @@ import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.Route
 import com.gasguru.core.model.data.UserData
 import com.gasguru.core.model.data.Vehicle
+import com.gasguru.core.model.data.VehicleType
 import com.gasguru.core.testing.CoroutinesTestExtension
 import com.gasguru.core.testing.fakes.data.database.FakeFavoriteStationDao
 import com.gasguru.core.testing.fakes.data.database.FakeFuelStationDao
@@ -69,7 +70,9 @@ class StationMapViewModelTest {
                         id = 1L,
                         fuelType = FuelType.GASOLINE_95,
                         name = null,
-                        tankCapacity = 40
+                        tankCapacity = 40,
+                        vehicleType = VehicleType.CAR,
+                        isPrincipal = true,
                     )
                 )
             )
@@ -87,7 +90,9 @@ class StationMapViewModelTest {
                     userId = 0L,
                     name = null,
                     fuelType = FuelType.GASOLINE_95,
-                    tankCapacity = 40
+                    tankCapacity = 40,
+                    vehicleType = VehicleType.CAR,
+                    isPrincipal = true,
                 )
             ),
         )

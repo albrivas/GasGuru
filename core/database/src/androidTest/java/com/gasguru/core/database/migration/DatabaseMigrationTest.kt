@@ -6,6 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.platform.app.InstrumentationRegistry
 import com.gasguru.core.database.GasGuruDatabase
 import com.gasguru.core.database.migrations.MIGRATION_13_14
+import com.gasguru.core.database.migrations.MIGRATION_14_15
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName
@@ -93,6 +94,30 @@ class DatabaseMigrationTest {
 
         val cursor = db.query("SELECT * FROM vehicles WHERE userId = 0")
         assertEquals(1, cursor.count)
+        cursor.close()
+        db.close()
+    }
+
+    @Test
+    @DisplayName("GIVEN vehicles in v14 WHEN migrating to v15 THEN vehicleType defaults to CAR and isPrincipal defaults to false")
+    fun migrate14to15_addsVehicleTypeAndIsPrincipalWithDefaults() {
+        helper.createDatabase(TEST_DB, 14).apply {
+            execSQL(
+                "INSERT INTO `user-data` (id, lastUpdate, isOnboardingSuccess, themeModeId) VALUES (0, 0, 1, 3)"
+            )
+            execSQL(
+                "INSERT INTO `vehicles` (id, userId, name, fuelType, tankCapacity) VALUES (1, 0, NULL, 'GASOLINE_95', 40)"
+            )
+            close()
+        }
+
+        val db = helper.runMigrationsAndValidate(TEST_DB, 15, true, MIGRATION_14_15)
+
+        val cursor = db.query("SELECT * FROM vehicles WHERE id = 1")
+        assertEquals(1, cursor.count)
+        cursor.moveToFirst()
+        assertEquals("CAR", cursor.getString(cursor.getColumnIndexOrThrow("vehicleType")))
+        assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("isPrincipal")))
         cursor.close()
         db.close()
     }
