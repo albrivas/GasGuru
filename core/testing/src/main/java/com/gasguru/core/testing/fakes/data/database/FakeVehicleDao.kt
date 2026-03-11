@@ -41,4 +41,12 @@ class FakeVehicleDao(
             list.map { if (it.id == vehicleId) it.copy(fuelType = fuelType) else it }
         }
     }
+
+    override suspend fun clearPrincipalVehiclesForUser(userId: Long) {
+        vehiclesFlow.update { list ->
+            list.map { vehicle ->
+                if (vehicle.userId == userId) vehicle.copy(isPrincipal = false) else vehicle
+            }
+        }
+    }
 }
