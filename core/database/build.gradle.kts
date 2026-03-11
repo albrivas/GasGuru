@@ -19,6 +19,8 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.moshi.kotlin)
 
+    testImplementation(libs.mockk)
+
     androidTestImplementation(libs.junit5.api)
     androidTestImplementation(libs.junit5.extensions)
     androidTestImplementation(libs.junit5.runner)
