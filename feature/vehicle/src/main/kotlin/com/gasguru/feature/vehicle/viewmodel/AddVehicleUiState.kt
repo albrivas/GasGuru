@@ -22,7 +22,7 @@ data class AddVehicleUiState(
         get() = selectedFuelType != null && selectedCapacity != null
 
     companion object {
-        const val PICKER_MIN = 40
+        const val PICKER_MIN = 1
         const val PICKER_MAX = 999
     }
 }
