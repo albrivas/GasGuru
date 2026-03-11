@@ -80,7 +80,9 @@ class ProfileViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN vehicles with isPrincipal false WHEN collected THEN non-principal vehicles are isSelected false")
+    @DisplayName(
+        "GIVEN vehicles with isPrincipal false WHEN collected THEN non-principal vehicles are isSelected false"
+    )
     fun nonPrincipalVehiclesAreNotSelected() = runTest {
         sut.userData.test {
             awaitItem() // Loading
