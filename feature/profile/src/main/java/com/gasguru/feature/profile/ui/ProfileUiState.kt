@@ -6,17 +6,18 @@ import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.ui.R
 import com.gasguru.core.ui.mapper.toUi
 import com.gasguru.core.ui.models.ThemeModeUi
+import com.gasguru.core.uikit.R as RUikit
+import com.gasguru.core.uikit.components.vehicle_item.VehicleItemCardModel
 
 @Immutable
 data class ProfileContentUi(
-    val fuelTranslation: Int,
     val themeUi: ThemeModeUi,
     val allThemesUi: List<ThemeModeUi>,
+    val vehicles: List<VehicleItemCardModel> = emptyList(),
 )
 
 sealed class ProfileSheet {
     object None : ProfileSheet()
-    object Fuel : ProfileSheet()
     object Theme : ProfileSheet()
 }
 
@@ -29,14 +30,48 @@ sealed interface ProfileUiState {
 class ProfileContentUiPreviewParameterProvider : PreviewParameterProvider<ProfileContentUi> {
     override val values = sequenceOf(
         ProfileContentUi(
-            fuelTranslation = R.string.gasoline_95,
             themeUi = ThemeMode.SYSTEM.toUi(),
             allThemesUi = ThemeMode.entries.map { it.toUi() },
+            vehicles = listOf(
+                VehicleItemCardModel(
+                    id = 1L,
+                    name = "Golf VIII",
+                    vehicleTypeIconRes = RUikit.drawable.ic_vehicle_car,
+                    fuelTypeTranslationRes = R.string.gasoline_95,
+                    tankCapacityLitres = 55,
+                    isSelected = true,
+                ),
+                VehicleItemCardModel(
+                    id = 2L,
+                    name = "Honda CB500",
+                    vehicleTypeIconRes = RUikit.drawable.ic_vehicle_motorcycle,
+                    fuelTypeTranslationRes = R.string.gasoline_95,
+                    tankCapacityLitres = 18,
+                    isSelected = false,
+                ),
+            ),
         ),
         ProfileContentUi(
-            fuelTranslation = R.string.diesel,
             themeUi = ThemeMode.DARK.toUi(),
             allThemesUi = ThemeMode.entries.map { it.toUi() },
-        )
+            vehicles = listOf(
+                VehicleItemCardModel(
+                    id = 1L,
+                    name = "Golf VIII",
+                    vehicleTypeIconRes = RUikit.drawable.ic_vehicle_car,
+                    fuelTypeTranslationRes = R.string.gasoline_95,
+                    tankCapacityLitres = 55,
+                    isSelected = false,
+                ),
+                VehicleItemCardModel(
+                    id = 2L,
+                    name = "Honda CB500",
+                    vehicleTypeIconRes = RUikit.drawable.ic_vehicle_motorcycle,
+                    fuelTypeTranslationRes = R.string.gasoline_95,
+                    tankCapacityLitres = 18,
+                    isSelected = false,
+                ),
+            ),
+        ),
     )
 }
