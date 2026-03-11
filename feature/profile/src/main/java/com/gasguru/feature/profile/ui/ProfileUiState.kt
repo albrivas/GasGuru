@@ -6,8 +6,8 @@ import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.ui.R
 import com.gasguru.core.ui.mapper.toUi
 import com.gasguru.core.ui.models.ThemeModeUi
-import com.gasguru.core.uikit.R as RUikit
 import com.gasguru.core.uikit.components.vehicle_item.VehicleItemCardModel
+import com.gasguru.core.uikit.R as RUikit
 
 @Immutable
 data class ProfileContentUi(
