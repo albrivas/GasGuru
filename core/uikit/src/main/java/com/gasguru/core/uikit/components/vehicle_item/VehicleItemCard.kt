@@ -1,6 +1,6 @@
 package com.gasguru.core.uikit.components.vehicle_item
 
-import androidx.compose.animation.core.EaseInOut
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -9,6 +9,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.ColorFilter
@@ -43,11 +45,13 @@ import com.gasguru.core.uikit.theme.ThemePreviews
 fun VehicleItemCard(
     model: VehicleItemCardModel,
     modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
 ) {
+    val clickableModifier = modifier.then(if (onClick != null) Modifier.clickable { onClick() } else Modifier)
     if (model.isSelected) {
-        ActiveVehicleRow(model = model, modifier = modifier)
+        ActiveVehicleRow(model = model, modifier = clickableModifier)
     } else {
-        InactiveVehicleRow(model = model, modifier = modifier)
+        InactiveVehicleRow(model = model, modifier = clickableModifier)
     }
 }
 
@@ -56,17 +60,11 @@ private fun ActiveVehicleRow(
     model: VehicleItemCardModel,
     modifier: Modifier = Modifier,
 ) {
-    val borderColor = GasGuruTheme.colors.primary400
     Row(
         modifier = modifier
             .fillMaxWidth()
-//            .drawBehind {
-//                drawRect(
-//                    color = borderColor,
-//                    size = Size(6.dp.toPx(), size.height),
-//                )
-//            }
-            .padding(start = 12.dp, end = 14.dp, top = 14.dp, bottom = 14.dp),
+            .clip(RoundedCornerShape(0.dp))
+            .padding(all = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -96,7 +94,7 @@ private fun ActiveVehicleRow(
                 ) {
                     Text(
                         text = model.name ?: stringResource(id = R.string.vehicle_default_name),
-                        style = GasGuruTheme.typography.smallBold,
+                        style = GasGuruTheme.typography.baseBold,
                         color = GasGuruTheme.colors.textMain,
                     )
                     Spacer(modifier = Modifier.width(8.dp))
@@ -135,6 +133,7 @@ private fun InactiveVehicleRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .clip(RoundedCornerShape(0.dp))
             .padding(horizontal = 16.dp, vertical = 14.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -161,7 +160,7 @@ private fun InactiveVehicleRow(
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
                     text = model.name ?: stringResource(id = R.string.vehicle_default_name),
-                    style = GasGuruTheme.typography.smallBold,
+                    style = GasGuruTheme.typography.baseBold,
                     color = GasGuruTheme.colors.textMain,
                 )
                 Text(
@@ -186,22 +185,32 @@ private fun InactiveVehicleRow(
 @Composable
 private fun LiveDot() {
     val infiniteTransition = rememberInfiniteTransition(label = "liveDot")
-    val pulseScale by infiniteTransition.animateFloat(
+    val rippleScale by infiniteTransition.animateFloat(
         initialValue = 1f,
-        targetValue = 1.8f,
+        targetValue = 2.4f,
         animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 800, easing = EaseInOut),
-            repeatMode = RepeatMode.Reverse,
+            animation = tween(durationMillis = 1400, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart,
         ),
-        label = "dotScale",
+        label = "rippleScale",
+    )
+    val rippleAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.5f,
+        targetValue = 0f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1400, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart,
+        ),
+        label = "rippleAlpha",
     )
     Box(contentAlignment = Alignment.Center) {
         Box(
             modifier = Modifier
                 .size(8.dp)
-                .scale(pulseScale)
+                .scale(rippleScale)
+                .alpha(rippleAlpha)
                 .clip(CircleShape)
-                .background(GasGuruTheme.colors.primary500.copy(alpha = 0.3f)),
+                .background(GasGuruTheme.colors.primary500),
         )
         Box(
             modifier = Modifier

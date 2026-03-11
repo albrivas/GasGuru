@@ -5,4 +5,5 @@ import com.gasguru.core.ui.models.ThemeModeUi
 sealed class ProfileEvents {
     data class Theme(val theme: ThemeModeUi) : ProfileEvents()
     data object AddVehicle : ProfileEvents()
+    data class EditVehicle(val vehicleId: Long) : ProfileEvents()
 }
