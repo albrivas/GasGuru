@@ -78,6 +78,10 @@ class NavigationHandler(private val navController: NavController) {
                 is NavigationDestination.AddVehicle -> {
                     navController.navigateToAddVehicle()
                 }
+
+                is NavigationDestination.EditVehicle -> {
+                    navController.navigateToAddVehicle(vehicleId = destination.vehicleId)
+                }
             }
 
             is NavigationCommand.Back -> {
