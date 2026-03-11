@@ -1,12 +1,16 @@
 package com.gasguru.feature.vehicle.viewmodel
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.gasguru.core.domain.user.GetUserDataUseCase
-import com.gasguru.core.domain.vehicle.AddVehicleUseCase
+import com.gasguru.core.domain.vehicle.GetVehicleByIdUseCase
+import com.gasguru.core.domain.vehicle.SaveVehicleUseCase
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.Vehicle
 import com.gasguru.core.model.data.VehicleType
+import com.gasguru.feature.vehicle.navigation.VehicleRoutes
 import com.gasguru.feature.vehicle.ui.AddVehicleEvent
 import com.gasguru.navigation.manager.NavigationManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,13 +21,20 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class AddVehicleViewModel(
+    savedStateHandle: SavedStateHandle,
     private val navigationManager: NavigationManager,
-    private val addVehicleUseCase: AddVehicleUseCase,
+    private val saveVehicleUseCase: SaveVehicleUseCase,
+    private val getVehicleByIdUseCase: GetVehicleByIdUseCase,
     private val getUserDataUseCase: GetUserDataUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AddVehicleUiState())
     val uiState: StateFlow<AddVehicleUiState> = _uiState.asStateFlow()
+
+    init {
+        val vehicleId = savedStateHandle.toRoute<VehicleRoutes.AddVehicleRoute>().vehicleId
+        vehicleId?.let { onLoadVehicle(vehicleId = it) }
+    }
 
     fun handleEvent(event: AddVehicleEvent) {
         when (event) {
@@ -72,6 +83,24 @@ class AddVehicleViewModel(
         _uiState.update { it.copy(isMainVehicle = !it.isMainVehicle) }
     }
 
+    private fun onLoadVehicle(vehicleId: Long) {
+        viewModelScope.launch {
+            val vehicle = getVehicleByIdUseCase(vehicleId = vehicleId) ?: return@launch
+            _uiState.update { currentState ->
+                currentState.copy(
+                    vehicleId = vehicleId,
+                    isEditMode = true,
+                    selectedVehicleType = vehicle.vehicleType,
+                    vehicleName = vehicle.name ?: "",
+                    selectedFuelType = vehicle.fuelType,
+                    selectedCapacity = vehicle.tankCapacity,
+                    isMainVehicle = vehicle.isPrincipal,
+                    pickerValue = vehicle.tankCapacity,
+                )
+            }
+        }
+    }
+
     private fun onSaveVehicle() {
         val currentState = _uiState.value
         val selectedFuelType = currentState.selectedFuelType ?: return
@@ -80,7 +109,8 @@ class AddVehicleViewModel(
         viewModelScope.launch {
             val currentUserId = getUserDataUseCase().first().userId
 
-            val newVehicle = Vehicle(
+            val vehicle = Vehicle(
+                id = currentState.vehicleId ?: 0L,
                 userId = currentUserId,
                 name = currentState.vehicleName.takeIf { it.isNotBlank() },
                 fuelType = selectedFuelType,
@@ -89,7 +119,7 @@ class AddVehicleViewModel(
                 isPrincipal = currentState.isMainVehicle,
             )
 
-            addVehicleUseCase(vehicle = newVehicle)
+            saveVehicleUseCase(vehicle = vehicle)
             navigationManager.navigateBack()
         }
     }

@@ -91,7 +91,7 @@ internal fun AddVehicleScreen(
             .fillMaxSize()
             .background(color = GasGuruTheme.colors.neutral100),
     ) {
-        AddVehicleTopBar(onBack = { onEvent(AddVehicleEvent.Back) })
+        AddVehicleTopBar(onBack = { onEvent(AddVehicleEvent.Back) }, isEditMode = uiState.isEditMode)
 
         LazyColumn(
             modifier = Modifier
@@ -191,6 +191,7 @@ internal fun AddVehicleScreen(
 @Composable
 private fun AddVehicleTopBar(
     onBack: () -> Unit,
+    isEditMode: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -208,7 +209,7 @@ private fun AddVehicleTopBar(
             )
         }
         Text(
-            text = stringResource(id = R.string.add_vehicle_title),
+            text = stringResource(id = if (isEditMode) R.string.edit_vehicle_title else R.string.add_vehicle_title),
             style = GasGuruTheme.typography.h5,
             color = GasGuruTheme.colors.neutralBlack,
         )

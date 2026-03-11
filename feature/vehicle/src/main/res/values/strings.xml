@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="add_vehicle_title">Nuevo vehículo</string>
+    <string name="edit_vehicle_title">Editar vehículo</string>
     <string name="add_vehicle_type_section">Tipo de vehículo</string>
     <string name="add_vehicle_name_section">Nombre</string>
     <string name="add_vehicle_name_placeholder">Ej. Golf VII</string>

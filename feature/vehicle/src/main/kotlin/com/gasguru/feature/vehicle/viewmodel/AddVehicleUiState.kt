@@ -8,6 +8,8 @@ import com.gasguru.core.ui.models.VehicleTypeUiModel
 
 @Immutable
 data class AddVehicleUiState(
+    val vehicleId: Long? = null,
+    val isEditMode: Boolean = false,
     val vehicleTypes: List<VehicleTypeUiModel> = VehicleTypeUiModel.ALL_TYPES,
     val selectedVehicleType: VehicleType? = null,
     val vehicleName: String = "",
