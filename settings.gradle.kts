@@ -40,6 +40,7 @@ include(":core:notifications")
 include(":core:supabase")
 
 include(":feature:onboarding")
+include(":feature:vehicle")
 include(":feature:detail-station")
 include(":feature:favorite-list-station")
 include(":feature:station-map")

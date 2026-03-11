@@ -6,6 +6,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.Vehicle
+import com.gasguru.core.model.data.VehicleType
 
 @Entity(
     tableName = "vehicles",
@@ -26,6 +27,8 @@ data class VehicleEntity(
     val name: String?,
     val fuelType: FuelType,
     val tankCapacity: Int,
+    val vehicleType: VehicleType,
+    val isPrincipal: Boolean,
 )
 
 fun VehicleEntity.asExternalModel() = Vehicle(
@@ -34,4 +37,6 @@ fun VehicleEntity.asExternalModel() = Vehicle(
     name = name,
     fuelType = fuelType,
     tankCapacity = tankCapacity,
+    vehicleType = vehicleType,
+    isPrincipal = isPrincipal,
 )
