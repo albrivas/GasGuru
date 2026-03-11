@@ -48,6 +48,9 @@ class ProfileViewModel(
         when (event) {
             is ProfileEvents.Theme -> saveTheme(theme = event.theme)
             is ProfileEvents.AddVehicle -> navigationManager.navigateTo(destination = NavigationDestination.AddVehicle)
+            is ProfileEvents.EditVehicle -> navigationManager.navigateTo(
+                destination = NavigationDestination.EditVehicle(vehicleId = event.vehicleId),
+            )
         }
     }
 

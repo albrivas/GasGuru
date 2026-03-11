@@ -79,6 +79,7 @@ internal fun ProfileScreen(uiState: ProfileUiState, event: (ProfileEvents) -> Un
                 content = uiState.content,
                 onSheetRequest = { sheet -> activeSheet = sheet },
                 onAddVehicle = { event(ProfileEvents.AddVehicle) },
+                onEditVehicle = { vehicleId -> event(ProfileEvents.EditVehicle(vehicleId = vehicleId)) },
             )
         }
 
@@ -126,6 +127,7 @@ fun SuccessContent(
     content: ProfileContentUi,
     onSheetRequest: (ProfileSheet) -> Unit,
     onAddVehicle: () -> Unit,
+    onEditVehicle: (Long) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -164,7 +166,7 @@ fun SuccessContent(
                         )
                     )
                 }
-                VehicleItemCard(model = vehicle)
+                VehicleItemCard(model = vehicle, onClick = { onEditVehicle(vehicle.id) })
             }
             GasGuruDivider(
                 model = GasGuruDividerModel(
