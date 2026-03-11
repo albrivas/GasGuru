@@ -14,6 +14,7 @@ import com.gasguru.core.domain.places.GetAddressFromLocationUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.domain.vehicle.UpdateVehicleTankCapacityUseCase
 import com.gasguru.core.model.data.Vehicle
+import com.gasguru.core.model.data.principalVehicle
 import com.gasguru.core.ui.mapper.toUiModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
@@ -124,7 +125,7 @@ class DetailStationViewModel(
                 val userData = userDataUseCase().first()
                 val station =
                     (fuelStation.value as DetailStationUiState.Success).stationModel.fuelStation
-                val price = userData.vehicles.first().fuelType.extractPrice(station)
+                val price = userData.principalVehicle().fuelType.extractPrice(station)
 
                 addPriceAlertUseCase(stationId = id, lastNotifiedPrice = price)
             }
