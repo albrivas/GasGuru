@@ -52,4 +52,11 @@ sealed interface NavigationDestination {
      * Navigate to add vehicle screen.
      */
     data object AddVehicle : NavigationDestination
+
+    /**
+     * Navigate to edit vehicle screen.
+     *
+     * @param vehicleId The ID of the vehicle to edit
+     */
+    data class EditVehicle(val vehicleId: Long) : NavigationDestination
 }
