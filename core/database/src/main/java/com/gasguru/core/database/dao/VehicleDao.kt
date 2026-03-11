@@ -25,4 +25,7 @@ interface VehicleDao {
 
     @Query("UPDATE vehicles SET fuelType = :fuelType WHERE id = :vehicleId")
     suspend fun updateFuelType(vehicleId: Long, fuelType: FuelType)
+
+    @Query("UPDATE vehicles SET isPrincipal = 0 WHERE userId = :userId")
+    suspend fun clearPrincipalVehiclesForUser(userId: Long)
 }
