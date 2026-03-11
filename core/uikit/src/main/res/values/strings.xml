@@ -18,4 +18,9 @@
     <string name="route_close_button">Close route</string>
     <string name="full_tank_cost">Full tank cost</string>
     <string name="change_litres">Change litres</string>
+    <string name="vehicle_in_use">In use</string>
+    <string name="vehicle_add">Add vehicle</string>
+    <string name="vehicle_default_name">My Vehicle</string>
+    <string name="vehicle_fuel_capacity">%1$s · %2$d L</string>
+    <string name="vehicle_capacity_litres">%1$d L</string>
 </resources>

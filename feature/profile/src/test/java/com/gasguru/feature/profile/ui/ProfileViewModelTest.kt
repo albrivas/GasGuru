@@ -3,7 +3,6 @@ package com.gasguru.feature.profile.ui
 import app.cash.turbine.test
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.domain.user.SaveThemeModeUseCase
-import com.gasguru.core.domain.vehicle.UpdateVehicleFuelTypeUseCase
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.model.data.UserData
@@ -11,9 +10,9 @@ import com.gasguru.core.model.data.Vehicle
 import com.gasguru.core.model.data.VehicleType
 import com.gasguru.core.testing.CoroutinesTestExtension
 import com.gasguru.core.testing.fakes.data.user.FakeUserDataRepository
-import com.gasguru.core.testing.fakes.data.vehicle.FakeVehicleRepository
-import com.gasguru.core.ui.R
+import com.gasguru.core.testing.fakes.navigation.FakeNavigationManager
 import com.gasguru.core.ui.mapper.toUi
+import com.gasguru.navigation.manager.NavigationDestination
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -29,58 +28,78 @@ import org.junit.jupiter.api.extension.ExtendWith
 class ProfileViewModelTest {
 
     private lateinit var fakeUserDataRepository: FakeUserDataRepository
-    private lateinit var fakeVehicleRepository: FakeVehicleRepository
+    private lateinit var fakeNavigationManager: FakeNavigationManager
 
     private lateinit var sut: ProfileViewModel
 
     @BeforeEach
     fun setUp() {
-        fakeVehicleRepository = FakeVehicleRepository(
-            initialVehicles = listOf(Vehicle(id = 1L, userId = 0L, fuelType = FuelType.GASOLINE_95, name = null, tankCapacity = 40, vehicleType = VehicleType.CAR, isPrincipal = true)),
-        )
         fakeUserDataRepository = FakeUserDataRepository(
             initialUserData = UserData(
-                vehicles = listOf(Vehicle(id = 1L, userId = 0L, fuelType = FuelType.GASOLINE_95, name = null, tankCapacity = 40, vehicleType = VehicleType.CAR, isPrincipal = true)),
+                vehicles = listOf(
+                    Vehicle(id = 1L, userId = 0L, fuelType = FuelType.GASOLINE_95, name = "Golf VIII", tankCapacity = 55, vehicleType = VehicleType.CAR, isPrincipal = true),
+                    Vehicle(id = 2L, userId = 0L, fuelType = FuelType.GASOLINE_95, name = "Honda CB500", tankCapacity = 18, vehicleType = VehicleType.MOTORCYCLE, isPrincipal = false),
+                ),
             )
         )
+        fakeNavigationManager = FakeNavigationManager()
         sut = ProfileViewModel(
             getUserData = GetUserDataUseCase(fakeUserDataRepository),
-            updateVehicleFuelTypeUseCase = UpdateVehicleFuelTypeUseCase(fakeVehicleRepository),
             saveThemeModeUseCase = SaveThemeModeUseCase(fakeUserDataRepository),
+            navigationManager = fakeNavigationManager,
         )
     }
 
     @Test
-    @DisplayName("GIVEN userdata use case WHEN collected THEN emit Loading and then Success")
+    @DisplayName("GIVEN userdata use case WHEN collected THEN emit Loading and then Success with vehicles")
     fun getUserDataSuccess() = runTest {
         sut.userData.test {
             Assertions.assertEquals(ProfileUiState.Loading, awaitItem())
 
             val successState = awaitItem() as ProfileUiState.Success
-            Assertions.assertEquals(R.string.gasoline_95, successState.content.fuelTranslation)
             Assertions.assertEquals(ThemeMode.SYSTEM, successState.content.themeUi.mode)
             Assertions.assertEquals(ThemeMode.entries.size, successState.content.allThemesUi.size)
+            Assertions.assertEquals(2, successState.content.vehicles.size)
 
             cancelAndConsumeRemainingEvents()
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    @DisplayName("GIVEN fuel selection event WHEN handleEvents THEN vehicle repository is updated")
-    fun saveSelectionFuel() = runTest {
-        val fuelType = FuelType.DIESEL
-
+    @DisplayName("GIVEN vehicles with isPrincipal true WHEN collected THEN principal vehicle is isSelected true")
+    fun principalVehicleIsSelected() = runTest {
         sut.userData.test {
-            awaitItem()
-            awaitItem()
+            awaitItem() // Loading
+            val successState = awaitItem() as ProfileUiState.Success
+
+            val selectedVehicle = successState.content.vehicles.first { it.isSelected }
+            Assertions.assertEquals(1L, selectedVehicle.id)
+
             cancelAndConsumeRemainingEvents()
         }
+    }
 
-        sut.handleEvents(ProfileEvents.Fuel(fuelType))
-        advanceUntilIdle()
+    @Test
+    @DisplayName("GIVEN vehicles with isPrincipal false WHEN collected THEN non-principal vehicles are isSelected false")
+    fun nonPrincipalVehiclesAreNotSelected() = runTest {
+        sut.userData.test {
+            awaitItem() // Loading
+            val successState = awaitItem() as ProfileUiState.Success
 
-        Assertions.assertEquals(listOf(1L to fuelType), fakeVehicleRepository.updatedFuelTypes)
+            val nonSelectedVehicles = successState.content.vehicles.filter { !it.isSelected }
+            Assertions.assertEquals(1, nonSelectedVehicles.size)
+            Assertions.assertEquals(2L, nonSelectedVehicles.first().id)
+
+            cancelAndConsumeRemainingEvents()
+        }
+    }
+
+    @Test
+    @DisplayName("GIVEN add vehicle event WHEN handleEvents THEN navigates to AddVehicle destination")
+    fun addVehicleNavigatesToAddVehicleScreen() = runTest {
+        sut.handleEvents(ProfileEvents.AddVehicle)
+
+        Assertions.assertEquals(listOf(NavigationDestination.AddVehicle), fakeNavigationManager.navigatedDestinations)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

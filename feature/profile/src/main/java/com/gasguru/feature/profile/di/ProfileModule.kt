@@ -8,8 +8,8 @@ val profileModule = module {
     viewModel {
         ProfileViewModel(
             getUserData = get(),
-            updateVehicleFuelTypeUseCase = get(),
             saveThemeModeUseCase = get(),
+            navigationManager = get(),
         )
     }
 }

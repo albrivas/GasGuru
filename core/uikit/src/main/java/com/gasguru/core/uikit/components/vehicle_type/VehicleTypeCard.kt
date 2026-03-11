@@ -35,7 +35,7 @@ fun VehicleTypeCard(
     val contentColor = if (model.isSelected) {
         GasGuruTheme.colors.primary500
     } else {
-        GasGuruTheme.colors.neutral600
+        GasGuruTheme.colors.textSubtle
     }
     val shape = RoundedCornerShape(size = 12.dp)
 
@@ -82,6 +82,21 @@ private fun VehicleTypeCardPreview() {
                 iconRes = R.drawable.ic_vehicle_car,
                 nameRes = R.string.preview_fuel_type,
                 isSelected = true,
+                onClick = {},
+            ),
+        )
+    }
+}
+
+@Composable
+@ThemePreviews
+private fun VehicleTypeCardUnselectedPreview() {
+    MyApplicationTheme {
+        VehicleTypeCard(
+            model = VehicleTypeCardModel(
+                iconRes = R.drawable.ic_vehicle_car,
+                nameRes = R.string.preview_fuel_type,
+                isSelected = false,
                 onClick = {},
             ),
         )
