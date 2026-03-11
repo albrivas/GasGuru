@@ -4,12 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.domain.user.SaveThemeModeUseCase
-import com.gasguru.core.domain.vehicle.UpdateVehicleFuelTypeUseCase
-import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.ui.mapper.toUi
-import com.gasguru.core.ui.mapper.toUiModel
 import com.gasguru.core.ui.models.ThemeModeUi
+import com.gasguru.feature.profile.ui.mapper.toVehicleItemCardModel
+import com.gasguru.navigation.manager.NavigationDestination
+import com.gasguru.navigation.manager.NavigationManager
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -19,24 +19,23 @@ import okhttp3.internal.toImmutableList
 
 class ProfileViewModel(
     getUserData: GetUserDataUseCase,
-    private val updateVehicleFuelTypeUseCase: UpdateVehicleFuelTypeUseCase,
     private val saveThemeModeUseCase: SaveThemeModeUseCase,
+    private val navigationManager: NavigationManager,
 ) : ViewModel() {
 
     private val allThemesUi by lazy(LazyThreadSafetyMode.NONE) {
         ThemeMode.entries.map { it.toUi() }.toImmutableList()
     }
 
-    private var currentVehicleId: Long? = null
-
     val userData: StateFlow<ProfileUiState> = getUserData().map { userData ->
-        val vehicle = userData.vehicles.first()
-        currentVehicleId = vehicle.id
+        val vehicles = userData.vehicles.map { vehicle ->
+            vehicle.toVehicleItemCardModel(isSelected = vehicle.isPrincipal)
+        }
         ProfileUiState.Success(
             content = ProfileContentUi(
-                fuelTranslation = vehicle.fuelType.toUiModel().translationRes,
                 themeUi = userData.themeMode.toUi(),
                 allThemesUi = allThemesUi,
+                vehicles = vehicles,
             )
         )
     }.stateIn(
@@ -47,14 +46,9 @@ class ProfileViewModel(
 
     fun handleEvents(event: ProfileEvents) {
         when (event) {
-            is ProfileEvents.Fuel -> saveSelectionFuel(fuelType = event.fuel)
             is ProfileEvents.Theme -> saveTheme(theme = event.theme)
+            is ProfileEvents.AddVehicle -> navigationManager.navigateTo(destination = NavigationDestination.AddVehicle)
         }
-    }
-
-    private fun saveSelectionFuel(fuelType: FuelType) = viewModelScope.launch {
-        val vehicleId = currentVehicleId ?: return@launch
-        updateVehicleFuelTypeUseCase(vehicleId = vehicleId, fuelType = fuelType)
     }
 
     private fun saveTheme(theme: ThemeModeUi) = viewModelScope.launch {
