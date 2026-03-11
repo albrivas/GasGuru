@@ -281,7 +281,7 @@ private fun VehicleNameSection(
                 Text(
                     text = stringResource(id = R.string.add_vehicle_name_placeholder),
                     style = GasGuruTheme.typography.baseRegular,
-                    color = GasGuruTheme.colors.neutral500,
+                    color = GasGuruTheme.colors.neutral600,
                 )
             },
             textStyle = GasGuruTheme.typography.baseRegular,
@@ -372,7 +372,7 @@ private fun CapacitySection(
                 color = if (isSelected) {
                     GasGuruTheme.colors.neutralBlack
                 } else {
-                    GasGuruTheme.colors.neutral500
+                    GasGuruTheme.colors.neutral600
                 },
             )
             Text(
@@ -432,7 +432,7 @@ private fun MainVehicleSection(
                 checkedThumbColor = GasGuruTheme.colors.neutralWhite,
                 checkedTrackColor = GasGuruTheme.colors.primary500,
                 uncheckedThumbColor = GasGuruTheme.colors.neutralWhite,
-                uncheckedTrackColor = GasGuruTheme.colors.neutral300,
+                uncheckedTrackColor = GasGuruTheme.colors.neutral600,
                 uncheckedBorderColor = Color.Transparent,
             ),
         )
