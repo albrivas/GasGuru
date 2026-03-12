@@ -17,7 +17,7 @@ jobs:
           fetch-depth: 0
 
       - name: Free disk space
-        uses: jlumbroso/free-disk-space@main
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # main
         with:
           tool-cache: false
           android: false
@@ -49,18 +49,30 @@ jobs:
           restore-keys: ${{ runner.os }}-gradle
 
       - name: Generate local.properties
+        env:
+          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+          GOOGLE_STYLE_MAP_ID: ${{ secrets.GOOGLE_STYLE_MAP_ID }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          ONE_SIGNAL: ${{ secrets.ONE_SIGNAL }}
+          MIXPANEL: ${{ secrets.MIXPANEL }}
+          SHA1_DEBUG: ${{ secrets.SHA1_DEBUG }}
+          SHA1_PLAY_STORE: ${{ secrets.SHA1_PLAY_STORE }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_API_KEY: ${{ secrets.SUPABASE_API_KEY }}
         run: |
-          echo "googleApiKey=${{ secrets.GOOGLE_MAPS_API_KEY }}" >> local.properties
-          echo "googleStyleId=${{ secrets.GOOGLE_STYLE_MAP_ID }}" >> local.properties
-          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> local.properties
-          echo "keyAlias=${{ secrets.KEYSTORE_ALIAS }}" >> local.properties
-          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> local.properties
-          echo "onesignalAppId=${{ secrets.ONE_SIGNAL }}" >> local.properties
-          echo "mixpanelProjectToken=${{ secrets.MIXPANEL }}" >> local.properties
-          echo "sha1Debug=${{ secrets.SHA1_DEBUG }}" >> local.properties
-          echo "sha1PlayStore=${{ secrets.SHA1_PLAY_STORE }}" >> local.properties
-          echo "supabaseUrl=${{ secrets.SUPABASE_URL }}" >> local.properties
-          echo "supabaseKey=${{ secrets.SUPABASE_API_KEY }}" >> local.properties
+          echo "googleApiKey=$GOOGLE_MAPS_API_KEY" >> local.properties
+          echo "googleStyleId=$GOOGLE_STYLE_MAP_ID" >> local.properties
+          echo "storePassword=$KEYSTORE_PASSWORD" >> local.properties
+          echo "keyAlias=$KEYSTORE_ALIAS" >> local.properties
+          echo "keyPassword=$KEY_PASSWORD" >> local.properties
+          echo "onesignalAppId=$ONE_SIGNAL" >> local.properties
+          echo "mixpanelProjectToken=$MIXPANEL" >> local.properties
+          echo "sha1Debug=$SHA1_DEBUG" >> local.properties
+          echo "sha1PlayStore=$SHA1_PLAY_STORE" >> local.properties
+          echo "supabaseUrl=$SUPABASE_URL" >> local.properties
+          echo "supabaseKey=$SUPABASE_API_KEY" >> local.properties
 
       - name: Create google-services.json
         env:
@@ -102,11 +114,11 @@ jobs:
 
       - name: Install Maestro CLI
         run: |
-          curl -Ls "https://get.maestro.mobile.dev" | bash
+          curl --proto "=https" --tlsv1.2 -sSf "https://get.maestro.mobile.dev" | bash
           echo "$HOME/.maestro/bin" >> $GITHUB_PATH
 
       - name: Start Android Emulator
-        uses: ReactiveCircus/android-emulator-runner@v2.35.0
+        uses: ReactiveCircus/android-emulator-runner@b530d96654c385303d652368551fb075bc2f0b6b # v2.35.0
         with:
           api-level: 34
           target: google_apis
