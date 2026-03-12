@@ -17,6 +17,7 @@ data class AddVehicleUiState(
     val selectedFuelType: FuelType? = null,
     val selectedCapacity: Int? = null,
     val isMainVehicle: Boolean = false,
+    val isOriginallyPrincipal: Boolean = false,
     val showCapacityPicker: Boolean = false,
     val pickerValue: Int = PICKER_MIN,
 ) {

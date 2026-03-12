@@ -164,6 +164,7 @@ internal fun AddVehicleScreen(
             item {
                 MainVehicleSection(
                     isMainVehicle = uiState.isMainVehicle,
+                    isToggleEnabled = !uiState.isOriginallyPrincipal,
                     onToggle = { onEvent(AddVehicleEvent.ToggleMainVehicle) },
                 )
             }
@@ -395,6 +396,7 @@ private fun CapacitySection(
 @Composable
 private fun MainVehicleSection(
     isMainVehicle: Boolean,
+    isToggleEnabled: Boolean,
     onToggle: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -429,6 +431,7 @@ private fun MainVehicleSection(
         Switch(
             checked = isMainVehicle,
             onCheckedChange = { onToggle() },
+            enabled = isToggleEnabled,
             colors = SwitchDefaults.colors(
                 checkedThumbColor = GasGuruTheme.colors.neutralWhite,
                 checkedTrackColor = GasGuruTheme.colors.primary500,
