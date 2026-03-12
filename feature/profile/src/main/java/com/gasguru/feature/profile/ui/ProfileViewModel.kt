@@ -59,8 +59,4 @@ class ProfileViewModel(
     private fun saveTheme(theme: ThemeModeUi) = viewModelScope.launch {
         saveThemeModeUseCase(themeMode = theme.mode)
     }
-
-    private fun saveTheme(theme: ThemeModeUi) = viewModelScope.launch {
-        saveThemeModeUseCase(themeMode = theme.mode)
-    }
 }

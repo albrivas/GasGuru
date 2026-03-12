@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -22,6 +23,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
@@ -189,89 +191,9 @@ fun SuccessContent(
             ),
             modifier = Modifier.testTag("theme_setting_item"),
         )
-        SettingItem(
-            model = SettingItemModel(
-                title = stringResource(id = R.string.theme_mode),
-                selection = stringResource(id = content.themeUi.titleRes),
-                icon = content.themeUi.iconRes,
-                onClick = { onSheetRequest(ProfileSheet.Theme) },
-            ),
-            modifier = Modifier.testTag("theme_setting_item")
-        )
         Spacer(modifier = Modifier.weight(1f))
         VersionAppInfo(modifier = Modifier.padding(bottom = 12.dp))
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun FuelSelectionSheet(
-    selectedFuel: Int,
-    onDismiss: () -> Unit,
-    onFuelSelected: (Int) -> Unit,
-    sheetState: SheetState,
-) {
-    ModalBottomSheet(
-        modifier = Modifier
-            .testTag("bottom_sheet_fuel")
-            .statusBarsPadding(),
-        onDismissRequest = onDismiss,
-        dragHandle = { DragHandle() },
-        shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
-        sheetState = sheetState,
-        containerColor = GasGuruTheme.colors.neutral100,
-        contentColor = GasGuruTheme.colors.neutral100,
-        contentWindowInsets = { WindowInsets.navigationBars },
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Text(
-                text = stringResource(id = RUi.string.select_fuel_preference),
-                style = GasGuruTheme.typography.baseBold,
-                color = GasGuruTheme.colors.textMain
-            )
-            val list = FuelType.entries.map { it.toUiModel().toFuelItem() }
-            FuelListSelection(
-                model = FuelListSelectionModel(
-                    list = list,
-                    selected = selectedFuel,
-                    onItemSelected = onFuelSelected
-                )
-            )
-        }
-    }
-}
-
-@Composable
-fun ThemeModeSheet(
-    selectedTheme: ThemeModeUi,
-    allThemesUi: List<ThemeModeUi>,
-    onDismiss: () -> Unit,
-    onThemeSelected: (ThemeModeUi) -> Unit,
-) {
-    val themeOptions = allThemesUi.map { stringResource(it.titleRes) }
-    val selectedOption = stringResource(selectedTheme.titleRes)
-
-    FilterSheet(
-        model = FilterSheetModel(
-            title = stringResource(R.string.theme_mode),
-            buttonText = "Save",
-            isMultiOption = false,
-            isMustSelection = true,
-            options = themeOptions,
-            optionsSelected = listOf(selectedOption),
-            onDismiss = onDismiss,
-            onSaveButton = { selectedOptions ->
-                val selectedIndex = themeOptions.indexOf(selectedOptions.first())
-                onThemeSelected(allThemesUi[selectedIndex])
-            },
-            type = FilterSheetType.NORMAL,
-        )
-    )
 }
 
 @Composable
