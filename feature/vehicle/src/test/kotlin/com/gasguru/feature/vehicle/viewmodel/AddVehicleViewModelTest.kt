@@ -49,20 +49,13 @@ class AddVehicleViewModelTest {
         sut = buildViewModel()
     }
 
-    private fun buildViewModel(vehicleId: Long? = null): AddVehicleViewModel {
-        val savedStateHandle = if (vehicleId != null) {
-            SavedStateHandle(mapOf("vehicleId" to vehicleId))
-        } else {
-            SavedStateHandle()
-        }
-        return AddVehicleViewModel(
-            savedStateHandle = savedStateHandle,
-            navigationManager = fakeNavigationManager,
-            saveVehicleUseCase = saveVehicleUseCase,
-            getVehicleByIdUseCase = getVehicleByIdUseCase,
-            getUserDataUseCase = getUserDataUseCase,
-        )
-    }
+    private fun buildViewModel(): AddVehicleViewModel = AddVehicleViewModel(
+        savedStateHandle = SavedStateHandle(),
+        navigationManager = fakeNavigationManager,
+        saveVehicleUseCase = saveVehicleUseCase,
+        getVehicleByIdUseCase = getVehicleByIdUseCase,
+        getUserDataUseCase = getUserDataUseCase,
+    )
 
     @Test
     @DisplayName(
@@ -436,12 +429,12 @@ class AddVehicleViewModelTest {
     @Test
     @DisplayName(
         """
-        GIVEN vehicleId in SavedStateHandle
-        WHEN ViewModel is created
+        GIVEN a vehicle exists in the repository
+        WHEN the vehicle is loaded
         THEN state is pre-filled with vehicle data and isEditMode is true
         """
     )
-    fun savedStateHandleWithVehicleIdPreFillsStateAndSetsEditMode() = runTest {
+    fun loadVehiclePreFillsStateAndSetsEditMode() = runTest {
         val existingVehicle = Vehicle(
             id = 5L,
             userId = 0L,
@@ -452,28 +445,23 @@ class AddVehicleViewModelTest {
             isPrincipal = false,
         )
         fakeVehicleRepository.upsertVehicle(vehicle = existingVehicle)
-        val viewModel = buildViewModel(vehicleId = 5L)
+        sut.onLoadVehicle(vehicleId = 5L)
+        advanceUntilIdle()
 
-        viewModel.uiState.test {
-            awaitItem() // initial state (may or may not be pre-filled yet)
-            advanceUntilIdle()
-
-            val state = viewModel.uiState.value
-            assertTrue(state.isEditMode)
-            assertEquals(5L, state.vehicleId)
-            assertEquals("Golf VII", state.vehicleName)
-            assertEquals(FuelType.GASOLINE_95, state.selectedFuelType)
-            assertEquals(55, state.selectedCapacity)
-            assertEquals(VehicleType.CAR, state.selectedVehicleType)
-            assertFalse(state.isMainVehicle)
-            cancelAndIgnoreRemainingEvents()
-        }
+        val state = sut.uiState.value
+        assertTrue(state.isEditMode)
+        assertEquals(5L, state.vehicleId)
+        assertEquals("Golf VII", state.vehicleName)
+        assertEquals(FuelType.GASOLINE_95, state.selectedFuelType)
+        assertEquals(55, state.selectedCapacity)
+        assertEquals(VehicleType.CAR, state.selectedVehicleType)
+        assertFalse(state.isMainVehicle)
     }
 
     @Test
     @DisplayName(
         """
-        GIVEN vehicleId in SavedStateHandle
+        GIVEN a vehicle is loaded in edit mode
         WHEN SaveVehicle event
         THEN vehicle is updated with same id
         """
@@ -489,11 +477,11 @@ class AddVehicleViewModelTest {
             isPrincipal = false,
         )
         fakeVehicleRepository.upsertVehicle(vehicle = existingVehicle)
-        val viewModel = buildViewModel(vehicleId = 5L)
-
+        sut.onLoadVehicle(vehicleId = 5L)
         advanceUntilIdle()
-        viewModel.handleEvent(event = AddVehicleEvent.UpdateVehicleName(name = "Golf VIII"))
-        viewModel.handleEvent(event = AddVehicleEvent.SaveVehicle)
+
+        sut.handleEvent(event = AddVehicleEvent.UpdateVehicleName(name = "Golf VIII"))
+        sut.handleEvent(event = AddVehicleEvent.SaveVehicle)
         advanceUntilIdle()
 
         val vehicles = fakeVehicleRepository.getVehiclesForUser(userId = 0L)
