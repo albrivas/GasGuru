@@ -108,8 +108,24 @@ class ProfileViewModelTest {
         val repositoryWithReversedOrder = FakeUserDataRepository(
             initialUserData = UserData(
                 vehicles = listOf(
-                    Vehicle(id = 2L, userId = 0L, fuelType = FuelType.GASOLINE_95, name = "Honda CB500", tankCapacity = 18, vehicleType = VehicleType.MOTORCYCLE, isPrincipal = false),
-                    Vehicle(id = 1L, userId = 0L, fuelType = FuelType.GASOLINE_95, name = "Golf VIII", tankCapacity = 55, vehicleType = VehicleType.CAR, isPrincipal = true),
+                    Vehicle(
+                        id = 2L,
+                        userId = 0L,
+                        fuelType = FuelType.GASOLINE_95,
+                        name = "Honda CB500",
+                        tankCapacity = 18,
+                        vehicleType = VehicleType.MOTORCYCLE,
+                        isPrincipal = false
+                    ),
+                    Vehicle(
+                        id = 1L,
+                        userId = 0L,
+                        fuelType = FuelType.GASOLINE_95,
+                        name = "Golf VIII",
+                        tankCapacity = 55,
+                        vehicleType = VehicleType.CAR,
+                        isPrincipal = true
+                    ),
                 ),
             )
         )
