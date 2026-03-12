@@ -28,9 +28,11 @@ class ProfileViewModel(
     }
 
     val userData: StateFlow<ProfileUiState> = getUserData().map { userData ->
-        val vehicles = userData.vehicles.map { vehicle ->
-            vehicle.toVehicleItemCardModel(isSelected = vehicle.isPrincipal)
-        }
+        val vehicles = userData.vehicles
+            .sortedByDescending { it.isPrincipal }
+            .map { vehicle ->
+                vehicle.toVehicleItemCardModel(isSelected = vehicle.isPrincipal)
+            }
         ProfileUiState.Success(
             content = ProfileContentUi(
                 themeUi = userData.themeMode.toUi(),
