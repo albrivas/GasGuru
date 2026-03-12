@@ -39,14 +39,21 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.NotificationsActive
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -67,17 +74,26 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.gasguru.core.model.data.FuelStationBrandsType
 import com.gasguru.core.model.data.LatLng
+import com.gasguru.core.model.data.Vehicle
 import com.gasguru.core.model.data.previewFuelStationDomain
 import com.gasguru.core.ui.iconTint
+import com.gasguru.core.ui.mapper.toPriceUiModel
 import com.gasguru.core.ui.mapper.toUiModel
+import com.gasguru.core.ui.models.FuelTypeUiModel
 import com.gasguru.core.ui.review.findActivity
 import com.gasguru.core.ui.review.rememberInAppReviewManager
+import com.gasguru.core.uikit.components.GasGuruButton
+import com.gasguru.core.uikit.components.fuel_type_chip.FuelTypeChipModel
 import com.gasguru.core.uikit.components.information_card.InformationCard
 import com.gasguru.core.uikit.components.information_card.InformationCardModel
 import com.gasguru.core.uikit.components.loading.GasGuruLoading
 import com.gasguru.core.uikit.components.loading.GasGuruLoadingModel
+import com.gasguru.core.uikit.components.number_wheel_picker.NumberWheelPicker
+import com.gasguru.core.uikit.components.number_wheel_picker.NumberWheelPickerModel
 import com.gasguru.core.uikit.components.price.PriceItem
 import com.gasguru.core.uikit.components.price.PriceItemModel
+import com.gasguru.core.uikit.components.tank_cost_card.TankCostCard
+import com.gasguru.core.uikit.components.tank_cost_card.TankCostCardModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
@@ -87,6 +103,7 @@ import com.gasguru.feature.detail_station.getTimeElapsedString
 import com.gasguru.navigation.LocalNavigationManager
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import java.text.DecimalFormat
 
 @Composable
 internal fun DetailStationScreenRoute(
@@ -96,11 +113,13 @@ internal fun DetailStationScreenRoute(
     val uiState by viewModel.fuelStation.collectAsStateWithLifecycle()
     val staticMapUrl by viewModel.staticMapUrl.collectAsStateWithLifecycle()
     val lastUpdate by viewModel.lastUpdate.collectAsStateWithLifecycle()
+    val vehicle by viewModel.vehicle.collectAsStateWithLifecycle()
 
     DetailStationScreen(
         uiState = uiState,
         staticMapUrl = staticMapUrl,
         lastUpdate = lastUpdate,
+        vehicle = vehicle,
         onBack = { navigationManager.navigateBack() },
         onEvent = viewModel::onEvent,
     )
@@ -111,6 +130,7 @@ internal fun DetailStationScreen(
     uiState: DetailStationUiState,
     staticMapUrl: String?,
     lastUpdate: Long,
+    vehicle: Vehicle? = null,
     onBack: () -> Unit = {},
     onEvent: (DetailStationEvent) -> Unit = {},
 ) {
@@ -177,6 +197,10 @@ internal fun DetailStationScreen(
                         stationState = stationState,
                         address = uiState.address,
                         lastUpdate = lastUpdate,
+                        vehicle = vehicle,
+                        onUpdateTankCapacity = { newCapacity ->
+                            onEvent(DetailStationEvent.UpdateTankCapacity(capacity = newCapacity))
+                        },
                     )
                 }
             }
@@ -189,7 +213,22 @@ fun DetailStationContent(
     stationState: DetailStationState,
     address: String?,
     lastUpdate: Long,
+    vehicle: Vehicle? = null,
+    onUpdateTankCapacity: (Int) -> Unit = {},
 ) {
+    var showCapacitySheet by remember { mutableStateOf(value = false) }
+
+    if (showCapacitySheet && vehicle != null) {
+        CapacityPickerSheet(
+            initialCapacity = vehicle.tankCapacity,
+            onDismiss = { showCapacitySheet = false },
+            onConfirm = { newCapacity ->
+                onUpdateTankCapacity(newCapacity)
+                showCapacitySheet = false
+            },
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -273,6 +312,28 @@ fun DetailStationContent(
         }
 
         Spacer(modifier = Modifier.height(24.dp))
+        vehicle?.let { currentVehicle ->
+            val fuelUiModel = FuelTypeUiModel.ALL_FUELS.find { it.type == currentVehicle.fuelType }
+            val priceModel = currentVehicle.fuelType.toPriceUiModel(fuelStation = stationState.station.fuelStation)
+            if (fuelUiModel != null && priceModel.hasPrice) {
+                TankCostCard(
+                    model = TankCostCardModel(
+                        fuelTypeChip = FuelTypeChipModel(
+                            nameRes = fuelUiModel.translationRes,
+                        ),
+                        totalCost = "${DecimalFormat(
+                            "0.00"
+                        ).format(priceModel.rawPrice * currentVehicle.tankCapacity)} €",
+                        litres = "${currentVehicle.tankCapacity} L",
+                        pricePerLitre = priceModel.formattedPrice,
+                        vehicleName = currentVehicle.name.takeUnless { it.isNullOrBlank() }
+                            ?: stringResource(id = R.string.vehicle_default_name),
+                        onEditClick = { showCapacitySheet = true },
+                    ),
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+        }
         FuelTypes(fuelItems = stationState.fuelItems, lastUpdate = lastUpdate)
         Spacer(modifier = Modifier.height(24.dp))
         InformationStation(
@@ -566,6 +627,60 @@ fun handlePriceAlertWithPermissions(
         onEvent(DetailStationEvent.TogglePriceAlert(!stationState.hasPriceAlert))
     } else {
         permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CapacityPickerSheet(
+    initialCapacity: Int,
+    onDismiss: () -> Unit,
+    onConfirm: (Int) -> Unit,
+) {
+    var currentCapacity by remember { mutableIntStateOf(value = initialCapacity) }
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor = GasGuruTheme.colors.neutralWhite,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+                .padding(bottom = 32.dp),
+        ) {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(id = R.string.capacity_picker_title),
+                style = GasGuruTheme.typography.h5,
+                color = GasGuruTheme.colors.neutralBlack,
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(id = R.string.capacity_picker_range),
+                style = GasGuruTheme.typography.captionRegular,
+                color = GasGuruTheme.colors.neutral600,
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            NumberWheelPicker(
+                model = NumberWheelPickerModel(
+                    min = 40,
+                    max = 999,
+                    initialValue = initialCapacity,
+                    onValueChanged = { newCapacity -> currentCapacity = newCapacity },
+                ),
+                modifier = Modifier
+                    .height(156.dp)
+                    .fillMaxWidth(),
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            GasGuruButton(
+                onClick = { onConfirm(currentCapacity) },
+                text = stringResource(id = R.string.capacity_picker_confirm),
+            )
+        }
     }
 }
 

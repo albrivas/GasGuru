@@ -15,6 +15,7 @@ import com.gasguru.core.model.data.Filter
 import com.gasguru.core.model.data.FilterType
 import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.UserData
+import com.gasguru.core.model.data.principalVehicle
 import com.gasguru.core.ui.mapper.toUiModel
 import com.gasguru.core.ui.models.FuelStationUiModel
 import com.gasguru.feature.station_map.ui.models.toUiModel
@@ -260,7 +261,7 @@ class StationMapViewModel(
                             mapStations = uiStations,
                             listStations = sortStationsByTab(uiStations, _tabState.value.selectedTab, userData),
                             loading = false,
-                            selectedType = userData.fuelSelection,
+                            selectedType = userData.principalVehicle().fuelType,
                             mapBounds = bounds,
                             shouldCenterMap = true,
                         )
@@ -341,7 +342,7 @@ class StationMapViewModel(
         selectedTab: StationSortTab,
         userData: UserData
     ) = when (selectedTab) {
-        StationSortTab.PRICE -> stations.sortedBy { userData.fuelSelection.extractPrice(it.fuelStation) }
+        StationSortTab.PRICE -> stations.sortedBy { userData.principalVehicle().fuelType.extractPrice(it.fuelStation) }
         StationSortTab.DISTANCE -> stations.sortedBy { it.fuelStation.distance }
     }
 

@@ -13,6 +13,7 @@ import com.gasguru.core.domain.fuelstation.FuelStationByLocationUseCase
 import com.gasguru.core.domain.location.GetCurrentLocationUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.model.data.OpeningHours
+import com.gasguru.core.model.data.principalVehicle
 import com.gasguru.core.ui.mapper.toUiModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -55,7 +56,7 @@ class NearbyStationsScreen(carContext: CarContext) : Screen(carContext), KoinCom
                     uiState = NearbyStationsUiState(
                         loading = false,
                         stations = stations.map { it.toUiModel() },
-                        selectedFuel = userData.fuelSelection
+                        selectedFuel = userData.principalVehicle().fuelType
                     )
                     invalidate()
                 }.launchIn(coroutineScope)
@@ -65,7 +66,7 @@ class NearbyStationsScreen(carContext: CarContext) : Screen(carContext), KoinCom
                         uiState = NearbyStationsUiState(
                             loading = false,
                             stations = emptyList(),
-                            selectedFuel = userData.fuelSelection,
+                            selectedFuel = userData.principalVehicle().fuelType,
                             locationDisabled = true
                         )
                         invalidate()
