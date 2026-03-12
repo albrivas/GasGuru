@@ -9,8 +9,8 @@ import androidx.navigation.compose.composable
 import com.gasguru.feature.vehicle.ui.AddVehicleRoute
 import kotlinx.serialization.Serializable
 
-fun NavController.navigateToAddVehicle(navOptions: NavOptions? = null) {
-    this.navigate(VehicleRoutes.AddVehicleRoute, navOptions)
+fun NavController.navigateToAddVehicle(vehicleId: Long? = null, navOptions: NavOptions? = null) {
+    this.navigate(VehicleRoutes.AddVehicleRoute(vehicleId = vehicleId), navOptions)
 }
 
 fun NavGraphBuilder.addVehicleScreen() {
@@ -25,5 +25,5 @@ fun NavGraphBuilder.addVehicleScreen() {
 @Serializable
 sealed class VehicleRoutes {
     @Serializable
-    data object AddVehicleRoute : VehicleRoutes()
+    data class AddVehicleRoute(val vehicleId: Long? = null) : VehicleRoutes()
 }

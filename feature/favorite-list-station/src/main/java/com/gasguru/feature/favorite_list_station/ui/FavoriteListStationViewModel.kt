@@ -6,6 +6,7 @@ import com.gasguru.core.domain.fuelstation.GetFavoriteStationsUseCase
 import com.gasguru.core.domain.fuelstation.RemoveFavoriteStationUseCase
 import com.gasguru.core.domain.location.GetLastKnownLocationUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
+import com.gasguru.core.model.data.principalVehicle
 import com.gasguru.core.ui.mapper.toUiModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,7 +56,7 @@ class FavoriteListStationViewModel(
                         val listUiModel = stations.favoriteStations.map { it.toUiModel() }
                         val sortedStations = when (tabState.selectedTab) {
                             0 -> listUiModel.sortedBy {
-                                userData.vehicles.first().fuelType.extractPrice(
+                                userData.principalVehicle().fuelType.extractPrice(
                                     it.fuelStation
                                 )
                             }
@@ -64,7 +65,7 @@ class FavoriteListStationViewModel(
                         }
                         FavoriteStationListUiState.Favorites(
                             favoriteStations = sortedStations,
-                            userSelectedFuelType = userData.vehicles.first().fuelType
+                            userSelectedFuelType = userData.principalVehicle().fuelType
                         )
                     }
                 }

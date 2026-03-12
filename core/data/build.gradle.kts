@@ -24,4 +24,7 @@ dependencies {
     implementation(libs.maps.utils)
 
     testImplementation(projects.core.testing)
+    testImplementation(libs.junit5.api)
+    testImplementation(libs.junit5.extensions)
+    testRuntimeOnly(libs.junit5.engine)
 }

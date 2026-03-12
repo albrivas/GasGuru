@@ -8,6 +8,10 @@ plugins {
 
 android {
     namespace = "com.gasguru.feature.vehicle"
+
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -22,5 +26,6 @@ dependencies {
     testImplementation(libs.junit5.api)
     testImplementation(libs.junit5.extensions)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
     testRuntimeOnly(libs.junit5.engine)
 }

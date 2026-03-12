@@ -10,4 +10,5 @@ interface VehicleRepository {
     suspend fun updateTankCapacity(vehicleId: Long, tankCapacity: Int)
     suspend fun updateFuelType(vehicleId: Long, fuelType: FuelType)
     suspend fun getVehicleById(vehicleId: Long): Vehicle?
+    suspend fun clearPrincipalVehiclesForUser(userId: Long)
 }
