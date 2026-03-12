@@ -83,7 +83,7 @@ class AddVehicleViewModel(
         _uiState.update { it.copy(isMainVehicle = !it.isMainVehicle) }
     }
 
-    private fun onLoadVehicle(vehicleId: Long) {
+    internal fun onLoadVehicle(vehicleId: Long) {
         viewModelScope.launch {
             val vehicle = getVehicleByIdUseCase(vehicleId = vehicleId) ?: return@launch
             _uiState.update { currentState ->
