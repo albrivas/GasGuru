@@ -97,6 +97,38 @@ class ProfileViewModelTest {
     }
 
     @Test
+    @DisplayName(
+        """
+        GIVEN vehicles where principal is not the first in the list
+        WHEN userData is collected
+        THEN principal vehicle is first in the result list
+        """
+    )
+    fun principalVehicleIsFirstInList() = runTest {
+        val repositoryWithReversedOrder = FakeUserDataRepository(
+            initialUserData = UserData(
+                vehicles = listOf(
+                    Vehicle(id = 2L, userId = 0L, fuelType = FuelType.GASOLINE_95, name = "Honda CB500", tankCapacity = 18, vehicleType = VehicleType.MOTORCYCLE, isPrincipal = false),
+                    Vehicle(id = 1L, userId = 0L, fuelType = FuelType.GASOLINE_95, name = "Golf VIII", tankCapacity = 55, vehicleType = VehicleType.CAR, isPrincipal = true),
+                ),
+            )
+        )
+        val viewModel = ProfileViewModel(
+            getUserData = GetUserDataUseCase(repositoryWithReversedOrder),
+            saveThemeModeUseCase = SaveThemeModeUseCase(repositoryWithReversedOrder),
+            navigationManager = fakeNavigationManager,
+        )
+
+        viewModel.userData.test {
+            awaitItem() // Loading
+            val successState = awaitItem() as ProfileUiState.Success
+
+            Assertions.assertEquals(1L, successState.content.vehicles.first().id)
+            cancelAndConsumeRemainingEvents()
+        }
+    }
+
+    @Test
     @DisplayName("GIVEN add vehicle event WHEN handleEvents THEN navigates to AddVehicle destination")
     fun addVehicleNavigatesToAddVehicleScreen() = runTest {
         sut.handleEvents(ProfileEvents.AddVehicle)

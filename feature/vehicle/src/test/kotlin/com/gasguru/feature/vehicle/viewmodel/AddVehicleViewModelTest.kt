@@ -456,6 +456,66 @@ class AddVehicleViewModelTest {
         assertEquals(55, state.selectedCapacity)
         assertEquals(VehicleType.CAR, state.selectedVehicleType)
         assertFalse(state.isMainVehicle)
+        assertFalse(state.isOriginallyPrincipal)
+    }
+
+    @Test
+    @DisplayName(
+        """
+        GIVEN a principal vehicle exists in the repository
+        WHEN the vehicle is loaded
+        THEN isOriginallyPrincipal is true and isMainVehicle is true
+        """
+    )
+    fun loadPrincipalVehicleSetsIsOriginallyPrincipalTrue() = runTest {
+        val principalVehicle = Vehicle(
+            id = 10L,
+            userId = 0L,
+            name = "Golf VII",
+            fuelType = FuelType.GASOLINE_95,
+            tankCapacity = 55,
+            vehicleType = VehicleType.CAR,
+            isPrincipal = true,
+        )
+        fakeVehicleRepository.upsertVehicle(vehicle = principalVehicle)
+        sut.onLoadVehicle(vehicleId = 10L)
+        advanceUntilIdle()
+
+        val state = sut.uiState.value
+        assertTrue(state.isMainVehicle)
+        assertTrue(state.isOriginallyPrincipal)
+    }
+
+    @Test
+    @DisplayName(
+        """
+        GIVEN a principal vehicle loaded in edit mode
+        WHEN ToggleMainVehicle event is sent
+        THEN isMainVehicle remains true
+        """
+    )
+    fun toggleMainVehicleIsIgnoredForOriginallyPrincipalVehicle() = runTest {
+        val principalVehicle = Vehicle(
+            id = 10L,
+            userId = 0L,
+            name = "Golf VII",
+            fuelType = FuelType.GASOLINE_95,
+            tankCapacity = 55,
+            vehicleType = VehicleType.CAR,
+            isPrincipal = true,
+        )
+        fakeVehicleRepository.upsertVehicle(vehicle = principalVehicle)
+        sut.onLoadVehicle(vehicleId = 10L)
+        advanceUntilIdle()
+
+        sut.uiState.test {
+            awaitItem() // current state after load
+
+            sut.handleEvent(event = AddVehicleEvent.ToggleMainVehicle)
+            expectNoEvents()
+
+            assertTrue(sut.uiState.value.isMainVehicle)
+        }
     }
 
     @Test
