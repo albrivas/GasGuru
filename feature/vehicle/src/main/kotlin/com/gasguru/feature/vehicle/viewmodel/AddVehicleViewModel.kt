@@ -80,6 +80,7 @@ class AddVehicleViewModel(
     }
 
     private fun onToggleMainVehicle() {
+        if (_uiState.value.isOriginallyPrincipal) return
         _uiState.update { it.copy(isMainVehicle = !it.isMainVehicle) }
     }
 
@@ -95,6 +96,7 @@ class AddVehicleViewModel(
                     selectedFuelType = vehicle.fuelType,
                     selectedCapacity = vehicle.tankCapacity,
                     isMainVehicle = vehicle.isPrincipal,
+                    isOriginallyPrincipal = vehicle.isPrincipal,
                     pickerValue = vehicle.tankCapacity,
                 )
             }
