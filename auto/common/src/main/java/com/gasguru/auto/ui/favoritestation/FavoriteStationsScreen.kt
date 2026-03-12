@@ -12,6 +12,7 @@ import com.gasguru.auto.ui.component.StationRowComponent
 import com.gasguru.core.domain.fuelstation.GetFavoriteStationsUseCase
 import com.gasguru.core.domain.location.GetCurrentLocationUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
+import com.gasguru.core.model.data.principalVehicle
 import com.gasguru.core.ui.mapper.toUiModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -49,7 +50,7 @@ class FavoriteStationsScreen(carContext: CarContext) : Screen(carContext), KoinC
                     uiState = FavoriteStationsUiState(
                         loading = false,
                         stations = userWithFavorites.favoriteStations.map { it.toUiModel() },
-                        selectedFuel = userData.vehicles.first().fuelType
+                        selectedFuel = userData.principalVehicle().fuelType
                     )
                     invalidate()
                 }.launchIn(coroutineScope)
@@ -59,7 +60,7 @@ class FavoriteStationsScreen(carContext: CarContext) : Screen(carContext), KoinC
                         uiState = FavoriteStationsUiState(
                             loading = false,
                             stations = emptyList(),
-                            selectedFuel = userData.vehicles.first().fuelType
+                            selectedFuel = userData.principalVehicle().fuelType
                         )
                         invalidate()
                     }

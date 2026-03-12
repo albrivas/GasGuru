@@ -12,7 +12,7 @@ data class CapacityTankUiState(
     val commonValues: List<Int> get() = listOf(40, 45, 50, 55, 60, 70)
 
     companion object {
-        const val PICKER_MIN = 40
+        const val PICKER_MIN = 1
         const val PICKER_MAX = 999
     }
 }
