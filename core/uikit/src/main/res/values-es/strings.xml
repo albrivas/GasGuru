@@ -16,4 +16,11 @@
     <string name="tab_distance">Distancia</string>
     <string name="route_calculating">Calculando ruta…</string>
     <string name="route_close_button">Cerrar ruta</string>
+    <string name="full_tank_cost">Coste depósito completo</string>
+    <string name="change_litres">Cambiar litros</string>
+    <string name="vehicle_in_use">En uso</string>
+    <string name="vehicle_add">Añadir vehículo</string>
+    <string name="vehicle_fuel_capacity">%1$s · %2$d L</string>
+    <string name="vehicle_capacity_litres">%1$d L</string>
+    <string name="vehicle_default_name">Mi Vehículo</string>
 </resources>

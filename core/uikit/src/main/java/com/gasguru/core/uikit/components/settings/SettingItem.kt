@@ -71,7 +71,7 @@ fun SettingItem(
         Icon(
             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = "chevron right",
-            tint = GasGuruTheme.colors.neutral500
+            tint = GasGuruTheme.colors.neutral600
         )
     }
 }
