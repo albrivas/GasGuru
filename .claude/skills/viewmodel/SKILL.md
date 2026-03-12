@@ -1,31 +1,31 @@
 ---
 name: skill-create-viewmodel
-description: Generate Android ViewModels following GasGuru architecture patterns. Use when creating ViewModels with sealed UiState, events, and Hilt injection. Triggers on tasks involving new features, state management, or ViewModel creation.
-license: MIT
+description: Generate Android ViewModels following GasGuru architecture patterns. Use when creating or modifying ViewModels with sealed UiState, events, and Koin injection (NOT Hilt — GasGuru uses Koin). Triggers on tasks involving new features, state management, ViewModel creation, or modifying existing ViewModels.
 metadata:
   author: Alberto Rivas
-  version: "1.0.0"
+  version: "1.1.0"
   project: GasGuru
 ---
 
 # GasGuru ViewModel Generator
 
-Comprehensive guide for generating Android ViewModels following GasGuru's architecture patterns. Contains 5 rules across 3 priority levels, ensuring proper state management, dependency injection, and architectural compliance.
+Comprehensive guide for generating Android ViewModels following GasGuru's architecture patterns. Uses **Koin** for dependency injection (not Hilt). Contains 5 rules across 3 priority levels, ensuring proper state management, dependency injection, and architectural compliance.
 
 ## When to Apply
 
 Reference these guidelines when:
 - Creating new feature modules with ViewModels
+- Modifying existing ViewModels
 - Implementing state management for Compose screens
 - Setting up event handling in ViewModels
-- Integrating UseCases with Hilt dependency injection
+- Integrating UseCases with Koin dependency injection
 - Refactoring existing ViewModels to follow architecture
 
 ## Rule Categories by Priority
 
 | Priority | Category | Impact | Prefix |
 |----------|----------|--------|--------|
-| 1 | Architecture Compliance | CRITICAL | `viewmodel-`, `hilt-` |
+| 1 | Architecture Compliance | CRITICAL | `viewmodel-`, `koin-` |
 | 2 | State & Event Patterns | HIGH | `uistate-`, `events-` |
 | 3 | Lifecycle Management | MEDIUM | `state-collection-` |
 
@@ -33,8 +33,8 @@ Reference these guidelines when:
 
 ### 1. Architecture Compliance (CRITICAL)
 
-- `viewmodel-structure` - Use @HiltViewModel with proper ViewModel() base class
-- `hilt-injection` - Inject UseCases, never access repositories directly
+- `viewmodel-structure` - Plain `ViewModel()` base class, registered in Koin module with `viewModel { ... }`
+- `koin-injection` - Inject UseCases via constructor, never access repositories directly
 
 ### 2. State & Event Patterns (HIGH)
 
@@ -135,15 +135,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gasguru.core.domain.fuelstation.SearchStationsUseCase
 import com.gasguru.core.ui.toUiModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class StationSearchViewModel @Inject constructor(
+class StationSearchViewModel(
     private val searchStationsUseCase: SearchStationsUseCase,
 ) : ViewModel() {
 
@@ -180,10 +177,10 @@ class StationSearchViewModel @Inject constructor(
 
 After generating ViewModels, verify:
 
-- [ ] ViewModel has `@HiltViewModel` annotation
-- [ ] ViewModel extends `ViewModel()` base class
+- [ ] ViewModel is a plain `class` extending `ViewModel()` — no `@HiltViewModel`
+- [ ] ViewModel is registered in the Koin module with `viewModel { XxxViewModel(get()) }`
 - [ ] UiState is sealed interface with Loading/Success/Error
-- [ ] Events are sealed class with `handleEvent()` function
-- [ ] Only UseCases are injected, no repositories
+- [ ] Events are sealed interface with `handleEvent()` function
+- [ ] Only UseCases are injected via constructor, no repositories
 - [ ] StateFlow uses `SharingStarted.WhileSubscribed(5_000)` when using `stateIn()`
 - [ ] Code follows CLAUDE.md standards (named arguments, trailing commas, no hardcoded strings)

@@ -15,4 +15,14 @@
     <string name="onboarding_desc_alerts">Te avisamos si una estación baja el precio para que repostes antes de que vuelva a subir</string>
     <string name="onboarding_title_offline">Sin cobertura, sin problema</string>
     <string name="onboarding_desc_offline">La app funciona offline para que sigas viendo la info en carretera, incluso si pierdes la conexión</string>
+    <string name="capacity_tank_title">¿Cuánto cabe en tu tanque?</string>
+    <string name="capacity_tank_subtitle">Introduce la capacidad de tu depósito para calcular el coste de llenar el tanque completo</string>
+    <string name="capacity_tank_display_hint">Toca para abrir el selector</string>
+    <string name="capacity_tank_saved">Capacidad guardada</string>
+    <string name="capacity_tank_common_values">Valores comunes</string>
+    <string name="capacity_tank_hint">Podrás cambiar esto más tarde en ajustes</string>
+    <string name="capacity_picker_title">Selecciona la capacidad</string>
+    <string name="capacity_picker_range">Mínimo 40 · Máximo 999</string>
+    <string name="capacity_picker_confirm">Confirmar</string>
+    <string name="vehicle_default_name">Vehículo</string>
 </resources>

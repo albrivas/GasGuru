@@ -31,6 +31,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.components.GasGuruButton
@@ -56,7 +57,7 @@ fun FilterSheet(model: FilterSheetModel, modifier: Modifier = Modifier) {
         shape = MaterialTheme.shapes.large,
         contentWindowInsets = { WindowInsets.navigationBars },
         dragHandle = { DragHandle() },
-        modifier = modifier.statusBarsPadding()
+        modifier = modifier.statusBarsPadding().testTag("bottom_sheet")
     ) {
         FilterSheetContent(model = model, onDismiss = {
             coroutineScope.launch { state.hide() }.invokeOnCompletion {

@@ -15,6 +15,7 @@ import com.gasguru.core.database.model.toLatLng
 import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.OpeningHours
+import com.gasguru.core.model.data.principalVehicle
 import com.gasguru.core.network.datasource.RemoteDataSource
 import com.gasguru.core.network.model.NetworkPriceFuelStation
 import kotlinx.coroutines.CoroutineDispatcher
@@ -65,9 +66,10 @@ class OfflineFuelStationRepository(
         schedule: OpeningHours,
     ): Flow<List<FuelStation>> =
         offlineUserDataRepository.userData.flatMapLatest { user ->
+            val fuelType = user.principalVehicle().fuelType
             fuelStationDao.getFuelStations(
-                fuelType = user.fuelSelection.name,
-                brands = brands.map { it.uppercase() }
+                fuelType = fuelType.name,
+                brands = brands.map { it.uppercase() },
             ).map { items ->
                 val externalModel = items
                     .sortedBy {
@@ -88,17 +90,17 @@ class OfflineFuelStationRepository(
                         }
                     }
 
-                val (minPrice, maxPrice) = externalModel.calculateFuelPrices(fuelType = user.fuelSelection)
+                val (minPrice, maxPrice) = externalModel.calculateFuelPrices(fuelType = fuelType)
 
                 externalModel.map { fuelStation ->
                     val priceCategory = fuelStation.getPriceCategory(
-                        user.fuelSelection,
+                        fuelType,
                         minPrice,
-                        maxPrice
+                        maxPrice,
                     )
                     fuelStation.copy(
                         priceCategory = priceCategory,
-                        distance = fuelStation.location.distanceTo(userLocation)
+                        distance = fuelStation.location.distanceTo(userLocation),
                     )
                 }
             }
@@ -118,7 +120,7 @@ class OfflineFuelStationRepository(
             stationModel.copy(
                 isFavorite = isFavorite,
                 hasPriceAlert = hasPriceAlert,
-                distance = stationModel.location.distanceTo(userLocation)
+                distance = stationModel.location.distanceTo(userLocation),
             )
         }.flowOn(ioDispatcher)
 
@@ -129,9 +131,9 @@ class OfflineFuelStationRepository(
         if (points.isEmpty()) return emptyList()
 
         val userData = offlineUserDataRepository.userData.first()
+        val fuelType = userData.principalVehicle().fuelType
         val radiusKm = 0.4
         val radiusMeters = radiusKm * 1000
-        val fuelTypeName = userData.fuelSelection.name
         val allStations = mutableSetOf<FuelStationEntity>()
 
         val reducedPoints = points.filterIndexed { index, _ -> index % 2 == 0 }
@@ -143,7 +145,7 @@ class OfflineFuelStationRepository(
                 maxLat = bounds.maxLat,
                 minLng = bounds.minLng,
                 maxLng = bounds.maxLng,
-                fuelType = fuelTypeName
+                fuelType = fuelType.name,
             )
 
             stationsInBounds.forEach { station ->
@@ -155,16 +157,16 @@ class OfflineFuelStationRepository(
         }
 
         val externalModel = allStations.map(FuelStationEntity::asExternalModel)
-        val (minPrice, maxPrice) = externalModel.calculateFuelPrices(fuelType = userData.fuelSelection)
+        val (minPrice, maxPrice) = externalModel.calculateFuelPrices(fuelType = fuelType)
         return externalModel.map { fuelStation ->
             val priceCategory = fuelStation.getPriceCategory(
-                fuelType = userData.fuelSelection,
+                fuelType = fuelType,
                 minPrice = minPrice,
-                maxPrice = maxPrice
+                maxPrice = maxPrice,
             )
             fuelStation.copy(
                 priceCategory = priceCategory,
-                distance = fuelStation.location.distanceTo(origin)
+                distance = fuelStation.location.distanceTo(origin),
             )
         }
     }
@@ -177,7 +179,7 @@ class OfflineFuelStationRepository(
             minLat = center.latitude - latDiff,
             maxLat = center.latitude + latDiff,
             minLng = center.longitude - lngDiff,
-            maxLng = center.longitude + lngDiff
+            maxLng = center.longitude + lngDiff,
         )
     }
 

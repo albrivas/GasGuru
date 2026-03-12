@@ -8,8 +8,10 @@ import androidx.navigation.compose.rememberNavController
 import com.gasguru.feature.detail_station.navigation.detailStationScreen
 import com.gasguru.feature.detail_station.navigation.detailStationScreenDialog
 import com.gasguru.feature.onboarding_welcome.navigation.OnboardingRoutes
+import com.gasguru.feature.onboarding_welcome.navigation.capacityTankScreen
 import com.gasguru.feature.onboarding_welcome.navigation.newOnboardingScreen
 import com.gasguru.feature.onboarding_welcome.navigation.onboardingFuelPreferencesScreen
+import com.gasguru.feature.vehicle.navigation.addVehicleScreen
 import com.gasguru.navigation.LocalNavigationManager
 import com.gasguru.navigation.graphs.routeSearchGraph
 import com.gasguru.navigation.handler.NavigationHandler
@@ -35,9 +37,11 @@ fun GasGuruNavHost(
     ) {
         newOnboardingScreen()
         onboardingFuelPreferencesScreen()
+        capacityTankScreen()
         navigationBarHost()
         detailStationScreen()
         detailStationScreenDialog()
         routeSearchGraph()
+        addVehicleScreen()
     }
 }
