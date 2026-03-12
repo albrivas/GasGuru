@@ -15,6 +15,7 @@ import com.gasguru.core.database.model.toLatLng
 import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.OpeningHours
+import com.gasguru.core.model.data.principalVehicle
 import com.gasguru.core.network.datasource.RemoteDataSource
 import com.gasguru.core.network.model.NetworkPriceFuelStation
 import kotlinx.coroutines.CoroutineDispatcher
@@ -65,7 +66,7 @@ class OfflineFuelStationRepository(
         schedule: OpeningHours,
     ): Flow<List<FuelStation>> =
         offlineUserDataRepository.userData.flatMapLatest { user ->
-            val fuelType = user.vehicles.first().fuelType
+            val fuelType = user.principalVehicle().fuelType
             fuelStationDao.getFuelStations(
                 fuelType = fuelType.name,
                 brands = brands.map { it.uppercase() },
@@ -130,7 +131,7 @@ class OfflineFuelStationRepository(
         if (points.isEmpty()) return emptyList()
 
         val userData = offlineUserDataRepository.userData.first()
-        val fuelType = userData.vehicles.first().fuelType
+        val fuelType = userData.principalVehicle().fuelType
         val radiusKm = 0.4
         val radiusMeters = radiusKm * 1000
         val allStations = mutableSetOf<FuelStationEntity>()

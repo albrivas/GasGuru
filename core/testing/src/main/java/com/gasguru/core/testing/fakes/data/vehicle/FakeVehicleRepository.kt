@@ -48,4 +48,12 @@ class FakeVehicleRepository(
 
     override suspend fun getVehicleById(vehicleId: Long): Vehicle? =
         vehiclesFlow.value.firstOrNull { it.id == vehicleId }
+
+    override suspend fun clearPrincipalVehiclesForUser(userId: Long) {
+        vehiclesFlow.update { list ->
+            list.map { vehicle ->
+                if (vehicle.userId == userId) vehicle.copy(isPrincipal = false) else vehicle
+            }
+        }
+    }
 }

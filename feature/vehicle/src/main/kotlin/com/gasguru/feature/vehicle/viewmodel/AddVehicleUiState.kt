@@ -8,6 +8,8 @@ import com.gasguru.core.ui.models.VehicleTypeUiModel
 
 @Immutable
 data class AddVehicleUiState(
+    val vehicleId: Long? = null,
+    val isEditMode: Boolean = false,
     val vehicleTypes: List<VehicleTypeUiModel> = VehicleTypeUiModel.ALL_TYPES,
     val selectedVehicleType: VehicleType? = null,
     val vehicleName: String = "",
@@ -22,7 +24,7 @@ data class AddVehicleUiState(
         get() = selectedFuelType != null && selectedCapacity != null
 
     companion object {
-        const val PICKER_MIN = 40
+        const val PICKER_MIN = 1
         const val PICKER_MAX = 999
     }
 }

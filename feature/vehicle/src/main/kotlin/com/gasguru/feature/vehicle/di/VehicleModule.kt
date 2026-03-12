@@ -7,8 +7,10 @@ import org.koin.dsl.module
 val vehicleModule = module {
     viewModel {
         AddVehicleViewModel(
+            savedStateHandle = get(),
             navigationManager = get(),
-            addVehicleUseCase = get(),
+            saveVehicleUseCase = get(),
+            getVehicleByIdUseCase = get(),
             getUserDataUseCase = get(),
         )
     }

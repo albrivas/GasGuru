@@ -29,4 +29,8 @@ class OfflineVehicleRepository(
 
     override suspend fun getVehicleById(vehicleId: Long): Vehicle? =
         vehicleDao.getVehicleById(vehicleId = vehicleId)?.asExternalModel()
+
+    override suspend fun clearPrincipalVehiclesForUser(userId: Long) {
+        vehicleDao.clearPrincipalVehiclesForUser(userId = userId)
+    }
 }
