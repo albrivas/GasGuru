@@ -47,6 +47,7 @@ fun SwipeItem(
     }, positionalThreshold = { it * .50f })
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(iconAnimated))
 
+    val isSwiping = swipeState.progress != 0f
     val backgroundColorAlpha = when {
         swipeState.progress > 0 -> {
             backgroundColor.copy(alpha = swipeState.progress * 6f)
@@ -77,7 +78,7 @@ fun SwipeItem(
                     composition = composition,
                     iterations = LottieConstants.IterateForever,
                     restartOnPlay = false,
-                    isPlaying = true
+                    isPlaying = isSwiping,
                 )
 
                 LottieAnimation(
@@ -87,7 +88,7 @@ fun SwipeItem(
                     composition = composition,
                     iterations = LottieConstants.IterateForever,
                     restartOnPlay = false,
-                    isPlaying = true
+                    isPlaying = isSwiping,
                 )
             }
         }

@@ -33,4 +33,8 @@ class OfflineVehicleRepository(
     override suspend fun clearPrincipalVehiclesForUser(userId: Long) {
         vehicleDao.clearPrincipalVehiclesForUser(userId = userId)
     }
+
+    override suspend fun deleteVehicle(vehicleId: Long) {
+        vehicleDao.deleteVehicle(vehicleId = vehicleId)
+    }
 }
