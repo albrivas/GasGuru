@@ -3,6 +3,9 @@ package com.gasguru.feature.profile.ui
 import app.cash.turbine.test
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.domain.user.SaveThemeModeUseCase
+import com.gasguru.core.domain.vehicle.DeleteVehicleUseCase
+import com.gasguru.core.domain.vehicle.GetVehicleByIdUseCase
+import com.gasguru.core.domain.vehicle.SaveVehicleUseCase
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.model.data.UserData
@@ -10,6 +13,7 @@ import com.gasguru.core.model.data.Vehicle
 import com.gasguru.core.model.data.VehicleType
 import com.gasguru.core.testing.CoroutinesTestExtension
 import com.gasguru.core.testing.fakes.data.user.FakeUserDataRepository
+import com.gasguru.core.testing.fakes.data.vehicle.FakeVehicleRepository
 import com.gasguru.core.testing.fakes.navigation.FakeNavigationManager
 import com.gasguru.core.ui.mapper.toUi
 import com.gasguru.navigation.manager.NavigationDestination
@@ -28,24 +32,45 @@ import org.junit.jupiter.api.extension.ExtendWith
 class ProfileViewModelTest {
 
     private lateinit var fakeUserDataRepository: FakeUserDataRepository
+    private lateinit var fakeVehicleRepository: FakeVehicleRepository
     private lateinit var fakeNavigationManager: FakeNavigationManager
 
     private lateinit var sut: ProfileViewModel
 
+    private val defaultVehicles = listOf(
+        Vehicle(
+            id = 1L,
+            userId = 0L,
+            fuelType = FuelType.GASOLINE_95,
+            name = "Golf VIII",
+            tankCapacity = 55,
+            vehicleType = VehicleType.CAR,
+            isPrincipal = true
+        ),
+        Vehicle(
+            id = 2L,
+            userId = 0L,
+            fuelType = FuelType.GASOLINE_95,
+            name = "Honda CB500",
+            tankCapacity = 18,
+            vehicleType = VehicleType.MOTORCYCLE,
+            isPrincipal = false
+        ),
+    )
+
     @BeforeEach
     fun setUp() {
         fakeUserDataRepository = FakeUserDataRepository(
-            initialUserData = UserData(
-                vehicles = listOf(
-                    Vehicle(id = 1L, userId = 0L, fuelType = FuelType.GASOLINE_95, name = "Golf VIII", tankCapacity = 55, vehicleType = VehicleType.CAR, isPrincipal = true),
-                    Vehicle(id = 2L, userId = 0L, fuelType = FuelType.GASOLINE_95, name = "Honda CB500", tankCapacity = 18, vehicleType = VehicleType.MOTORCYCLE, isPrincipal = false),
-                ),
-            )
+            initialUserData = UserData(vehicles = defaultVehicles)
         )
+        fakeVehicleRepository = FakeVehicleRepository(initialVehicles = defaultVehicles)
         fakeNavigationManager = FakeNavigationManager()
         sut = ProfileViewModel(
             getUserData = GetUserDataUseCase(fakeUserDataRepository),
             saveThemeModeUseCase = SaveThemeModeUseCase(fakeUserDataRepository),
+            deleteVehicleUseCase = DeleteVehicleUseCase(fakeVehicleRepository),
+            getVehicleByIdUseCase = GetVehicleByIdUseCase(fakeVehicleRepository),
+            saveVehicleUseCase = SaveVehicleUseCase(fakeVehicleRepository),
             navigationManager = fakeNavigationManager,
         )
     }
@@ -132,6 +157,9 @@ class ProfileViewModelTest {
         val viewModel = ProfileViewModel(
             getUserData = GetUserDataUseCase(repositoryWithReversedOrder),
             saveThemeModeUseCase = SaveThemeModeUseCase(repositoryWithReversedOrder),
+            deleteVehicleUseCase = DeleteVehicleUseCase(fakeVehicleRepository),
+            getVehicleByIdUseCase = GetVehicleByIdUseCase(fakeVehicleRepository),
+            saveVehicleUseCase = SaveVehicleUseCase(fakeVehicleRepository),
             navigationManager = fakeNavigationManager,
         )
 
@@ -178,6 +206,179 @@ class ProfileViewModelTest {
 
             val updated = awaitItem() as ProfileUiState.Success
             Assertions.assertEquals(ThemeMode.DARK, updated.content.themeUi.mode)
+            cancelAndConsumeRemainingEvents()
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    @DisplayName(
+        """
+        GIVEN two vehicles
+        WHEN delete non-principal vehicle
+        THEN deleteVehicleUseCase is called with correct id
+        """
+    )
+    fun deleteNonPrincipalVehicleCallsUseCase() = runTest {
+        sut.userData.test {
+            awaitItem() // Loading
+            awaitItem() // Success
+
+            sut.handleEvents(ProfileEvents.DeleteVehicle(vehicleId = 2L))
+            advanceUntilIdle()
+
+            Assertions.assertEquals(listOf(2L), fakeVehicleRepository.deletedVehicleIds)
+            cancelAndConsumeRemainingEvents()
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    @DisplayName(
+        """
+        GIVEN two vehicles where vehicle 1 is principal
+        WHEN delete principal vehicle
+        THEN remaining vehicle is promoted to principal and deleted vehicle is removed
+        """
+    )
+    fun deletePrincipalVehicleWithTwoVehiclesPromotesRemainingToPrincipal() = runTest {
+        sut.userData.test {
+            awaitItem() // Loading
+            awaitItem() // Success
+
+            sut.handleEvents(ProfileEvents.DeleteVehicle(vehicleId = 1L))
+            advanceUntilIdle()
+
+            val promotedVehicle = fakeVehicleRepository.getVehicleById(vehicleId = 2L)
+            Assertions.assertTrue(promotedVehicle?.isPrincipal == true)
+            Assertions.assertEquals(listOf(1L), fakeVehicleRepository.deletedVehicleIds)
+            cancelAndConsumeRemainingEvents()
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    @DisplayName(
+        """
+        GIVEN one vehicle
+        WHEN delete that vehicle
+        THEN nothing is deleted (guard prevents it)
+        """
+    )
+    fun deleteWithSingleVehicleDoesNothing() = runTest {
+        val singleVehicleRepository = FakeVehicleRepository(
+            initialVehicles = listOf(
+                Vehicle(
+                    id = 1L,
+                    userId = 0L,
+                    fuelType = FuelType.GASOLINE_95,
+                    name = "Golf VIII",
+                    tankCapacity = 55,
+                    vehicleType = VehicleType.CAR,
+                    isPrincipal = true
+                ),
+            )
+        )
+        val singleVehicleViewModel = ProfileViewModel(
+            getUserData = GetUserDataUseCase(
+                FakeUserDataRepository(
+                    initialUserData = UserData(
+                        vehicles = listOf(
+                            Vehicle(
+                                id = 1L,
+                                userId = 0L,
+                                fuelType = FuelType.GASOLINE_95,
+                                name = "Golf VIII",
+                                tankCapacity = 55,
+                                vehicleType = VehicleType.CAR,
+                                isPrincipal = true
+                            ),
+                        )
+                    )
+                )
+            ),
+            saveThemeModeUseCase = SaveThemeModeUseCase(fakeUserDataRepository),
+            deleteVehicleUseCase = DeleteVehicleUseCase(singleVehicleRepository),
+            getVehicleByIdUseCase = GetVehicleByIdUseCase(singleVehicleRepository),
+            saveVehicleUseCase = SaveVehicleUseCase(singleVehicleRepository),
+            navigationManager = fakeNavigationManager,
+        )
+
+        singleVehicleViewModel.userData.test {
+            awaitItem() // Loading
+            awaitItem() // Success
+
+            singleVehicleViewModel.handleEvents(ProfileEvents.DeleteVehicle(vehicleId = 1L))
+            advanceUntilIdle()
+
+            Assertions.assertTrue(singleVehicleRepository.deletedVehicleIds.isEmpty())
+            cancelAndConsumeRemainingEvents()
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    @DisplayName(
+        """
+        GIVEN three vehicles where vehicle 1 is principal
+        WHEN delete principal vehicle
+        THEN vehicle is deleted but no auto-promotion happens
+        """
+    )
+    fun deletePrincipalVehicleWithThreeVehiclesDoesNotAutopromote() = runTest {
+        val threeVehicles = listOf(
+            Vehicle(
+                id = 1L,
+                userId = 0L,
+                fuelType = FuelType.GASOLINE_95,
+                name = "Golf VIII",
+                tankCapacity = 55,
+                vehicleType = VehicleType.CAR,
+                isPrincipal = true
+            ),
+            Vehicle(
+                id = 2L,
+                userId = 0L,
+                fuelType = FuelType.GASOLINE_95,
+                name = "Honda CB500",
+                tankCapacity = 18,
+                vehicleType = VehicleType.MOTORCYCLE,
+                isPrincipal = false
+            ),
+            Vehicle(
+                id = 3L,
+                userId = 0L,
+                fuelType = FuelType.GASOLINE_95,
+                name = "Seat Ibiza",
+                tankCapacity = 40,
+                vehicleType = VehicleType.CAR,
+                isPrincipal = false
+            ),
+        )
+        val threeVehicleRepository = FakeVehicleRepository(initialVehicles = threeVehicles)
+        val threeVehicleViewModel = ProfileViewModel(
+            getUserData = GetUserDataUseCase(
+                FakeUserDataRepository(initialUserData = UserData(vehicles = threeVehicles))
+            ),
+            saveThemeModeUseCase = SaveThemeModeUseCase(fakeUserDataRepository),
+            deleteVehicleUseCase = DeleteVehicleUseCase(threeVehicleRepository),
+            getVehicleByIdUseCase = GetVehicleByIdUseCase(threeVehicleRepository),
+            saveVehicleUseCase = SaveVehicleUseCase(threeVehicleRepository),
+            navigationManager = fakeNavigationManager,
+        )
+
+        threeVehicleViewModel.userData.test {
+            awaitItem() // Loading
+            awaitItem() // Success
+
+            threeVehicleViewModel.handleEvents(ProfileEvents.DeleteVehicle(vehicleId = 1L))
+            advanceUntilIdle()
+
+            Assertions.assertEquals(listOf(1L), threeVehicleRepository.deletedVehicleIds)
+            val vehicle2 = threeVehicleRepository.getVehicleById(vehicleId = 2L)
+            val vehicle3 = threeVehicleRepository.getVehicleById(vehicleId = 3L)
+            Assertions.assertFalse(vehicle2?.isPrincipal == true)
+            Assertions.assertFalse(vehicle3?.isPrincipal == true)
             cancelAndConsumeRemainingEvents()
         }
     }
