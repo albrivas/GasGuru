@@ -22,7 +22,7 @@
     <string name="capacity_tank_common_values">Valores comunes</string>
     <string name="capacity_tank_hint">Podrás cambiar esto más tarde en ajustes</string>
     <string name="capacity_picker_title">Selecciona la capacidad</string>
-    <string name="capacity_picker_range">Mínimo 40 · Máximo 999</string>
+    <string name="capacity_picker_range">Mínimo 1 · Máximo 999</string>
     <string name="capacity_picker_confirm">Confirmar</string>
     <string name="vehicle_default_name">Vehículo</string>
 </resources>

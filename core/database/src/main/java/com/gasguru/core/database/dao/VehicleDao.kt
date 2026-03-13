@@ -28,4 +28,7 @@ interface VehicleDao {
 
     @Query("UPDATE vehicles SET isPrincipal = 0 WHERE userId = :userId")
     suspend fun clearPrincipalVehiclesForUser(userId: Long)
+
+    @Query("DELETE FROM vehicles WHERE id = :vehicleId")
+    suspend fun deleteVehicle(vehicleId: Long)
 }
