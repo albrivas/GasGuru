@@ -68,17 +68,36 @@ description: Create a GasGuru release for store deployment. Use when the user as
    done
    ```
 
-   If any files were removed in step (b), amend the merge commit:
+   c) Remove files that exist in the release branch (from main) but do NOT exist in develop — these are files added on main that were never merged to develop and should not be in the release:
+   ```bash
+   git diff develop HEAD --name-only --diff-filter=A | while read f; do
+     if [ -f "$f" ]; then
+       echo "Removing file not present in develop: $f"
+       git rm -f "$f"
+     fi
+   done
+   ```
+
+   If any files were removed in steps (b) or (c), amend the merge commit:
    ```bash
    git diff --cached --quiet || git commit --amend --no-edit
    ```
 
-6. Update `versions.properties`:
+6. **Verify the project compiles** before continuing:
+   ```bash
+   ./gradlew assembleDebug
+   ```
+   If the build fails, fix the errors before proceeding. Common causes after a merge:
+   - Duplicate functions or classes (keep develop's version, remove the duplicate from main)
+   - References to removed methods or classes (remove the dead code)
+   - Missing imports caused by merge artifacts
+
+7. Update `versions.properties`:
    - Increment `versionCode` by 1
    - Increment `versionPatch` by 1
    - Do NOT change `versionMajor` or `versionMinor` unless explicitly requested
 
-7. Update whatsnew files:
+8. Update whatsnew files:
    - These files appear in the **app store listing** — content must be user-facing (new features, UI changes, visible fixes). Never include technical changes (refactors, dependency updates, build infra, architecture changes).
    - Review commits since last release and identify only user-facing changes.
    - If there are no user-facing changes, use this generic message:
@@ -87,15 +106,15 @@ description: Create a GasGuru release for store deployment. Use when the user as
    - Add new changes at the TOP of the file (newest first)
    - Remove the LAST line(s) to keep max 4 lines per file
 
-8. Commit (no Claude references):
+9. Commit (no Claude references):
    ```bash
    git add . && git commit -m "chore: bump version from X.X.X to X.X.X"
    ```
 
-9. Push and create PR:
+10. Push and create PR:
    ```bash
    git push origin release/X.X.X -u
    gh pr create --base main --title "Release - vX.X.X" --body ""
    ```
 
-10. Return the PR URL when done.
+11. Return the PR URL when done.
