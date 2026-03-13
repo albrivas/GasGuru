@@ -16,6 +16,7 @@ class FakeVehicleRepository(
 
     val updatedFuelTypes = mutableListOf<Pair<Long, FuelType>>()
     val updatedTankCapacities = mutableListOf<Pair<Long, Int>>()
+    val deletedVehicleIds = mutableListOf<Long>()
 
     override fun getVehiclesForUser(userId: Long): Flow<List<Vehicle>> =
         vehiclesFlow.map { list -> list.filter { it.userId == userId } }
@@ -55,5 +56,10 @@ class FakeVehicleRepository(
                 if (vehicle.userId == userId) vehicle.copy(isPrincipal = false) else vehicle
             }
         }
+    }
+
+    override suspend fun deleteVehicle(vehicleId: Long) {
+        deletedVehicleIds.add(vehicleId)
+        vehiclesFlow.update { list -> list.filter { it.id != vehicleId } }
     }
 }
