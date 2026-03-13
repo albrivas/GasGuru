@@ -63,7 +63,7 @@ private fun ActiveVehicleRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(0.dp))
+            .background(color = GasGuruTheme.colors.neutralWhite)
             .padding(all = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -133,7 +133,7 @@ private fun InactiveVehicleRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(0.dp))
+            .background(color = GasGuruTheme.colors.neutralWhite)
             .padding(horizontal = 16.dp, vertical = 14.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
