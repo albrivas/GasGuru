@@ -114,7 +114,7 @@ jobs:
 
       - name: Install Maestro CLI
         run: |
-          curl --proto "=https" --tlsv1.2 -sSf "https://get.maestro.mobile.dev" | bash
+          curl --proto "=https" --tlsv1.2 -sSfL "https://get.maestro.mobile.dev" | bash
           echo "$HOME/.maestro/bin" >> $GITHUB_PATH
 
       - name: Start Android Emulator
