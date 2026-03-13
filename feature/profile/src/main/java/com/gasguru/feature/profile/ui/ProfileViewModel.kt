@@ -4,6 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.domain.user.SaveThemeModeUseCase
+import com.gasguru.core.domain.vehicle.DeleteVehicleUseCase
+import com.gasguru.core.domain.vehicle.GetVehicleByIdUseCase
+import com.gasguru.core.domain.vehicle.SaveVehicleUseCase
 import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.ui.mapper.toUi
 import com.gasguru.core.ui.models.ThemeModeUi
@@ -20,6 +23,9 @@ import okhttp3.internal.toImmutableList
 class ProfileViewModel(
     getUserData: GetUserDataUseCase,
     private val saveThemeModeUseCase: SaveThemeModeUseCase,
+    private val deleteVehicleUseCase: DeleteVehicleUseCase,
+    private val getVehicleByIdUseCase: GetVehicleByIdUseCase,
+    private val saveVehicleUseCase: SaveVehicleUseCase,
     private val navigationManager: NavigationManager,
 ) : ViewModel() {
 
@@ -53,10 +59,29 @@ class ProfileViewModel(
             is ProfileEvents.EditVehicle -> navigationManager.navigateTo(
                 destination = NavigationDestination.EditVehicle(vehicleId = event.vehicleId),
             )
+            is ProfileEvents.DeleteVehicle -> deleteVehicle(vehicleId = event.vehicleId)
         }
     }
 
     private fun saveTheme(theme: ThemeModeUi) = viewModelScope.launch {
         saveThemeModeUseCase(themeMode = theme.mode)
+    }
+
+    private fun deleteVehicle(vehicleId: Long) = viewModelScope.launch {
+        val currentVehicles = (userData.value as? ProfileUiState.Success)?.content?.vehicles ?: return@launch
+        if (currentVehicles.size <= 1) return@launch
+
+        val deletedVehicleModel = currentVehicles.firstOrNull { it.id == vehicleId } ?: return@launch
+        val shouldPromotePrincipal = deletedVehicleModel.isSelected && currentVehicles.size == 2
+
+        if (shouldPromotePrincipal) {
+            val remainingVehicleId = currentVehicles.first { it.id != vehicleId }.id
+            val remainingVehicle = getVehicleByIdUseCase(vehicleId = remainingVehicleId)
+            if (remainingVehicle != null) {
+                saveVehicleUseCase(vehicle = remainingVehicle.copy(isPrincipal = true))
+            }
+        }
+
+        deleteVehicleUseCase(vehicleId = vehicleId)
     }
 }
