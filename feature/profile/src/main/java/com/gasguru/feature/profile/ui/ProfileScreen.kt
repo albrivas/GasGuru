@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
@@ -45,6 +47,8 @@ import com.gasguru.core.uikit.components.loading.GasGuruLoading
 import com.gasguru.core.uikit.components.loading.GasGuruLoadingModel
 import com.gasguru.core.uikit.components.settings.SettingItem
 import com.gasguru.core.uikit.components.settings.SettingItemModel
+import com.gasguru.core.uikit.components.swipe.SwipeItem
+import com.gasguru.core.uikit.components.swipe.SwipeItemModel
 import com.gasguru.core.uikit.components.vehicle_item.VehicleItemCard
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
@@ -80,6 +84,7 @@ internal fun ProfileScreen(uiState: ProfileUiState, event: (ProfileEvents) -> Un
                 onSheetRequest = { sheet -> activeSheet = sheet },
                 onAddVehicle = { event(ProfileEvents.AddVehicle) },
                 onEditVehicle = { vehicleId -> event(ProfileEvents.EditVehicle(vehicleId = vehicleId)) },
+                onDeleteVehicle = { vehicleId -> event(ProfileEvents.DeleteVehicle(vehicleId = vehicleId)) },
             )
         }
 
@@ -128,13 +133,15 @@ fun SuccessContent(
     onSheetRequest: (ProfileSheet) -> Unit,
     onAddVehicle: () -> Unit,
     onEditVehicle: (Long) -> Unit,
+    onDeleteVehicle: (Long) -> Unit,
 ) {
     Column(
         modifier = Modifier
             .background(color = GasGuruTheme.colors.neutral100)
-            .fillMaxSize()
+            .fillMaxWidth()
             .statusBarsPadding()
-            .padding(start = 16.dp, end = 16.dp, top = 32.dp)
+            .verticalScroll(rememberScrollState())
+            .padding(start = 16.dp, end = 16.dp, top = 32.dp, bottom = 12.dp)
             .pointerInput(Unit) { detectTapGestures { } }, // For overlay map
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
@@ -166,7 +173,19 @@ fun SuccessContent(
                         )
                     )
                 }
-                VehicleItemCard(model = vehicle, onClick = { onEditVehicle(vehicle.id) })
+                if (content.vehicles.size > 1) {
+                    SwipeItem(
+                        model = SwipeItemModel(
+                            iconAnimated = com.gasguru.core.ui.R.raw.trash_animated,
+                            backgroundColor = GasGuruTheme.colors.red500,
+                            onClick = { onDeleteVehicle(vehicle.id) },
+                        ),
+                    ) {
+                        VehicleItemCard(model = vehicle, onClick = { onEditVehicle(vehicle.id) })
+                    }
+                } else {
+                    VehicleItemCard(model = vehicle, onClick = { onEditVehicle(vehicle.id) })
+                }
             }
             GasGuruDivider(
                 model = GasGuruDividerModel(
@@ -191,8 +210,7 @@ fun SuccessContent(
             ),
             modifier = Modifier.testTag("theme_setting_item"),
         )
-        Spacer(modifier = Modifier.weight(1f))
-        VersionAppInfo(modifier = Modifier.padding(bottom = 12.dp))
+        VersionAppInfo()
     }
 }
 

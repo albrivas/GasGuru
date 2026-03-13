@@ -27,6 +27,7 @@ import com.gasguru.core.domain.search.InsertRecentSearchQueryUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.domain.user.SaveThemeModeUseCase
 import com.gasguru.core.domain.vehicle.AddVehicleUseCase
+import com.gasguru.core.domain.vehicle.DeleteVehicleUseCase
 import com.gasguru.core.domain.vehicle.GetVehicleByIdUseCase
 import com.gasguru.core.domain.vehicle.GetVehiclesUseCase
 import com.gasguru.core.domain.vehicle.SaveDefaultVehicleCapacityUseCase
@@ -85,6 +86,7 @@ val domainModule = module {
 
     // Vehicle
     factory { AddVehicleUseCase(vehicleRepository = get()) }
+    factory { DeleteVehicleUseCase(vehicleRepository = get()) }
     factory { GetVehicleByIdUseCase(vehicleRepository = get()) }
     factory { SaveVehicleUseCase(vehicleRepository = get()) }
     factory { UpdateVehicleUseCase(vehicleRepository = get()) }
