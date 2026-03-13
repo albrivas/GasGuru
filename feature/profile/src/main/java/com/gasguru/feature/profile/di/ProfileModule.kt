@@ -9,6 +9,9 @@ val profileModule = module {
         ProfileViewModel(
             getUserData = get(),
             saveThemeModeUseCase = get(),
+            deleteVehicleUseCase = get(),
+            getVehicleByIdUseCase = get(),
+            saveVehicleUseCase = get(),
             navigationManager = get(),
         )
     }
