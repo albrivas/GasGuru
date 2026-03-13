@@ -49,4 +49,8 @@ class FakeVehicleDao(
             }
         }
     }
+
+    override suspend fun deleteVehicle(vehicleId: Long) {
+        vehiclesFlow.update { list -> list.filter { it.id != vehicleId } }
+    }
 }
