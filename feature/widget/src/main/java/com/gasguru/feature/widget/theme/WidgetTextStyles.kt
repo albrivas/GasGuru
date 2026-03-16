@@ -37,4 +37,3 @@ internal val WidgetStylePrice = TextStyle(
     fontWeight = FontWeight.Bold,
     fontSize = 13.sp,
 )
-
