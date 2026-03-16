@@ -36,7 +36,7 @@ Lo importante es entender que **Glance no es Compose**. Aunque la sintaxis es pa
 |---|---|---|
 | Namespace | `androidx.compose.*` | `androidx.glance.*` |
 | Renderizado | Canvas directo | RemoteViews (via XML) |
-| Recomposición | En tiempo real | Solo al llamar `update()` |
+| Recomposición | En tiempo real | Reactiva via `collectAsState` (Glance 1.1+) o manual via `update()` |
 | Fuentes custom | ✅ FontFamily desde recursos | ❌ Solo fuentes del sistema |
 | Animaciones | ✅ | ❌ |
 | Componentes | Cualquier Composable | Solo los soportados por Glance |
@@ -49,21 +49,40 @@ No puedes mezclar ambos sistemas: un composable de Compose no puede usarse dentr
 
 ### 1. GlanceAppWidget
 
-La clase principal. Aquí defines la UI y cargas los datos:
+La clase principal. Aquí defines la UI y cargas los datos.
+
+**Patrón clásico (one-shot):** carga los datos una vez y renderiza. El widget permanece estático hasta que algo externo llame a `update()` o `updateAll()`.
 
 ```kotlin
 class MyWidget : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-        val data = loadData() // suspending, corre en un coroutine
+        val data = loadData() // suspending — carga una sola vez
         provideContent {
-            MyWidgetContent(data = data)
+            MyWidgetContent(data = data) // estático hasta el próximo update()
         }
     }
 }
 ```
 
-`provideGlance` es una función suspendida, así que puedes cargar datos desde Room, DataStore o una API antes de llamar a `provideContent`. El contenido se renderiza una vez con los datos que tengas en ese momento.
+**Patrón reactivo (Glance 1.1+, recomendado):** la sesión de Glance mantiene la composición viva mientras el widget está en pantalla. Dentro de `provideContent` se puede usar `collectAsState()` de Compose runtime sobre cualquier `Flow` (Room, DataStore…). El widget recompone automáticamente cada vez que el Flow emite, sin ninguna llamada externa.
+
+```kotlin
+class MyWidget : GlanceAppWidget() {
+
+    override suspend fun provideGlance(context: Context, id: GlanceId) {
+        // Transformar el Flow FUERA del composable para no recrearlo en cada recomposición
+        val dataFlow = repository.observeData().map { it.toUiModel() }
+
+        provideContent {
+            val data by dataFlow.collectAsState(initial = emptyList())
+            MyWidgetContent(data = data) // recompone solo cuando el Flow emite
+        }
+    }
+}
+```
+
+> **¿Cuándo aplica la reactividad?** Solo mientras la sesión está activa, es decir, cuando el launcher está en primer plano y el widget es visible. Si el dispositivo está bloqueado o la sesión ha expirado, los cambios en el Flow no llegarán hasta que la sesión se reactive o se llame a `update()` externamente (p.ej., desde WorkManager).
 
 ### 2. GlanceAppWidgetReceiver
 
@@ -275,7 +294,15 @@ Para soportar ambas versiones se pueden declarar los dos atributos: `previewLayo
 
 ---
 
-## Actualización de datos sin la app abierta
+## Actualización de datos
+
+### Cambios locales mientras la app está en uso
+
+Con el patrón reactivo (Glance 1.1+), cualquier cambio en Room o DataStore que se propague a través de un `Flow` recompone el widget automáticamente, sin necesidad de coordinación externa. Esto cubre todos los casos en que el usuario interactúa con la app mientras el launcher está activo (añadir/eliminar favoritos, cambiar configuración, etc.).
+
+No se necesita WorkManager, `updateAll()` ni ningún manager adicional para este tipo de actualizaciones. La combinación `provideContent + collectAsState` lo resuelve de forma nativa.
+
+### Cambios de red sin la app abierta
 
 Este es uno de los puntos más importantes y delicados de los widgets. El widget necesita datos frescos aunque el usuario no haya abierto la app en horas.
 
@@ -326,12 +353,22 @@ class SyncWorker(context: Context, params: WorkerParameters) : CoroutineWorker(c
 
 ### Ciclo de vida del worker
 
-```
-onEnabled()  →  scheduleImmediateSync()  →  datos frescos al instante
-             →  schedulePeriodicSync()   →  refresco cada 30 min
+El worker de sync de datos es una responsabilidad de la **app**, no del widget. Se programa en `Application.onCreate()` para que corra independientemente de si el usuario tiene widgets activos:
 
-onDisabled() →  cancelUniqueWork()       →  limpieza al quitar el widget
+```kotlin
+// En Application.onCreate()
+WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+    "my_widget_sync",
+    ExistingPeriodicWorkPolicy.KEEP,  // no resetea el timer en cada apertura
+    PeriodicWorkRequestBuilder<SyncWorker>(30, TimeUnit.MINUTES)
+        .setConstraints(Constraints(requiredNetworkType = NetworkType.CONNECTED))
+        .build(),
+)
 ```
+
+Con el patrón reactivo de Glance 1.1+ (`collectAsState`), el widget se recompone automáticamente cuando el worker actualiza Room y la sesión está activa. Si la sesión no está activa, el worker llama a `updateAll()` para iniciar una nueva sesión con los datos frescos.
+
+**Antipatrón a evitar:** programar el sync desde `onEnabled`/`onDisabled` del receiver. Esto acopla la frecuencia de actualización de datos al ciclo de vida del widget — sin widget, no hay sync.
 
 Si la app tiene varios tamaños de widget (varios receivers), hay que asegurarse de cancelar el trabajo solo cuando **todos** los widgets estén inactivos:
 
@@ -358,25 +395,124 @@ El resultado práctico: si el teléfono lleva horas sin usarse, los precios del 
 
 ---
 
-## Múltiples tamaños del mismo widget
+## Tamaños y responsive: dos enfoques
 
-Para ofrecer varios tamaños en el selector de widgets (como hace Gmail con su widget 2×2 y 4×2), se necesita un receiver separado por tamaño, pero pueden compartir toda la lógica mediante una clase base:
+Hay dos formas distintas de gestionar el tamaño de un widget. No son excluyentes, pero responden a necesidades diferentes.
+
+---
+
+### Enfoque A — Widget responsivo con `LocalSize` (recomendado)
+
+Un solo widget en el picker. El usuario lo añade y puede redimensionarlo libremente pulsando largo. La UI se adapta al tamaño disponible en cada momento.
+
+Glance expone el tamaño actual del widget mediante `LocalSize.current`, que devuelve un `DpSize`. Puedes usarlo en cualquier punto del composable para decidir qué mostrar:
+
+```kotlin
+@Composable
+fun MyWidgetContent(stations: List<StationModel>) {
+    val size = LocalSize.current
+
+    when {
+        size.height < 150.dp -> CompactContent(stations)   // caben 1-2 elementos
+        size.height < 250.dp -> MediumContent(stations)    // caben 3-4 elementos
+        else                 -> FullContent(stations)       // lista completa
+    }
+}
+```
+
+Para que Glance llame a `provideGlance` cada vez que el usuario redimensiona el widget, hay que declarar los tamaños soportados en el `GlanceAppWidget`:
+
+```kotlin
+class MyWidget : GlanceAppWidget() {
+
+    // Declara los breakpoints de tamaño que tu UI soporta
+    override val sizeMode = SizeMode.Responsive(
+        setOf(
+            DpSize(width = 250.dp, height = 110.dp),  // pequeño
+            DpSize(width = 250.dp, height = 200.dp),  // mediano
+            DpSize(width = 250.dp, height = 300.dp),  // grande
+        )
+    )
+
+    override suspend fun provideGlance(context: Context, id: GlanceId) {
+        val dataFlow = repository.observeData()
+        provideContent {
+            val data by dataFlow.collectAsState(initial = emptyList())
+            MyWidgetContent(data)  // lee LocalSize.current internamente
+        }
+    }
+}
+```
+
+**`SizeMode`** controla cuándo se llama a `provideGlance`:
+
+| Modo | Comportamiento |
+|------|---------------|
+| `SizeMode.Single` (default) | Se llama una sola vez con el tamaño mínimo del XML. No responde a cambios de tamaño. |
+| `SizeMode.Exact` | Se llama cada vez que cambia el tamaño exacto. Un `provideGlance` por tamaño → más llamadas, más RemoteViews generadas. |
+| `SizeMode.Responsive(sizes)` | Se llama una vez por cada breakpoint declarado. Glance elige el RemoteViews más adecuado según el tamaño real. Recomendado. |
+
+Con `SizeMode.Responsive`, Glance genera un conjunto de RemoteViews en el arranque (una por breakpoint) y el launcher elige cuál mostrar según el espacio disponible — sin llamadas adicionales al redimensionar.
+
+**Configuración del XML** con `resizeMode` habilitado:
+
+```xml
+<appwidget-provider
+    android:minWidth="110dp"
+    android:minHeight="110dp"
+    android:targetCellWidth="2"
+    android:targetCellHeight="2"
+    android:resizeMode="horizontal|vertical"
+    android:maxResizeWidth="500dp"
+    android:maxResizeHeight="500dp" />
+```
+
+Un solo receiver, un solo XML, una sola entrada en el picker.
+
+---
+
+### Enfoque B — Múltiples variantes en el picker
+
+Varias entradas distintas en el selector de widgets (como hace Gmail con "Gmail pequeño" y "Gmail grande"). Cada variante tiene un tamaño fijo predeterminado, aunque sigan siendo redimensionables.
+
+Se necesita un receiver separado por variante, pero pueden compartir toda la lógica mediante una clase base:
 
 ```kotlin
 // Toda la lógica aquí
 abstract class BaseWidgetReceiver : GlanceAppWidgetReceiver() {
     override val glanceAppWidget = MyWidget()
-
-    override fun onEnabled(context: Context) { /* scheduleSync */ }
-    override fun onDisabled(context: Context) { /* cancelSync si no hay más */ }
 }
 
-// Receivers de una línea, solo para registrar distintos tamaños en el manifest
+// Receivers de una línea, solo para registrar distintas variantes en el manifest
 class LargeWidgetReceiver : BaseWidgetReceiver()
 class SmallWidgetReceiver : BaseWidgetReceiver()
 ```
 
-Cada receiver apunta a un XML de provider distinto con diferentes `targetCellWidth` / `targetCellHeight`. El widget en sí (`GlanceAppWidget`) y su contenido son exactamente los mismos.
+Cada receiver apunta a un XML de provider distinto con diferentes `targetCellWidth` / `targetCellHeight`:
+
+```xml
+<!-- widget_large_info.xml -->
+<appwidget-provider android:targetCellWidth="4" android:targetCellHeight="3" ... />
+
+<!-- widget_small_info.xml -->
+<appwidget-provider android:targetCellWidth="4" android:targetCellHeight="2" ... />
+```
+
+El `GlanceAppWidget` y su contenido son los mismos en ambas variantes. La diferencia es solo el tamaño por defecto al añadirlo.
+
+**Cuándo usar este enfoque:** cuando quieres que el usuario elija explícitamente entre layouts conceptualmente distintos (p.ej. un widget de solo precio vs. uno con lista de gasolineras), no solo tamaños diferentes del mismo contenido.
+
+---
+
+### Comparativa
+
+| | Enfoque A — Responsivo | Enfoque B — Variantes en picker |
+|---|---|---|
+| Entradas en el picker | 1 | N (una por variante) |
+| El usuario ajusta el tamaño | Sí, pulsando largo | Sí, pero el punto de partida es fijo |
+| UI se adapta al tamaño | ✅ Con `LocalSize` + `SizeMode.Responsive` | Solo si se implementa manualmente |
+| Complejidad | Baja (un receiver, un XML) | Media (un receiver + XML por variante) |
+| Cuándo usarlo | Contenido homogéneo en distintos tamaños | Layouts conceptualmente distintos |
 
 ---
 
@@ -385,9 +521,11 @@ Cada receiver apunta a un XML de provider distinto con diferentes `targetCellWid
 | Concepto | Qué es | Cuándo usarlo |
 |---|---|---|
 | `GlanceAppWidget` | Define la UI y carga datos | Siempre, es el núcleo del widget |
-| `GlanceAppWidgetReceiver` | Gestiona el ciclo de vida | Siempre, un receiver por tamaño |
+| `GlanceAppWidgetReceiver` | Gestiona el ciclo de vida | Siempre, un receiver por variante |
 | `AppWidgetProviderInfo` | Configuración del widget (XML) | Siempre, un XML por receiver |
+| `collectAsState` en `provideContent` | Reactividad nativa (Glance 1.1+) | Cuando los datos cambian desde la app mientras el launcher está visible |
+| `SizeMode.Responsive` + `LocalSize` | UI adaptativa al tamaño del widget | Widget responsivo con un solo receiver |
 | `GlanceTheme` | Theming de colores light/dark | Cuando quieres colores adaptativos |
 | `previewLayout` | Preview en el picker (Android 12+) | Siempre que sea posible |
-| `WorkManager` | Actualizaciones periódicas en background | Cuando el widget necesita datos frescos |
-| Clase base abstract | Compartir lógica entre tamaños | Cuando tienes más de un tamaño |
+| `WorkManager` | Sincronización periódica en background | Cuando el widget necesita datos de red aunque la app esté cerrada |
+| Clase base abstract | Compartir lógica entre variantes | Cuando tienes más de una variante en el picker |

@@ -9,38 +9,55 @@ Widget de pantalla de inicio que muestra las gasolineras favoritas del usuario c
 - Tap en una gasolinera → abre el detalle en la app.
 - Sin distancia: el widget no calcula distancias (requeriría localización en background).
 
-## Tamaños disponibles
+## Tamaño y responsive
 
-Hay dos variantes del widget en el picker:
+Una sola entrada en el picker. El usuario puede redimensionarlo libremente pulsando largo sobre él.
 
-| Variante | Celdas | Clase receiver |
-|----------|--------|----------------|
-| Normal | 4×3 | `FavoriteStationsWidgetReceiver` |
-| Pequeño | 4×2 | `FavoriteStationsWidgetSmallReceiver` |
+El widget usa `SizeMode.Responsive` con dos breakpoints:
 
-Ambas variantes usan el mismo `FavoriteStationsWidget` y `FavoriteStationsWidgetContent`, y son redimensionables por el usuario (`resizeMode="horizontal|vertical"`).
+| Breakpoint | Tamaño | Modo |
+|------------|--------|------|
+| Compacto | 250×110dp | Header y items con padding reducido |
+| Completo | 250×200dp | Layout estándar |
+
+`LocalSize.current` dentro de `provideContent` determina el modo activo (`isCompact = height < 150.dp`). Glance genera un conjunto de RemoteViews por breakpoint al arrancar; el launcher elige cuál mostrar según el espacio disponible, sin llamadas adicionales al redimensionar.
+
+Receiver: `FavoriteStationsWidgetReceiver`
 
 ## Módulo
 
 `:feature:widget`
 
 Clases principales:
-- `FavoriteStationsWidget` — `GlanceAppWidget` que carga datos con `GetFavoriteStationsWithoutDistanceUseCase`
+- `FavoriteStationsWidget` — `GlanceAppWidget` reactivo que observa el `Flow` de favoritos con `collectAsState` dentro de `provideContent`
 - `FavoriteStationsWidgetReceiver` — receiver del widget normal (4×3)
 - `FavoriteStationsWidgetSmallReceiver` — receiver del widget pequeño (4×2)
-- `StationSyncWorker` — `CoroutineWorker` de WorkManager que refresca los datos
 
-## Refresco de datos (WorkManager)
+## Refresco de datos
 
-Al añadir cualquiera de los dos widgets se programan dos trabajos:
-1. **Inmediato** (`OneTimeWorkRequest`): refresca los datos nada más añadirlo.
-2. **Periódico** (`PeriodicWorkRequest`): cada 30 minutos, con constraint de red (`NetworkType.CONNECTED`).
+### Patrón reactivo (Glance 1.1+)
 
-Nombre único del trabajo: `gasguru_station_sync`. Se usa `ExistingPeriodicWorkPolicy.KEEP` para evitar duplicados cuando hay varias instancias activas.
+`FavoriteStationsWidget` usa el patrón reactivo de Glance: en `provideGlance`, el `Flow` de favoritos y precios se transforma fuera del composable y se colecta dentro de `provideContent` con `collectAsState`. La sesión de Glance se mantiene viva mientras el widget está en pantalla, por lo que cualquier cambio en Room (añadir/eliminar favorita, actualización de precios) provoca una recomposición automática del widget.
 
-El trabajo periódico solo se cancela cuando **ambos** tipos de widget están inactivos. Cada receiver verifica en `onDisabled` que el otro tipo tampoco tenga instancias antes de cancelar.
+```kotlin
+override suspend fun provideGlance(context: Context, id: GlanceId) {
+    val stationsFlow = getFavoriteStationsWithoutDistanceUseCase().map { ... }
+    provideContent {
+        val stations by stationsFlow.collectAsState(initial = emptyList())
+        FavoriteStationsWidgetContent(stations = stations)
+    }
+}
+```
 
-La lógica de refresco al abrir la app (`SplashViewModel`) se mantiene sin cambios; ambas son independientes y complementarias.
+### Sincronización periódica de precios (WorkManager — nivel app)
+
+La sincronización periódica de precios es una responsabilidad de la app, no del widget. Se programa en `GasGuruApplication.onCreate()` y corre independientemente de si el usuario tiene o no un widget activo.
+
+`StationSyncWorker` (en `:app`) actualiza los precios en Room y llama a `updateAll()` para garantizar el refresco incluso cuando la sesión del widget no está activa (dispositivo bloqueado, Doze mode, sesión expirada). Si la sesión está activa, el `collectAsState` ya habrá recompuesto el widget al detectar el cambio en Room.
+
+- Intervalo: cada 30 minutos, con constraint de red (`NetworkType.CONNECTED`)
+- Nombre único del trabajo: `gasguru_station_sync`
+- Política: `ExistingPeriodicWorkPolicy.KEEP` — no se resetea el timer en cada arranque de la app
 
 ## Theming
 
