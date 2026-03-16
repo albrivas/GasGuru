@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="widget_background">#FFFFFFFF</color>
+    <color name="widget_text_main">#FF212321</color>
+    <color name="widget_text_subtle">#FF626A64</color>
+    <color name="widget_chip_green_bg">#2936CD5E</color>
+    <color name="widget_chip_green_text">#FF36CD5E</color>
+    <color name="widget_chip_orange_bg">#29F39632</color>
+    <color name="widget_chip_orange_text">#FFF39632</color>
+    <color name="widget_chip_red_bg">#29CD4036</color>
+    <color name="widget_chip_red_text">#FFCD4036</color>
+</resources>
