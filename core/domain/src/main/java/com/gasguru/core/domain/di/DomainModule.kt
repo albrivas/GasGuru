@@ -7,6 +7,7 @@ import com.gasguru.core.domain.filters.GetFiltersUseCase
 import com.gasguru.core.domain.filters.SaveFilterUseCase
 import com.gasguru.core.domain.fuelstation.FuelStationByLocationUseCase
 import com.gasguru.core.domain.fuelstation.GetFavoriteStationsUseCase
+import com.gasguru.core.domain.fuelstation.GetFavoriteStationsWithoutDistanceUseCase
 import com.gasguru.core.domain.fuelstation.GetFuelStationByIdUseCase
 import com.gasguru.core.domain.fuelstation.GetFuelStationUseCase
 import com.gasguru.core.domain.fuelstation.GetFuelStationsInRouteUseCase
@@ -56,6 +57,7 @@ val domainModule = module {
     factory { GetFuelStationUseCase(repository = get()) }
     factory { GetFuelStationsInRouteUseCase(repository = get()) }
     factory { GetFavoriteStationsUseCase(repository = get()) }
+    factory { GetFavoriteStationsWithoutDistanceUseCase(repository = get()) }
     factory { SaveFavoriteStationUseCase(offlineRepository = get()) }
     factory { RemoveFavoriteStationUseCase(offlineRepository = get()) }
     // Location
