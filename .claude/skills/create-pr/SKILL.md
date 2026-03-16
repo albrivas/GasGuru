@@ -42,6 +42,8 @@ Examples:
    - `bugfix/*` or `fix/*` -> `Bugfix`
    - `release/*` -> `Release`
    - `sync/*` -> `Sync`
+
+   **Important**: There is no `security/` prefix. Security fixes use `bugfix/`.
 5. Draft the title using the format above
 6. Push the branch with `-u` if needed
 7. Create the PR with `gh pr create` (empty body)
