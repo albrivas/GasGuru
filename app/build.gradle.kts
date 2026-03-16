@@ -101,6 +101,7 @@ dependencies {
     implementation(projects.core.network)
     implementation(projects.feature.search)
     implementation(projects.feature.routePlanner)
+    implementation(projects.feature.widget)
     implementation(projects.navigation)
     implementation(projects.core.notifications)
     mockImplementation(projects.mocknetwork)
