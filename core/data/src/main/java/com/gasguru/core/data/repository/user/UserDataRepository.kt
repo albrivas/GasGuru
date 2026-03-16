@@ -14,4 +14,5 @@ interface UserDataRepository {
     suspend fun addFavoriteStation(stationId: Int)
     suspend fun removeFavoriteStation(stationId: Int)
     fun getUserWithFavoriteStations(userLocation: LatLng): Flow<UserWithFavoriteStations>
+    fun getFavoriteStationsWithoutDistance(): Flow<UserWithFavoriteStations>
 }
