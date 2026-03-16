@@ -59,7 +59,7 @@ fun FavoriteStationsWidgetContent(
 
 @Composable
 private fun WidgetHeader(isCompact: Boolean) {
-    val context = LocalContext. current
+    val context = LocalContext.current
     val openAppIntent = Intent().apply {
         setClassName(context.packageName, "com.gasguru.MainActivity")
         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
