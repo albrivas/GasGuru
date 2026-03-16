@@ -34,34 +34,42 @@ import com.gasguru.feature.widget.theme.WidgetStyleHeader
 import com.gasguru.feature.widget.theme.WidgetStylePrice
 
 @Composable
-fun FavoriteStationsWidgetContent(stations: List<FavoriteWidgetItemModel>) {
+fun FavoriteStationsWidgetContent(
+    stations: List<FavoriteWidgetItemModel>,
+    isCompact: Boolean = false,
+) {
     GlanceTheme(colors = WidgetColorScheme.colors) {
         Column(
             modifier = GlanceModifier
                 .fillMaxSize()
                 .background(GlanceTheme.colors.widgetBackground),
         ) {
-            WidgetHeader()
+            WidgetHeader(isCompact = isCompact)
             if (stations.isEmpty()) {
                 EmptyWidgetContent()
             } else {
-                StationsListContent(stations = stations)
+                StationsListContent(
+                    stations = stations,
+                    isCompact = isCompact,
+                )
             }
         }
     }
 }
 
 @Composable
-private fun WidgetHeader() {
-    val context = LocalContext.current
-    val openAppIntent = Intent(context, Class.forName("com.gasguru.MainActivity")).apply {
+private fun WidgetHeader(isCompact: Boolean) {
+    val context = LocalContext. current
+    val openAppIntent = Intent().apply {
+        setClassName(context.packageName, "com.gasguru.MainActivity")
         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
     }
+    val verticalPadding = if (isCompact) 6.dp else 10.dp
     Row(
         modifier = GlanceModifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .padding(horizontal = 16.dp, vertical = 10.dp)
+            .padding(horizontal = 16.dp, vertical = verticalPadding)
             .clickable(actionStartActivity(openAppIntent)),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -75,7 +83,8 @@ private fun WidgetHeader() {
 @Composable
 private fun EmptyWidgetContent() {
     val context = LocalContext.current
-    val openAppIntent = Intent(context, Class.forName("com.gasguru.MainActivity")).apply {
+    val openAppIntent = Intent().apply {
+        setClassName(context.packageName, "com.gasguru.MainActivity")
         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
     }
     Column(
@@ -98,26 +107,37 @@ private fun EmptyWidgetContent() {
 }
 
 @Composable
-private fun StationsListContent(stations: List<FavoriteWidgetItemModel>) {
+private fun StationsListContent(
+    stations: List<FavoriteWidgetItemModel>,
+    isCompact: Boolean,
+) {
     LazyColumn(modifier = GlanceModifier.fillMaxSize()) {
         items(stations) { stationItem ->
-            StationWidgetItem(stationItem = stationItem)
+            StationWidgetItem(
+                stationItem = stationItem,
+                isCompact = isCompact,
+            )
         }
     }
 }
 
 @Composable
-private fun StationWidgetItem(stationItem: FavoriteWidgetItemModel) {
+private fun StationWidgetItem(
+    stationItem: FavoriteWidgetItemModel,
+    isCompact: Boolean,
+) {
     val context = LocalContext.current
-    val openDetailIntent = Intent(context, Class.forName("com.gasguru.MainActivity")).apply {
+    val openDetailIntent = Intent().apply {
+        setClassName(context.packageName, "com.gasguru.MainActivity")
         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
         putExtra("station_id", stationItem.idServiceStation.toString())
     }
+    val verticalPadding = if (isCompact) 4.dp else 8.dp
     Row(
         modifier = GlanceModifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .padding(horizontal = 12.dp, vertical = 8.dp)
+            .padding(horizontal = 12.dp, vertical = verticalPadding)
             .clickable(actionStartActivity(openDetailIntent)),
         verticalAlignment = Alignment.CenterVertically,
     ) {
