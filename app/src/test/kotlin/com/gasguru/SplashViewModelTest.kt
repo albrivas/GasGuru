@@ -51,7 +51,16 @@ class SplashViewModelTest {
             initialUserData = UserData(
                 isOnboardingSuccess = true,
                 themeMode = ThemeMode.DARK,
-                vehicles = listOf(Vehicle(id = 1L, fuelType = FuelType.GASOLINE_95, name = null, tankCapacity = 40, vehicleType = VehicleType.CAR, isPrincipal = true)),
+                vehicles = listOf(
+                    Vehicle(
+                        id = 1L,
+                        fuelType = FuelType.GASOLINE_95,
+                        name = null,
+                        tankCapacity = 40,
+                        vehicleType = VehicleType.CAR,
+                        isPrincipal = true
+                    )
+                ),
             )
         )
         fakeUserDataDao = FakeUserDataDao(
@@ -64,7 +73,17 @@ class SplashViewModelTest {
         fakeFavoriteStationDao = FakeFavoriteStationDao()
         fakePriceAlertDao = FakePriceAlertDao()
         fakeVehicleDao = FakeVehicleDao(
-            initialVehicles = listOf(VehicleEntity(id = 1L, userId = 0L, name = null, fuelType = FuelType.GASOLINE_95, tankCapacity = 40, vehicleType = VehicleType.CAR, isPrincipal = true)),
+            initialVehicles = listOf(
+                VehicleEntity(
+                    id = 1L,
+                    userId = 0L,
+                    name = null,
+                    fuelType = FuelType.GASOLINE_95,
+                    tankCapacity = 40,
+                    vehicleType = VehicleType.CAR,
+                    isPrincipal = true
+                )
+            ),
         )
         fakeRemoteDataSource = FakeRemoteDataSource()
 
@@ -94,6 +113,7 @@ class SplashViewModelTest {
                 ThemeMode.SYSTEM -> {
                     assertEquals(ThemeMode.DARK, awaitItem())
                 }
+
                 else -> {
                     assertEquals(ThemeMode.DARK, state)
                 }
