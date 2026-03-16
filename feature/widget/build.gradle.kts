@@ -17,7 +17,6 @@ dependencies {
 
     implementation(libs.androidx.glance.appwidget)
     implementation(libs.androidx.glance.material3)
-    implementation(libs.androidx.work.runtime.ktx)
 
     debugImplementation(libs.androidx.glance.appwidget.preview)
     debugImplementation(libs.androidx.glance.preview)
