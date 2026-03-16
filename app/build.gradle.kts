@@ -130,6 +130,8 @@ dependencies {
     implementation(libs.firebase.analytics)
 
     implementation(libs.splash.screen)
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.glance.appwidget)
 
     // Analytics
     implementation(libs.mixpanel)

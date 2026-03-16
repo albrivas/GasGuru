@@ -1,4 +1,4 @@
-package com.gasguru.feature.widget.worker
+package com.gasguru.worker
 
 import android.content.Context
 import androidx.glance.appwidget.updateAll
