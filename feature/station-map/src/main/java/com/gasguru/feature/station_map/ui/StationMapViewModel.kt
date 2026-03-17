@@ -323,6 +323,7 @@ class StationMapViewModel(
                 type = AnalyticsEvent.Types.FILTER_BRAND_CHANGED,
                 extras = listOf(
                     AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.BRAND_COUNT, value = stationsSelected.size.toString()),
+                    AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.BRAND_NAMES, value = stationsSelected.joinToString(separator = ",")),
                 ),
             ),
         )
