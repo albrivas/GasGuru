@@ -170,6 +170,7 @@ internal fun DetailStationScreen(
                         staticMapUrl = staticMapUrl,
                         onBack = onBack,
                         onShareClick = {
+                            onEvent(DetailStationEvent.ShareStation)
                             shareStation(
                                 context = context,
                                 shareText = shareText,
