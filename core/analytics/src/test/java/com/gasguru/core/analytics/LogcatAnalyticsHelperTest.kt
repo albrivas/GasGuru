@@ -4,21 +4,24 @@ import android.util.Log
 import io.mockk.mockkStatic
 import io.mockk.slot
 import io.mockk.verify
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
 
+@DisplayName("LogcatAnalyticsHelper")
 class LogcatAnalyticsHelperTest {
 
     private lateinit var analyticsHelper: LogcatAnalyticsHelper
 
-    @Before
+    @BeforeEach
     fun setUp() {
         mockkStatic(Log::class)
         analyticsHelper = LogcatAnalyticsHelper()
     }
 
     @Test
+    @DisplayName("logEvent logs event type to logcat")
     fun `logEvent logs event type to logcat`() {
         val event = AnalyticsEvent(type = AnalyticsEvent.Types.VEHICLE_CREATED)
 
@@ -30,6 +33,7 @@ class LogcatAnalyticsHelperTest {
     }
 
     @Test
+    @DisplayName("logEvent logs extras as key=value pairs")
     fun `logEvent logs extras as key=value pairs`() {
         val event = AnalyticsEvent(
             type = AnalyticsEvent.Types.VEHICLE_CREATED,
@@ -49,6 +53,7 @@ class LogcatAnalyticsHelperTest {
     }
 
     @Test
+    @DisplayName("logEvent logs dash when event has no extras")
     fun `logEvent logs dash when event has no extras`() {
         val event = AnalyticsEvent(type = AnalyticsEvent.Types.WENT_OFFLINE)
 
