@@ -89,8 +89,14 @@ class ProfileViewModel(
             event = AnalyticsEvent(
                 type = AnalyticsEvent.Types.VEHICLE_DELETED,
                 extras = listOf(
-                    AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.WAS_PRINCIPAL, value = deletedVehicleModel.isSelected.toString()),
-                    AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.VEHICLES_REMAINING, value = (currentVehicles.size - 1).toString()),
+                    AnalyticsEvent.Param(
+                        key = AnalyticsEvent.ParamKeys.WAS_PRINCIPAL,
+                        value = deletedVehicleModel.isSelected.toString()
+                    ),
+                    AnalyticsEvent.Param(
+                        key = AnalyticsEvent.ParamKeys.VEHICLES_REMAINING,
+                        value = (currentVehicles.size - 1).toString()
+                    ),
                 ),
             ),
         )
