@@ -16,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.R
 import com.gasguru.core.uikit.theme.GasGuruTheme
@@ -69,6 +71,9 @@ fun VehicleTypeCard(
             text = stringResource(id = model.nameRes),
             style = GasGuruTheme.typography.captionBold,
             color = contentColor,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center,
         )
     }
 }
