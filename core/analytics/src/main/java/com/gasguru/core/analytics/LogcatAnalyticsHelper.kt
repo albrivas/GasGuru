@@ -12,6 +12,6 @@ class LogcatAnalyticsHelper : AnalyticsHelper {
         } else {
             event.extras.joinToString(separator = ", ") { param -> "${param.key}=${param.value}" }
         }
-        Log.d(TAG, "▶ ${event.type} | $paramsString")
+        Log.d(TAG, "▶ [${event.category}] ${event.type} | $paramsString")
     }
 }
