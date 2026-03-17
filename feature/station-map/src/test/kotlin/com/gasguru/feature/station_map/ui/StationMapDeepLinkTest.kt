@@ -69,11 +69,13 @@ class StationMapDeepLinkTest {
         val job = launch {
             deepLinkStateHolder.pendingStationId.collect { value -> emittedValues.add(value) }
         }
+        advanceUntilIdle()
 
         deepLinkStateHolder.setPendingStationId(stationId = 123)
+        advanceUntilIdle()
         deepLinkStateHolder.clear()
+        advanceUntilIdle()
         deepLinkStateHolder.setPendingStationId(stationId = 123)
-
         advanceUntilIdle()
         job.cancel()
 
@@ -94,6 +96,7 @@ class StationMapDeepLinkTest {
         val job = launch {
             deepLinkStateHolder.pendingStationId.collect { value -> emittedValues.add(value) }
         }
+        advanceUntilIdle()
 
         deepLinkStateHolder.setPendingStationId(stationId = 123)
         deepLinkStateHolder.setPendingStationId(stationId = 123)
