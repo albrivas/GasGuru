@@ -5,21 +5,24 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.json.JSONObject
-import org.junit.Assert.assertEquals
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
 
+@DisplayName("MixpanelAnalyticsHelper")
 class MixpanelAnalyticsHelperTest {
 
     private val mixpanelApi: MixpanelAPI = mockk(relaxed = true)
     private lateinit var analyticsHelper: MixpanelAnalyticsHelper
 
-    @Before
+    @BeforeEach
     fun setUp() {
         analyticsHelper = MixpanelAnalyticsHelper(mixpanel = mixpanelApi)
     }
 
     @Test
+    @DisplayName("logEvent tracks event with correct type")
     fun `logEvent tracks event with correct type`() {
         val event = AnalyticsEvent(type = AnalyticsEvent.Types.VEHICLE_CREATED)
 
@@ -30,6 +33,7 @@ class MixpanelAnalyticsHelperTest {
     }
 
     @Test
+    @DisplayName("logEvent tracks event with extras as JSON properties")
     fun `logEvent tracks event with extras as JSON properties`() {
         val event = AnalyticsEvent(
             type = AnalyticsEvent.Types.VEHICLE_CREATED,
@@ -50,6 +54,7 @@ class MixpanelAnalyticsHelperTest {
     }
 
     @Test
+    @DisplayName("logEvent tracks event with empty extras as empty JSON")
     fun `logEvent tracks event with empty extras as empty JSON`() {
         val event = AnalyticsEvent(type = AnalyticsEvent.Types.WENT_OFFLINE)
 
