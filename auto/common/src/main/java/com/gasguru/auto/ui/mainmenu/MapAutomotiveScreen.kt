@@ -39,7 +39,11 @@ class MapAutomotiveScreen(carContext: CarContext) : Screen(carContext), KoinComp
                 .setTitle(carContext.getString(CoreUiR.string.nearby_stations))
                 .setBrowsable(true)
                 .setOnClickListener {
-                    analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.AUTO_NEARBY_STATIONS_OPENED))
+                    analyticsHelper.logEvent(
+                        event = AnalyticsEvent(
+                            type = AnalyticsEvent.Types.AUTO_NEARBY_STATIONS_OPENED,
+                        ),
+                    )
                     screenManager.push(NearbyStationsScreen(carContext))
                 }
                 .build()
@@ -50,7 +54,11 @@ class MapAutomotiveScreen(carContext: CarContext) : Screen(carContext), KoinComp
                 .setTitle(carContext.getString(CoreUiR.string.favorites))
                 .setBrowsable(true)
                 .setOnClickListener {
-                    analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.AUTO_FAVORITE_STATIONS_OPENED))
+                    analyticsHelper.logEvent(
+                        event = AnalyticsEvent(
+                            type = AnalyticsEvent.Types.AUTO_FAVORITE_STATIONS_OPENED,
+                        ),
+                    )
                     screenManager.push(FavoriteStationsScreen(carContext))
                 }
                 .build()
@@ -90,38 +98,37 @@ class MapAutomotiveScreen(carContext: CarContext) : Screen(carContext), KoinComp
         }
     }
 
-    override fun onGetTemplate(): Template {
-        if (uiState.permissionDenied) {
-            return MessageTemplate.Builder(carContext.getString(R.string.permission_required_message))
-                .setTitle(carContext.getString(R.string.permission_required_title))
-                .setHeaderAction(Action.APP_ICON)
-                .addAction(
-                    Action.Builder()
-                        .setTitle(carContext.getString(R.string.grant_permissions))
-                        .setOnClickListener {
-                            checkPermissions()
-                        }
-                        .build()
-                )
-                .build()
-        }
+    override fun onGetTemplate(): Template = when {
+        uiState.permissionDenied -> buildPermissionDeniedTemplate()
+        uiState.needsOnboarding -> buildOnboardingTemplate()
+        else -> buildMapTemplate()
+    }
 
-        if (uiState.needsOnboarding) {
-            return MessageTemplate.Builder(carContext.getString(R.string.onboarding_required_message))
-                .setTitle(carContext.getString(R.string.onboarding_required_title))
-                .setHeaderAction(Action.APP_ICON)
-                .addAction(
-                    Action.Builder()
-                        .setTitle(carContext.getString(R.string.complete_onboarding))
-                        .setOnClickListener {
-                            checkPermissions()
-                        }
-                        .build()
-                )
-                .build()
-        }
+    private fun buildPermissionDeniedTemplate(): Template =
+        MessageTemplate.Builder(carContext.getString(R.string.permission_required_message))
+            .setTitle(carContext.getString(R.string.permission_required_title))
+            .setHeaderAction(Action.APP_ICON)
+            .addAction(
+                Action.Builder()
+                    .setTitle(carContext.getString(R.string.grant_permissions))
+                    .setOnClickListener { checkPermissions() }
+                    .build()
+            )
+            .build()
 
-        // Normal map template for when permissions are granted
+    private fun buildOnboardingTemplate(): Template =
+        MessageTemplate.Builder(carContext.getString(R.string.onboarding_required_message))
+            .setTitle(carContext.getString(R.string.onboarding_required_title))
+            .setHeaderAction(Action.APP_ICON)
+            .addAction(
+                Action.Builder()
+                    .setTitle(carContext.getString(R.string.complete_onboarding))
+                    .setOnClickListener { checkPermissions() }
+                    .build()
+            )
+            .build()
+
+    private fun buildMapTemplate(): Template {
         val builder = PlaceListMapTemplate
             .Builder()
             .setTitle(carContext.getString(R.string.app_title))
