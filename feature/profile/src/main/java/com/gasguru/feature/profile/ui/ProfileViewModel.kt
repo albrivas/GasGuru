@@ -62,6 +62,7 @@ class ProfileViewModel(
             is ProfileEvents.EditVehicle -> navigationManager.navigateTo(
                 destination = NavigationDestination.EditVehicle(vehicleId = event.vehicleId),
             )
+
             is ProfileEvents.DeleteVehicle -> deleteVehicle(vehicleId = event.vehicleId)
         }
     }
@@ -71,7 +72,10 @@ class ProfileViewModel(
             event = AnalyticsEvent(
                 type = AnalyticsEvent.Types.THEME_CHANGED,
                 extras = listOf(
-                    AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.THEME_MODE, value = theme.name),
+                    AnalyticsEvent.Param(
+                        key = AnalyticsEvent.ParamKeys.THEME_MODE,
+                        value = theme.mode.name
+                    ),
                 ),
             ),
         )
@@ -79,10 +83,12 @@ class ProfileViewModel(
     }
 
     private fun deleteVehicle(vehicleId: Long) = viewModelScope.launch {
-        val currentVehicles = (userData.value as? ProfileUiState.Success)?.content?.vehicles ?: return@launch
+        val currentVehicles =
+            (userData.value as? ProfileUiState.Success)?.content?.vehicles ?: return@launch
         if (currentVehicles.size <= 1) return@launch
 
-        val deletedVehicleModel = currentVehicles.firstOrNull { it.id == vehicleId } ?: return@launch
+        val deletedVehicleModel =
+            currentVehicles.firstOrNull { it.id == vehicleId } ?: return@launch
         val shouldPromotePrincipal = deletedVehicleModel.isSelected && currentVehicles.size == 2
 
         analyticsHelper.logEvent(
