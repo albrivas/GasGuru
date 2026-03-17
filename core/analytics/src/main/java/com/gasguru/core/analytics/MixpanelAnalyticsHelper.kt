@@ -7,6 +7,7 @@ class MixpanelAnalyticsHelper(private val mixpanel: MixpanelAPI) : AnalyticsHelp
 
     override fun logEvent(event: AnalyticsEvent) {
         val properties = JSONObject()
+        properties.put(AnalyticsEvent.ParamKeys.CATEGORY, event.category)
         event.extras.forEach { param ->
             properties.put(param.key, param.value)
         }
