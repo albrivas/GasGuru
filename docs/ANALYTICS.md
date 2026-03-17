@@ -16,15 +16,16 @@ core/analytics/
 ├── build.gradle.kts
 └── src/
     ├── main/java/com/gasguru/core/analytics/
-    │   ├── AnalyticsEvent.kt           — data class + constantes de tipos y parámetros
+    │   ├── AnalyticsEvent.kt           — data class + Types, Categories y ParamKeys
     │   ├── AnalyticsHelper.kt          — interface: fun logEvent(event: AnalyticsEvent)
     │   ├── NoOpAnalyticsHelper.kt      — implementación vacía para tests y previews
     │   ├── LogcatAnalyticsHelper.kt    — implementación de debug (Log.d por evento)
     │   ├── MixpanelAnalyticsHelper.kt  — implementación de producción (wraps MixpanelAPI)
     │   ├── LocalAnalyticsHelper.kt     — staticCompositionLocalOf<AnalyticsHelper>
     │   └── di/
-    │       └── AnalyticsModule.kt      — Koin single<AnalyticsHelper> binding (debug/release)
+    │       └── AnalyticsModule.kt      — Koin single<AnalyticsHelper> y single<MixpanelAPI>
     └── test/java/com/gasguru/core/analytics/
+        ├── AnalyticsEventCategoriesTest.kt
         ├── LogcatAnalyticsHelperTest.kt
         └── MixpanelAnalyticsHelperTest.kt
 ```
@@ -48,29 +49,48 @@ data class AnalyticsEvent(
 ) {
     data class Param(val key: String, val value: String)
 
-    object Types {
-        // constantes de nombre de evento (ej. "onboarding_started")
-    }
+    val category: String
+        get() = Categories.fromType(type)
 
-    object ParamKeys {
-        // constantes de clave de parámetro (ej. "fuel_type")
+    object Types { /* constantes de nombre de evento */ }
+    object Categories { /* categorías y fromType() */ }
+    object ParamKeys { /* constantes de clave de parámetro */ }
+}
+```
+
+La propiedad `category` se deriva automáticamente del `type` mediante `Categories.fromType()`.
+No es necesario especificarla al crear el evento.
+
+#### `MixpanelAnalyticsHelper` — Producción
+
+Inyecta la instancia de `MixpanelAPI` via Koin (singleton) y envía cada evento con sus
+parámetros como propiedades JSON. La propiedad `category` se añade **automáticamente**
+a todas las propiedades sin intervención del caller:
+
+```kotlin
+class MixpanelAnalyticsHelper(private val mixpanel: MixpanelAPI) : AnalyticsHelper {
+    override fun logEvent(event: AnalyticsEvent) {
+        val properties = JSONObject()
+        properties.put(ParamKeys.CATEGORY, event.category)   // siempre presente
+        event.extras.forEach { param -> properties.put(param.key, param.value) }
+        mixpanel.track(event.type, properties)
     }
 }
 ```
 
-#### `MixpanelAnalyticsHelper` — Producción
+#### `AnalyticsModule` — Koin
 
-Obtiene la instancia ya inicializada de Mixpanel (sin re-inicializar) y envía cada
-evento con sus parámetros como propiedades JSON:
+`MixpanelAPI` se registra como singleton para evitar múltiples inicializaciones.
+La selección de implementación se hace en función del build type:
 
 ```kotlin
-class MixpanelAnalyticsHelper(private val context: Context) : AnalyticsHelper {
-    private val mixpanel get() = MixpanelAPI.getInstance(context, null, true)
-
-    override fun logEvent(event: AnalyticsEvent) {
-        val properties = JSONObject()
-        event.extras.forEach { param -> properties.put(param.key, param.value) }
-        mixpanel.track(event.type, properties)
+val analyticsModule = module {
+    single<MixpanelAPI> {
+        MixpanelAPI.getInstance(androidContext(), null, true)
+    }
+    single<AnalyticsHelper> {
+        if (BuildConfig.DEBUG) LogcatAnalyticsHelper()
+        else MixpanelAnalyticsHelper(mixpanel = get())
     }
 }
 ```
@@ -86,202 +106,230 @@ Provisto en `MainActivity` mediante `CompositionLocalProvider(LocalAnalyticsHelp
 #### `LogcatAnalyticsHelper` — Debug
 
 Implementación activa únicamente en builds de debug (`BuildConfig.DEBUG = true`).
-Escribe cada evento en Logcat con tag `Analytics`, el nombre del evento y sus
-parámetros como pares `key=value`:
+Escribe cada evento en Logcat con tag `Analytics`, la categoría, el nombre del evento
+y sus parámetros como pares `key=value`:
 
 ```
-D/Analytics: ▶ vehicle_created | vehicle_type=CAR, fuel_type=GASOLINE_95
-D/Analytics: ▶ went_offline | —
-```
-
-#### `AnalyticsModule` — Koin
-
-Selecciona la implementación en función del build type:
-
-```kotlin
-val analyticsModule = module {
-    single<AnalyticsHelper> {
-        if (BuildConfig.DEBUG) LogcatAnalyticsHelper()
-        else MixpanelAnalyticsHelper(context = androidContext())
-    }
-}
+D/Analytics: ▶ [vehicle] vehicle_created | vehicle_type=CAR, fuel_type=GASOLINE_95
+D/Analytics: ▶ [network] went_offline | —
+D/Analytics: ▶ [widget] widget_station_tapped | station_id=1234
 ```
 
 ### Flujo de dependencias
 
 ```
-app          → core:analytics  (MainActivity, StationSyncWorker)
-feature:*    → core:analytics  (todos los ViewModels)
-core:data    → core:analytics  (SyncManager, PriceAlertRepositoryImpl)
-core:components → core:analytics (GasGuruSearchBarViewModel)
+app                → core:analytics  (MainActivity, StationSyncWorker, ProdDataSourceModule)
+feature:*          → core:analytics  (todos los ViewModels)
+feature:widget     → core:analytics  (WidgetStationClickCallback)
+auto:common        → core:analytics  (GasGuruSession, MapAutomotiveScreen, NearbyStationsScreen, FavoriteStationsScreen)
+core:data          → core:analytics  (SyncManager, PriceAlertRepositoryImpl)
+core:network       → core:analytics  (RemoteDataSourceImp)
+core:notifications → core:analytics  (PushNotificationService)
+core:components    → core:analytics  (GasGuruSearchBarViewModel)
 ```
 
 ---
 
-## Catálogo de eventos por funcionalidad
+## Sistema de categorías
+
+Cada evento se enriquece automáticamente con una propiedad `category` en Mixpanel.
+Esto permite filtrar, segmentar y construir funnels por área funcional sin configuración adicional.
+
+| Categoría | Constante | Qué mide |
+|-----------|-----------|----------|
+| `onboarding` | `Categories.ONBOARDING` | Funnel de activación primera vez |
+| `vehicle` | `Categories.VEHICLE` | Configuración y gestión de vehículos |
+| `map` | `Categories.MAP` | Interacciones con el mapa principal |
+| `station_detail` | `Categories.STATION_DETAIL` | Favoritos, alertas y compartir desde detalle |
+| `search` | `Categories.SEARCH` | Búsqueda de ubicaciones |
+| `route_planner` | `Categories.ROUTE_PLANNER` | Planificador de rutas |
+| `profile` | `Categories.PROFILE` | Personalización y ajustes |
+| `favorites` | `Categories.FAVORITES` | Lista de gasolineras favoritas |
+| `network` | `Categories.NETWORK` | Conectividad offline/online |
+| `sync` | `Categories.SYNC` | Workers y sincronización de alertas en background |
+| `api` | `Categories.API` | Llamadas a la API de gasolineras |
+| `push` | `Categories.PUSH` | Notificaciones push |
+| `widget` | `Categories.WIDGET` | Widget de pantalla de inicio |
+| `auto` | `Categories.AUTO` | Android Auto |
+
+La categoría se deriva automáticamente en `Categories.fromType(type)`. Al añadir un nuevo
+evento hay que registrarlo en ese `when` para evitar que caiga en `unknown`.
 
 ---
 
-### 1. Onboarding
+## Catálogo de eventos por categoría
+
+---
+
+### onboarding
 
 **Dónde se instrumenta:** `NewOnboardingViewModel`, `OnboardingViewModel`, `CapacityTankViewModel`
 
-El flujo de onboarding solo se ejecuta la primera vez que el usuario abre la app
-(`isOnboardingSuccess = false`). Medir este flujo permite entender la tasa de
-finalización y en qué paso se abandona.
-
-| Evento | Tipo | Parámetros | Clase |
-|--------|------|-----------|-------|
-| Onboarding iniciado | `ONBOARDING_STARTED` | — | `NewOnboardingViewModel.init` |
-| Página visualizada | `ONBOARDING_PAGE_VIEWED` | `page_number: Int` | `NewOnboardingViewModel` → evento `PageChanged` |
-| Onboarding saltado | `ONBOARDING_SKIPPED` | — | `NewOnboardingViewModel` → evento `Skip` |
-| Combustible seleccionado | `ONBOARDING_FUEL_SELECTED` | `fuel_type: String` | `OnboardingViewModel.saveSelectedFuel()` |
-| Capacidad de depósito configurada | `ONBOARDING_TANK_CAPACITY_SET` | `capacity_litres: Int` | `CapacityTankViewModel` → evento `Continue` |
-| Onboarding completado | `ONBOARDING_COMPLETED` | — | `CapacityTankViewModel` → evento `Continue` |
+| Evento | Tipo | Parámetros |
+|--------|------|-----------|
+| Onboarding iniciado | `ONBOARDING_STARTED` | — |
+| Página visualizada | `ONBOARDING_PAGE_VIEWED` | `page_number: Int` |
+| Onboarding saltado | `ONBOARDING_SKIPPED` | — |
+| Combustible seleccionado | `ONBOARDING_FUEL_SELECTED` | `fuel_type: String` |
+| Capacidad de depósito configurada | `ONBOARDING_TANK_CAPACITY_SET` | `capacity_litres: Int` |
+| Onboarding completado | `ONBOARDING_COMPLETED` | — |
 
 ---
 
-### 2. Vehículos
+### vehicle
 
 **Dónde se instrumenta:** `AddVehicleViewModel`, `ProfileViewModel`
 
-Los vehículos son el núcleo de la personalización. Saber cuántos se crean, de qué
-tipo y con qué combustible ayuda a entender el perfil de los usuarios.
-
-| Evento | Tipo | Parámetros | Clase |
-|--------|------|-----------|-------|
-| Vehículo creado | `VEHICLE_CREATED` | `vehicle_type`, `fuel_type`, `capacity_litres`, `is_principal` | `AddVehicleViewModel` → evento `SaveVehicle` (modo creación) |
-| Vehículo editado | `VEHICLE_EDITED` | `vehicle_type`, `fuel_type` | `AddVehicleViewModel` → evento `SaveVehicle` (modo edición) |
-| Vehículo eliminado | `VEHICLE_DELETED` | `was_principal: Boolean`, `vehicles_remaining: Int` | `ProfileViewModel` → evento `DeleteVehicle` |
+| Evento | Tipo | Parámetros |
+|--------|------|-----------|
+| Vehículo creado | `VEHICLE_CREATED` | `vehicle_type`, `fuel_type`, `capacity_litres`, `is_principal` |
+| Vehículo editado | `VEHICLE_EDITED` | `vehicle_type`, `fuel_type` |
+| Vehículo eliminado | `VEHICLE_DELETED` | `was_principal: Boolean`, `vehicles_remaining: Int` |
 
 ---
 
-### 3. Mapa de gasolineras
+### map
 
 **Dónde se instrumenta:** `StationMapViewModel`
 
-La pantalla principal de la app. Medir las interacciones con el mapa permite
-entender cómo navegan los usuarios y qué filtros usan con más frecuencia.
-
-| Evento | Tipo | Parámetros | Clase |
-|--------|------|-----------|-------|
-| Gasolineras cargadas | `MAP_STATIONS_LOADED` | `station_count: Int` | `StationMapViewModel` — collect éxito |
-| Gasolinera seleccionada | `STATION_SELECTED` | `station_id: Int` | `StationMapViewModel` → evento `SelectStation` |
-| Filtro de marca cambiado | `FILTER_BRAND_CHANGED` | `brand_count: Int` | `StationMapViewModel` → evento `UpdateBrandFilter` |
-| Filtro de distancia cambiado | `FILTER_NEARBY_CHANGED` | `nearby_km: String` | `StationMapViewModel` → evento `UpdateNearbyFilter` |
-| Filtro de horario cambiado | `FILTER_SCHEDULE_CHANGED` | `schedule: String` | `StationMapViewModel` → evento `UpdateScheduleFilter` |
-| Tab cambiado (Precio/Distancia) | `MAP_TAB_CHANGED` | `tab: String` | `StationMapViewModel` → evento `ChangeTab` |
-| Ruta iniciada | `ROUTE_STARTED` | — | `StationMapViewModel` → evento `StartRoute` |
-| Ruta cancelada | `ROUTE_CANCELLED` | — | `StationMapViewModel` → evento `CancelRoute` |
+| Evento | Tipo | Parámetros |
+|--------|------|-----------|
+| Gasolineras cargadas | `MAP_STATIONS_LOADED` | `station_count: Int` |
+| Gasolinera seleccionada | `STATION_SELECTED` | `station_id: Int` |
+| Filtro de marca cambiado | `FILTER_BRAND_CHANGED` | `brand_count: Int` |
+| Filtro de distancia cambiado | `FILTER_NEARBY_CHANGED` | `nearby_km: String` |
+| Filtro de horario cambiado | `FILTER_SCHEDULE_CHANGED` | `schedule: String` |
+| Tab cambiado (Precio/Distancia) | `MAP_TAB_CHANGED` | `tab: String` |
+| Ruta iniciada | `ROUTE_STARTED` | — |
+| Ruta cancelada | `ROUTE_CANCELLED` | — |
 
 ---
 
-### 4. Detalle de gasolinera
+### station_detail
 
 **Dónde se instrumenta:** `DetailStationViewModel`
 
-Pantalla de detalle de una gasolinera individual. Los eventos de favoritos y alertas
-de precio son conversiones clave de engagement.
-
-| Evento | Tipo | Parámetros | Clase |
-|--------|------|-----------|-------|
-| Gasolinera añadida a favoritos | `STATION_FAVORITED` | `station_id: Int` | `DetailStationViewModel` → `ToggleFavorite(isFavorite = true)` |
-| Gasolinera eliminada de favoritos | `STATION_UNFAVORITED` | `station_id: Int` | `DetailStationViewModel` → `ToggleFavorite(isFavorite = false)` |
-| Alerta de precio activada | `PRICE_ALERT_ENABLED` | `station_id: Int` | `DetailStationViewModel` → `TogglePriceAlert(isEnabled = true)` |
-| Alerta de precio desactivada | `PRICE_ALERT_DISABLED` | `station_id: Int` | `DetailStationViewModel` → `TogglePriceAlert(isEnabled = false)` |
+| Evento | Tipo | Parámetros |
+|--------|------|-----------|
+| Gasolinera añadida a favoritos | `STATION_FAVORITED` | `station_id: Int` |
+| Gasolinera eliminada de favoritos | `STATION_UNFAVORITED` | `station_id: Int` |
+| Gasolinera compartida | `STATION_SHARED` | `station_id: Int` |
+| Alerta de precio activada | `PRICE_ALERT_ENABLED` | `station_id: Int` |
+| Alerta de precio desactivada | `PRICE_ALERT_DISABLED` | `station_id: Int` |
 
 ---
 
-### 5. Búsqueda
+### search
 
 **Dónde se instrumenta:** `GasGuruSearchBarViewModel`
 
-El buscador es el punto de entrada para encontrar gasolineras por ubicación. Medir
-qué se busca y si se usa el historial ayuda a mejorar la UX.
-
-| Evento | Tipo | Parámetros | Clase |
-|--------|------|-----------|-------|
-| Lugar seleccionado de resultados | `SEARCH_PLACE_SELECTED` | — | `GasGuruSearchBarViewModel` → evento `InsertRecentSearch` |
-| Historial de búsqueda limpiado | `SEARCH_HISTORY_CLEARED` | — | `GasGuruSearchBarViewModel` → evento `ClearRecentSearches` |
+| Evento | Tipo | Parámetros |
+|--------|------|-----------|
+| Lugar seleccionado de resultados | `SEARCH_PLACE_SELECTED` | — |
+| Historial de búsqueda limpiado | `SEARCH_HISTORY_CLEARED` | — |
 
 ---
 
-### 6. Planificador de ruta
+### route_planner
 
 **Dónde se instrumenta:** `RoutePlannerViewModel`
 
-Funcionalidad para planificar rutas entre dos puntos con sugerencia de gasolineras
-en el camino. Medir el uso ayuda a entender si los usuarios aprovechan esta feature.
-
-| Evento | Tipo | Parámetros | Clase |
-|--------|------|-----------|-------|
-| Destino establecido | `ROUTE_PLANNER_DESTINATION_SET` | `is_current_location: Boolean` | `RoutePlannerViewModel` → `SelectPlace` / `SelectCurrentLocation` |
-| Destinos intercambiados | `ROUTE_PLANNER_DESTINATIONS_SWAPPED` | — | `RoutePlannerViewModel` → evento `ChangeDestinations` |
-| Búsqueda reciente usada | `RECENT_SEARCH_USED` | — | `RoutePlannerViewModel` → evento `SelectRecentPlace` |
+| Evento | Tipo | Parámetros |
+|--------|------|-----------|
+| Destino establecido | `ROUTE_PLANNER_DESTINATION_SET` | `is_current_location: Boolean` |
+| Destinos intercambiados | `ROUTE_PLANNER_DESTINATIONS_SWAPPED` | — |
+| Búsqueda reciente usada | `RECENT_SEARCH_USED` | — |
 
 ---
 
-### 7. Perfil / Tema
+### profile
 
 **Dónde se instrumenta:** `ProfileViewModel`
 
-| Evento | Tipo | Parámetros | Clase |
-|--------|------|-----------|-------|
-| Tema cambiado | `THEME_CHANGED` | `theme_mode: String` (LIGHT / DARK / SYSTEM) | `ProfileViewModel` → evento `Theme` |
+| Evento | Tipo | Parámetros |
+|--------|------|-----------|
+| Tema cambiado | `THEME_CHANGED` | `theme_mode: String` (LIGHT / DARK / SYSTEM) |
 
 ---
 
-### 8. Favoritos (lista)
+### favorites
 
 **Dónde se instrumenta:** `FavoriteListStationViewModel`
 
-| Evento | Tipo | Parámetros | Clase |
-|--------|------|-----------|-------|
-| Tab cambiado (Precio/Distancia) | `FAVORITES_TAB_CHANGED` | `tab: Int` (0 = Precio, 1 = Distancia) | `FavoriteListStationViewModel` → evento `ChangeTab` |
-| Gasolinera eliminada desde lista | `STATION_UNFAVORITED_FROM_LIST` | `station_id: Int` | `FavoriteListStationViewModel` → evento `RemoveFavoriteStation` |
+| Evento | Tipo | Parámetros |
+|--------|------|-----------|
+| Tab cambiado (Precio/Distancia) | `FAVORITES_TAB_CHANGED` | `tab: Int` |
+| Gasolinera eliminada desde lista | `STATION_UNFAVORITED_FROM_LIST` | `station_id: Int` |
 
 ---
 
-### 9. Red / Estado offline
+### network
 
 **Dónde se instrumenta:** `SyncManager`
 
-Permite entender con qué frecuencia los usuarios usan la app sin conexión y cuántas
-operaciones quedan pendientes de sincronizar.
-
-| Evento | Tipo | Parámetros | Clase |
-|--------|------|-----------|-------|
-| Dispositivo sin conexión | `WENT_OFFLINE` | — | `SyncManager` — flow `networkMonitor` → `isOnline = false` |
-| Dispositivo con conexión | `CAME_ONLINE` | — | `SyncManager` — flow `networkMonitor` → `isOnline = true` |
+| Evento | Tipo | Parámetros |
+|--------|------|-----------|
+| Dispositivo sin conexión | `WENT_OFFLINE` | — |
+| Dispositivo con conexión | `CAME_ONLINE` | — |
 
 ---
 
-### 10. Sincronización de alertas de precio
+### sync
 
-**Dónde se instrumenta:** `PriceAlertRepositoryImpl`
+**Dónde se instrumenta:** `PriceAlertRepositoryImpl`, `StationSyncWorker`
 
-Las alertas de precio se sincronizan con Supabase cuando el dispositivo recupera
-conexión. Medir éxitos y fallos ayuda a detectar problemas de backend.
-
-| Evento | Tipo | Parámetros | Clase |
-|--------|------|-----------|-------|
-| Sincronización completada | `ALERTS_SYNC_COMPLETED` | `synced_count: Int` | `PriceAlertRepositoryImpl.sync()` — éxito |
-| Sincronización fallida | `ALERTS_SYNC_FAILED` | — | `PriceAlertRepositoryImpl.sync()` — catch |
+| Evento | Tipo | Parámetros |
+|--------|------|-----------|
+| Sincronización de alertas completada | `ALERTS_SYNC_COMPLETED` | `synced_count: Int` |
+| Sincronización de alertas fallida | `ALERTS_SYNC_FAILED` | — |
+| Worker iniciado | `STATION_SYNC_WORKER_STARTED` | — |
+| Worker completado | `STATION_SYNC_WORKER_COMPLETED` | — |
+| Worker reintentando | `STATION_SYNC_WORKER_RETRIED` | — |
 
 ---
 
-### 11. Worker de sincronización de gasolineras
+### api
 
-**Dónde se instrumenta:** `StationSyncWorker`
+**Dónde se instrumenta:** `RemoteDataSourceImp`
 
-Worker de WorkManager que sincroniza todas las gasolineras en segundo plano (ejecución
-periódica). Medir el ciclo de vida del worker permite detectar fallos recurrentes.
+| Evento | Tipo | Parámetros |
+|--------|------|-----------|
+| Fetch de gasolineras iniciado | `API_STATIONS_FETCH_STARTED` | — |
+| Fetch de gasolineras completado | `API_STATIONS_FETCH_COMPLETED` | — |
+| Fetch de gasolineras fallido | `API_STATIONS_FETCH_FAILED` | — |
 
-| Evento | Tipo | Parámetros | Clase |
-|--------|------|-----------|-------|
-| Worker iniciado | `STATION_SYNC_WORKER_STARTED` | — | `StationSyncWorker.doWork()` — inicio |
-| Worker completado | `STATION_SYNC_WORKER_COMPLETED` | — | `StationSyncWorker.doWork()` — `Result.success()` |
-| Worker reintentando | `STATION_SYNC_WORKER_RETRIED` | — | `StationSyncWorker.doWork()` — `Result.retry()` |
+---
+
+### push
+
+**Dónde se instrumenta:** `PushNotificationService`
+
+| Evento | Tipo | Parámetros |
+|--------|------|-----------|
+| Notificación push pulsada | `PUSH_NOTIFICATION_TAPPED` | `station_id: String` |
+
+---
+
+### widget
+
+**Dónde se instrumenta:** `WidgetStationClickCallback`
+
+| Evento | Tipo | Parámetros |
+|--------|------|-----------|
+| Gasolinera pulsada en el widget | `WIDGET_STATION_TAPPED` | `station_id: Int` |
+
+---
+
+### auto
+
+**Dónde se instrumenta:** `GasGuruSession`, `MapAutomotiveScreen`, `NearbyStationsScreen`, `FavoriteStationsScreen`
+
+| Evento | Tipo | Parámetros |
+|--------|------|-----------|
+| Sesión de Android Auto iniciada | `AUTO_SESSION_STARTED` | — |
+| Pantalla de gasolineras cercanas abierta | `AUTO_NEARBY_STATIONS_OPENED` | — |
+| Pantalla de favoritos abierta | `AUTO_FAVORITE_STATIONS_OPENED` | — |
+| Navegación a gasolinera iniciada | `AUTO_STATION_NAVIGATION_STARTED` | — |
 
 ---
 
@@ -289,6 +337,7 @@ periódica). Medir el ciclo de vida del worker permite detectar fallos recurrent
 
 | Clave | Tipo | Descripción |
 |-------|------|-------------|
+| `category` | `String` | Categoría del evento (inyectada automáticamente) |
 | `page_number` | `Int` | Número de página en onboarding |
 | `fuel_type` | `String` | Tipo de combustible (ej. `GASOLINE_95`) |
 | `capacity_litres` | `Int` | Capacidad del depósito en litros |
@@ -304,6 +353,7 @@ periódica). Medir el ciclo de vida del worker permite detectar fallos recurrent
 | `tab` | `String` / `Int` | Tab seleccionado |
 | `is_current_location` | `Boolean` | Si el destino es la ubicación actual |
 | `theme_mode` | `String` | Modo de tema (LIGHT / DARK / SYSTEM) |
+| `pending_sync_count` | `Int` | Alertas pendientes de sincronizar |
 | `synced_count` | `Int` | Número de alertas sincronizadas |
 
 ---
@@ -377,15 +427,15 @@ val viewModel = MyViewModel(analyticsHelper = NoOpAnalyticsHelper())
 ## Añadir un nuevo evento
 
 1. Añadir la constante de tipo en `AnalyticsEvent.Types`.
-2. Añadir las claves de parámetro necesarias en `AnalyticsEvent.ParamKeys`.
-3. Llamar a `analyticsHelper.logEvent(...)` en el ViewModel o clase correspondiente.
-4. Actualizar este documento.
+2. Añadir las claves de parámetro necesarias en `AnalyticsEvent.ParamKeys` si hacen falta nuevas.
+3. Registrar el tipo en `Categories.fromType()` mapeándolo a la categoría correcta.
+4. Llamar a `analyticsHelper.logEvent(...)` en el ViewModel o clase correspondiente.
+5. Actualizar este documento.
 
 ---
 
 ## Inicialización de Mixpanel
 
 Mixpanel se inicializa en `GasGuruApplication.mixpanelSetUp()` con el token del proyecto
-desde `BuildConfig.mixpanelProjectToken`. `MixpanelAnalyticsHelper` recupera el singleton
-ya inicializado via `MixpanelAPI.getInstance(context, null, true)` — no se produce
-una segunda inicialización.
+desde `BuildConfig.mixpanelProjectToken`. `MixpanelAnalyticsHelper` recibe el singleton
+ya inicializado via Koin — no se produce una segunda inicialización.
