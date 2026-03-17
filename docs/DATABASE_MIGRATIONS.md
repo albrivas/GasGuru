@@ -2,7 +2,7 @@
 
 Historial de migraciones de la base de datos Room de GasGuru. Cada entrada explica qué cambió y por qué.
 
-**Versión actual**: 15
+**Versión actual**: 16
 **Archivo de migraciones**: `core/database/src/main/java/com/gasguru/core/database/migrations/DataBaseMigration.kt`
 **Configuración de la DB**: `core/database/src/main/java/com/gasguru/core/database/di/DatabaseModule.kt`
 **Tests de migración**: `core/database/src/androidTest/java/com/gasguru/core/database/migration/DatabaseMigrationTest.kt`
@@ -107,3 +107,10 @@ Al crear la base de datos por primera vez, `DatabaseModule` registra un `RoomDat
 2. `ALTER TABLE vehicles ADD COLUMN isPrincipal INTEGER NOT NULL DEFAULT 0`
 
 **Por qué**: Ampliar el modelo de vehículos con el tipo de carrocería (`CAR`, `MOTORCYCLE`, `VAN`, `TRUCK`) y un flag para identificar el vehículo principal del usuario, necesarios para la funcionalidad de selección de vehículo. Los vehículos migrados desde v14 reciben `vehicleType = 'CAR'` e `isPrincipal = false` como valores seguros por defecto.
+
+---
+
+### v15 → v16
+**Qué**: `UPDATE vehicles SET isPrincipal = 1 WHERE id IN (SELECT MIN(id) FROM vehicles GROUP BY userId)`
+
+**Por qué**: Corrección de datos para usuarios que actualizaron a v15. La migración 14→15 dejó `isPrincipal = false` en todos los vehículos existentes (DEFAULT 0), lo que provocaba que en la pantalla de perfil ningún vehículo apareciera marcado como "principal". Esta migración selecciona el vehículo más antiguo (menor id) de cada usuario y lo marca como principal, reproduciendo el comportamiento esperado. Las instalaciones nuevas no se ven afectadas porque el onboarding ya crea el primer vehículo con `isPrincipal = true`.
