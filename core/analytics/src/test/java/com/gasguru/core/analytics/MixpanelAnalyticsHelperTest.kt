@@ -1,10 +1,7 @@
 package com.gasguru.core.analytics
 
-import android.content.Context
 import com.mixpanel.android.mpmetrics.MixpanelAPI
-import io.mockk.every
 import io.mockk.mockk
-import io.mockk.mockkStatic
 import io.mockk.slot
 import io.mockk.verify
 import org.json.JSONObject
@@ -14,15 +11,12 @@ import org.junit.Test
 
 class MixpanelAnalyticsHelperTest {
 
-    private val context: Context = mockk(relaxed = true)
     private val mixpanelApi: MixpanelAPI = mockk(relaxed = true)
     private lateinit var analyticsHelper: MixpanelAnalyticsHelper
 
     @Before
     fun setUp() {
-        mockkStatic(MixpanelAPI::class)
-        every { MixpanelAPI.getInstance(any(), null, true) } returns mixpanelApi
-        analyticsHelper = MixpanelAnalyticsHelper(context = context)
+        analyticsHelper = MixpanelAnalyticsHelper(mixpanel = mixpanelApi)
     }
 
     @Test
