@@ -93,7 +93,11 @@ class FavoriteStationsScreen(carContext: CarContext) : Screen(carContext), KoinC
                         theme = theme,
                         carContext = carContext
                     ) { lat, lng ->
-                        analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.AUTO_STATION_NAVIGATION_STARTED))
+                        analyticsHelper.logEvent(
+                            event = AnalyticsEvent(
+                                type = AnalyticsEvent.Types.AUTO_STATION_NAVIGATION_STARTED,
+                            ),
+                        )
                         StationNavigationHelper.navigateToStationAndPopScreen(
                             screen = this@FavoriteStationsScreen,
                             latitude = lat,
