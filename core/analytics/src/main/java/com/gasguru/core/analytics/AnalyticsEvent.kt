@@ -6,6 +6,9 @@ data class AnalyticsEvent(
 ) {
     data class Param(val key: String, val value: String)
 
+    val category: String
+        get() = Categories.fromType(type = type)
+
     object Types {
         // Onboarding
         const val ONBOARDING_STARTED = "onboarding_started"
@@ -33,6 +36,7 @@ data class AnalyticsEvent(
         // Station detail
         const val STATION_FAVORITED = "station_favorited"
         const val STATION_UNFAVORITED = "station_unfavorited"
+        const val STATION_SHARED = "station_shared"
         const val PRICE_ALERT_ENABLED = "price_alert_enabled"
         const val PRICE_ALERT_DISABLED = "price_alert_disabled"
 
@@ -76,9 +80,6 @@ data class AnalyticsEvent(
         // Widget
         const val WIDGET_STATION_TAPPED = "widget_station_tapped"
 
-        // Station detail
-        const val STATION_SHARED = "station_shared"
-
         // Android Auto
         const val AUTO_SESSION_STARTED = "auto_session_started"
         const val AUTO_NEARBY_STATIONS_OPENED = "auto_nearby_stations_opened"
@@ -86,7 +87,104 @@ data class AnalyticsEvent(
         const val AUTO_STATION_NAVIGATION_STARTED = "auto_station_navigation_started"
     }
 
+    object Categories {
+        const val ONBOARDING = "onboarding"
+        const val VEHICLE = "vehicle"
+        const val MAP = "map"
+        const val STATION_DETAIL = "station_detail"
+        const val SEARCH = "search"
+        const val ROUTE_PLANNER = "route_planner"
+        const val PROFILE = "profile"
+        const val FAVORITES = "favorites"
+        const val NETWORK = "network"
+        const val SYNC = "sync"
+        const val API = "api"
+        const val PUSH = "push"
+        const val WIDGET = "widget"
+        const val AUTO = "auto"
+        const val UNKNOWN = "unknown"
+
+        fun fromType(type: String): String = when (type) {
+            Types.ONBOARDING_STARTED,
+            Types.ONBOARDING_PAGE_VIEWED,
+            Types.ONBOARDING_SKIPPED,
+            Types.ONBOARDING_FUEL_SELECTED,
+            Types.ONBOARDING_TANK_CAPACITY_SET,
+            Types.ONBOARDING_COMPLETED,
+            -> ONBOARDING
+
+            Types.VEHICLE_CREATED,
+            Types.VEHICLE_EDITED,
+            Types.VEHICLE_DELETED,
+            -> VEHICLE
+
+            Types.MAP_STATIONS_LOADED,
+            Types.STATION_SELECTED,
+            Types.FILTER_BRAND_CHANGED,
+            Types.FILTER_NEARBY_CHANGED,
+            Types.FILTER_SCHEDULE_CHANGED,
+            Types.MAP_TAB_CHANGED,
+            Types.ROUTE_STARTED,
+            Types.ROUTE_CANCELLED,
+            -> MAP
+
+            Types.STATION_FAVORITED,
+            Types.STATION_UNFAVORITED,
+            Types.STATION_SHARED,
+            Types.PRICE_ALERT_ENABLED,
+            Types.PRICE_ALERT_DISABLED,
+            -> STATION_DETAIL
+
+            Types.SEARCH_PLACE_SELECTED,
+            Types.SEARCH_HISTORY_CLEARED,
+            -> SEARCH
+
+            Types.ROUTE_PLANNER_DESTINATION_SET,
+            Types.ROUTE_PLANNER_DESTINATIONS_SWAPPED,
+            Types.RECENT_SEARCH_USED,
+            -> ROUTE_PLANNER
+
+            Types.THEME_CHANGED,
+            -> PROFILE
+
+            Types.FAVORITES_TAB_CHANGED,
+            Types.STATION_UNFAVORITED_FROM_LIST,
+            -> FAVORITES
+
+            Types.WENT_OFFLINE,
+            Types.CAME_ONLINE,
+            -> NETWORK
+
+            Types.ALERTS_SYNC_COMPLETED,
+            Types.ALERTS_SYNC_FAILED,
+            Types.STATION_SYNC_WORKER_STARTED,
+            Types.STATION_SYNC_WORKER_COMPLETED,
+            Types.STATION_SYNC_WORKER_RETRIED,
+            -> SYNC
+
+            Types.API_STATIONS_FETCH_STARTED,
+            Types.API_STATIONS_FETCH_COMPLETED,
+            Types.API_STATIONS_FETCH_FAILED,
+            -> API
+
+            Types.PUSH_NOTIFICATION_TAPPED,
+            -> PUSH
+
+            Types.WIDGET_STATION_TAPPED,
+            -> WIDGET
+
+            Types.AUTO_SESSION_STARTED,
+            Types.AUTO_NEARBY_STATIONS_OPENED,
+            Types.AUTO_FAVORITE_STATIONS_OPENED,
+            Types.AUTO_STATION_NAVIGATION_STARTED,
+            -> AUTO
+
+            else -> UNKNOWN
+        }
+    }
+
     object ParamKeys {
+        const val CATEGORY = "category"
         const val PAGE_NUMBER = "page_number"
         const val FUEL_TYPE = "fuel_type"
         const val CAPACITY_LITRES = "capacity_litres"
