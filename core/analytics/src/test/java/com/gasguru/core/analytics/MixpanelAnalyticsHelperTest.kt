@@ -33,6 +33,18 @@ class MixpanelAnalyticsHelperTest {
     }
 
     @Test
+    @DisplayName("logEvent always includes category property")
+    fun `logEvent always includes category property`() {
+        val event = AnalyticsEvent(type = AnalyticsEvent.Types.VEHICLE_CREATED)
+
+        analyticsHelper.logEvent(event = event)
+
+        val propertiesSlot = slot<JSONObject>()
+        verify { mixpanelApi.track(AnalyticsEvent.Types.VEHICLE_CREATED, capture(propertiesSlot)) }
+        assertEquals(AnalyticsEvent.Categories.VEHICLE, propertiesSlot.captured.getString(AnalyticsEvent.ParamKeys.CATEGORY))
+    }
+
+    @Test
     @DisplayName("logEvent tracks event with extras as JSON properties")
     fun `logEvent tracks event with extras as JSON properties`() {
         val event = AnalyticsEvent(
@@ -63,6 +75,6 @@ class MixpanelAnalyticsHelperTest {
         val propertiesSlot = slot<JSONObject>()
         verify { mixpanelApi.track(AnalyticsEvent.Types.WENT_OFFLINE, capture(propertiesSlot)) }
 
-        assertEquals(0, propertiesSlot.captured.length())
+        assertEquals(AnalyticsEvent.Categories.NETWORK, propertiesSlot.captured.getString(AnalyticsEvent.ParamKeys.CATEGORY))
     }
 }
