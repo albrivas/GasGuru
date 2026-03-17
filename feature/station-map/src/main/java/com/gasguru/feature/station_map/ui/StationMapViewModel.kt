@@ -265,7 +265,10 @@ class StationMapViewModel(
                         event = AnalyticsEvent(
                             type = AnalyticsEvent.Types.MAP_STATIONS_LOADED,
                             extras = listOf(
-                                AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.STATION_COUNT, value = uiStations.size.toString()),
+                                AnalyticsEvent.Param(
+                                    key = AnalyticsEvent.ParamKeys.STATION_COUNT,
+                                    value = uiStations.size.toString()
+                                ),
                             ),
                         ),
                     )
@@ -322,8 +325,14 @@ class StationMapViewModel(
             event = AnalyticsEvent(
                 type = AnalyticsEvent.Types.FILTER_BRAND_CHANGED,
                 extras = listOf(
-                    AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.BRAND_COUNT, value = stationsSelected.size.toString()),
-                    AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.BRAND_NAMES, value = stationsSelected.joinToString(separator = ",")),
+                    AnalyticsEvent.Param(
+                        key = AnalyticsEvent.ParamKeys.BRAND_COUNT,
+                        value = stationsSelected.size.toString()
+                    ),
+                    AnalyticsEvent.Param(
+                        key = AnalyticsEvent.ParamKeys.BRAND_NAMES,
+                        value = stationsSelected.joinToString(separator = ",")
+                    ),
                 ),
             ),
         )
