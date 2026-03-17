@@ -101,6 +101,7 @@ dependencies {
     implementation(projects.core.network)
     implementation(projects.feature.search)
     implementation(projects.feature.routePlanner)
+    implementation(projects.feature.widget)
     implementation(projects.navigation)
     implementation(projects.core.notifications)
     mockImplementation(projects.mocknetwork)
@@ -129,6 +130,8 @@ dependencies {
     implementation(libs.firebase.analytics)
 
     implementation(libs.splash.screen)
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.glance.appwidget)
 
     // Analytics
     implementation(libs.mixpanel)
