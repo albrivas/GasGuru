@@ -19,11 +19,13 @@ core/analytics/
     │   ├── AnalyticsEvent.kt           — data class + constantes de tipos y parámetros
     │   ├── AnalyticsHelper.kt          — interface: fun logEvent(event: AnalyticsEvent)
     │   ├── NoOpAnalyticsHelper.kt      — implementación vacía para tests y previews
+    │   ├── LogcatAnalyticsHelper.kt    — implementación de debug (Log.d por evento)
     │   ├── MixpanelAnalyticsHelper.kt  — implementación de producción (wraps MixpanelAPI)
     │   ├── LocalAnalyticsHelper.kt     — staticCompositionLocalOf<AnalyticsHelper>
     │   └── di/
-    │       └── AnalyticsModule.kt      — Koin single<AnalyticsHelper> binding
+    │       └── AnalyticsModule.kt      — Koin single<AnalyticsHelper> binding (debug/release)
     └── test/java/com/gasguru/core/analytics/
+        ├── LogcatAnalyticsHelperTest.kt
         └── MixpanelAnalyticsHelperTest.kt
 ```
 
@@ -81,11 +83,27 @@ val LocalAnalyticsHelper = staticCompositionLocalOf<AnalyticsHelper> { NoOpAnaly
 
 Provisto en `MainActivity` mediante `CompositionLocalProvider(LocalAnalyticsHelper provides analyticsHelper)`.
 
+#### `LogcatAnalyticsHelper` — Debug
+
+Implementación activa únicamente en builds de debug (`BuildConfig.DEBUG = true`).
+Escribe cada evento en Logcat con tag `Analytics`, el nombre del evento y sus
+parámetros como pares `key=value`:
+
+```
+D/Analytics: ▶ vehicle_created | vehicle_type=CAR, fuel_type=GASOLINE_95
+D/Analytics: ▶ went_offline | —
+```
+
 #### `AnalyticsModule` — Koin
+
+Selecciona la implementación en función del build type:
 
 ```kotlin
 val analyticsModule = module {
-    single<AnalyticsHelper> { MixpanelAnalyticsHelper(context = androidContext()) }
+    single<AnalyticsHelper> {
+        if (BuildConfig.DEBUG) LogcatAnalyticsHelper()
+        else MixpanelAnalyticsHelper(context = androidContext())
+    }
 }
 ```
 
