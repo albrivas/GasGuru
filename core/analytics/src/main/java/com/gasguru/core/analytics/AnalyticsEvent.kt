@@ -69,6 +69,21 @@ data class AnalyticsEvent(
         const val API_STATIONS_FETCH_STARTED = "api_stations_fetch_started"
         const val API_STATIONS_FETCH_COMPLETED = "api_stations_fetch_completed"
         const val API_STATIONS_FETCH_FAILED = "api_stations_fetch_failed"
+
+        // Push notifications
+        const val PUSH_NOTIFICATION_TAPPED = "push_notification_tapped"
+
+        // Widget
+        const val WIDGET_STATION_TAPPED = "widget_station_tapped"
+
+        // Station detail
+        const val STATION_SHARED = "station_shared"
+
+        // Android Auto
+        const val AUTO_SESSION_STARTED = "auto_session_started"
+        const val AUTO_NEARBY_STATIONS_OPENED = "auto_nearby_stations_opened"
+        const val AUTO_FAVORITE_STATIONS_OPENED = "auto_favorite_stations_opened"
+        const val AUTO_STATION_NAVIGATION_STARTED = "auto_station_navigation_started"
     }
 
     object ParamKeys {
