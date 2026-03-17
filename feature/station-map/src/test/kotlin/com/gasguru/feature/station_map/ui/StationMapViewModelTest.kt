@@ -5,6 +5,7 @@ import com.gasguru.core.data.repository.user.OfflineUserDataRepository
 import com.gasguru.core.database.model.FuelStationEntity
 import com.gasguru.core.database.model.UserDataEntity
 import com.gasguru.core.database.model.VehicleEntity
+import com.gasguru.core.analytics.NoOpAnalyticsHelper
 import com.gasguru.core.domain.filters.GetFiltersUseCase
 import com.gasguru.core.domain.filters.SaveFilterUseCase
 import com.gasguru.core.domain.fuelstation.FuelStationByLocationUseCase
@@ -530,7 +531,8 @@ class StationMapViewModelTest {
             getFuelStationsInRouteUseCase = GetFuelStationsInRouteUseCase(
                 offlineFuelStationRepository
             ),
-            defaultDispatcher = Dispatchers.Main
+            defaultDispatcher = Dispatchers.Main,
+            analyticsHelper = NoOpAnalyticsHelper(),
         )
     }
 
