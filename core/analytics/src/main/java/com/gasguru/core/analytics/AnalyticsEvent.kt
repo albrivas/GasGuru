@@ -195,6 +195,7 @@ data class AnalyticsEvent(
         const val STATION_COUNT = "station_count"
         const val STATION_ID = "station_id"
         const val BRAND_COUNT = "brand_count"
+        const val BRAND_NAMES = "brand_names"
         const val NEARBY_KM = "nearby_km"
         const val SCHEDULE = "schedule"
         const val TAB = "tab"
