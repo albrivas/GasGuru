@@ -196,7 +196,7 @@ evento hay que registrarlo en ese `when` para evitar que caiga en `unknown`.
 |--------|------|-----------|
 | Gasolineras cargadas | `MAP_STATIONS_LOADED` | `station_count: Int` |
 | Gasolinera seleccionada | `STATION_SELECTED` | `station_id: Int` |
-| Filtro de marca cambiado | `FILTER_BRAND_CHANGED` | `brand_count: Int` |
+| Filtro de marca cambiado | `FILTER_BRAND_CHANGED` | `brand_count: Int`, `brand_names: String` (comma-separated) |
 | Filtro de distancia cambiado | `FILTER_NEARBY_CHANGED` | `nearby_km: String` |
 | Filtro de horario cambiado | `FILTER_SCHEDULE_CHANGED` | `schedule: String` |
 | Tab cambiado (Precio/Distancia) | `MAP_TAB_CHANGED` | `tab: String` |
@@ -348,6 +348,7 @@ evento hay que registrarlo en ese `when` para evitar que caiga en `unknown`.
 | `station_count` | `Int` | Número de gasolineras cargadas |
 | `station_id` | `Int` | ID de la gasolinera |
 | `brand_count` | `Int` | Número de marcas seleccionadas en filtro |
+| `brand_names` | `String` | Marcas seleccionadas separadas por coma (ej. `"REPSOL,CEPSA"`) |
 | `nearby_km` | `String` | Distancia en km del filtro de proximidad |
 | `schedule` | `String` | Tipo de horario del filtro |
 | `tab` | `String` / `Int` | Tab seleccionado |
