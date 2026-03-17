@@ -16,6 +16,5 @@ android {
 dependencies {
     implementation(libs.mixpanel)
 
-    testImplementation(libs.junit)
     testImplementation(libs.mockk)
 }
