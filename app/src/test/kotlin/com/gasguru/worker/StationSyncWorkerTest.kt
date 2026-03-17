@@ -5,6 +5,8 @@ import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.updateAll
 import androidx.work.ListenableWorker.Result
 import androidx.work.WorkerParameters
+import com.gasguru.core.analytics.AnalyticsHelper
+import com.gasguru.core.analytics.NoOpAnalyticsHelper
 import com.gasguru.core.domain.fuelstation.GetFuelStationUseCase
 import com.gasguru.core.testing.CoroutinesTestExtension
 import com.gasguru.feature.widget.ui.FavoriteStationsWidget
@@ -35,7 +37,10 @@ class StationSyncWorkerTest {
     @BeforeEach
     fun setUp() {
         startKoin {
-            modules(module { single { getFuelStationUseCase } })
+            modules(module {
+                single { getFuelStationUseCase }
+                single<AnalyticsHelper> { NoOpAnalyticsHelper() }
+            })
         }
         mockkStatic(GlanceAppWidget::updateAll)
     }

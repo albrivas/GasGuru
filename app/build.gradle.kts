@@ -82,6 +82,7 @@ android {
 
 dependencies {
 
+    implementation(projects.core.analytics)
     implementation(projects.core.uikit)
     implementation(projects.core.ui)
     implementation(projects.core.data)

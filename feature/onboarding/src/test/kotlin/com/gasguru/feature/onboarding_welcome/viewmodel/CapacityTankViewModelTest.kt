@@ -1,6 +1,7 @@
 package com.gasguru.feature.onboarding_welcome.viewmodel
 
 import app.cash.turbine.test
+import com.gasguru.core.analytics.NoOpAnalyticsHelper
 import com.gasguru.core.domain.vehicle.SaveDefaultVehicleCapacityUseCase
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.UserData
@@ -59,6 +60,7 @@ class CapacityTankViewModelTest {
         sut = CapacityTankViewModel(
             navigationManager = fakeNavigationManager,
             saveDefaultVehicleCapacityUseCase = saveDefaultVehicleCapacityUseCase,
+            analyticsHelper = NoOpAnalyticsHelper(),
         )
     }
 

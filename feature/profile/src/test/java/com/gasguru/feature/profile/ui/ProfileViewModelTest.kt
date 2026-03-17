@@ -1,6 +1,7 @@
 package com.gasguru.feature.profile.ui
 
 import app.cash.turbine.test
+import com.gasguru.core.analytics.NoOpAnalyticsHelper
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.domain.user.SaveThemeModeUseCase
 import com.gasguru.core.domain.vehicle.DeleteVehicleUseCase
@@ -72,6 +73,7 @@ class ProfileViewModelTest {
             getVehicleByIdUseCase = GetVehicleByIdUseCase(fakeVehicleRepository),
             saveVehicleUseCase = SaveVehicleUseCase(fakeVehicleRepository),
             navigationManager = fakeNavigationManager,
+            analyticsHelper = NoOpAnalyticsHelper(),
         )
     }
 
@@ -161,6 +163,7 @@ class ProfileViewModelTest {
             getVehicleByIdUseCase = GetVehicleByIdUseCase(fakeVehicleRepository),
             saveVehicleUseCase = SaveVehicleUseCase(fakeVehicleRepository),
             navigationManager = fakeNavigationManager,
+            analyticsHelper = NoOpAnalyticsHelper(),
         )
 
         viewModel.userData.test {
@@ -302,6 +305,7 @@ class ProfileViewModelTest {
             getVehicleByIdUseCase = GetVehicleByIdUseCase(singleVehicleRepository),
             saveVehicleUseCase = SaveVehicleUseCase(singleVehicleRepository),
             navigationManager = fakeNavigationManager,
+            analyticsHelper = NoOpAnalyticsHelper(),
         )
 
         singleVehicleViewModel.userData.test {
@@ -365,6 +369,7 @@ class ProfileViewModelTest {
             getVehicleByIdUseCase = GetVehicleByIdUseCase(threeVehicleRepository),
             saveVehicleUseCase = SaveVehicleUseCase(threeVehicleRepository),
             navigationManager = fakeNavigationManager,
+            analyticsHelper = NoOpAnalyticsHelper(),
         )
 
         threeVehicleViewModel.userData.test {

@@ -1,6 +1,7 @@
 package com.gasguru.feature.detail_station.ui
 
 import androidx.lifecycle.SavedStateHandle
+import com.gasguru.core.analytics.NoOpAnalyticsHelper
 import app.cash.turbine.test
 import com.gasguru.core.data.repository.stations.OfflineFuelStationRepository
 import com.gasguru.core.data.repository.user.OfflineUserDataRepository
@@ -262,6 +263,7 @@ class DetailStationViewModelTest {
             updateVehicleTankCapacityUseCase = UpdateVehicleTankCapacityUseCase(
                 fakeVehicleRepository
             ),
+            analyticsHelper = NoOpAnalyticsHelper(),
         )
     }
 

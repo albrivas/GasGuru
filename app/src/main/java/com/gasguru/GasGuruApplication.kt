@@ -6,6 +6,7 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.gasguru.core.analytics.di.analyticsModule
 import com.gasguru.core.common.coroutineModule
 import com.gasguru.core.components.searchbar.di.searchBarModule
 import com.gasguru.core.data.di.dataModule
@@ -53,6 +54,7 @@ class GasGuruApplication : Application() {
         mixpanelSetUp()
         initSyncManager()
         initStationSync()
+
     }
 
     private fun oneSignalSetUp() {
@@ -93,6 +95,7 @@ class GasGuruApplication : Application() {
             androidLogger(level = if (BuildConfig.DEBUG) Level.DEBUG else Level.ERROR)
             androidContext(this@GasGuruApplication)
             modules(
+                analyticsModule,
                 coroutineModule,
                 databaseModule,
                 daoModule,

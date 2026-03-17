@@ -1,6 +1,7 @@
 package com.gasguru.feature.onboarding_welcome.viewmodel
 
 import app.cash.turbine.test
+import com.gasguru.core.analytics.NoOpAnalyticsHelper
 import com.gasguru.core.testing.CoroutinesTestExtension
 import com.gasguru.core.testing.fakes.navigation.FakeNavigationManager
 import com.gasguru.feature.onboarding_welcome.ui.NewOnboardingEvent
@@ -23,7 +24,7 @@ class NewOnboardingViewModelTest {
     @BeforeEach
     fun setUp() {
         fakeNavigationManager = FakeNavigationManager()
-        sut = NewOnboardingViewModel(navigationManager = fakeNavigationManager)
+        sut = NewOnboardingViewModel(navigationManager = fakeNavigationManager, analyticsHelper = NoOpAnalyticsHelper())
     }
 
     @Test

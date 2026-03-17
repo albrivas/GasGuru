@@ -38,6 +38,7 @@ include(":core:common")
 include(":core:components")
 include(":core:notifications")
 include(":core:supabase")
+include(":core:analytics")
 
 include(":feature:onboarding")
 include(":feature:vehicle")

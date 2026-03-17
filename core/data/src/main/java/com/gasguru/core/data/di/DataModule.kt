@@ -111,6 +111,7 @@ val dataModule = module {
             networkMonitor = get(),
             oneSignalManager = get(),
             vehicleDao = get(),
+            analyticsHelper = get(),
         )
     }
 
@@ -119,6 +120,7 @@ val dataModule = module {
             networkMonitor = get(),
             priceAlertRepository = get(),
             scope = get(named(KoinQualifiers.APPLICATION_SCOPE)),
+            analyticsHelper = get(),
         )
     }
 }
