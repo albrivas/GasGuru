@@ -201,7 +201,6 @@ data class AnalyticsEvent(
         const val TAB = "tab"
         const val IS_CURRENT_LOCATION = "is_current_location"
         const val THEME_MODE = "theme_mode"
-        const val PENDING_SYNC_COUNT = "pending_sync_count"
         const val SYNCED_COUNT = "synced_count"
     }
 }
