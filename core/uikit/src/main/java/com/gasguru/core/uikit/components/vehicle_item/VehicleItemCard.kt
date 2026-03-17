@@ -64,7 +64,7 @@ private fun ActiveVehicleRow(
         modifier = modifier
             .fillMaxWidth()
             .background(color = GasGuruTheme.colors.neutralWhite)
-            .padding(all = 12.dp),
+            .padding(horizontal = 16.dp, vertical = 14.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -112,7 +112,7 @@ private fun ActiveVehicleRow(
                         stringResource(id = model.fuelTypeTranslationRes),
                         model.tankCapacityLitres,
                     ),
-                    style = GasGuruTheme.typography.smallRegular,
+                    style = GasGuruTheme.typography.captionRegular,
                     color = GasGuruTheme.colors.textSubtle,
                 )
             }

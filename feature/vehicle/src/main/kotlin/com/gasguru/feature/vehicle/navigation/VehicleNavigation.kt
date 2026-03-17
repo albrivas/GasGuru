@@ -1,11 +1,11 @@
 package com.gasguru.feature.vehicle.navigation
 
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
-import androidx.navigation.compose.composable
+import androidx.navigation.compose.dialog
+import com.gasguru.core.ui.ConfigureDialogSystemBars
 import com.gasguru.feature.vehicle.ui.AddVehicleRoute
 import kotlinx.serialization.Serializable
 
@@ -14,10 +14,13 @@ fun NavController.navigateToAddVehicle(vehicleId: Long? = null, navOptions: NavO
 }
 
 fun NavGraphBuilder.addVehicleScreen() {
-    composable<VehicleRoutes.AddVehicleRoute>(
-        enterTransition = { slideInHorizontally { it } },
-        popExitTransition = { slideOutHorizontally { it } },
+    dialog<VehicleRoutes.AddVehicleRoute>(
+        dialogProperties = DialogProperties(
+            usePlatformDefaultWidth = false,
+            decorFitsSystemWindows = false,
+        ),
     ) {
+        ConfigureDialogSystemBars(invertColors = true)
         AddVehicleRoute()
     }
 }

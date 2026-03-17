@@ -131,6 +131,7 @@ internal val MIGRATION_12_13 = object : Migration(DB_VERSION_12, DB_VERSION_13) 
 
 const val DB_VERSION_14 = 14
 const val DB_VERSION_15 = 15
+const val DB_VERSION_16 = 16
 
 internal val MIGRATION_13_14 = object : Migration(DB_VERSION_13, DB_VERSION_14) {
     override fun migrate(db: SupportSQLiteDatabase) {
@@ -187,5 +188,13 @@ internal val MIGRATION_14_15 = object : Migration(DB_VERSION_14, DB_VERSION_15) 
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("ALTER TABLE `vehicles` ADD COLUMN `vehicleType` TEXT NOT NULL DEFAULT 'CAR'")
         db.execSQL("ALTER TABLE `vehicles` ADD COLUMN `isPrincipal` INTEGER NOT NULL DEFAULT 0")
+    }
+}
+
+internal val MIGRATION_15_16 = object : Migration(DB_VERSION_15, DB_VERSION_16) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            "UPDATE vehicles SET isPrincipal = 1 WHERE id IN (SELECT MIN(id) FROM vehicles GROUP BY userId)",
+        )
     }
 }

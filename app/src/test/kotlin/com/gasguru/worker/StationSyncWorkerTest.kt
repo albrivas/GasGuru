@@ -8,11 +8,11 @@ import androidx.work.WorkerParameters
 import com.gasguru.core.domain.fuelstation.GetFuelStationUseCase
 import com.gasguru.core.testing.CoroutinesTestExtension
 import com.gasguru.feature.widget.ui.FavoriteStationsWidget
+import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkStatic
-import io.mockk.Runs
 import io.mockk.unmockkAll
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.AfterEach
