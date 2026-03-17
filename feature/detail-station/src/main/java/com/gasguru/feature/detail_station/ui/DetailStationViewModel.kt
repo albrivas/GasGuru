@@ -3,6 +3,8 @@ package com.gasguru.feature.detail_station.ui
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gasguru.core.analytics.AnalyticsEvent
+import com.gasguru.core.analytics.AnalyticsHelper
 import com.gasguru.core.domain.alerts.AddPriceAlertUseCase
 import com.gasguru.core.domain.alerts.RemovePriceAlertUseCase
 import com.gasguru.core.domain.fuelstation.GetFuelStationByIdUseCase
@@ -39,6 +41,7 @@ class DetailStationViewModel(
     private val addPriceAlertUseCase: AddPriceAlertUseCase,
     private val removePriceAlertUseCase: RemovePriceAlertUseCase,
     private val updateVehicleTankCapacityUseCase: UpdateVehicleTankCapacityUseCase,
+    private val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
 
     private val id: Int = checkNotNull(savedStateHandle["idServiceStation"])
@@ -109,8 +112,28 @@ class DetailStationViewModel(
 
     private fun onFavoriteClick(isFavorite: Boolean) = viewModelScope.launch {
         when (isFavorite) {
-            true -> saveFavoriteStationUseCase(stationId = id)
-            false -> removeFavoriteStationUseCase(stationId = id)
+            true -> {
+                analyticsHelper.logEvent(
+                    event = AnalyticsEvent(
+                        type = AnalyticsEvent.Types.STATION_FAVORITED,
+                        extras = listOf(
+                            AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.STATION_ID, value = id.toString()),
+                        ),
+                    ),
+                )
+                saveFavoriteStationUseCase(stationId = id)
+            }
+            false -> {
+                analyticsHelper.logEvent(
+                    event = AnalyticsEvent(
+                        type = AnalyticsEvent.Types.STATION_UNFAVORITED,
+                        extras = listOf(
+                            AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.STATION_ID, value = id.toString()),
+                        ),
+                    ),
+                )
+                removeFavoriteStationUseCase(stationId = id)
+            }
         }
     }
 
@@ -122,6 +145,14 @@ class DetailStationViewModel(
     private fun onPriceAlertClick(isEnabled: Boolean) = viewModelScope.launch {
         when (isEnabled) {
             true -> {
+                analyticsHelper.logEvent(
+                    event = AnalyticsEvent(
+                        type = AnalyticsEvent.Types.PRICE_ALERT_ENABLED,
+                        extras = listOf(
+                            AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.STATION_ID, value = id.toString()),
+                        ),
+                    ),
+                )
                 val userData = userDataUseCase().first()
                 val station =
                     (fuelStation.value as DetailStationUiState.Success).stationModel.fuelStation
@@ -131,6 +162,14 @@ class DetailStationViewModel(
             }
 
             false -> {
+                analyticsHelper.logEvent(
+                    event = AnalyticsEvent(
+                        type = AnalyticsEvent.Types.PRICE_ALERT_DISABLED,
+                        extras = listOf(
+                            AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.STATION_ID, value = id.toString()),
+                        ),
+                    ),
+                )
                 removePriceAlertUseCase(stationId = id)
             }
         }

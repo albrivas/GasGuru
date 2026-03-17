@@ -1,5 +1,7 @@
 package com.gasguru.core.data.repository.alerts
 
+import com.gasguru.core.analytics.AnalyticsEvent
+import com.gasguru.core.analytics.AnalyticsHelper
 import com.gasguru.core.data.util.NetworkMonitor
 import com.gasguru.core.database.dao.PriceAlertDao
 import com.gasguru.core.database.dao.VehicleDao
@@ -15,6 +17,7 @@ class PriceAlertRepositoryImpl(
     private val networkMonitor: NetworkMonitor,
     private val oneSignalManager: OneSignalManager,
     private val vehicleDao: VehicleDao,
+    private val analyticsHelper: AnalyticsHelper,
 ) : PriceAlertRepository {
 
     override suspend fun addPriceAlert(stationId: Int, lastNotifiedPrice: Double) {
@@ -108,8 +111,18 @@ class PriceAlertRepositoryImpl(
                 priceAlertDao.deleteByStationId(stationId = alert.stationId)
             }
 
+            val syncedCount = pendingInserts.size + pendingDeletes.size
+            analyticsHelper.logEvent(
+                event = AnalyticsEvent(
+                    type = AnalyticsEvent.Types.ALERTS_SYNC_COMPLETED,
+                    extras = listOf(
+                        AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.SYNCED_COUNT, value = syncedCount.toString()),
+                    ),
+                ),
+            )
             true
         } catch (_: Exception) {
+            analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.ALERTS_SYNC_FAILED))
             false
         }
     }
