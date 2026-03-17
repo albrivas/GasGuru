@@ -9,6 +9,8 @@ object CoverageExclusions {
 
     val excludedFilePatterns = listOf(
         "**/di/**",
+        "**/theme/**",
+        "**/*Widget*.*",
         "**/BuildConfig.*",
         "**/R.class",
         "**/R\\$*.class",

@@ -47,6 +47,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -116,6 +117,7 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import com.gasguru.core.uikit.R as RUikit
@@ -136,18 +138,17 @@ fun StationMapScreenRoute(
     val deepLinkStateHolder = LocalDeepLinkStateHolder.current
     val pendingStationId by deepLinkStateHolder.pendingStationId.collectAsStateWithLifecycle()
 
-    LaunchedEffect(key1 = state.loading, key2 = pendingStationId, key3 = state.mapStations) {
-        if (!state.loading && state.mapStations.isNotEmpty()) {
-            pendingStationId?.let { stationId ->
-                deepLinkStateHolder.clear()
-                navigationManager.navigateTo(
-                    destination = NavigationDestination.DetailStation(
-                        idServiceStation = stationId,
-                        presentAsDialog = true,
-                    ),
-                )
-            }
-        }
+    LaunchedEffect(key1 = pendingStationId) {
+        val stationId = pendingStationId ?: return@LaunchedEffect
+        snapshotFlow { state.loading to state.mapStations }
+            .first { (isLoading, stations) -> !isLoading && stations.isNotEmpty() }
+        deepLinkStateHolder.clear()
+        navigationManager.navigateTo(
+            destination = NavigationDestination.DetailStation(
+                idServiceStation = stationId,
+                presentAsDialog = true,
+            ),
+        )
     }
 
     fun hasLocationPermission(): Boolean =
