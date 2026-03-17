@@ -354,7 +354,6 @@ evento hay que registrarlo en ese `when` para evitar que caiga en `unknown`.
 | `tab` | `String` / `Int` | Tab seleccionado |
 | `is_current_location` | `Boolean` | Si el destino es la ubicación actual |
 | `theme_mode` | `String` | Modo de tema (LIGHT / DARK / SYSTEM) |
-| `pending_sync_count` | `Int` | Alertas pendientes de sincronizar |
 | `synced_count` | `Int` | Número de alertas sincronizadas |
 
 ---
