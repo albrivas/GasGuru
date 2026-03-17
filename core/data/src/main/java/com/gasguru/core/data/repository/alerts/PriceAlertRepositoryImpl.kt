@@ -116,7 +116,10 @@ class PriceAlertRepositoryImpl(
                 event = AnalyticsEvent(
                     type = AnalyticsEvent.Types.ALERTS_SYNC_COMPLETED,
                     extras = listOf(
-                        AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.SYNCED_COUNT, value = syncedCount.toString()),
+                        AnalyticsEvent.Param(
+                            key = AnalyticsEvent.ParamKeys.SYNCED_COUNT,
+                            value = syncedCount.toString()
+                        ),
                     ),
                 ),
             )

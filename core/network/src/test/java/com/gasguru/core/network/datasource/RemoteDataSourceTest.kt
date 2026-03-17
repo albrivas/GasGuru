@@ -66,8 +66,16 @@ class RemoteDataSourceTest {
 
         sut.getListFuelStations()
 
-        verify { analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.API_STATIONS_FETCH_STARTED)) }
-        verify { analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.API_STATIONS_FETCH_COMPLETED)) }
+        verify {
+            analyticsHelper.logEvent(
+                event = AnalyticsEvent(type = AnalyticsEvent.Types.API_STATIONS_FETCH_STARTED)
+            )
+        }
+        verify {
+            analyticsHelper.logEvent(
+                event = AnalyticsEvent(type = AnalyticsEvent.Types.API_STATIONS_FETCH_COMPLETED)
+            )
+        }
     }
 
     @Test
@@ -77,7 +85,15 @@ class RemoteDataSourceTest {
 
         sut.getListFuelStations()
 
-        verify { analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.API_STATIONS_FETCH_STARTED)) }
-        verify { analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.API_STATIONS_FETCH_FAILED)) }
+        verify {
+            analyticsHelper.logEvent(
+                event = AnalyticsEvent(type = AnalyticsEvent.Types.API_STATIONS_FETCH_STARTED)
+            )
+        }
+        verify {
+            analyticsHelper.logEvent(
+                event = AnalyticsEvent(type = AnalyticsEvent.Types.API_STATIONS_FETCH_FAILED)
+            )
+        }
     }
 }

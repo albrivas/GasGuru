@@ -129,8 +129,14 @@ class AddVehicleViewModel(
                     event = AnalyticsEvent(
                         type = AnalyticsEvent.Types.VEHICLE_EDITED,
                         extras = listOf(
-                            AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.VEHICLE_TYPE, value = vehicle.vehicleType.name),
-                            AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.FUEL_TYPE, value = vehicle.fuelType.name),
+                            AnalyticsEvent.Param(
+                                key = AnalyticsEvent.ParamKeys.VEHICLE_TYPE,
+                                value = vehicle.vehicleType.name
+                            ),
+                            AnalyticsEvent.Param(
+                                key = AnalyticsEvent.ParamKeys.FUEL_TYPE,
+                                value = vehicle.fuelType.name
+                            ),
                         ),
                     ),
                 )
@@ -139,10 +145,22 @@ class AddVehicleViewModel(
                     event = AnalyticsEvent(
                         type = AnalyticsEvent.Types.VEHICLE_CREATED,
                         extras = listOf(
-                            AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.VEHICLE_TYPE, value = vehicle.vehicleType.name),
-                            AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.FUEL_TYPE, value = vehicle.fuelType.name),
-                            AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.CAPACITY_LITRES, value = tankCapacity.toString()),
-                            AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.IS_PRINCIPAL, value = vehicle.isPrincipal.toString()),
+                            AnalyticsEvent.Param(
+                                key = AnalyticsEvent.ParamKeys.VEHICLE_TYPE,
+                                value = vehicle.vehicleType.name
+                            ),
+                            AnalyticsEvent.Param(
+                                key = AnalyticsEvent.ParamKeys.FUEL_TYPE,
+                                value = vehicle.fuelType.name
+                            ),
+                            AnalyticsEvent.Param(
+                                key = AnalyticsEvent.ParamKeys.CAPACITY_LITRES,
+                                value = tankCapacity.toString()
+                            ),
+                            AnalyticsEvent.Param(
+                                key = AnalyticsEvent.ParamKeys.IS_PRINCIPAL,
+                                value = vehicle.isPrincipal.toString()
+                            ),
                         ),
                     ),
                 )

@@ -54,7 +54,6 @@ class GasGuruApplication : Application() {
         mixpanelSetUp()
         initSyncManager()
         initStationSync()
-
     }
 
     private fun oneSignalSetUp() {

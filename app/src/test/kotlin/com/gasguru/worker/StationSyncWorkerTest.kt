@@ -37,10 +37,12 @@ class StationSyncWorkerTest {
     @BeforeEach
     fun setUp() {
         startKoin {
-            modules(module {
-                single { getFuelStationUseCase }
-                single<AnalyticsHelper> { NoOpAnalyticsHelper() }
-            })
+            modules(
+                module {
+                    single { getFuelStationUseCase }
+                    single<AnalyticsHelper> { NoOpAnalyticsHelper() }
+                }
+            )
         }
         mockkStatic(GlanceAppWidget::updateAll)
     }

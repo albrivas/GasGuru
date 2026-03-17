@@ -41,7 +41,10 @@ class MixpanelAnalyticsHelperTest {
 
         val propertiesSlot = slot<JSONObject>()
         verify { mixpanelApi.track(AnalyticsEvent.Types.VEHICLE_CREATED, capture(propertiesSlot)) }
-        assertEquals(AnalyticsEvent.Categories.VEHICLE, propertiesSlot.captured.getString(AnalyticsEvent.ParamKeys.CATEGORY))
+        assertEquals(
+            AnalyticsEvent.Categories.VEHICLE,
+            propertiesSlot.captured.getString(AnalyticsEvent.ParamKeys.CATEGORY)
+        )
     }
 
     @Test
@@ -75,6 +78,9 @@ class MixpanelAnalyticsHelperTest {
         val propertiesSlot = slot<JSONObject>()
         verify { mixpanelApi.track(AnalyticsEvent.Types.WENT_OFFLINE, capture(propertiesSlot)) }
 
-        assertEquals(AnalyticsEvent.Categories.NETWORK, propertiesSlot.captured.getString(AnalyticsEvent.ParamKeys.CATEGORY))
+        assertEquals(
+            AnalyticsEvent.Categories.NETWORK,
+            propertiesSlot.captured.getString(AnalyticsEvent.ParamKeys.CATEGORY)
+        )
     }
 }
