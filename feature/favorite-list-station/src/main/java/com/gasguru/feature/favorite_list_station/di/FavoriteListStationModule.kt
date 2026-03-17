@@ -11,6 +11,7 @@ val favoriteListStationModule = module {
             getFavoriteStationsUseCase = get(),
             getLastKnownLocationUseCase = get(),
             removeFavoriteStationUseCase = get(),
+            analyticsHelper = get(),
         )
     }
 }

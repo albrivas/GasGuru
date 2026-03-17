@@ -2,6 +2,8 @@ package com.gasguru.feature.station_map.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gasguru.core.analytics.AnalyticsEvent
+import com.gasguru.core.analytics.AnalyticsHelper
 import com.gasguru.core.common.toGoogleLatLng
 import com.gasguru.core.domain.filters.GetFiltersUseCase
 import com.gasguru.core.domain.filters.SaveFilterUseCase
@@ -48,6 +50,7 @@ class StationMapViewModel(
     private val getRouteUseCase: GetRouteUseCase,
     private val getFuelStationsInRouteUseCase: GetFuelStationsInRouteUseCase,
     private val defaultDispatcher: CoroutineDispatcher,
+    private val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(StationMapUiState())
@@ -172,6 +175,7 @@ class StationMapViewModel(
 
                 getRouteUseCase(origin = originLocation, destination = destinationLocation).collect { route ->
                     route?.let { routeData ->
+                        analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.ROUTE_STARTED))
                         launch(defaultDispatcher) {
                             processRouteStations(
                                 origin = originLocation,
@@ -199,6 +203,7 @@ class StationMapViewModel(
     }
 
     private fun cancelRoute() {
+        analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.ROUTE_CANCELLED))
         routeCalculationJob?.cancel()
         routeCalculationJob = null
         _state.update { it.copy(route = null, routeDestinationName = null, loading = false) }
@@ -256,6 +261,14 @@ class StationMapViewModel(
                         location = location
                     )
                     val uiStations = fuelStations.map { station -> station.toUiModel() }
+                    analyticsHelper.logEvent(
+                        event = AnalyticsEvent(
+                            type = AnalyticsEvent.Types.MAP_STATIONS_LOADED,
+                            extras = listOf(
+                                AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.STATION_COUNT, value = uiStations.size.toString()),
+                            ),
+                        ),
+                    )
                     _state.update {
                         it.copy(
                             mapStations = uiStations,
@@ -305,15 +318,39 @@ class StationMapViewModel(
         )
 
     private fun updateFilterBrand(stationsSelected: List<String>) = viewModelScope.launch {
+        analyticsHelper.logEvent(
+            event = AnalyticsEvent(
+                type = AnalyticsEvent.Types.FILTER_BRAND_CHANGED,
+                extras = listOf(
+                    AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.BRAND_COUNT, value = stationsSelected.size.toString()),
+                ),
+            ),
+        )
         saveFilterUseCase(filterType = FilterType.BRAND, selection = stationsSelected)
     }
 
     private fun updateFilterNearby(numberSelected: String) = viewModelScope.launch {
+        analyticsHelper.logEvent(
+            event = AnalyticsEvent(
+                type = AnalyticsEvent.Types.FILTER_NEARBY_CHANGED,
+                extras = listOf(
+                    AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.NEARBY_KM, value = numberSelected),
+                ),
+            ),
+        )
         saveFilterUseCase(filterType = FilterType.NEARBY, selection = listOf(numberSelected))
     }
 
     private fun updateFilterSchedule(scheduleSelected: FilterUiState.OpeningHours) =
         viewModelScope.launch {
+            analyticsHelper.logEvent(
+                event = AnalyticsEvent(
+                    type = AnalyticsEvent.Types.FILTER_SCHEDULE_CHANGED,
+                    extras = listOf(
+                        AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.SCHEDULE, value = scheduleSelected.name),
+                    ),
+                ),
+            )
             saveFilterUseCase(
                 filterType = FilterType.SCHEDULE,
                 selection = listOf(scheduleSelected.name)
@@ -322,9 +359,27 @@ class StationMapViewModel(
 
     private fun showListStation(show: Boolean) = _state.update { it.copy(showListStations = show) }
 
-    private fun selectStation(stationId: Int) = _state.update { it.copy(selectedStationId = stationId) }
+    private fun selectStation(stationId: Int) {
+        analyticsHelper.logEvent(
+            event = AnalyticsEvent(
+                type = AnalyticsEvent.Types.STATION_SELECTED,
+                extras = listOf(
+                    AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.STATION_ID, value = stationId.toString()),
+                ),
+            ),
+        )
+        _state.update { it.copy(selectedStationId = stationId) }
+    }
 
     private fun changeTab(selectedTab: StationSortTab) {
+        analyticsHelper.logEvent(
+            event = AnalyticsEvent(
+                type = AnalyticsEvent.Types.MAP_TAB_CHANGED,
+                extras = listOf(
+                    AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.TAB, value = selectedTab.name),
+                ),
+            ),
+        )
         _tabState.update { it.copy(selectedTab = selectedTab) }
 
         val currentState = _state.value

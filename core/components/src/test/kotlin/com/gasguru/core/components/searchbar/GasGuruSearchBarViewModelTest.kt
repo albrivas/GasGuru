@@ -1,6 +1,7 @@
 package com.gasguru.core.components.searchbar
 
 import androidx.lifecycle.SavedStateHandle
+import com.gasguru.core.analytics.NoOpAnalyticsHelper
 import app.cash.turbine.test
 import com.gasguru.core.components.searchbar.state.GasGuruSearchBarEvent
 import com.gasguru.core.components.searchbar.state.SearchResultUiState
@@ -56,7 +57,8 @@ class GasGuruSearchBarViewModelTest {
             getPlacesUseCase = GetPlacesUseCase(placesRepository),
             clearRecentSearchQueriesUseCase = ClearRecentSearchQueriesUseCase(recentSearchRepository),
             insertRecentSearchQueryUseCase = InsertRecentSearchQueryUseCase(recentSearchRepository),
-            getRecentSearchQueryUseCase = GetRecentSearchQueryUseCase(recentSearchRepository)
+            getRecentSearchQueryUseCase = GetRecentSearchQueryUseCase(recentSearchRepository),
+            analyticsHelper = NoOpAnalyticsHelper(),
         )
     }
 

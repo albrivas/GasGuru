@@ -18,6 +18,7 @@ val detailStationModule = module {
             addPriceAlertUseCase = get(),
             removePriceAlertUseCase = get(),
             updateVehicleTankCapacityUseCase = get(),
+            analyticsHelper = get(),
         )
     }
 }

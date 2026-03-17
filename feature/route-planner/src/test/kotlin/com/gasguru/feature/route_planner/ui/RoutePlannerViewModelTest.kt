@@ -1,6 +1,7 @@
 package com.gasguru.feature.route_planner.ui
 
 import app.cash.turbine.test
+import com.gasguru.core.analytics.NoOpAnalyticsHelper
 import com.gasguru.core.domain.search.ClearRecentSearchQueriesUseCase
 import com.gasguru.core.domain.search.GetRecentSearchQueryUseCase
 import com.gasguru.core.model.data.RecentSearchQuery
@@ -41,7 +42,8 @@ class RoutePlannerViewModelTest {
 
         sut = RoutePlannerViewModel(
             clearRecentSearchQueriesUseCase = clearRecentSearchQueriesUseCase,
-            getRecentSearchQueryUseCase = getRecentSearchQueryUseCase
+            getRecentSearchQueryUseCase = getRecentSearchQueryUseCase,
+            analyticsHelper = NoOpAnalyticsHelper(),
         )
     }
 

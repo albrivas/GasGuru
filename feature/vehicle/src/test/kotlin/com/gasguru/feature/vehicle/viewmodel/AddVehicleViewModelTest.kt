@@ -2,6 +2,7 @@ package com.gasguru.feature.vehicle.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
+import com.gasguru.core.analytics.NoOpAnalyticsHelper
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.domain.vehicle.GetVehicleByIdUseCase
 import com.gasguru.core.domain.vehicle.SaveVehicleUseCase
@@ -55,6 +56,7 @@ class AddVehicleViewModelTest {
         saveVehicleUseCase = saveVehicleUseCase,
         getVehicleByIdUseCase = getVehicleByIdUseCase,
         getUserDataUseCase = getUserDataUseCase,
+        analyticsHelper = NoOpAnalyticsHelper(),
     )
 
     @Test
