@@ -1,7 +1,10 @@
 package com.gasguru.core.analytics
 
 import com.mixpanel.android.mpmetrics.MixpanelAPI
+import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.runs
 import io.mockk.slot
 import io.mockk.verify
 import org.json.JSONObject
@@ -10,7 +13,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
-@DisplayName("MixpanelAnalyticsHelper")
 class MixpanelAnalyticsHelperTest {
 
     private val mixpanelApi: MixpanelAPI = mockk(relaxed = true)
@@ -22,65 +24,92 @@ class MixpanelAnalyticsHelperTest {
     }
 
     @Test
-    @DisplayName("logEvent tracks event with correct type")
-    fun `logEvent tracks event with correct type`() {
+    @DisplayName(
+        """
+        GIVEN an analytics event with a type
+        WHEN logEvent is called
+        THEN mixpanel tracks the event with the correct type
+        """
+    )
+    fun logEventTracksEventWithCorrectType() {
         val event = AnalyticsEvent(type = AnalyticsEvent.Types.VEHICLE_CREATED)
 
         analyticsHelper.logEvent(event = event)
 
-        val propertiesSlot = slot<JSONObject>()
-        verify { mixpanelApi.track(AnalyticsEvent.Types.VEHICLE_CREATED, capture(propertiesSlot)) }
+        verify { mixpanelApi.track(AnalyticsEvent.Types.VEHICLE_CREATED, any()) }
     }
 
     @Test
-    @DisplayName("logEvent always includes category property")
-    fun `logEvent always includes category property`() {
+    @DisplayName(
+        """
+        GIVEN an analytics event
+        WHEN logEvent is called
+        THEN the tracked properties include the category
+        """
+    )
+    fun logEventAlwaysIncludesCategoryProperty() {
+        val propertiesSlot = slot<JSONObject>()
+        every { mixpanelApi.track(any(), capture(propertiesSlot)) } just runs
         val event = AnalyticsEvent(type = AnalyticsEvent.Types.VEHICLE_CREATED)
 
         analyticsHelper.logEvent(event = event)
 
-        val propertiesSlot = slot<JSONObject>()
-        verify { mixpanelApi.track(AnalyticsEvent.Types.VEHICLE_CREATED, capture(propertiesSlot)) }
         assertEquals(
             AnalyticsEvent.Categories.VEHICLE,
-            propertiesSlot.captured.getString(AnalyticsEvent.ParamKeys.CATEGORY)
+            propertiesSlot.captured.getString(AnalyticsEvent.ParamKeys.CATEGORY),
         )
     }
 
     @Test
-    @DisplayName("logEvent tracks event with extras as JSON properties")
-    fun `logEvent tracks event with extras as JSON properties`() {
+    @DisplayName(
+        """
+        GIVEN an analytics event with extra params
+        WHEN logEvent is called
+        THEN the tracked properties include all extras as JSON properties
+        """
+    )
+    fun logEventTracksExtrasAsJsonProperties() {
+        val propertiesSlot = slot<JSONObject>()
+        every { mixpanelApi.track(any(), capture(propertiesSlot)) } just runs
         val event = AnalyticsEvent(
             type = AnalyticsEvent.Types.VEHICLE_CREATED,
             extras = listOf(
                 AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.VEHICLE_TYPE, value = "CAR"),
-                AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.FUEL_TYPE, value = "GASOLINE_95"),
+                AnalyticsEvent.Param(
+                    key = AnalyticsEvent.ParamKeys.FUEL_TYPE,
+                    value = "GASOLINE_95"
+                ),
             ),
         )
 
         analyticsHelper.logEvent(event = event)
 
-        val propertiesSlot = slot<JSONObject>()
-        verify { mixpanelApi.track(AnalyticsEvent.Types.VEHICLE_CREATED, capture(propertiesSlot)) }
-
         val capturedProperties = propertiesSlot.captured
         assertEquals("CAR", capturedProperties.getString(AnalyticsEvent.ParamKeys.VEHICLE_TYPE))
-        assertEquals("GASOLINE_95", capturedProperties.getString(AnalyticsEvent.ParamKeys.FUEL_TYPE))
+        assertEquals(
+            "GASOLINE_95",
+            capturedProperties.getString(AnalyticsEvent.ParamKeys.FUEL_TYPE)
+        )
     }
 
     @Test
-    @DisplayName("logEvent tracks event with empty extras as empty JSON")
-    fun `logEvent tracks event with empty extras as empty JSON`() {
+    @DisplayName(
+        """
+        GIVEN an analytics event with no extras
+        WHEN logEvent is called
+        THEN the tracked properties only contain the category
+        """
+    )
+    fun logEventWithNoExtrasTracksOnlyCategory() {
+        val propertiesSlot = slot<JSONObject>()
+        every { mixpanelApi.track(any(), capture(propertiesSlot)) } just runs
         val event = AnalyticsEvent(type = AnalyticsEvent.Types.WENT_OFFLINE)
 
         analyticsHelper.logEvent(event = event)
 
-        val propertiesSlot = slot<JSONObject>()
-        verify { mixpanelApi.track(AnalyticsEvent.Types.WENT_OFFLINE, capture(propertiesSlot)) }
-
         assertEquals(
             AnalyticsEvent.Categories.NETWORK,
-            propertiesSlot.captured.getString(AnalyticsEvent.ParamKeys.CATEGORY)
+            propertiesSlot.captured.getString(AnalyticsEvent.ParamKeys.CATEGORY),
         )
     }
 }
