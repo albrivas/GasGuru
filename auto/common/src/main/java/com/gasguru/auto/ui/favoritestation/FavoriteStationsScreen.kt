@@ -9,6 +9,8 @@ import androidx.car.app.model.Template
 import com.gasguru.auto.common.getAutomotiveThemeColor
 import com.gasguru.auto.navigation.StationNavigationHelper
 import com.gasguru.auto.ui.component.StationRowComponent
+import com.gasguru.core.analytics.AnalyticsEvent
+import com.gasguru.core.analytics.AnalyticsHelper
 import com.gasguru.core.domain.fuelstation.GetFavoriteStationsUseCase
 import com.gasguru.core.domain.location.GetCurrentLocationUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
@@ -31,6 +33,7 @@ class FavoriteStationsScreen(carContext: CarContext) : Screen(carContext), KoinC
         loading = true
     )
 
+    private val analyticsHelper: AnalyticsHelper by inject()
     private val getCurrentLocationUseCase: GetCurrentLocationUseCase by inject()
     private val getFavoriteStationsUseCase: GetFavoriteStationsUseCase by inject()
     private val getUserDataUseCase: GetUserDataUseCase by inject()
@@ -90,6 +93,7 @@ class FavoriteStationsScreen(carContext: CarContext) : Screen(carContext), KoinC
                         theme = theme,
                         carContext = carContext
                     ) { lat, lng ->
+                        analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.AUTO_STATION_NAVIGATION_STARTED))
                         StationNavigationHelper.navigateToStationAndPopScreen(
                             screen = this@FavoriteStationsScreen,
                             latitude = lat,

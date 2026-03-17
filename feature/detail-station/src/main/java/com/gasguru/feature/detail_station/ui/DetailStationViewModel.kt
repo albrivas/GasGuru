@@ -107,6 +107,8 @@ class DetailStationViewModel(
             is DetailStationEvent.UpdateTankCapacity -> {
                 onUpdateTankCapacity(event.capacity)
             }
+
+            DetailStationEvent.ShareStation -> onShareStation()
         }
     }
 
@@ -140,6 +142,17 @@ class DetailStationViewModel(
     private fun onUpdateTankCapacity(tankCapacity: Int) = viewModelScope.launch {
         val currentVehicle = vehicle.value ?: return@launch
         updateVehicleTankCapacityUseCase(vehicleId = currentVehicle.id, tankCapacity = tankCapacity)
+    }
+
+    private fun onShareStation() {
+        analyticsHelper.logEvent(
+            event = AnalyticsEvent(
+                type = AnalyticsEvent.Types.STATION_SHARED,
+                extras = listOf(
+                    AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.STATION_ID, value = id.toString()),
+                ),
+            ),
+        )
     }
 
     private fun onPriceAlertClick(isEnabled: Boolean) = viewModelScope.launch {
