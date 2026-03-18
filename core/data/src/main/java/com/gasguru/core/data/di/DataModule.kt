@@ -87,6 +87,7 @@ val dataModule = module {
         ConnectivityManagerNetworkMonitor(
             context = androidContext(),
             ioDispatcher = get(named(KoinQualifiers.IO_DISPATCHER)),
+            analyticsHelper = get(),
         )
     }
 
@@ -120,7 +121,6 @@ val dataModule = module {
             networkMonitor = get(),
             priceAlertRepository = get(),
             scope = get(named(KoinQualifiers.APPLICATION_SCOPE)),
-            analyticsHelper = get(),
         )
     }
 }
