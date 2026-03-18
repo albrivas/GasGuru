@@ -83,7 +83,7 @@ private fun ActiveVehicleRow(
                 Image(
                     painter = painterResource(id = model.vehicleTypeIconRes),
                     contentDescription = null,
-                    modifier = Modifier.size(18.dp),
+                    modifier = Modifier.size(24.dp),
                     colorFilter = ColorFilter.tint(GasGuruTheme.colors.primary700),
                 )
             }
@@ -153,7 +153,7 @@ private fun InactiveVehicleRow(
                 Image(
                     painter = painterResource(id = model.vehicleTypeIconRes),
                     contentDescription = null,
-                    modifier = Modifier.size(18.dp),
+                    modifier = Modifier.size(24.dp),
                     colorFilter = ColorFilter.tint(GasGuruTheme.colors.neutral800),
                 )
             }
