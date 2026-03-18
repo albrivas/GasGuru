@@ -79,7 +79,9 @@ class RemoteDataSourceTest {
     }
 
     @Test
-    @DisplayName("GIVEN server return error, WHEN fetching fuel stations, THEN logs STARTED and FAILED events with error extras")
+    @DisplayName(
+        "GIVEN server return error, WHEN fetching fuel stations, THEN logs STARTED and FAILED events with error extras"
+    )
     fun fuelStationErrorLogsAnalyticsEvents() = runTest {
         server.enqueue(mockApi.listFuelStationKO())
 
