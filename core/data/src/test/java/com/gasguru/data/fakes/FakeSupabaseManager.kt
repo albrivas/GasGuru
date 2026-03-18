@@ -1,4 +1,4 @@
-package com.gasguru.core.testing.fakes.data.supabase
+package com.gasguru.data.fakes
 
 import com.gasguru.core.supabase.SupabaseManager
 

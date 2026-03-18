@@ -1,4 +1,4 @@
-package com.gasguru.core.testing.fakes.data.analytics
+package com.gasguru.data.fakes
 
 import com.gasguru.core.analytics.AnalyticsEvent
 import com.gasguru.core.analytics.AnalyticsHelper
