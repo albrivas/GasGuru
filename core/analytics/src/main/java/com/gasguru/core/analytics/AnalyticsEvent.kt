@@ -202,5 +202,7 @@ data class AnalyticsEvent(
         const val IS_CURRENT_LOCATION = "is_current_location"
         const val THEME_MODE = "theme_mode"
         const val SYNCED_COUNT = "synced_count"
+        const val ERROR_MESSAGE = "error_message"
+        const val ERROR_TYPE = "error_type"
     }
 }
