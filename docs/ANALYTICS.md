@@ -281,10 +281,10 @@ evento hay que registrarlo en ese `when` para evitar que caiga en `unknown`.
 | Evento | Tipo | Parámetros |
 |--------|------|-----------|
 | Sincronización de alertas completada | `ALERTS_SYNC_COMPLETED` | `synced_count: Int` |
-| Sincronización de alertas fallida | `ALERTS_SYNC_FAILED` | — |
+| Sincronización de alertas fallida | `ALERTS_SYNC_FAILED` | `error_message: String`, `error_type: String` |
 | Worker iniciado | `STATION_SYNC_WORKER_STARTED` | — |
 | Worker completado | `STATION_SYNC_WORKER_COMPLETED` | — |
-| Worker reintentando | `STATION_SYNC_WORKER_RETRIED` | — |
+| Worker reintentando | `STATION_SYNC_WORKER_RETRIED` | `error_message: String`, `error_type: String` |
 
 ---
 
@@ -296,7 +296,7 @@ evento hay que registrarlo en ese `when` para evitar que caiga en `unknown`.
 |--------|------|-----------|
 | Fetch de gasolineras iniciado | `API_STATIONS_FETCH_STARTED` | — |
 | Fetch de gasolineras completado | `API_STATIONS_FETCH_COMPLETED` | — |
-| Fetch de gasolineras fallido | `API_STATIONS_FETCH_FAILED` | — |
+| Fetch de gasolineras fallido | `API_STATIONS_FETCH_FAILED` | `error_message: String`, `error_type: String` |
 
 ---
 
@@ -355,6 +355,8 @@ evento hay que registrarlo en ese `when` para evitar que caiga en `unknown`.
 | `is_current_location` | `Boolean` | Si el destino es la ubicación actual |
 | `theme_mode` | `String` | Modo de tema (LIGHT / DARK / SYSTEM) |
 | `synced_count` | `Int` | Número de alertas sincronizadas |
+| `error_message` | `String` | Mensaje de la excepción capturada en eventos de error |
+| `error_type` | `String` | Nombre de la clase de la excepción (ej. `RuntimeException`) |
 
 ---
 
