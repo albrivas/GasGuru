@@ -8,12 +8,12 @@ import com.gasguru.core.database.model.VehicleEntity
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.VehicleType
 import com.gasguru.core.testing.CoroutinesTestExtension
-import com.gasguru.core.testing.fakes.data.analytics.FakeAnalyticsHelper
 import com.gasguru.core.testing.fakes.data.database.FakePriceAlertDao
 import com.gasguru.core.testing.fakes.data.database.FakeVehicleDao
 import com.gasguru.core.testing.fakes.data.network.FakeNetworkMonitor
-import com.gasguru.core.testing.fakes.data.notifications.FakeOneSignalManager
-import com.gasguru.core.testing.fakes.data.supabase.FakeSupabaseManager
+import com.gasguru.data.fakes.FakeAnalyticsHelper
+import com.gasguru.data.fakes.FakeOneSignalManager
+import com.gasguru.data.fakes.FakeSupabaseManager
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse

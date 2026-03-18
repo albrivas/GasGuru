@@ -8,12 +8,9 @@ android {
 }
 
 dependencies {
-    api(projects.core.analytics)
     api(projects.core.data)
     api(projects.core.database)
     api(projects.core.network)
-    api(projects.core.notifications)
-    api(projects.core.supabase)
     api(projects.core.model)
     api(projects.navigation)
     api(libs.io.arrow.kt.arrow.core)
