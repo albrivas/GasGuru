@@ -17,9 +17,21 @@ class RemoteDataSourceImp(
         analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.API_STATIONS_FETCH_STARTED))
         return tryCall { api.listFuelStations() }.also { result ->
             result.fold(
-                ifLeft = {
+                ifLeft = { networkError ->
                     analyticsHelper.logEvent(
-                        event = AnalyticsEvent(type = AnalyticsEvent.Types.API_STATIONS_FETCH_FAILED)
+                        event = AnalyticsEvent(
+                            type = AnalyticsEvent.Types.API_STATIONS_FETCH_FAILED,
+                            extras = listOf(
+                                AnalyticsEvent.Param(
+                                    key = AnalyticsEvent.ParamKeys.ERROR_MESSAGE,
+                                    value = networkError.exception.message.orEmpty(),
+                                ),
+                                AnalyticsEvent.Param(
+                                    key = AnalyticsEvent.ParamKeys.ERROR_TYPE,
+                                    value = networkError.exception::class.simpleName.orEmpty(),
+                                ),
+                            ),
+                        )
                     )
                 },
                 ifRight = {

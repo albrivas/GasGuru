@@ -124,8 +124,22 @@ class PriceAlertRepositoryImpl(
                 ),
             )
             true
-        } catch (_: Exception) {
-            analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.ALERTS_SYNC_FAILED))
+        } catch (exception: Exception) {
+            analyticsHelper.logEvent(
+                event = AnalyticsEvent(
+                    type = AnalyticsEvent.Types.ALERTS_SYNC_FAILED,
+                    extras = listOf(
+                        AnalyticsEvent.Param(
+                            key = AnalyticsEvent.ParamKeys.ERROR_MESSAGE,
+                            value = exception.message.orEmpty(),
+                        ),
+                        AnalyticsEvent.Param(
+                            key = AnalyticsEvent.ParamKeys.ERROR_TYPE,
+                            value = exception::class.simpleName.orEmpty(),
+                        ),
+                    ),
+                ),
+            )
             false
         }
     }

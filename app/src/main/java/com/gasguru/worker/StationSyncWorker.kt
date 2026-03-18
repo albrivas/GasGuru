@@ -27,7 +27,21 @@ class StationSyncWorker(
             analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.STATION_SYNC_WORKER_COMPLETED))
             Result.success()
         } catch (exception: Exception) {
-            analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.STATION_SYNC_WORKER_RETRIED))
+            analyticsHelper.logEvent(
+                event = AnalyticsEvent(
+                    type = AnalyticsEvent.Types.STATION_SYNC_WORKER_RETRIED,
+                    extras = listOf(
+                        AnalyticsEvent.Param(
+                            key = AnalyticsEvent.ParamKeys.ERROR_MESSAGE,
+                            value = exception.message.orEmpty(),
+                        ),
+                        AnalyticsEvent.Param(
+                            key = AnalyticsEvent.ParamKeys.ERROR_TYPE,
+                            value = exception::class.simpleName.orEmpty(),
+                        ),
+                    ),
+                ),
+            )
             Result.retry()
         }
     }
