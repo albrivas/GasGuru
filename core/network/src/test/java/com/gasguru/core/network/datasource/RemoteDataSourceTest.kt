@@ -79,7 +79,7 @@ class RemoteDataSourceTest {
     }
 
     @Test
-    @DisplayName("GIVEN server return error, WHEN fetching fuel stations, THEN logs STARTED and FAILED events")
+    @DisplayName("GIVEN server return error, WHEN fetching fuel stations, THEN logs STARTED and FAILED events with error extras")
     fun fuelStationErrorLogsAnalyticsEvents() = runTest {
         server.enqueue(mockApi.listFuelStationKO())
 
@@ -92,7 +92,11 @@ class RemoteDataSourceTest {
         }
         verify {
             analyticsHelper.logEvent(
-                event = AnalyticsEvent(type = AnalyticsEvent.Types.API_STATIONS_FETCH_FAILED)
+                event = match { event ->
+                    event.type == AnalyticsEvent.Types.API_STATIONS_FETCH_FAILED &&
+                        event.extras.any { it.key == AnalyticsEvent.ParamKeys.ERROR_TYPE } &&
+                        event.extras.any { it.key == AnalyticsEvent.ParamKeys.ERROR_MESSAGE }
+                }
             )
         }
     }
