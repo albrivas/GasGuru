@@ -22,7 +22,7 @@ object CommonUtils {
             return true
         }
 
-        val scheduleParts = schedule.split(";")
+        val scheduleParts = schedule.split(";").flatMap { expandSchedulePart(it) }
         for (part in scheduleParts) {
             val regex = Regex("""([LMXJVSD-]+):\s*([0-9]{2}:[0-9]{2})-([0-9]{2}:[0-9]{2})""")
             val matchResult = regex.find(part.trim())
@@ -43,6 +43,15 @@ object CommonUtils {
         return false
     }
 
+    private fun expandSchedulePart(part: String): List<String> {
+        val subParts = part.trim().split(Regex("""\s+[yY]\s+"""))
+        if (subParts.size <= 1) return listOf(part)
+        val dayPrefix = Regex("""^([LMXJVSD-]+):\s*""").find(subParts[0])?.value ?: return listOf(part)
+        return subParts.mapIndexed { index, subPart ->
+            if (index == 0) subPart else "$dayPrefix$subPart"
+        }
+    }
+
     private fun isTimeInRange(startTimeStr: String, endTimeStr: String, currentTime: LocalTime): Boolean {
         val (startHour, startMinute) = startTimeStr.split(":").map { it.toInt() }
         val (endHour, endMinute) = endTimeStr.split(":").map { it.toInt() }
@@ -61,6 +70,7 @@ object CommonUtils {
             "L-D" -> true
             "L-V" -> currentDay.isoDayNumber in 1..5
             "L-S" -> currentDay.isoDayNumber in 1..6
+            "S-D" -> currentDay.isoDayNumber in 6..7
             "L" -> currentDay == DayOfWeek.MONDAY
             "M" -> currentDay == DayOfWeek.TUESDAY
             "X" -> currentDay == DayOfWeek.WEDNESDAY
