@@ -6,7 +6,9 @@ import androidx.compose.ui.unit.dp
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
 import androidx.glance.LocalContext
+import androidx.glance.action.actionParametersOf
 import androidx.glance.action.clickable
+import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.lazy.LazyColumn
@@ -126,19 +128,17 @@ private fun StationWidgetItem(
     stationItem: FavoriteWidgetItemModel,
     isCompact: Boolean,
 ) {
-    val context = LocalContext.current
-    val openDetailIntent = Intent().apply {
-        setClassName(context.packageName, "com.gasguru.MainActivity")
-        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
-        putExtra("station_id", stationItem.idServiceStation.toString())
-    }
     val verticalPadding = if (isCompact) 4.dp else 8.dp
     Row(
         modifier = GlanceModifier
             .fillMaxWidth()
             .wrapContentHeight()
             .padding(horizontal = 12.dp, vertical = verticalPadding)
-            .clickable(actionStartActivity(openDetailIntent)),
+            .clickable(
+                actionRunCallback<WidgetStationClickCallback>(
+                    actionParametersOf(WidgetStationClickCallback.stationIdKey to stationItem.idServiceStation),
+                ),
+            ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(modifier = GlanceModifier.defaultWeight()) {

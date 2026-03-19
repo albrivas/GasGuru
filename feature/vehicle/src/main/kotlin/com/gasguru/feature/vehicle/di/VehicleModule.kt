@@ -12,6 +12,7 @@ val vehicleModule = module {
             saveVehicleUseCase = get(),
             getVehicleByIdUseCase = get(),
             getUserDataUseCase = get(),
+            analyticsHelper = get(),
         )
     }
 }

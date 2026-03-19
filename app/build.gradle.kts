@@ -82,6 +82,7 @@ android {
 
 dependencies {
 
+    implementation(projects.core.analytics)
     implementation(projects.core.uikit)
     implementation(projects.core.ui)
     implementation(projects.core.data)
@@ -138,5 +139,7 @@ dependencies {
     implementation(libs.onesignal)
 
     testImplementation(projects.core.testing)
+    testImplementation(libs.koin.test.junit5)
+    testImplementation(libs.mockk)
     testRuntimeOnly(libs.junit5.engine)
 }

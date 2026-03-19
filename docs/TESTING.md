@@ -4,11 +4,36 @@
 Guia para tests unitarios de ViewModel y uso de fakes en GasGuru. La idea es evitar mocks siempre que sea posible y usar repositorios/DAOs fake para mantener la logica real de los use case.
 
 ## Estructura de fakes
-- `core/testing`: modulo con fakes reutilizables.
-- Organizacion por capa:
-  - `fakes/data/user`, `fakes/data/location`, `fakes/data/search`, etc.
-  - `fakes/data/database` para DAOs fake cuando usamos repositorios offline reales.
-  - `fakes/data/route`, `fakes/data/filter`, `fakes/data/maps`, `fakes/data/geocoder`, etc.
+
+### Donde vive cada fake
+
+| Ubicacion | Criterio |
+|-----------|----------|
+| `core/testing/src/main/.../fakes/` | El fake se reutiliza en **mas de un modulo** |
+| `modulo/src/test/.../fakes/` | El fake solo lo usa ese modulo |
+
+Poner un fake en `core:testing` cuando solo lo usa un modulo añade una dependencia innecesaria al modulo compartido. Si en el futuro el fake se necesita en otro modulo, se mueve entonces.
+
+### Que pertenece a `core:testing`
+
+- Fakes de DAOs (`FakePriceAlertDao`, `FakeVehicleDao`...) — usados en tests de repositorios y ViewModels de multiples features.
+- Fakes de repositorios (`FakeVehicleRepository`, `FakeUserDataRepository`...) — inyectados en ViewModels de varias features.
+- `FakeNetworkMonitor` — el monitor de red lo usan varios repositorios del proyecto.
+- Helpers de test (`CoroutinesTestExtension`, builders de entidades...).
+
+### Que NO pertenece a `core:testing`
+
+- Fakes de servicios externos especificos de un modulo (`SupabaseManager`, `OneSignalManager`...) — si solo los usa `core:data`, van en `core/data/src/test/`.
+- Fakes de analytics para verificar eventos concretos (`FakeAnalyticsHelper`) — `NoOpAnalyticsHelper` ya existe en `core:analytics` para cuando no importan los eventos; si un test necesita verificar eventos especificos, el fake va en ese modulo.
+
+### Jerarquia de dependencias en `core:testing`
+
+`core:testing` ya depende de `core:data`, `core:database` y `core:network`. **No añadir dependencias nuevas** a este modulo sin que haya al menos dos modulos consumidores que las necesiten.
+
+### Organizacion por capa
+- `fakes/data/user`, `fakes/data/location`, `fakes/data/search`, etc.
+- `fakes/data/database` para DAOs fake cuando usamos repositorios offline reales.
+- `fakes/data/route`, `fakes/data/filter`, `fakes/data/maps`, `fakes/data/geocoder`, etc.
 
 ## Enfoque recomendado para ViewModel
 1. Usar los **use case reales**.
@@ -65,14 +90,19 @@ Fakes:
 - `core/testing/src/main/java/com/gasguru/core/testing/fakes/...`
 
 ## Cuando usar fakes vs mocks
-Usa fakes si:
-- El objeto tiene una interfaz clara.
-- Necesitas registrar llamadas y devolver datos controlados.
-- Quieres mantener logica de repositorios/use cases reales.
 
-Usa mocks si:
-- El objeto es complejo o dificil de instanciar.
-- No aporta valor mantener su implementacion real en el test.
+**Fakes primero, mocks como ultimo recurso.**
+
+Usa **fake** si:
+- El objeto tiene una interfaz clara.
+- Necesitas controlar su estado o comportamiento entre llamadas (ej: devolver errores, registrar llamadas).
+- Quieres mantener la logica real de repositorios/use cases en el test.
+
+Usa **mock** solo si:
+- El objeto es complejo de instanciar y un fake seria mas codigo que valor.
+- La dependencia viene de una libreria externa sin interfaz propia (ej: `MixpanelAPI`).
+
+> Ejemplo: `SupabaseManager` y `OneSignalManager` son interfaces simples propias del proyecto — siempre fake, nunca mock.
 
 ## Checklist rapido
 - Usa `CoroutinesTestExtension`.

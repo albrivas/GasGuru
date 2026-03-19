@@ -15,6 +15,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.analytics)
     implementation(projects.core.ui)
     implementation(projects.core.domain)
     implementation(projects.core.model)

@@ -20,6 +20,7 @@ firebase-bom = "34.1.0"
 firebase-crashlytics-gradle = "3.0.3"
 koin = "4.1.1"
 junit = "4.13.2"
+json = "20250107"
 kotlinxSerializationJson = "1.8.1"
 ksp = "2.3.3"
 mock-webserver = "4.11.0"
@@ -102,6 +103,7 @@ koin-test-junit5 = { module = "io.insert-koin:koin-test-junit5", version.ref = "
 io-arrow-kt-arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow"}
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 junit = { module = "junit:junit", version.ref = "junit" }
+json = { module = "org.json:json", version.ref = "json" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
