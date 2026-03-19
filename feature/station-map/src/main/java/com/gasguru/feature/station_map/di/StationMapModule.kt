@@ -18,6 +18,7 @@ val stationMapModule = module {
             getRouteUseCase = get(),
             getFuelStationsInRouteUseCase = get(),
             defaultDispatcher = get(named(KoinQualifiers.DEFAULT_DISPATCHER)),
+            analyticsHelper = get(),
         )
     }
 }

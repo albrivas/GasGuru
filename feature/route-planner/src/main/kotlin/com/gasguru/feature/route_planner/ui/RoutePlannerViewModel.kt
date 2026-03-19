@@ -2,6 +2,8 @@ package com.gasguru.feature.route_planner.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gasguru.core.analytics.AnalyticsEvent
+import com.gasguru.core.analytics.AnalyticsHelper
 import com.gasguru.core.domain.search.ClearRecentSearchQueriesUseCase
 import com.gasguru.core.domain.search.GetRecentSearchQueryUseCase
 import com.gasguru.core.ui.RecentSearchQueriesUiState
@@ -17,6 +19,7 @@ import kotlinx.coroutines.launch
 class RoutePlannerViewModel(
     private val clearRecentSearchQueriesUseCase: ClearRecentSearchQueriesUseCase,
     getRecentSearchQueryUseCase: GetRecentSearchQueryUseCase,
+    private val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(RoutePlannerUiState())
@@ -68,6 +71,14 @@ class RoutePlannerViewModel(
     }
 
     private fun selectedPlace(placeId: String, placeName: String) {
+        analyticsHelper.logEvent(
+            event = AnalyticsEvent(
+                type = AnalyticsEvent.Types.ROUTE_PLANNER_DESTINATION_SET,
+                extras = listOf(
+                    AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.IS_CURRENT_LOCATION, value = false.toString()),
+                ),
+            ),
+        )
         when (_state.value.currentInput) {
             InputField.START -> _state.update {
                 it.copy(
@@ -90,6 +101,7 @@ class RoutePlannerViewModel(
     }
 
     private fun changeDestinations() {
+        analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.ROUTE_PLANNER_DESTINATIONS_SWAPPED))
         val start = _state.value.startQuery
         val end = _state.value.endQuery
         _state.update { it.copy(startQuery = end, endQuery = start) }
@@ -103,6 +115,7 @@ class RoutePlannerViewModel(
     }
 
     private fun selectedRecentPlace(placeId: String, placeName: String) {
+        analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.RECENT_SEARCH_USED))
         val currentState = _state.value
 
         when {
@@ -131,6 +144,14 @@ class RoutePlannerViewModel(
     }
 
     private fun selectCurrentLocation() {
+        analyticsHelper.logEvent(
+            event = AnalyticsEvent(
+                type = AnalyticsEvent.Types.ROUTE_PLANNER_DESTINATION_SET,
+                extras = listOf(
+                    AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.IS_CURRENT_LOCATION, value = true.toString()),
+                ),
+            ),
+        )
         val currentState = _state.value
 
         when {

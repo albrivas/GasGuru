@@ -1,5 +1,6 @@
 package com.gasguru.feature.station_map.ui
 
+import com.gasguru.core.analytics.NoOpAnalyticsHelper
 import com.gasguru.core.data.repository.stations.OfflineFuelStationRepository
 import com.gasguru.core.data.repository.user.OfflineUserDataRepository
 import com.gasguru.core.database.model.FuelStationEntity
@@ -530,7 +531,8 @@ class StationMapViewModelTest {
             getFuelStationsInRouteUseCase = GetFuelStationsInRouteUseCase(
                 offlineFuelStationRepository
             ),
-            defaultDispatcher = Dispatchers.Main
+            defaultDispatcher = Dispatchers.Main,
+            analyticsHelper = NoOpAnalyticsHelper(),
         )
     }
 

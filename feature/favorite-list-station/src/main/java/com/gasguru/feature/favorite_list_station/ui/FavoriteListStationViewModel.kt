@@ -2,6 +2,8 @@ package com.gasguru.feature.favorite_list_station.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gasguru.core.analytics.AnalyticsEvent
+import com.gasguru.core.analytics.AnalyticsHelper
 import com.gasguru.core.domain.fuelstation.GetFavoriteStationsUseCase
 import com.gasguru.core.domain.fuelstation.RemoveFavoriteStationUseCase
 import com.gasguru.core.domain.location.GetLastKnownLocationUseCase
@@ -26,6 +28,7 @@ class FavoriteListStationViewModel(
     private val getFavoriteStationsUseCase: GetFavoriteStationsUseCase,
     getLastKnownLocationUseCase: GetLastKnownLocationUseCase,
     private val removeFavoriteStationUseCase: RemoveFavoriteStationUseCase,
+    private val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
 
     private val _tabState = MutableStateFlow(SelectedTabUiState())
@@ -80,8 +83,26 @@ class FavoriteListStationViewModel(
             )
 
     private fun removeFavoriteStation(idStation: Int) = viewModelScope.launch {
+        analyticsHelper.logEvent(
+            event = AnalyticsEvent(
+                type = AnalyticsEvent.Types.STATION_UNFAVORITED_FROM_LIST,
+                extras = listOf(
+                    AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.STATION_ID, value = idStation.toString()),
+                ),
+            ),
+        )
         removeFavoriteStationUseCase.invoke(idStation)
     }
 
-    private fun changeTab(position: Int) = _tabState.update { it.copy(selectedTab = position) }
+    private fun changeTab(position: Int) {
+        analyticsHelper.logEvent(
+            event = AnalyticsEvent(
+                type = AnalyticsEvent.Types.FAVORITES_TAB_CHANGED,
+                extras = listOf(
+                    AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.TAB, value = position.toString()),
+                ),
+            ),
+        )
+        _tabState.update { it.copy(selectedTab = position) }
+    }
 }

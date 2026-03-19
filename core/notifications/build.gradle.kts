@@ -9,6 +9,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.analytics)
     implementation(libs.onesignal)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.io.arrow.kt.arrow.core)

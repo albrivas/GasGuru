@@ -26,6 +26,8 @@
 - Toda clase nueva o funcionalidad nueva debe tener tests en el mismo paso en que se crea
 - Si se modifica una clase que tiene tests asociados, actualizar los tests para reflejar los cambios en el mismo paso
 - Cada feature nueva debe alcanzar un mínimo del **65% de cobertura** de código (líneas + ramas) antes de hacer merge
+- **Usar siempre JUnit5** (`org.junit.jupiter.api`): `@Test`, `@BeforeEach`, `@AfterEach`, `Assertions.*`. Nunca JUnit4 (`org.junit.Test`, `org.junit.Before`).
+- **Toda clase de test debe llevar `@DisplayName`** en la clase y en cada método `@Test`
 
 
 - Siempre que añadas dependencias deben ir en el libs.versions.toml y luego referenciarlas en los build.gradle que necesiten esas depdencias. Lo mismo para los plugins. Todas las dependencias se centralizan en lisb.versions.toml
@@ -55,3 +57,4 @@
 | [KMP Phase 0](docs/KMP_PHASE0.md) | Explicación detallada de la infraestructura de build creada en Phase 0: convention plugins, source sets, dependencias |
 | [KMP Phase 1](docs/KMP_PHASE1.md) | Migración de :core:model a commonMain: cambios de plugin, sustituciones de APIs JVM, tests en commonTest |
 | [Widget](docs/WIDGET.md) | Widget de pantalla de inicio con gasolineras favoritas: arquitectura Glance + WorkManager, ciclo de vida y limitaciones |
+| [Analytics](docs/ANALYTICS.md) | Sistema de analíticas con Mixpanel: arquitectura, catálogo de eventos, uso en ViewModels y Composables |

@@ -13,6 +13,7 @@ val profileModule = module {
             getVehicleByIdUseCase = get(),
             saveVehicleUseCase = get(),
             navigationManager = get(),
+            analyticsHelper = get(),
         )
     }
 }
