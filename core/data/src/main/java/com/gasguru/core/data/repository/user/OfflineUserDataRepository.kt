@@ -63,6 +63,37 @@ class OfflineUserDataRepository(
         favoriteStationDao.removeFavoriteStation(stationId)
     }
 
+    override fun getFavoriteStationsWithoutDistance(): Flow<UserWithFavoriteStations> =
+        combine(
+            userData,
+            favoriteStationDao.getFavoriteStations(),
+        ) { user, favoriteStationEntities ->
+            val favoriteStations = favoriteStationEntities.map { it.asExternalModel() }
+            val fuelType = user.principalVehicle().fuelType
+
+            val updatedStations = if (favoriteStations.size <= 1) {
+                favoriteStations.map { station ->
+                    station.copy(priceCategory = PriceCategory.NONE)
+                }
+            } else {
+                val (minPrice, maxPrice) = favoriteStations.calculateFuelPrices(fuelType = fuelType)
+                favoriteStations.map { station ->
+                    station.copy(
+                        priceCategory = station.getPriceCategory(
+                            fuelType,
+                            minPrice,
+                            maxPrice,
+                        ),
+                    )
+                }
+            }
+
+            UserWithFavoriteStations(
+                user = user,
+                favoriteStations = updatedStations,
+            )
+        }
+
     override fun getUserWithFavoriteStations(userLocation: LatLng): Flow<UserWithFavoriteStations> =
         combine(
             userData,

@@ -1,6 +1,7 @@
 package com.gasguru.feature.favorite_list_station.ui
 
 import app.cash.turbine.test
+import com.gasguru.core.analytics.NoOpAnalyticsHelper
 import com.gasguru.core.domain.fuelstation.GetFavoriteStationsUseCase
 import com.gasguru.core.domain.fuelstation.RemoveFavoriteStationUseCase
 import com.gasguru.core.domain.location.GetLastKnownLocationUseCase
@@ -43,6 +44,7 @@ class FavoriteListStationViewModelTest {
             getFavoriteStationsUseCase = GetFavoriteStationsUseCase(fakeUserDataRepository),
             getLastKnownLocationUseCase = GetLastKnownLocationUseCase(fakeLocationTracker),
             removeFavoriteStationUseCase = RemoveFavoriteStationUseCase(fakeUserDataRepository),
+            analyticsHelper = NoOpAnalyticsHelper(),
         )
     }
 

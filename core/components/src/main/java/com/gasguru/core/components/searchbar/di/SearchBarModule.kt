@@ -12,6 +12,7 @@ val searchBarModule = module {
             clearRecentSearchQueriesUseCase = get(),
             insertRecentSearchQueryUseCase = get(),
             getRecentSearchQueryUseCase = get(),
+            analyticsHelper = get(),
         )
     }
 }

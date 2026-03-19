@@ -31,7 +31,7 @@ import com.gasguru.core.database.model.VehicleEntity
         PriceAlertEntity::class,
         VehicleEntity::class,
     ],
-    version = 15,
+    version = 16,
     exportSchema = true,
 )
 @TypeConverters(UserDataConverters::class, ListConverters::class, FilterTypeConverter::class)
