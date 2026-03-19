@@ -19,22 +19,22 @@ fun Int.dpToPx() = (this * Resources.getSystem().displayMetrics.density).toInt()
 suspend fun CameraPositionState.centerOnMap(bounds: LatLngBounds, padding: Int) =
     animate(
         update = CameraUpdateFactory.newLatLngBounds(bounds, padding.dpToPx()),
-        durationMs = 500
+        durationMs = 500,
     )
 
 suspend fun CameraPositionState.centerOnLocation(location: GoogleLatLng) =
     animate(
         update = CameraUpdateFactory.newLatLng(location),
-        durationMs = 500
+        durationMs = 500,
     )
 
 fun Context.hasLocationPermission(): Boolean {
     return ContextCompat.checkSelfPermission(
         this,
-        Manifest.permission.ACCESS_FINE_LOCATION
+        Manifest.permission.ACCESS_FINE_LOCATION,
     ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
         this,
-        Manifest.permission.ACCESS_COARSE_LOCATION
+        Manifest.permission.ACCESS_COARSE_LOCATION,
     ) == PackageManager.PERMISSION_GRANTED
 }
 

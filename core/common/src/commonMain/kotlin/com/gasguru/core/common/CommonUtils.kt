@@ -1,25 +1,23 @@
 package com.gasguru.core.common
 
 import com.gasguru.core.model.data.FuelStation
-import java.time.DayOfWeek
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
+import kotlinx.datetime.Clock
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 object CommonUtils {
 
-    fun getAppVersion(): String {
-        val versionName =
-            "${BuildConfig.versionMajor}.${BuildConfig.versionMinor}.${BuildConfig.versionPatch}"
-        return "$versionName (${BuildConfig.versionCode})"
-    }
-
     @Suppress("ReturnCount")
-    fun FuelStation.isStationOpen(): Boolean {
-        val now = java.time.ZonedDateTime.now()
+    fun FuelStation.isStationOpen(
+        now: LocalDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+    ): Boolean {
         val currentDay = now.dayOfWeek
-        val currentTime = now.toLocalTime()
+        val currentTime = now.time
 
-        if (schedule.trim().uppercase(java.util.Locale.ROOT) == "L-D: 24H") {
+        if (schedule.trim().uppercase() == "L-D: 24H") {
             return true
         }
 
@@ -33,7 +31,9 @@ object CommonUtils {
                 val startTime = matchResult.groupValues[2]
                 val endTime = matchResult.groupValues[3]
 
-                if (isDayMatched(days, currentDay) && isTimeInRange(startTime, endTime, currentTime)) {
+                if (isDayMatched(days = days, currentDay = currentDay) &&
+                    isTimeInRange(startTimeStr = startTime, endTimeStr = endTime, currentTime = currentTime)
+                ) {
                     return true
                 }
             }
@@ -43,23 +43,23 @@ object CommonUtils {
     }
 
     private fun isTimeInRange(startTimeStr: String, endTimeStr: String, currentTime: LocalTime): Boolean {
-        val formatter = DateTimeFormatter.ofPattern("HH:mm")
+        val (startHour, startMinute) = startTimeStr.split(":").map { it.toInt() }
+        val (endHour, endMinute) = endTimeStr.split(":").map { it.toInt() }
+        val startTime = LocalTime(hour = startHour, minute = startMinute)
+        val endTime = LocalTime(hour = endHour, minute = endMinute)
 
-        val startTime = LocalTime.parse(startTimeStr, formatter)
-        val endTime = LocalTime.parse(endTimeStr, formatter)
-
-        if (endTime.isAfter(startTime) || endTime == startTime) {
-            return currentTime.isAfter(startTime) && currentTime.isBefore(endTime)
+        return if (endTime >= startTime) {
+            currentTime > startTime && currentTime < endTime
+        } else {
+            currentTime > startTime || currentTime < endTime
         }
-
-        return currentTime.isAfter(startTime) || currentTime.isBefore(endTime)
     }
 
     private fun isDayMatched(days: String, currentDay: DayOfWeek): Boolean {
         return when (days) {
             "L-D" -> true
-            "L-V" -> currentDay.value in 1..5
-            "L-S" -> currentDay.value in 1..6
+            "L-V" -> currentDay.isoDayNumber in 1..5
+            "L-S" -> currentDay.isoDayNumber in 1..6
             "L" -> currentDay == DayOfWeek.MONDAY
             "M" -> currentDay == DayOfWeek.TUESDAY
             "X" -> currentDay == DayOfWeek.WEDNESDAY
