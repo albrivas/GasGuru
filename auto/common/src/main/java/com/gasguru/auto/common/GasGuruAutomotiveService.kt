@@ -6,6 +6,10 @@ import androidx.car.app.Screen
 import androidx.car.app.Session
 import androidx.car.app.validation.HostValidator
 import com.gasguru.auto.ui.mainmenu.MapAutomotiveScreen
+import com.gasguru.core.analytics.AnalyticsEvent
+import com.gasguru.core.analytics.AnalyticsHelper
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 class GasGuruAutomotiveService : CarAppService() {
     override fun createHostValidator(): HostValidator {
@@ -17,8 +21,12 @@ class GasGuruAutomotiveService : CarAppService() {
     }
 }
 
-class GasGuruSession : Session() {
+class GasGuruSession : Session(), KoinComponent {
+
+    private val analyticsHelper: AnalyticsHelper by inject()
+
     override fun onCreateScreen(intent: Intent): Screen {
+        analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.AUTO_SESSION_STARTED))
         return MapAutomotiveScreen(carContext)
     }
 }

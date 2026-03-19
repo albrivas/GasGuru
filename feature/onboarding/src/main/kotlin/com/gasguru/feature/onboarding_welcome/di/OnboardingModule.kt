@@ -10,17 +10,20 @@ val onboardingModule = module {
     viewModel {
         OnboardingViewModel(
             saveDefaultVehicleFuelTypeUseCase = get(),
+            analyticsHelper = get(),
         )
     }
     viewModel {
         NewOnboardingViewModel(
             navigationManager = get(),
+            analyticsHelper = get(),
         )
     }
     viewModel {
         CapacityTankViewModel(
             navigationManager = get(),
             saveDefaultVehicleCapacityUseCase = get(),
+            analyticsHelper = get(),
         )
     }
 }

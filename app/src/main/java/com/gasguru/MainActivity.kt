@@ -15,6 +15,8 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.gasguru.core.analytics.AnalyticsHelper
+import com.gasguru.core.analytics.LocalAnalyticsHelper
 import com.gasguru.core.data.util.NetworkMonitor
 import com.gasguru.core.domain.location.IsLocationEnabledUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
@@ -44,6 +46,7 @@ class MainActivity : ComponentActivity() {
     private val getUserDataUseCase: GetUserDataUseCase by inject()
     private val navigationManager: NavigationManager by inject()
     private val deepLinkStateHolder: DeepLinkStateHolder by inject()
+    private val analyticsHelper: AnalyticsHelper by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splash = installSplashScreen()
@@ -106,6 +109,7 @@ class MainActivity : ComponentActivity() {
             CompositionLocalProvider(
                 LocalNavigationManager provides navigationManager,
                 LocalDeepLinkStateHolder provides deepLinkStateHolder,
+                LocalAnalyticsHelper provides analyticsHelper,
             ) {
                 MyApplicationTheme(darkTheme = darkTheme) {
                     when (val state = uiState) {
