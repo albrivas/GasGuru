@@ -64,7 +64,7 @@ private fun ActiveVehicleRow(
         modifier = modifier
             .fillMaxWidth()
             .background(color = GasGuruTheme.colors.neutralWhite)
-            .padding(all = 12.dp),
+            .padding(horizontal = 16.dp, vertical = 14.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -83,7 +83,7 @@ private fun ActiveVehicleRow(
                 Image(
                     painter = painterResource(id = model.vehicleTypeIconRes),
                     contentDescription = null,
-                    modifier = Modifier.size(18.dp),
+                    modifier = Modifier.size(24.dp),
                     colorFilter = ColorFilter.tint(GasGuruTheme.colors.primary700),
                 )
             }
@@ -112,7 +112,7 @@ private fun ActiveVehicleRow(
                         stringResource(id = model.fuelTypeTranslationRes),
                         model.tankCapacityLitres,
                     ),
-                    style = GasGuruTheme.typography.smallRegular,
+                    style = GasGuruTheme.typography.captionRegular,
                     color = GasGuruTheme.colors.textSubtle,
                 )
             }
@@ -153,7 +153,7 @@ private fun InactiveVehicleRow(
                 Image(
                     painter = painterResource(id = model.vehicleTypeIconRes),
                     contentDescription = null,
-                    modifier = Modifier.size(18.dp),
+                    modifier = Modifier.size(24.dp),
                     colorFilter = ColorFilter.tint(GasGuruTheme.colors.neutral800),
                 )
             }

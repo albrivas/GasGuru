@@ -9,6 +9,7 @@ val routePlannerModule = module {
         RoutePlannerViewModel(
             clearRecentSearchQueriesUseCase = get(),
             getRecentSearchQueryUseCase = get(),
+            analyticsHelper = get(),
         )
     }
 }

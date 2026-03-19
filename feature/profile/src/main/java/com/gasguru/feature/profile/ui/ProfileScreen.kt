@@ -1,5 +1,6 @@
 package com.gasguru.feature.profile.ui
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -161,14 +162,19 @@ fun SuccessContent(
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(14.dp))
                 .background(color = GasGuruTheme.colors.neutralWhite)
-                .border(width = 1.dp, color = GasGuruTheme.colors.neutral300, shape = RoundedCornerShape(14.dp)),
+                .border(
+                    width = 1.dp,
+                    color = GasGuruTheme.colors.neutral300,
+                    shape = RoundedCornerShape(14.dp)
+                )
+                .animateContentSize(),
         ) {
             content.vehicles.forEachIndexed { index, vehicle ->
                 if (index > 0) {
                     GasGuruDivider(
                         model = GasGuruDividerModel(
                             color = GasGuruTheme.colors.neutral300,
-                            length = DividerLength.FULL,
+                            length = DividerLength.INSET,
                             thickness = DividerThickness.THICK,
                         )
                     )

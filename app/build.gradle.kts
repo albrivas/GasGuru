@@ -82,6 +82,7 @@ android {
 
 dependencies {
 
+    implementation(projects.core.analytics)
     implementation(projects.core.uikit)
     implementation(projects.core.ui)
     implementation(projects.core.data)
@@ -101,6 +102,7 @@ dependencies {
     implementation(projects.core.network)
     implementation(projects.feature.search)
     implementation(projects.feature.routePlanner)
+    implementation(projects.feature.widget)
     implementation(projects.navigation)
     implementation(projects.core.notifications)
     mockImplementation(projects.mocknetwork)
@@ -129,11 +131,15 @@ dependencies {
     implementation(libs.firebase.analytics)
 
     implementation(libs.splash.screen)
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.glance.appwidget)
 
     // Analytics
     implementation(libs.mixpanel)
     implementation(libs.onesignal)
 
     testImplementation(projects.core.testing)
+    testImplementation(libs.koin.test.junit5)
+    testImplementation(libs.mockk)
     testRuntimeOnly(libs.junit5.engine)
 }

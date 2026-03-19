@@ -1,6 +1,12 @@
 package com.gasguru
 
 import android.app.Application
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import com.gasguru.core.analytics.di.analyticsModule
 import com.gasguru.core.common.coroutineModule
 import com.gasguru.core.components.searchbar.di.searchBarModule
 import com.gasguru.core.data.di.dataModule
@@ -24,6 +30,7 @@ import com.gasguru.feature.route_planner.di.routePlannerModule
 import com.gasguru.feature.station_map.di.stationMapModule
 import com.gasguru.feature.vehicle.di.vehicleModule
 import com.gasguru.navigation.di.navigationModule
+import com.gasguru.worker.StationSyncWorker
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.onesignal.OneSignal
 import com.onesignal.debug.LogLevel
@@ -32,6 +39,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
+import java.util.concurrent.TimeUnit
 
 class GasGuruApplication : Application() {
 
@@ -45,6 +53,7 @@ class GasGuruApplication : Application() {
         initPushNotifications()
         mixpanelSetUp()
         initSyncManager()
+        initStationSync()
     }
 
     private fun oneSignalSetUp() {
@@ -68,11 +77,24 @@ class GasGuruApplication : Application() {
         syncManager.execute()
     }
 
+    private fun initStationSync() {
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            StationSyncWorker.WORK_NAME,
+            ExistingPeriodicWorkPolicy.KEEP,
+            PeriodicWorkRequestBuilder<StationSyncWorker>(30, TimeUnit.MINUTES)
+                .setConstraints(
+                    Constraints(requiredNetworkType = NetworkType.CONNECTED),
+                )
+                .build(),
+        )
+    }
+
     private fun initKoin() {
         startKoin {
             androidLogger(level = if (BuildConfig.DEBUG) Level.DEBUG else Level.ERROR)
             androidContext(this@GasGuruApplication)
             modules(
+                analyticsModule,
                 coroutineModule,
                 databaseModule,
                 daoModule,

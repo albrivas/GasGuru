@@ -53,6 +53,11 @@ class FakeUserDataRepository(
         }
     }
 
+    override fun getFavoriteStationsWithoutDistance(): Flow<UserWithFavoriteStations> =
+        combine(userDataFlow, favoriteStationsFlow) { userData, stations ->
+            UserWithFavoriteStations(user = userData, favoriteStations = stations)
+        }
+
     override fun getUserWithFavoriteStations(userLocation: LatLng): Flow<UserWithFavoriteStations> =
         combine(userDataFlow, favoriteStationsFlow) { userData, stations ->
             UserWithFavoriteStations(user = userData, favoriteStations = stations)

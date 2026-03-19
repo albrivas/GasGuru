@@ -3,6 +3,8 @@ package com.gasguru.core.components.searchbar
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gasguru.core.analytics.AnalyticsEvent
+import com.gasguru.core.analytics.AnalyticsHelper
 import com.gasguru.core.components.searchbar.state.GasGuruSearchBarEvent
 import com.gasguru.core.components.searchbar.state.SearchResultUiState
 import com.gasguru.core.domain.places.GetPlacesUseCase
@@ -30,6 +32,7 @@ class GasGuruSearchBarViewModel(
     private val clearRecentSearchQueriesUseCase: ClearRecentSearchQueriesUseCase,
     private val insertRecentSearchQueryUseCase: InsertRecentSearchQueryUseCase,
     getRecentSearchQueryUseCase: GetRecentSearchQueryUseCase,
+    private val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
 
     val searchQuery = savedStateHandle.getStateFlow(key = SEARCH_QUERY, initialValue = "")
@@ -76,10 +79,12 @@ class GasGuruSearchBarViewModel(
     }
 
     private fun clearRecentSearches() = viewModelScope.launch {
+        analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.SEARCH_HISTORY_CLEARED))
         clearRecentSearchQueriesUseCase()
     }
 
     private fun insertRecentSearch(searchQuery: SearchPlace) = viewModelScope.launch {
+        analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.SEARCH_PLACE_SELECTED))
         insertRecentSearchQueryUseCase(placeId = searchQuery.id, name = searchQuery.name)
     }
 }
