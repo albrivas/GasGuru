@@ -17,6 +17,7 @@ import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.domain.vehicle.UpdateVehicleTankCapacityUseCase
 import com.gasguru.core.model.data.Vehicle
 import com.gasguru.core.model.data.principalVehicle
+import com.gasguru.core.common.CommonUtils.isStationOpen
 import com.gasguru.core.ui.mapper.toUiModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
@@ -58,13 +59,15 @@ class DetailStationViewModel(
                         ).map {
                             DetailStationUiState.Success(
                                 stationModel = station.toUiModel(),
-                                address = it
+                                address = it,
+                                isOpen = station.isStationOpen(),
                             )
                         }.catch {
                             emit(
                                 DetailStationUiState.Success(
                                     stationModel = station.toUiModel(),
-                                    address = null
+                                    address = null,
+                                    isOpen = station.isStationOpen(),
                                 )
                             )
                         }
