@@ -4,6 +4,10 @@ import com.gasguru.core.ui.models.FuelStationUiModel
 
 sealed interface DetailStationUiState {
     data object Loading : DetailStationUiState
-    data class Success(val stationModel: FuelStationUiModel, val address: String?) : DetailStationUiState
+    data class Success(
+        val stationModel: FuelStationUiModel,
+        val address: String?,
+        val isOpen: Boolean,
+    ) : DetailStationUiState
     data object Error : DetailStationUiState
 }

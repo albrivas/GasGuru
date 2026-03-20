@@ -7,7 +7,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toLowerCase
-import com.gasguru.core.common.CommonUtils.isStationOpen
 import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.ui.mapper.toPriceUiModel
 import com.gasguru.core.ui.models.FuelStationUiModel
@@ -17,12 +16,12 @@ import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.feature.detail_station.R
 
 @Composable
-fun rememberDetailStationState(station: FuelStationUiModel) = remember(station) {
-    DetailStationState(station)
+fun rememberDetailStationState(station: FuelStationUiModel, isOpen: Boolean) = remember(station, isOpen) {
+    DetailStationState(station = station, isOpen = isOpen)
 }
 
 @Stable
-class DetailStationState(internal val station: FuelStationUiModel) {
+class DetailStationState(internal val station: FuelStationUiModel, internal val isOpen: Boolean) {
 
     internal val fuelItems: List<PriceItemModel>
         @Composable get() = FuelTypeUiModel.ALL_FUELS.mapNotNull { fuelUiModel ->
@@ -38,9 +37,6 @@ class DetailStationState(internal val station: FuelStationUiModel) {
 
     internal val formattedDistance: String
         get() = station.fuelStation.formatDistance()
-
-    internal val isOpen: Boolean
-        get() = station.fuelStation.isStationOpen()
 
     internal val openCloseText: String
         @Composable get() = if (isOpen) {
