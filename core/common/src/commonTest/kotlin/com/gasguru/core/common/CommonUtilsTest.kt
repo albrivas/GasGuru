@@ -46,6 +46,22 @@ class CommonUtilsTest {
     private val mondayMorning =
         LocalDateTime(year = 2024, monthNumber = 1, dayOfMonth = 1, hour = 10, minute = 0)
 
+    // Tuesday 10:00
+    private val tuesdayMorning =
+        LocalDateTime(year = 2024, monthNumber = 1, dayOfMonth = 2, hour = 10, minute = 0)
+
+    // Wednesday 10:00
+    private val wednesdayMorning =
+        LocalDateTime(year = 2024, monthNumber = 1, dayOfMonth = 3, hour = 10, minute = 0)
+
+    // Thursday 10:00
+    private val thursdayMorning =
+        LocalDateTime(year = 2024, monthNumber = 1, dayOfMonth = 4, hour = 10, minute = 0)
+
+    // Friday 10:00
+    private val fridayMorning =
+        LocalDateTime(year = 2024, monthNumber = 1, dayOfMonth = 5, hour = 10, minute = 0)
+
     // Saturday 10:00
     private val saturdayMorning =
         LocalDateTime(year = 2024, monthNumber = 1, dayOfMonth = 6, hour = 10, minute = 0)
@@ -57,6 +73,22 @@ class CommonUtilsTest {
     // Monday 22:00
     private val mondayNight =
         LocalDateTime(year = 2024, monthNumber = 1, dayOfMonth = 1, hour = 22, minute = 0)
+
+    // Monday 08:00 (exact start boundary)
+    private val mondayAtOpeningTime =
+        LocalDateTime(year = 2024, monthNumber = 1, dayOfMonth = 1, hour = 8, minute = 0)
+
+    // Monday 20:00 (exact end boundary)
+    private val mondayAtClosingTime =
+        LocalDateTime(year = 2024, monthNumber = 1, dayOfMonth = 1, hour = 20, minute = 0)
+
+    // Monday 23:00 (inside overnight window, after midnight start)
+    private val mondayLateNight =
+        LocalDateTime(year = 2024, monthNumber = 1, dayOfMonth = 1, hour = 23, minute = 0)
+
+    // Tuesday 03:00 (inside overnight window, before early end)
+    private val tuesdayEarlyMorning =
+        LocalDateTime(year = 2024, monthNumber = 1, dayOfMonth = 2, hour = 3, minute = 0)
 
     // Monday 14:00 (between two time windows)
     private val mondayBetweenWindows =
@@ -251,5 +283,93 @@ class CommonUtilsTest {
     @Test
     fun `GIVEN malformed schedule WHEN isStationOpen THEN returns false`() {
         buildStation(schedule = "INVALID").isStationOpen(now = mondayMorning) shouldBe false
+    }
+
+    // --- Individual day codes ---
+
+    @Test
+    fun `GIVEN L schedule WHEN Monday inside hours THEN returns true`() {
+        buildStation(schedule = "L: 08:00-20:00").isStationOpen(now = mondayMorning) shouldBe true
+    }
+
+    @Test
+    fun `GIVEN L schedule WHEN Tuesday THEN returns false`() {
+        buildStation(schedule = "L: 08:00-20:00").isStationOpen(now = tuesdayMorning) shouldBe false
+    }
+
+    @Test
+    fun `GIVEN M schedule WHEN Tuesday inside hours THEN returns true`() {
+        buildStation(schedule = "M: 08:00-20:00").isStationOpen(now = tuesdayMorning) shouldBe true
+    }
+
+    @Test
+    fun `GIVEN M schedule WHEN Wednesday THEN returns false`() {
+        buildStation(schedule = "M: 08:00-20:00").isStationOpen(now = wednesdayMorning) shouldBe false
+    }
+
+    @Test
+    fun `GIVEN X schedule WHEN Wednesday inside hours THEN returns true`() {
+        buildStation(schedule = "X: 08:00-20:00").isStationOpen(now = wednesdayMorning) shouldBe true
+    }
+
+    @Test
+    fun `GIVEN X schedule WHEN Thursday THEN returns false`() {
+        buildStation(schedule = "X: 08:00-20:00").isStationOpen(now = thursdayMorning) shouldBe false
+    }
+
+    @Test
+    fun `GIVEN J schedule WHEN Thursday inside hours THEN returns true`() {
+        buildStation(schedule = "J: 08:00-20:00").isStationOpen(now = thursdayMorning) shouldBe true
+    }
+
+    @Test
+    fun `GIVEN J schedule WHEN Friday THEN returns false`() {
+        buildStation(schedule = "J: 08:00-20:00").isStationOpen(now = fridayMorning) shouldBe false
+    }
+
+    @Test
+    fun `GIVEN V schedule WHEN Friday inside hours THEN returns true`() {
+        buildStation(schedule = "V: 08:00-20:00").isStationOpen(now = fridayMorning) shouldBe true
+    }
+
+    @Test
+    fun `GIVEN V schedule WHEN Saturday THEN returns false`() {
+        buildStation(schedule = "V: 08:00-20:00").isStationOpen(now = saturdayMorning) shouldBe false
+    }
+
+    // --- Boundary conditions (strict inequality) ---
+
+    @Test
+    fun `GIVEN schedule WHEN currentTime is exactly at opening time THEN returns false`() {
+        buildStation(schedule = "L-V: 08:00-20:00").isStationOpen(now = mondayAtOpeningTime) shouldBe false
+    }
+
+    @Test
+    fun `GIVEN schedule WHEN currentTime is exactly at closing time THEN returns false`() {
+        buildStation(schedule = "L-V: 08:00-20:00").isStationOpen(now = mondayAtClosingTime) shouldBe false
+    }
+
+    // --- Overnight schedule (endTime < startTime) ---
+
+    @Test
+    fun `GIVEN overnight schedule WHEN currentTime is after start THEN returns true`() {
+        buildStation(schedule = "L-D: 22:00-06:00").isStationOpen(now = mondayLateNight) shouldBe true
+    }
+
+    @Test
+    fun `GIVEN overnight schedule WHEN currentTime is before end THEN returns true`() {
+        buildStation(schedule = "L-D: 22:00-06:00").isStationOpen(now = tuesdayEarlyMorning) shouldBe true
+    }
+
+    @Test
+    fun `GIVEN overnight schedule WHEN currentTime is in the midday gap THEN returns false`() {
+        buildStation(schedule = "L-D: 22:00-06:00").isStationOpen(now = mondayMorning) shouldBe false
+    }
+
+    // --- expandSchedulePart: y-split without recognizable day prefix ---
+
+    @Test
+    fun `GIVEN schedule with y but no day prefix WHEN isStationOpen THEN returns false`() {
+        buildStation(schedule = "08:00-13:00 y 15:00-20:00").isStationOpen(now = mondayMorning) shouldBe false
     }
 }
