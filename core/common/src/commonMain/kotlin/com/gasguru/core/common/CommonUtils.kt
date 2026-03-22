@@ -1,13 +1,13 @@
 package com.gasguru.core.common
 
 import com.gasguru.core.model.data.FuelStation
-import kotlinx.datetime.Clock
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Clock
 
 object CommonUtils {
 
