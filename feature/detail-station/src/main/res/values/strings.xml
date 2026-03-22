@@ -17,7 +17,7 @@
     <string name="friday_short">Friday</string>
     <string name="saturday_short">Saturday</string>
     <string name="sunday_short">Sunday</string>
-    <string name="update_now">Update now</string>
+    <string name="update_now">Verified now</string>
     <string name="update_minute_ago">Verified 1 minute ago</string>
     <string name="update_minutes_ago">Verified %d minutes ago</string>
     <string name="update_hour_ago">Verified 1 hour ago</string>
