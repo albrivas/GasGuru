@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gasguru.core.analytics.AnalyticsEvent
 import com.gasguru.core.analytics.AnalyticsHelper
+import com.gasguru.core.common.CommonUtils.isStationOpen
 import com.gasguru.core.domain.alerts.AddPriceAlertUseCase
 import com.gasguru.core.domain.alerts.RemovePriceAlertUseCase
 import com.gasguru.core.domain.fuelstation.GetFuelStationByIdUseCase
@@ -58,13 +59,15 @@ class DetailStationViewModel(
                         ).map {
                             DetailStationUiState.Success(
                                 stationModel = station.toUiModel(),
-                                address = it
+                                address = it,
+                                isOpen = station.isStationOpen(),
                             )
                         }.catch {
                             emit(
                                 DetailStationUiState.Success(
                                     stationModel = station.toUiModel(),
-                                    address = null
+                                    address = null,
+                                    isOpen = station.isStationOpen(),
                                 )
                             )
                         }

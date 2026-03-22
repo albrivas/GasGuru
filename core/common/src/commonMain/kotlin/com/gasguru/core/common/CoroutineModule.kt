@@ -9,7 +9,7 @@ import org.koin.dsl.module
 
 val coroutineModule = module {
     single<CoroutineDispatcher>(named(KoinQualifiers.DEFAULT_DISPATCHER)) { Dispatchers.Default }
-    single<CoroutineDispatcher>(named(KoinQualifiers.IO_DISPATCHER)) { Dispatchers.IO }
+    single<CoroutineDispatcher>(named(KoinQualifiers.IO_DISPATCHER)) { ioDispatcher }
     single<CoroutineDispatcher>(named(KoinQualifiers.MAIN_DISPATCHER)) { Dispatchers.Main }
     single<CoroutineDispatcher>(named(KoinQualifiers.MAIN_IMMEDIATE_DISPATCHER)) { Dispatchers.Main.immediate }
 

@@ -1,9 +1,8 @@
 import com.google.android.libraries.mapsplatform.secrets_gradle_plugin.loadPropertiesFile
 
 plugins {
-    alias(libs.plugins.gasguru.android.library)
+    alias(libs.plugins.gasguru.kmp.library)
     alias(libs.plugins.gasguru.koin)
-    alias(libs.plugins.gasguru.proguard)
 }
 
 val versionProperties = loadPropertiesFile("../../versions.properties")
@@ -22,24 +21,30 @@ android {
         buildConfigField("Integer", "versionCode", codeVersion)
     }
 
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-        }
-    }
-
     buildFeatures {
         buildConfig = true
     }
 }
 
-dependencies {
-    implementation(projects.core.model)
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.appcompat)
-    implementation(libs.material)
-    api(libs.play.services.maps)
-    implementation(libs.maps.compose)
-    
-    testImplementation(libs.junit)
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            implementation(projects.core.model)
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.koin.core)
+            api(libs.kotlinx.datetime)
+        }
+        androidMain.dependencies {
+            implementation(libs.androidx.core.ktx)
+            implementation(libs.appcompat)
+            implementation(libs.material)
+            api(libs.play.services.maps)
+            implementation(libs.maps.compose)
+            implementation(libs.koin.android)
+        }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotest.assertions.core)
+        }
+    }
 }

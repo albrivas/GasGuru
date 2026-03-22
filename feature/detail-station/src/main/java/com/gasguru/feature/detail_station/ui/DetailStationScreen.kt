@@ -149,7 +149,7 @@ internal fun DetailStationScreen(
         }
 
         is DetailStationUiState.Success -> {
-            val stationState = rememberDetailStationState(uiState.stationModel)
+            val stationState = rememberDetailStationState(station = uiState.stationModel, isOpen = uiState.isOpen)
             val context = LocalContext.current
             val shareText = stationState.buildShareText(address = uiState.address)
 
@@ -696,7 +696,8 @@ private fun DetailStationPreview() {
                     schedule = "L-V: 06:00-22:00; S: 07:00-22:00; D: 08:00-22:00",
                     brandStationBrandsType = FuelStationBrandsType.AZUL_OIL
                 ).toUiModel(),
-                address = null
+                address = null,
+                isOpen = true,
             ),
             staticMapUrl = null,
             lastUpdate = 0,
