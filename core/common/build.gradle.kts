@@ -32,7 +32,7 @@ kotlin {
             implementation(projects.core.model)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.koin.core)
-            implementation(libs.kotlinx.datetime)
+            api(libs.kotlinx.datetime)
         }
         androidMain.dependencies {
             implementation(libs.androidx.core.ktx)
