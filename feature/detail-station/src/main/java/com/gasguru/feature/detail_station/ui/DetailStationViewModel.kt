@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gasguru.core.analytics.AnalyticsEvent
 import com.gasguru.core.analytics.AnalyticsHelper
+import com.gasguru.core.common.CommonUtils.isStationOpen
 import com.gasguru.core.domain.alerts.AddPriceAlertUseCase
 import com.gasguru.core.domain.alerts.RemovePriceAlertUseCase
 import com.gasguru.core.domain.fuelstation.GetFuelStationByIdUseCase
@@ -17,7 +18,6 @@ import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.domain.vehicle.UpdateVehicleTankCapacityUseCase
 import com.gasguru.core.model.data.Vehicle
 import com.gasguru.core.model.data.principalVehicle
-import com.gasguru.core.common.CommonUtils.isStationOpen
 import com.gasguru.core.ui.mapper.toUiModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
