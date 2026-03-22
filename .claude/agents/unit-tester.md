@@ -9,6 +9,21 @@ model: sonnet
 
 Analiza el módulo objetivo, identifica qué clases necesitan tests y los genera usando la skill `gasguru-layer-testing`.
 
+## Modo de operación
+
+**Trabaja de forma completamente autónoma.** No pedir confirmación al usuario para:
+- Elegir qué clases testear
+- Decidir qué fakes crear y dónde ubicarlos
+- Resolver imports o dependencias de compilación
+- Corregir errores de compilación
+
+**Solo interrumpir si:**
+- Se requiere acceso a un archivo fuera del workspace
+- Hay un conflicto de permisos de escritura irrecuperable
+- Hay ambigüedad estructural que hace imposible continuar (ej: dos módulos con el mismo nombre)
+
+Ante cualquier duda sobre diseño o convención, tomar la decisión más conservadora y anotarla en el reporte final.
+
 ## Algoritmo
 
 ### 1. Descubrir clases
@@ -72,11 +87,51 @@ testImplementation(libs.junit5.api)
 testRuntimeOnly(libs.junit5.engine)
 ```
 
-### 8. Compilar
+### 8. Compilar y autocorregir
 ```bash
 ./gradlew :<module>:compileDebugUnitTestKotlin
 ```
-Corregir errores si los hay.
+Si hay errores:
+1. Leer el error completo
+2. Corregir sin preguntar al usuario
+3. Recompilar
+4. Repetir hasta que compile limpio o hasta 3 intentos por error
+
+Si tras 3 intentos el error persiste, anotarlo en el reporte como **bloqueante** y continuar con las demás clases.
+
+### 9. Generar reporte final
+
+Al terminar, imprimir el siguiente reporte en consola:
+```
+════════════════════════════════════════════
+  REPORTE DE TESTS — <NombreModulo>
+════════════════════════════════════════════
+
+📄 ARCHIVOS CREADOS
+  ✚ FooViewModelTest.kt          → CREADO    [8 tests]
+  ✚ BarUseCaseTest.kt            → CREADO    [5 tests]
+  ✚ FakeFooRepository.kt         → CREADO    [fake]
+
+📝 ARCHIVOS MODIFICADOS
+  ✎ BazMapperTest.kt             → MODIFICADO [+3 tests] (total: 7)
+
+⚠️  OMITIDOS
+  ─ QuxDataSource.kt             → Sin lógica testeable
+  ─ DiModule.kt                  → Descartado (módulo DI)
+
+🚫 BLOQUEANTES (compilación)
+  ✖ CorgeWorkerTest.kt           → Error irrecuperable: <mensaje corto>
+
+────────────────────────────────────────────
+  Total tests añadidos:    16
+  Archivos de test nuevos:  2
+  Fakes nuevos:             1
+════════════════════════════════════════════
+```
+
+Adaptar las secciones: omitir las que estén vacías.
+
+---
 
 ## Análisis de casos de test
 
@@ -96,7 +151,6 @@ Para cada clase, recorrer el código línea a línea buscando:
 8. **Cada llamada a dependencia externa** → test cuando la dependencia falla, test cuando devuelve vacío
 
 ### Ejemplos de casos que se pierden sin este análisis
-
 ```
 // Si el código tiene esto:
 fun calculatePrice(price: String): Double {
@@ -111,7 +165,6 @@ fun calculatePrice(price: String): Double {
 // ✓ string con múltiples comas → comportamiento
 // ✓ string con texto no numérico → excepción o manejo
 ```
-
 ```
 // Si el código tiene esto:
 fun isStationOpen(schedule: String?, currentTime: LocalTime): Boolean {
