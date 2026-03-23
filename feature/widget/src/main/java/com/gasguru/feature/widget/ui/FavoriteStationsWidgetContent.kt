@@ -23,8 +23,10 @@ import androidx.glance.layout.Column
 import androidx.glance.layout.Row
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
+import androidx.glance.layout.height
 import androidx.glance.layout.padding
 import androidx.glance.layout.size
+import androidx.glance.layout.width
 import androidx.glance.layout.wrapContentHeight
 import androidx.glance.text.Text
 import com.gasguru.core.model.data.PriceCategory
@@ -41,7 +43,7 @@ import com.gasguru.feature.widget.theme.WidgetStylePrice
 
 @Composable
 fun FavoriteStationsWidgetContent(
-    stations: List<FavoriteWidgetItemModel>,
+    stations: List<FavoriteWidgetItemModel>?,
     isCompact: Boolean = false,
 ) {
     GlanceTheme(colors = WidgetColorScheme.colors) {
@@ -51,10 +53,10 @@ fun FavoriteStationsWidgetContent(
                 .background(GlanceTheme.colors.widgetBackground),
         ) {
             WidgetHeader(isCompact = isCompact)
-            if (stations.isEmpty()) {
-                EmptyWidgetContent()
-            } else {
-                StationsListContent(
+            when {
+                stations == null -> LoadingWidgetContent(isCompact = isCompact)
+                stations.isEmpty() -> EmptyWidgetContent()
+                else -> StationsListContent(
                     stations = stations,
                     isCompact = isCompact,
                 )
@@ -89,6 +91,48 @@ private fun WidgetHeader(isCompact: Boolean) {
             text = context.getString(R.string.widget_title),
             style = WidgetStyleHeader.copy(color = GlanceTheme.colors.onSurface),
         )
+    }
+}
+
+@Composable
+private fun LoadingWidgetContent(isCompact: Boolean) {
+    val verticalPadding = if (isCompact) 4.dp else 8.dp
+    val rowCount = if (isCompact) 2 else 3
+    Column(modifier = GlanceModifier.fillMaxSize().padding(horizontal = 12.dp)) {
+        repeat(rowCount) {
+            Row(
+                modifier = GlanceModifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .padding(vertical = verticalPadding),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column(modifier = GlanceModifier.defaultWeight().padding(end = 8.dp)) {
+                    Box(
+                        modifier = GlanceModifier
+                            .fillMaxWidth()
+                            .height(15.dp)
+                            .cornerRadius(4.dp)
+                            .background(GlanceTheme.colors.surfaceVariant),
+                    ) {}
+                    Box(
+                        modifier = GlanceModifier
+                            .width(120.dp)
+                            .height(13.dp)
+                            .cornerRadius(4.dp)
+                            .padding(top = 4.dp)
+                            .background(GlanceTheme.colors.surfaceVariant),
+                    ) {}
+                }
+                Box(
+                    modifier = GlanceModifier
+                        .width(64.dp)
+                        .height(28.dp)
+                        .cornerRadius(16.dp)
+                        .background(GlanceTheme.colors.surfaceVariant),
+                ) {}
+            }
+        }
     }
 }
 
