@@ -3,8 +3,11 @@ package com.gasguru.feature.widget.ui
 import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
+import androidx.glance.ColorFilter
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
+import androidx.glance.Image
+import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
 import androidx.glance.action.actionParametersOf
 import androidx.glance.action.clickable
@@ -21,6 +24,7 @@ import androidx.glance.layout.Row
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.padding
+import androidx.glance.layout.size
 import androidx.glance.layout.wrapContentHeight
 import androidx.glance.text.Text
 import com.gasguru.core.model.data.PriceCategory
@@ -75,6 +79,12 @@ private fun WidgetHeader(isCompact: Boolean) {
             .clickable(actionStartActivity(openAppIntent)),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        Image(
+            provider = ImageProvider(R.drawable.ic_widget_logo),
+            contentDescription = null,
+            modifier = GlanceModifier.size(20.dp).padding(end = 6.dp),
+            colorFilter = ColorFilter.tint(GlanceTheme.colors.onSurface),
+        )
         Text(
             text = context.getString(R.string.widget_title),
             style = WidgetStyleHeader.copy(color = GlanceTheme.colors.onSurface),
@@ -141,7 +151,7 @@ private fun StationWidgetItem(
             ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Column(modifier = GlanceModifier.defaultWeight()) {
+        Column(modifier = GlanceModifier.defaultWeight().padding(end = 8.dp)) {
             Text(
                 text = stationItem.name,
                 style = WidgetStyleBodyMedium.copy(color = GlanceTheme.colors.onSurface),
