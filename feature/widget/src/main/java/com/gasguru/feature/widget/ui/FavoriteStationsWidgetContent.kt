@@ -3,7 +3,6 @@ package com.gasguru.feature.widget.ui
 import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
-import androidx.glance.ColorFilter
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
 import androidx.glance.Image
@@ -11,6 +10,7 @@ import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
 import androidx.glance.action.actionParametersOf
 import androidx.glance.action.clickable
+import androidx.glance.appwidget.CircularProgressIndicator
 import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.cornerRadius
@@ -26,10 +26,10 @@ import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.height
 import androidx.glance.layout.padding
 import androidx.glance.layout.size
-import androidx.glance.layout.width
 import androidx.glance.layout.wrapContentHeight
 import androidx.glance.text.Text
 import com.gasguru.core.model.data.PriceCategory
+import com.gasguru.core.ui.R as CoreUiR
 import com.gasguru.feature.widget.R
 import com.gasguru.feature.widget.model.FavoriteWidgetItemModel
 import com.gasguru.feature.widget.theme.WidgetColorScheme
@@ -54,7 +54,7 @@ fun FavoriteStationsWidgetContent(
         ) {
             WidgetHeader(isCompact = isCompact)
             when {
-                stations == null -> LoadingWidgetContent(isCompact = isCompact)
+                stations == null -> LoadingWidgetContent()
                 stations.isEmpty() -> EmptyWidgetContent()
                 else -> StationsListContent(
                     stations = stations,
@@ -82,10 +82,9 @@ private fun WidgetHeader(isCompact: Boolean) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Image(
-            provider = ImageProvider(R.drawable.ic_widget_logo),
+            provider = ImageProvider(CoreUiR.mipmap.ic_launcher),
             contentDescription = null,
-            modifier = GlanceModifier.size(20.dp).padding(end = 6.dp),
-            colorFilter = ColorFilter.tint(GlanceTheme.colors.onSurface),
+            modifier = GlanceModifier.size(32.dp).padding(end = 6.dp),
         )
         Text(
             text = context.getString(R.string.widget_title),
@@ -95,44 +94,14 @@ private fun WidgetHeader(isCompact: Boolean) {
 }
 
 @Composable
-private fun LoadingWidgetContent(isCompact: Boolean) {
-    val verticalPadding = if (isCompact) 4.dp else 8.dp
-    val rowCount = if (isCompact) 2 else 3
-    Column(modifier = GlanceModifier.fillMaxSize().padding(horizontal = 12.dp)) {
-        repeat(rowCount) {
-            Row(
-                modifier = GlanceModifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .padding(vertical = verticalPadding),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Column(modifier = GlanceModifier.defaultWeight().padding(end = 8.dp)) {
-                    Box(
-                        modifier = GlanceModifier
-                            .fillMaxWidth()
-                            .height(15.dp)
-                            .cornerRadius(4.dp)
-                            .background(GlanceTheme.colors.surfaceVariant),
-                    ) {}
-                    Box(
-                        modifier = GlanceModifier
-                            .width(120.dp)
-                            .height(13.dp)
-                            .cornerRadius(4.dp)
-                            .padding(top = 4.dp)
-                            .background(GlanceTheme.colors.surfaceVariant),
-                    ) {}
-                }
-                Box(
-                    modifier = GlanceModifier
-                        .width(64.dp)
-                        .height(28.dp)
-                        .cornerRadius(16.dp)
-                        .background(GlanceTheme.colors.surfaceVariant),
-                ) {}
-            }
-        }
+private fun LoadingWidgetContent() {
+    Box(
+        modifier = GlanceModifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        CircularProgressIndicator(
+            color = WidgetColors.loading,
+        )
     }
 }
 
@@ -182,12 +151,12 @@ private fun StationWidgetItem(
     stationItem: FavoriteWidgetItemModel,
     isCompact: Boolean,
 ) {
-    val verticalPadding = if (isCompact) 4.dp else 8.dp
+    val itemHeight = if (isCompact) 40.dp else 52.dp
     Row(
         modifier = GlanceModifier
             .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(horizontal = 12.dp, vertical = verticalPadding)
+            .height(itemHeight)
+            .padding(horizontal = 12.dp)
             .clickable(
                 actionRunCallback<WidgetStationClickCallback>(
                     actionParametersOf(WidgetStationClickCallback.stationIdKey to stationItem.idServiceStation),
