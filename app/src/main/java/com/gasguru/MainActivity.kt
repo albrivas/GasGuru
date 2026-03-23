@@ -135,11 +135,9 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun handleIntent(intent: Intent) {
-        val stationId = intent.getStringExtra("station_id")?.toIntOrNull()
-        stationId?.let {
-            // Store for later instead of navigating immediately
-            deepLinkStateHolder.setPendingStationId(stationId = it)
-        }
+        val stationId = intent.getStringExtra("station_id")?.toIntOrNull() ?: return
+        intent.removeExtra("station_id")
+        deepLinkStateHolder.setPendingStationId(stationId = stationId)
     }
 
     override fun onNewIntent(intent: Intent) {
