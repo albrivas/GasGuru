@@ -78,43 +78,6 @@ Cada variante tiene su propio layout de preview estático (Views normales, no Gl
 
 Los colores del preview se definen en `res/values/colors.xml` (y `values-night/` para dark mode).
 
-## Android 16: métricas de engagement
-
-Android 16 (API 36) introduce `AppWidgetManager.queryAppWidgetEvents()`, una API que permite a las apps consultar métricas de interacción con sus widgets.
-
-### Qué mide
-
-Cada `AppWidgetEvent` expone:
-
-| Campo | Descripción |
-|-------|-------------|
-| `appWidgetId` | ID del widget concreto |
-| `visibleDuration` | Tiempo que el widget estuvo visible en pantalla |
-| `clickedIds` | IDs de las vistas que recibieron tap |
-| `scrolledIds` | IDs de las listas que se scrollearon |
-
-Los eventos se agregan por defecto cada hora. En desarrollo se puede forzar reporting inmediato con:
-```
-adb shell device_config put systemui widget_events_report_interval_ms 0
-```
-
-### Implementación en GasGuru
-
-`WidgetMetricsWorker` (`:feature:widget`) consulta los eventos de la última hora y los reporta a Mixpanel como `widget_metrics_reported` con los parámetros `widget_id`, `widget_visible_duration_ms` y `widget_click_count`.
-
-El worker solo se registra en dispositivos Android 16+ (guard `Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA`). Se programa al instalar el primer widget (`onEnabled`) y se cancela al eliminar el último (`onDisabled`).
-
-```
-onEnabled  →  WorkManager.enqueueUniquePeriodicWork("widget_metrics_worker", KEEP, cada 1h)
-onDisabled →  WorkManager.cancelUniqueWork("widget_metrics_worker")
-```
-
-### Por qué tiene sentido
-
-- Permite saber si los usuarios interactúan con el widget o solo lo tienen de adorno.
-- Identifica si hay estaciones que se pulsan más desde el widget que desde la app.
-- Mide el tiempo visible para evaluar si el widget aporta valor en la pantalla de inicio.
-
 ## Limitaciones conocidas
 
 - **Sin distancia**: no se puede obtener la localización en background de forma fiable.

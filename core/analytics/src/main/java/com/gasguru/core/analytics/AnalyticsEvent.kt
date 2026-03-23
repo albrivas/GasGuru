@@ -79,7 +79,6 @@ data class AnalyticsEvent(
 
         // Widget
         const val WIDGET_STATION_TAPPED = "widget_station_tapped"
-        const val WIDGET_METRICS_REPORTED = "widget_metrics_reported"
 
         // Android Auto
         const val AUTO_SESSION_STARTED = "auto_session_started"
@@ -172,7 +171,6 @@ data class AnalyticsEvent(
             -> PUSH
 
             Types.WIDGET_STATION_TAPPED,
-            Types.WIDGET_METRICS_REPORTED,
             -> WIDGET
 
             Types.AUTO_SESSION_STARTED,
@@ -196,9 +194,6 @@ data class AnalyticsEvent(
         const val VEHICLES_REMAINING = "vehicles_remaining"
         const val STATION_COUNT = "station_count"
         const val STATION_ID = "station_id"
-        const val WIDGET_ID = "widget_id"
-        const val WIDGET_VISIBLE_DURATION_MS = "widget_visible_duration_ms"
-        const val WIDGET_CLICK_COUNT = "widget_click_count"
         const val BRAND_COUNT = "brand_count"
         const val BRAND_NAMES = "brand_names"
         const val NEARBY_KM = "nearby_km"
