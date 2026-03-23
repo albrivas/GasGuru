@@ -1,7 +1,8 @@
 package com.gasguru.core.database.migrations
 
 import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.sqlite.SQLiteConnection
+import androidx.sqlite.execSQL
 
 const val DB_VERSION_2 = 2
 const val DB_VERSION_3 = 3
@@ -17,20 +18,20 @@ const val DB_VERSION_12 = 12
 const val DB_VERSION_13 = 13
 
 internal val MIGRATION_2_3 = object : Migration(DB_VERSION_2, DB_VERSION_3) {
-    override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL("ALTER TABLE 'fuel-station' ADD COLUMN 'lastUpdate' INTEGER NOT NULL DEFAULT 0")
+    override fun migrate(connection: SQLiteConnection) {
+        connection.execSQL("ALTER TABLE 'fuel-station' ADD COLUMN 'lastUpdate' INTEGER NOT NULL DEFAULT 0")
     }
 }
 
 internal val MIGRATION_3_4 = object : Migration(DB_VERSION_3, DB_VERSION_4) {
-    override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL("ALTER TABLE 'fuel-station' ADD COLUMN 'isFavorite' INTEGER NOT NULL DEFAULT 0")
+    override fun migrate(connection: SQLiteConnection) {
+        connection.execSQL("ALTER TABLE 'fuel-station' ADD COLUMN 'isFavorite' INTEGER NOT NULL DEFAULT 0")
     }
 }
 
 internal val MIGRATION_4_5 = object : Migration(DB_VERSION_4, DB_VERSION_5) {
-    override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL(
+    override fun migrate(connection: SQLiteConnection) {
+        connection.execSQL(
             """
                 CREATE TABLE IF NOT EXISTS `favorite_station_cross_ref` (
                     `id` INTEGER NOT NULL,
@@ -43,14 +44,14 @@ internal val MIGRATION_4_5 = object : Migration(DB_VERSION_4, DB_VERSION_5) {
 }
 
 internal val MIGRATION_5_6 = object : Migration(DB_VERSION_5, DB_VERSION_6) {
-    override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL("ALTER TABLE 'user-data' ADD COLUMN 'lastUpdate' INTEGER NOT NULL DEFAULT 0")
+    override fun migrate(connection: SQLiteConnection) {
+        connection.execSQL("ALTER TABLE 'user-data' ADD COLUMN 'lastUpdate' INTEGER NOT NULL DEFAULT 0")
     }
 }
 
 internal val MIGRATION_6_7 = object : Migration(DB_VERSION_6, DB_VERSION_7) {
-    override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL(
+    override fun migrate(connection: SQLiteConnection) {
+        connection.execSQL(
             """
                 CREATE TABLE IF NOT EXISTS 'filter' (
                     'id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -63,27 +64,27 @@ internal val MIGRATION_6_7 = object : Migration(DB_VERSION_6, DB_VERSION_7) {
 }
 
 internal val MIGRATION_7_8 = object : Migration(DB_VERSION_7, DB_VERSION_8) {
-    override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL("ALTER TABLE 'user-data' ADD COLUMN 'isOnboardingSuccess' INTEGER NOT NULL DEFAULT 0")
+    override fun migrate(connection: SQLiteConnection) {
+        connection.execSQL("ALTER TABLE 'user-data' ADD COLUMN 'isOnboardingSuccess' INTEGER NOT NULL DEFAULT 0")
     }
 }
 
 internal val MIGRATION_8_9 = object : Migration(DB_VERSION_8, DB_VERSION_9) {
-    override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL("ALTER TABLE 'user-data' ADD COLUMN 'themeModeId' INTEGER NOT NULL DEFAULT 3")
+    override fun migrate(connection: SQLiteConnection) {
+        connection.execSQL("ALTER TABLE 'user-data' ADD COLUMN 'themeModeId' INTEGER NOT NULL DEFAULT 3")
     }
 }
 
 internal val MIGRATION_9_10 = object : Migration(DB_VERSION_9, DB_VERSION_10) {
-    override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL("CREATE INDEX IF NOT EXISTS `index_location` ON `fuel-station` (`latitude`, `longitudeWGS84`)")
+    override fun migrate(connection: SQLiteConnection) {
+        connection.execSQL("CREATE INDEX IF NOT EXISTS `index_location` ON `fuel-station` (`latitude`, `longitudeWGS84`)")
     }
 }
 
 internal val MIGRATION_10_11 = object : Migration(DB_VERSION_10, DB_VERSION_11) {
-    override fun migrate(db: SupportSQLiteDatabase) {
+    override fun migrate(connection: SQLiteConnection) {
         // 1. Create new simplified table for favorite stations
-        db.execSQL(
+        connection.execSQL(
             """
                 CREATE TABLE IF NOT EXISTS `favorite_stations` (
                     `idServiceStation` INTEGER NOT NULL,
@@ -93,7 +94,7 @@ internal val MIGRATION_10_11 = object : Migration(DB_VERSION_10, DB_VERSION_11) 
         )
 
         // 2. Migrate existing data from cross-reference table (if any)
-        db.execSQL(
+        connection.execSQL(
             """
                 INSERT OR IGNORE INTO `favorite_stations` (`idServiceStation`)
                 SELECT DISTINCT `idServiceStation`
@@ -102,13 +103,13 @@ internal val MIGRATION_10_11 = object : Migration(DB_VERSION_10, DB_VERSION_11) 
         )
 
         // 3. Drop obsolete cross-reference table
-        db.execSQL("DROP TABLE IF EXISTS `favorite_station_cross_ref`")
+        connection.execSQL("DROP TABLE IF EXISTS `favorite_station_cross_ref`")
     }
 }
 
 internal val MIGRATION_11_12 = object : Migration(DB_VERSION_11, DB_VERSION_12) {
-    override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL(
+    override fun migrate(connection: SQLiteConnection) {
+        connection.execSQL(
             """
                 CREATE TABLE IF NOT EXISTS `price_alerts` (
                     `stationId` INTEGER NOT NULL,
@@ -124,8 +125,8 @@ internal val MIGRATION_11_12 = object : Migration(DB_VERSION_11, DB_VERSION_12) 
 }
 
 internal val MIGRATION_12_13 = object : Migration(DB_VERSION_12, DB_VERSION_13) {
-    override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL("ALTER TABLE 'fuel-station' ADD COLUMN 'priceAdblue' REAL NOT NULL DEFAULT 0.0")
+    override fun migrate(connection: SQLiteConnection) {
+        connection.execSQL("ALTER TABLE 'fuel-station' ADD COLUMN 'priceAdblue' REAL NOT NULL DEFAULT 0.0")
     }
 }
 
@@ -134,9 +135,9 @@ const val DB_VERSION_15 = 15
 const val DB_VERSION_16 = 16
 
 internal val MIGRATION_13_14 = object : Migration(DB_VERSION_13, DB_VERSION_14) {
-    override fun migrate(db: SupportSQLiteDatabase) {
+    override fun migrate(connection: SQLiteConnection) {
         // 1. Create vehicles table
-        db.execSQL(
+        connection.execSQL(
             """
                 CREATE TABLE IF NOT EXISTS `vehicles` (
                     `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -148,12 +149,12 @@ internal val MIGRATION_13_14 = object : Migration(DB_VERSION_13, DB_VERSION_14) 
                 )
             """.trimIndent()
         )
-        db.execSQL(
+        connection.execSQL(
             "CREATE INDEX IF NOT EXISTS `index_vehicles_userId` ON `vehicles` (`userId`)"
         )
 
         // 2. Copy fuelSelection from user-data into the new vehicles table
-        db.execSQL(
+        connection.execSQL(
             """
                 INSERT INTO `vehicles` (`userId`, `name`, `fuelType`, `tankCapacity`)
                 SELECT `id`, NULL, `fuelSelection`, 40
@@ -162,7 +163,7 @@ internal val MIGRATION_13_14 = object : Migration(DB_VERSION_13, DB_VERSION_14) 
         )
 
         // 3. Recreate user-data without fuelSelection
-        db.execSQL(
+        connection.execSQL(
             """
                 CREATE TABLE `user-data_new` (
                     `id` INTEGER PRIMARY KEY NOT NULL,
@@ -172,28 +173,28 @@ internal val MIGRATION_13_14 = object : Migration(DB_VERSION_13, DB_VERSION_14) 
                 )
             """.trimIndent()
         )
-        db.execSQL(
+        connection.execSQL(
             """
                 INSERT INTO `user-data_new` (`id`, `lastUpdate`, `isOnboardingSuccess`, `themeModeId`)
                 SELECT `id`, `lastUpdate`, `isOnboardingSuccess`, `themeModeId`
                 FROM `user-data`
             """.trimIndent()
         )
-        db.execSQL("DROP TABLE `user-data`")
-        db.execSQL("ALTER TABLE `user-data_new` RENAME TO `user-data`")
+        connection.execSQL("DROP TABLE `user-data`")
+        connection.execSQL("ALTER TABLE `user-data_new` RENAME TO `user-data`")
     }
 }
 
 internal val MIGRATION_14_15 = object : Migration(DB_VERSION_14, DB_VERSION_15) {
-    override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL("ALTER TABLE `vehicles` ADD COLUMN `vehicleType` TEXT NOT NULL DEFAULT 'CAR'")
-        db.execSQL("ALTER TABLE `vehicles` ADD COLUMN `isPrincipal` INTEGER NOT NULL DEFAULT 0")
+    override fun migrate(connection: SQLiteConnection) {
+        connection.execSQL("ALTER TABLE `vehicles` ADD COLUMN `vehicleType` TEXT NOT NULL DEFAULT 'CAR'")
+        connection.execSQL("ALTER TABLE `vehicles` ADD COLUMN `isPrincipal` INTEGER NOT NULL DEFAULT 0")
     }
 }
 
 internal val MIGRATION_15_16 = object : Migration(DB_VERSION_15, DB_VERSION_16) {
-    override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL(
+    override fun migrate(connection: SQLiteConnection) {
+        connection.execSQL(
             "UPDATE vehicles SET isPrincipal = 1 WHERE id IN (SELECT MIN(id) FROM vehicles GROUP BY userId)",
         )
     }

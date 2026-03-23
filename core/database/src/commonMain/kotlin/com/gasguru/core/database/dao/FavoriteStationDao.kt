@@ -24,7 +24,7 @@ interface FavoriteStationDao {
     @Transaction
     @Query(
         """
-        SELECT fs.* FROM `fuel-station` fs 
+        SELECT fs.* FROM `fuel-station` fs
         INNER JOIN favorite_stations fav ON fs.idServiceStation = fav.idServiceStation
     """
     )

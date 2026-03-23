@@ -27,10 +27,10 @@ interface PriceAlertDao {
 
     @Query(
         """
-        SELECT COUNT(*) FROM price_alerts 
+        SELECT COUNT(*) FROM price_alerts
         WHERE typeModification = 'INSERT'
         AND stationId NOT IN (
-            SELECT stationId FROM price_alerts 
+            SELECT stationId FROM price_alerts
             WHERE typeModification = 'DELETE' AND isSynced = 0
         )
     """
@@ -39,10 +39,10 @@ interface PriceAlertDao {
 
     @Query(
         """
-        SELECT * FROM price_alerts 
+        SELECT * FROM price_alerts
         WHERE typeModification = 'INSERT'
         AND stationId NOT IN (
-            SELECT stationId FROM price_alerts 
+            SELECT stationId FROM price_alerts
             WHERE typeModification = 'DELETE' AND isSynced = 0
         )
     """

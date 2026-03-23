@@ -2,7 +2,8 @@ package com.gasguru.core.database.di
 
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.sqlite.SQLiteConnection
+import androidx.sqlite.execSQL
 import com.gasguru.core.database.GasGuruDatabase
 import com.gasguru.core.database.migrations.MIGRATION_10_11
 import com.gasguru.core.database.migrations.MIGRATION_11_12
@@ -23,10 +24,9 @@ import org.koin.dsl.module
 
 val databaseModule = module {
     single {
-        Room.databaseBuilder(
-            androidContext(),
-            GasGuruDatabase::class.java,
-            "fuel-pump-database",
+        Room.databaseBuilder<GasGuruDatabase>(
+            context = androidContext(),
+            name = "fuel-pump-database",
         ).addMigrations(
             MIGRATION_2_3,
             MIGRATION_3_4,
@@ -44,9 +44,8 @@ val databaseModule = module {
             MIGRATION_15_16,
         ).addCallback(
             object : RoomDatabase.Callback() {
-                override fun onCreate(db: SupportSQLiteDatabase) {
-                    super.onCreate(db)
-                    db.execSQL(
+                override fun onCreate(connection: SQLiteConnection) {
+                    connection.execSQL(
                         "INSERT OR IGNORE INTO `user-data` " +
                             "(id, lastUpdate, isOnboardingSuccess, themeModeId) " +
                             "VALUES (0, 0, 0, 3)",
