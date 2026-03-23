@@ -67,15 +67,22 @@ El proyecto ya tiene un módulo KMP (`:core:network`) que sirve como referencia,
 - [ ] PR → develop y merge
 
 ### Phase 3: `:core:database`
-- [ ] Crear rama `feature/kmp-phase3-core-database` desde `develop`
-- [ ] Cambiar plugin a `gasguru.kmp.room`
-- [ ] Migrar `ListConverters` de Moshi a kotlinx-serialization
-- [ ] Mover entities, DAOs, migrations, type converters a commonMain
-- [ ] Añadir `@ConstructedBy` a `GasGuruDatabase`
-- [ ] DI split: DatabaseModule androidMain/iosMain, DaoModule commonMain
-- [ ] Test de compatibilidad JSON (Moshi vs kotlinx-serialization)
-- [ ] DAO tests Android pasan
-- [ ] `./gradlew :core:database:build` compila Android + iOS
+- [x] Crear rama `feature/kmp-phase-3` desde `develop`
+- [x] Subir Room a `2.8.4` (latest stable KMP)
+- [x] Cambiar plugin a `gasguru.kmp.room` + `gasguru.kmp.library` + `kotlin.serialization`
+- [x] Migrar `ListConverters` de Moshi a kotlinx-serialization
+- [x] Mover entities, DAOs, migrations, type converters a commonMain
+- [x] Añadir `@ConstructedBy` a `GasGuruDatabase`
+- [x] Actualizar 14 migraciones: `SupportSQLiteDatabase` → `SQLiteConnection` (Room KMP API)
+- [x] Reemplazar `System.currentTimeMillis()` → `Clock.System.now()` (`kotlin.time`) en `PriceAlertEntity`
+- [x] DI split: DatabaseModule androidMain/iosMain, DaoModule commonMain
+- [x] Tests de compatibilidad JSON (Moshi vs kotlinx-serialization) en commonTest
+- [x] `UserDataConvertersTest` y `ListConvertersTest` en commonTest
+- [x] `DataBaseMigrationUnitTest` en androidUnitTest (actualizado para SQLiteConnection)
+- [x] `./gradlew :core:database:assembleDebug` compila ✅
+- [x] `./gradlew :core:database:compileKotlinIosSimulatorArm64` compila ✅
+- [x] `./gradlew :core:data:assembleDebug` compila ✅
+- [ ] `./gradlew :core:database:connectedAndroidTest` pasa en dispositivo
 - [ ] PR → develop y merge
 
 ### Phase 4: Lógica de Negocio
