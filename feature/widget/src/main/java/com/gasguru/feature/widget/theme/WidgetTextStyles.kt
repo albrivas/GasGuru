@@ -21,15 +21,15 @@ internal val WidgetStyleEmptySubtitle = TextStyle(
     fontSize = 12.sp,
 )
 
-// Matches GasGuruTypography.smallBold at 13sp Medium — station name
+// Matches GasGuruTypography.smallBold at 15sp Medium — station name
 internal val WidgetStyleBodyMedium = TextStyle(
     fontWeight = FontWeight.Medium,
-    fontSize = 13.sp,
+    fontSize = 15.sp,
 )
 
-// Matches GasGuruTypography.captionRegular at 11sp — address / secondary text
+// Matches GasGuruTypography.captionRegular at 13sp — address / secondary text
 internal val WidgetStyleCaption = TextStyle(
-    fontSize = 11.sp,
+    fontSize = 13.sp,
 )
 
 // Matches GasGuruTypography.smallBold at 13sp Bold — price
