@@ -1,7 +1,9 @@
 package com.gasguru.core.database
 
+import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.RoomDatabaseConstructor
 import androidx.room.TypeConverters
 import com.gasguru.core.database.converters.FilterTypeConverter
 import com.gasguru.core.database.converters.ListConverters
@@ -21,6 +23,9 @@ import com.gasguru.core.database.model.RecentSearchQueryEntity
 import com.gasguru.core.database.model.UserDataEntity
 import com.gasguru.core.database.model.VehicleEntity
 
+@Suppress("NO_ACTUAL_FOR_EXPECT")
+expect object GasGuruDatabaseConstructor : RoomDatabaseConstructor<GasGuruDatabase>
+
 @Database(
     entities = [
         FuelStationEntity::class,
@@ -35,6 +40,7 @@ import com.gasguru.core.database.model.VehicleEntity
     exportSchema = true,
 )
 @TypeConverters(UserDataConverters::class, ListConverters::class, FilterTypeConverter::class)
+@ConstructedBy(GasGuruDatabaseConstructor::class)
 abstract class GasGuruDatabase : RoomDatabase() {
     abstract fun fuelStationDao(): FuelStationDao
     abstract fun userDataDao(): UserDataDao
