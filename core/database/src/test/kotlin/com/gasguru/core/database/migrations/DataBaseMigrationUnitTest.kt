@@ -1,6 +1,6 @@
 package com.gasguru.core.database.migrations
 
-import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.sqlite.SQLiteConnection
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.DisplayName
@@ -10,18 +10,22 @@ class DataBaseMigrationUnitTest {
 
     @Test
     @DisplayName(
-        "GIVEN migration 14 to 15 WHEN migrate is called THEN vehicleType and isPrincipal columns are added"
+        """
+        GIVEN migration 14 to 15
+        WHEN migrate is called
+        THEN vehicleType and isPrincipal columns are added
+        """
     )
     fun migration14to15AddsVehicleTypeAndIsPrincipalColumns() {
-        val db = mockk<SupportSQLiteDatabase>(relaxed = true)
+        val connection = mockk<SQLiteConnection>(relaxed = true)
 
-        MIGRATION_14_15.migrate(db)
+        MIGRATION_14_15.migrate(connection = connection)
 
         verify {
-            db.execSQL("ALTER TABLE `vehicles` ADD COLUMN `vehicleType` TEXT NOT NULL DEFAULT 'CAR'")
+            connection.prepare("ALTER TABLE `vehicles` ADD COLUMN `vehicleType` TEXT NOT NULL DEFAULT 'CAR'")
         }
         verify {
-            db.execSQL("ALTER TABLE `vehicles` ADD COLUMN `isPrincipal` INTEGER NOT NULL DEFAULT 0")
+            connection.prepare("ALTER TABLE `vehicles` ADD COLUMN `isPrincipal` INTEGER NOT NULL DEFAULT 0")
         }
     }
 
@@ -34,12 +38,12 @@ class DataBaseMigrationUnitTest {
         """
     )
     fun migration15to16SetsFirstVehiclePerUserAsPrincipal() {
-        val db = mockk<SupportSQLiteDatabase>(relaxed = true)
+        val connection = mockk<SQLiteConnection>(relaxed = true)
 
-        MIGRATION_15_16.migrate(db)
+        MIGRATION_15_16.migrate(connection = connection)
 
         verify {
-            db.execSQL(
+            connection.prepare(
                 "UPDATE vehicles SET isPrincipal = 1 WHERE id IN (SELECT MIN(id) FROM vehicles GROUP BY userId)",
             )
         }
