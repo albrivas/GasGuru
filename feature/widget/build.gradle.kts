@@ -14,6 +14,7 @@ dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.model)
     implementation(projects.core.common)
+    implementation(projects.core.ui)
     implementation(projects.core.uikit)
 
     implementation(libs.androidx.glance.appwidget)
