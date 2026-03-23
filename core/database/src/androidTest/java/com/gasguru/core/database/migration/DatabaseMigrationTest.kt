@@ -7,6 +7,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.gasguru.core.database.GasGuruDatabase
 import com.gasguru.core.database.migrations.MIGRATION_13_14
 import com.gasguru.core.database.migrations.MIGRATION_14_15
+import com.gasguru.core.database.migrations.MIGRATION_15_16
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName
@@ -117,6 +118,36 @@ class DatabaseMigrationTest {
         assertEquals(1, cursor.count)
         cursor.moveToFirst()
         assertEquals("CAR", cursor.getString(cursor.getColumnIndexOrThrow("vehicleType")))
+        assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("isPrincipal")))
+        cursor.close()
+        db.close()
+    }
+
+    @Test
+    @DisplayName("GIVEN multiple vehicles per user in v15 WHEN migrating to v16 THEN first vehicle per user is marked as principal")
+    fun migrate15to16_setsFirstVehiclePerUserAsPrincipal() {
+        helper.createDatabase(TEST_DB, 15).apply {
+            execSQL(
+                "INSERT INTO `user-data` (id, lastUpdate, isOnboardingSuccess, themeModeId) VALUES (0, 0, 1, 3)"
+            )
+            execSQL(
+                "INSERT INTO `vehicles` (id, userId, name, fuelType, tankCapacity, vehicleType, isPrincipal) VALUES (1, 0, NULL, 'GASOLINE_95', 40, 'CAR', 0)"
+            )
+            execSQL(
+                "INSERT INTO `vehicles` (id, userId, name, fuelType, tankCapacity, vehicleType, isPrincipal) VALUES (2, 0, NULL, 'DIESEL', 50, 'CAR', 0)"
+            )
+            close()
+        }
+
+        val db = helper.runMigrationsAndValidate(TEST_DB, 16, true, MIGRATION_15_16)
+
+        val cursor = db.query("SELECT id, isPrincipal FROM vehicles ORDER BY id")
+        assertEquals(2, cursor.count)
+        cursor.moveToFirst()
+        assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("id")))
+        assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("isPrincipal")))
+        cursor.moveToNext()
+        assertEquals(2, cursor.getInt(cursor.getColumnIndexOrThrow("id")))
         assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("isPrincipal")))
         cursor.close()
         db.close()
