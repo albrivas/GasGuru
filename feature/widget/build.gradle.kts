@@ -16,7 +16,6 @@ dependencies {
     implementation(projects.core.common)
     implementation(projects.core.uikit)
 
-    implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.glance.appwidget)
     implementation(libs.androidx.glance.material3)
 
