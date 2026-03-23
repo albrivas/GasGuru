@@ -29,7 +29,6 @@ import androidx.glance.layout.size
 import androidx.glance.layout.wrapContentHeight
 import androidx.glance.text.Text
 import com.gasguru.core.model.data.PriceCategory
-import com.gasguru.core.ui.R as CoreUiR
 import com.gasguru.feature.widget.R
 import com.gasguru.feature.widget.model.FavoriteWidgetItemModel
 import com.gasguru.feature.widget.theme.WidgetColorScheme
@@ -40,6 +39,7 @@ import com.gasguru.feature.widget.theme.WidgetStyleEmptySubtitle
 import com.gasguru.feature.widget.theme.WidgetStyleEmptyTitle
 import com.gasguru.feature.widget.theme.WidgetStyleHeader
 import com.gasguru.feature.widget.theme.WidgetStylePrice
+import com.gasguru.core.ui.R as CoreUiR
 
 @Composable
 fun FavoriteStationsWidgetContent(
