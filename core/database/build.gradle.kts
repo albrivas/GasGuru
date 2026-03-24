@@ -7,10 +7,6 @@ plugins {
 
 android {
     namespace = "com.gasguru.core.database"
-
-    sourceSets {
-        getByName("androidTest").assets.srcDir("$projectDir/schemas")
-    }
 }
 
 kotlin {
@@ -29,16 +25,10 @@ kotlin {
         }
         androidUnitTest.dependencies {
             implementation(libs.mockk)
-        }
-        androidInstrumentedTest.dependencies {
-            implementation(libs.junit5.api)
-            implementation(libs.junit5.extensions)
-            implementation(libs.junit5.runner)
             runtimeOnly(libs.junit5.engine)
-            implementation(libs.androidx.test.core)
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.turbine)
-            implementation(libs.androidx.room.testing)
+            implementation(libs.androidx.sqlite.bundled)
         }
     }
 }
