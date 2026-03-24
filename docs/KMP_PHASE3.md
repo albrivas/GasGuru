@@ -107,9 +107,32 @@ Room.databaseBuilder<GasGuruDatabase>(
 |------|-----------|--------|
 | `ListConvertersTest` | commonTest | Lógica pura kotlinx-serialization |
 | `UserDataConvertersTest` | commonTest | Lógica pura Kotlin, sin Android |
-| `DataBaseMigrationUnitTest` | androidUnitTest (`src/test/kotlin/`) | MockK es JVM-only; verifica SQL de migraciones |
-| DAO tests (6 ficheros) | androidInstrumentedTest (`src/androidTest/`) | Necesitan `Context` + SQLite real en dispositivo |
-| `DatabaseMigrationTest` | androidInstrumentedTest | `MigrationTestHelper` es Android-only |
+| DAO tests (6 ficheros) | androidUnitTest (`src/test/kotlin/`) | `BundledSQLiteDriver` — JVM puro, sin dispositivo |
+| `DatabaseMigrationTest` | androidUnitTest (`src/test/kotlin/`) | `BundledSQLiteDriver` + `SQLiteConnection` directo, sin dispositivo |
+
+> No hay tests en `androidInstrumentedTest`. Todos los tests de Room corren en JVM via `BundledSQLiteDriver`.
+
+**Patrón DAO tests** (`BundledSQLiteDriver`):
+```kotlin
+db = Room.inMemoryDatabaseBuilder<GasGuruDatabase>()
+    .setDriver(BundledSQLiteDriver())
+    .setQueryCoroutineContext(Dispatchers.IO)
+    .build()
+```
+
+**Patrón migration tests** (sin `MigrationTestHelper`):
+```kotlin
+val connection = BundledSQLiteDriver().open(":memory:")
+// Crear schema de la versión anterior manualmente
+connection.execSQL("CREATE TABLE IF NOT EXISTS `user-data` (...)")
+// Llamar migration directamente
+MIGRATION_13_14.migrate(connection)
+// Verificar con queries SQL directas
+val stmt = connection.prepare("SELECT fuelType FROM vehicles WHERE userId = 0")
+assertTrue(stmt.step())
+stmt.close()
+connection.close()
+```
 
 ---
 
@@ -134,11 +157,9 @@ core/database/src/
 ├── commonTest/kotlin/com/gasguru/core/database/
 │   ├── converters/ListConvertersTest.kt
 │   └── converters/UserDataConvertersTest.kt
-├── androidTest/java/com/gasguru/core/database/
-│   ├── dao/                        (6 DAO tests — instrumented)
-│   └── migration/DatabaseMigrationTest.kt
 └── test/kotlin/com/gasguru/core/database/
-    └── migrations/DataBaseMigrationUnitTest.kt  (MockK, JVM)
+    ├── dao/                        (6 DAO tests — BundledSQLiteDriver, sin dispositivo)
+    └── migration/DatabaseMigrationTest.kt  (BundledSQLiteDriver + SQLiteConnection directo)
 ```
 
 ---
@@ -173,4 +194,6 @@ core/database/src/
 - [x] `./gradlew :core:database:compileKotlinIosSimulatorArm64` ✅
 - [x] `./gradlew :core:data:assembleDebug` ✅ (downstream)
 - [x] Tests comunes en commonTest
-- [ ] `./gradlew :core:database:connectedAndroidTest` en dispositivo
+- [x] DAO tests en androidUnitTest con `BundledSQLiteDriver` (sin dispositivo)
+- [x] `DatabaseMigrationTest` en androidUnitTest con `BundledSQLiteDriver` (sin dispositivo)
+- [x] `./gradlew :core:database:testDebugUnitTest` ✅ (sin dispositivo)
