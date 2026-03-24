@@ -1,10 +1,10 @@
 package com.gasguru.core.database.dao
 
-import android.content.Context
 import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.gasguru.core.database.GasGuruDatabase
 import com.gasguru.core.database.model.UserDataEntity
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.AfterEach
@@ -20,11 +20,10 @@ class UserDataDaoTest {
 
     @BeforeEach
     fun createDb() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        db = Room.inMemoryDatabaseBuilder(
-            context,
-            GasGuruDatabase::class.java
-        ).build()
+        db = Room.inMemoryDatabaseBuilder<GasGuruDatabase>()
+            .setDriver(BundledSQLiteDriver())
+            .setQueryCoroutineContext(Dispatchers.IO)
+            .build()
         userDataDao = db.userDataDao()
     }
 
@@ -34,11 +33,7 @@ class UserDataDaoTest {
     @Test
     @DisplayName("Retrieves user data")
     fun getUserDataTest() = runTest {
-        val userData = UserDataEntity(
-            id = 1,
-            lastUpdate = 0,
-            isOnboardingSuccess = true,
-        )
+        val userData = UserDataEntity(id = 1, lastUpdate = 0, isOnboardingSuccess = true)
         userDataDao.insertUserData(userData)
         val retrievedUserData = userDataDao.getUserData().first()
         assertEquals(userData, retrievedUserData)
@@ -47,11 +42,7 @@ class UserDataDaoTest {
     @Test
     @DisplayName("Inserts user data")
     fun insertUserDataTest() = runTest {
-        val userData = UserDataEntity(
-            id = 1,
-            lastUpdate = 0,
-            isOnboardingSuccess = true,
-        )
+        val userData = UserDataEntity(id = 1, lastUpdate = 0, isOnboardingSuccess = true)
         userDataDao.insertUserData(userData)
         val retrievedUserData = userDataDao.getUserData().first()
         assertEquals(userData, retrievedUserData)
