@@ -23,8 +23,10 @@ import com.gasguru.core.database.model.RecentSearchQueryEntity
 import com.gasguru.core.database.model.UserDataEntity
 import com.gasguru.core.database.model.VehicleEntity
 
-@Suppress("NO_ACTUAL_FOR_EXPECT")
-expect object GasGuruDatabaseConstructor : RoomDatabaseConstructor<GasGuruDatabase>
+@Suppress("KotlinNoActualForExpect", "EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
+expect object GasGuruDatabaseConstructor : RoomDatabaseConstructor<GasGuruDatabase> {
+    override fun initialize(): GasGuruDatabase
+}
 
 @Database(
     entities = [
