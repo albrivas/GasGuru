@@ -1,13 +1,13 @@
 package com.gasguru.core.database.dao
 
-import android.content.Context
 import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.gasguru.core.database.GasGuruDatabase
 import com.gasguru.core.database.model.UserDataEntity
 import com.gasguru.core.database.model.VehicleEntity
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.VehicleType
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.AfterEach
@@ -26,11 +26,10 @@ class VehicleDaoTest {
 
     @BeforeEach
     fun createDb() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        db = Room.inMemoryDatabaseBuilder(
-            context,
-            GasGuruDatabase::class.java,
-        ).build()
+        db = Room.inMemoryDatabaseBuilder<GasGuruDatabase>()
+            .setDriver(BundledSQLiteDriver())
+            .setQueryCoroutineContext(Dispatchers.IO)
+            .build()
         vehicleDao = db.vehicleDao()
         userDataDao = db.userDataDao()
     }

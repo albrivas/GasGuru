@@ -1,12 +1,12 @@
 package com.gasguru.core.database.dao
 
-import android.content.Context
 import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import app.cash.turbine.test
 import com.gasguru.core.database.GasGuruDatabase
 import com.gasguru.core.database.model.FuelStationEntity
 import com.gasguru.core.model.data.FuelType
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.AfterEach
@@ -22,11 +22,10 @@ class FuelStationDaoTest {
 
     @BeforeEach
     fun createDb() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        db = Room.inMemoryDatabaseBuilder(
-            context,
-            GasGuruDatabase::class.java
-        ).build()
+        db = Room.inMemoryDatabaseBuilder<GasGuruDatabase>()
+            .setDriver(BundledSQLiteDriver())
+            .setQueryCoroutineContext(Dispatchers.IO)
+            .build()
         fuelStationDao = db.fuelStationDao()
     }
 
@@ -37,18 +36,14 @@ class FuelStationDaoTest {
     @DisplayName("Retrieves all fuel stations when no filters are applied")
     fun getAllStations() = runTest {
         val listStations = listOf(
-            testFuelStationEntity(
-                brand = "Repsol", isFavorite = false, idServiceStation = 1
-            ),
-            testFuelStationEntity(
-                brand = "Cepsa", isFavorite = false, idServiceStation = 2
-            )
+            testFuelStationEntity(brand = "Repsol", isFavorite = false, idServiceStation = 1),
+            testFuelStationEntity(brand = "Cepsa", isFavorite = false, idServiceStation = 2),
         )
         fuelStationDao.insertFuelStation(listStations)
 
         val result = fuelStationDao.getFuelStations(
             fuelType = FuelType.GASOLINE_95.name,
-            brands = emptyList()
+            brands = emptyList(),
         )
 
         result.test {
@@ -61,18 +56,14 @@ class FuelStationDaoTest {
     @DisplayName("Retrieves a specific fuel station by its ID")
     fun getStationBrandFilter() = runTest {
         val listStations = listOf(
-            testFuelStationEntity(
-                brand = "Repsol", isFavorite = false, idServiceStation = 1
-            ),
-            testFuelStationEntity(
-                brand = "Cepsa", isFavorite = false, idServiceStation = 2
-            )
+            testFuelStationEntity(brand = "Repsol", isFavorite = false, idServiceStation = 1),
+            testFuelStationEntity(brand = "Cepsa", isFavorite = false, idServiceStation = 2),
         )
         fuelStationDao.insertFuelStation(listStations)
 
         val result = fuelStationDao.getFuelStations(
             fuelType = FuelType.GASOLINE_95.name,
-            brands = listOf("Repsol")
+            brands = listOf("Repsol"),
         ).first()
 
         Assertions.assertEquals(result, listOf(listStations.first()))
@@ -82,12 +73,8 @@ class FuelStationDaoTest {
     @DisplayName("Get fuel station by id")
     fun getFavorites() = runTest {
         val listStations = listOf(
-            testFuelStationEntity(
-                brand = "Repsol", isFavorite = false, idServiceStation = 1
-            ),
-            testFuelStationEntity(
-                brand = "Cepsa", isFavorite = true, idServiceStation = 2
-            )
+            testFuelStationEntity(brand = "Repsol", isFavorite = false, idServiceStation = 1),
+            testFuelStationEntity(brand = "Cepsa", isFavorite = true, idServiceStation = 2),
         )
         fuelStationDao.insertFuelStation(listStations)
 
@@ -96,7 +83,6 @@ class FuelStationDaoTest {
         Assertions.assertEquals(result, listStations.last())
     }
 }
-
 
 private fun testFuelStationEntity(brand: String, isFavorite: Boolean, idServiceStation: Int) =
     FuelStationEntity(

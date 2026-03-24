@@ -1,11 +1,11 @@
 package com.gasguru.core.database.dao
 
-import android.content.Context
 import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.gasguru.core.database.GasGuruDatabase
 import com.gasguru.core.database.model.FilterEntity
 import com.gasguru.core.model.data.FilterType
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.AfterEach
@@ -21,23 +21,20 @@ class FiltersDaoTest {
 
     @BeforeEach
     fun createDb() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        db = Room.inMemoryDatabaseBuilder(
-            context,
-            GasGuruDatabase::class.java
-        ).build()
+        db = Room.inMemoryDatabaseBuilder<GasGuruDatabase>()
+            .setDriver(BundledSQLiteDriver())
+            .setQueryCoroutineContext(Dispatchers.IO)
+            .build()
         filterDao = db.filterDao()
     }
 
     @AfterEach
     fun closeDb() = db.close()
 
-
     @Test
     @DisplayName("Retrieves all filters")
     fun getAllFilters() = runTest {
-        val filter =
-            FilterEntity(type = FilterType.BRAND, selection = listOf("Repsol"))
+        val filter = FilterEntity(type = FilterType.BRAND, selection = listOf("Repsol"))
         filterDao.insertFilter(filter)
 
         val result = filterDao.getFilters().first()
@@ -48,10 +45,7 @@ class FiltersDaoTest {
     @Test
     @DisplayName("Update filter")
     fun updateFilter() = runTest {
-        val filter = FilterEntity(
-            type = FilterType.BRAND,
-            selection = listOf("Repsol")
-        )
+        val filter = FilterEntity(type = FilterType.BRAND, selection = listOf("Repsol"))
         filterDao.insertFilter(filter)
         filterDao.updateFilterByType(filterType = FilterType.BRAND, newSelection = listOf("Cepsa"))
 
@@ -63,10 +57,7 @@ class FiltersDaoTest {
     @Test
     @DisplayName("Filter exist")
     fun filterExist() = runTest {
-        val filter = FilterEntity(
-            type = FilterType.BRAND,
-            selection = listOf("Repsol")
-        )
+        val filter = FilterEntity(type = FilterType.BRAND, selection = listOf("Repsol"))
         filterDao.insertFilter(filter)
 
         val result = filterDao.isFilterExist(filterType = FilterType.BRAND)

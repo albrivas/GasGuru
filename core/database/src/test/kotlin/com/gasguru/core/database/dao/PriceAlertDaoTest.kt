@@ -1,12 +1,12 @@
 package com.gasguru.core.database.dao
 
-import android.content.Context
 import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import app.cash.turbine.test
 import com.gasguru.core.database.GasGuruDatabase
 import com.gasguru.core.database.model.ModificationType
 import com.gasguru.core.database.model.PriceAlertEntity
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.AfterEach
@@ -22,11 +22,10 @@ class PriceAlertDaoTest {
 
     @BeforeEach
     fun createDb() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        db = Room.inMemoryDatabaseBuilder(
-            context,
-            GasGuruDatabase::class.java
-        ).build()
+        db = Room.inMemoryDatabaseBuilder<GasGuruDatabase>()
+            .setDriver(BundledSQLiteDriver())
+            .setQueryCoroutineContext(Dispatchers.IO)
+            .build()
         priceAlertDao = db.priceAlertDao()
     }
 
@@ -42,7 +41,7 @@ class PriceAlertDaoTest {
             stationId = 123,
             lastNotifiedPrice = 1.50,
             typeModification = ModificationType.INSERT,
-            isSynced = false
+            isSynced = false,
         )
 
         priceAlertDao.insert(alert)
@@ -60,14 +59,14 @@ class PriceAlertDaoTest {
             stationId = 123,
             lastNotifiedPrice = 1.50,
             typeModification = ModificationType.INSERT,
-            isSynced = true
+            isSynced = true,
         )
 
         val deleteAlert = PriceAlertEntity(
             stationId = 123,
             lastNotifiedPrice = 1.50,
             typeModification = ModificationType.DELETE,
-            isSynced = false
+            isSynced = false,
         )
 
         priceAlertDao.insert(insertAlert)
@@ -116,7 +115,7 @@ class PriceAlertDaoTest {
             stationId = 123,
             lastNotifiedPrice = 1.50,
             typeModification = ModificationType.INSERT,
-            isSynced = false
+            isSynced = false,
         )
 
         priceAlertDao.insert(alert)
@@ -179,19 +178,19 @@ class PriceAlertDaoTest {
             assertEquals(0, awaitItem().size)
 
             val alert1 = PriceAlertEntity(
-                stationId = 123, 
+                stationId = 123,
                 lastNotifiedPrice = 1.50,
                 typeModification = ModificationType.INSERT,
-                isSynced = false
+                isSynced = false,
             )
             priceAlertDao.insert(alert1)
             assertEquals(1, awaitItem().size)
 
             val deleteAlert = PriceAlertEntity(
-                stationId = 123, 
-                lastNotifiedPrice = 1.50, 
+                stationId = 123,
+                lastNotifiedPrice = 1.50,
                 typeModification = ModificationType.DELETE,
-                isSynced = false
+                isSynced = false,
             )
             priceAlertDao.insert(deleteAlert)
             assertEquals(0, awaitItem().size)
@@ -202,16 +201,16 @@ class PriceAlertDaoTest {
     @DisplayName("GIVEN duplicate station ID WHEN inserting THEN should replace existing record")
     fun handleDuplicateStationIds() = runTest {
         val alert1 = PriceAlertEntity(
-            stationId = 123, 
+            stationId = 123,
             lastNotifiedPrice = 1.50,
             typeModification = ModificationType.INSERT,
-            isSynced = false
+            isSynced = false,
         )
         val alert2 = PriceAlertEntity(
-            stationId = 123, 
+            stationId = 123,
             lastNotifiedPrice = 1.60,
             typeModification = ModificationType.INSERT,
-            isSynced = false
+            isSynced = false,
         )
 
         priceAlertDao.insert(alert1)
@@ -226,16 +225,16 @@ class PriceAlertDaoTest {
     @DisplayName("GIVEN alerts WHEN checking has pending sync THEN should return correct status")
     fun hasPendingSync() = runTest {
         val alert1 = PriceAlertEntity(
-            stationId = 123, 
-            lastNotifiedPrice = 1.50, 
+            stationId = 123,
+            lastNotifiedPrice = 1.50,
             typeModification = ModificationType.INSERT,
-            isSynced = false
+            isSynced = false,
         )
         val alert2 = PriceAlertEntity(
-            stationId = 456, 
-            lastNotifiedPrice = 1.60, 
+            stationId = 456,
+            lastNotifiedPrice = 1.60,
             typeModification = ModificationType.INSERT,
-            isSynced = true
+            isSynced = true,
         )
 
         priceAlertDao.insert(alert1)
