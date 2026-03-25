@@ -49,6 +49,12 @@ override suspend fun provideGlance(context: Context, id: GlanceId) {
 }
 ```
 
+### Refresco inmediato al cambiar favoritos (`WidgetFavoriteSyncManager` — nivel app)
+
+La sesión reactiva de Glance sólo está viva mientras el proceso de la app está activo. En Android 13+ (API 33+), el sistema mata los procesos en background más agresivamente, por lo que la sesión puede morir antes de que el usuario añada o elimine una favorita. En ese caso, el `collectAsState` no recibirá la emisión de Room y el widget quedará desactualizado.
+
+Para solucionar esto, `WidgetFavoriteSyncManager` (en `:app`) observa el `Flow` de favoritos usando el `APPLICATION_SCOPE` de Koin y llama a `FavoriteStationsWidget().updateAll(context)` en cada cambio. Esto reactiva la sesión de Glance inmediatamente, sin esperar al ciclo del `StationSyncWorker`. Se inicializa en `GasGuruApplication.onCreate()`.
+
 ### Sincronización periódica de precios (WorkManager — nivel app)
 
 La sincronización periódica de precios es una responsabilidad de la app, no del widget. Se programa en `GasGuruApplication.onCreate()` y corre independientemente de si el usuario tiene o no un widget activo.
@@ -64,17 +70,28 @@ La sincronización periódica de precios es una responsabilidad de la app, no de
 El widget usa el sistema de theming de Glance siguiendo la guía oficial de Android:
 
 - **Colores** (`WidgetColorScheme.kt`): dos `ColorScheme` de Material 3 (`lightColorScheme` / `darkColorScheme`) mapeando los colores de GasGuru (`core.uikit.theme`) a los roles estándar (`surface`, `onSurface`, `onSurfaceVariant`, etc.). Se pasan a `GlanceTheme(colors = WidgetColorScheme.colors)`.
-- **Estilos de texto** (`WidgetTextStyles.kt`): variables top-level de `androidx.glance.text.TextStyle` que replican los tamaños y pesos de `GasGuruTypography`. Se aplican con `.copy(color = GlanceTheme.colors.*)`.
+- **Estilos de texto** (`WidgetTextStyles.kt`): variables top-level de `androidx.glance.text.TextStyle` alineadas con los estilos de `FuelStationItem` en `core:uikit`: nombre de estación → `baseRegular` (16sp Normal), dirección → `smallRegular` (14sp Normal), chip de precio → `baseRegular` (16sp Normal). Se aplican con `.copy(color = GlanceTheme.colors.*)`.
 - **Colores de acento** (`WidgetColors.kt`): `ColorProvider` para los chips de precio (verde/naranja/rojo), con variantes sólidas (texto) y al 16% alpha (fondo), replicando el diseño de `StatusChip`.
 
 > **Limitación**: Glance no soporta fuentes personalizadas desde recursos. El font family Inter no puede usarse en el widget — se usa la tipografía del sistema (sans-serif por defecto).
 
 ## Preview en el picker
 
-Cada variante tiene su propio layout de preview estático (Views normales, no Glance) declarado con `android:previewLayout` en el XML del provider:
+### Android 12–14
 
-- `res/layout/widget_preview.xml` — preview del widget normal
-- `res/layout/widget_preview_small.xml` — preview del widget pequeño
+`android:previewLayout="@layout/widget_preview"` en el XML del provider muestra un layout estático (Views normales, no Glance) en el picker.
+
+### Android 15+ (API 35+)
+
+En Android 15+, el picker usa una push API en lugar de `previewLayout`. `WidgetFavoriteSyncManager.setupPreview()` llama a `AppWidgetManager.setWidgetPreview()` con el mismo `widget_preview.xml` como `RemoteViews` al arrancar la app. Sin esta llamada, el picker mostraría solo el icono de la app.
+
+```kotlin
+AppWidgetManager.getInstance(context).setWidgetPreview(
+    ComponentName(context, FavoriteStationsWidgetReceiver::class.java),
+    AppWidgetProviderInfo.WIDGET_CATEGORY_HOME_SCREEN,
+    RemoteViews(context.packageName, WidgetR.layout.widget_preview),
+)
+```
 
 Los colores del preview se definen en `res/values/colors.xml` (y `values-night/` para dark mode).
 

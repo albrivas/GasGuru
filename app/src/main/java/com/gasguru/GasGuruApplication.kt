@@ -30,6 +30,7 @@ import com.gasguru.feature.route_planner.di.routePlannerModule
 import com.gasguru.feature.station_map.di.stationMapModule
 import com.gasguru.feature.vehicle.di.vehicleModule
 import com.gasguru.navigation.di.navigationModule
+import com.gasguru.widget.WidgetFavoriteSyncManager
 import com.gasguru.worker.StationSyncWorker
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.onesignal.OneSignal
@@ -45,6 +46,7 @@ class GasGuruApplication : Application() {
 
     private val syncManager: SyncManager by inject()
     private val pushNotificationService: PushNotificationService by inject()
+    private val widgetFavoriteSyncManager: WidgetFavoriteSyncManager by inject()
 
     override fun onCreate() {
         super.onCreate()
@@ -54,6 +56,8 @@ class GasGuruApplication : Application() {
         mixpanelSetUp()
         initSyncManager()
         initStationSync()
+        widgetFavoriteSyncManager.observe()
+        widgetFavoriteSyncManager.setupPreview()
     }
 
     private fun oneSignalSetUp() {

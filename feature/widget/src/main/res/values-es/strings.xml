@@ -7,5 +7,5 @@
     <string name="widget_price_cheap">Barato</string>
     <string name="widget_price_normal">Normal</string>
     <string name="widget_price_expensive">Caro</string>
-    <string name="widget_title">Favoritas</string>
+    <string name="widget_title">GasGuru - Favoritas</string>
 </resources>
