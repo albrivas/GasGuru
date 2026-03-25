@@ -4,6 +4,7 @@ import androidx.glance.unit.ColorProvider
 import com.gasguru.core.uikit.theme.AccentGreen
 import com.gasguru.core.uikit.theme.AccentOrange
 import com.gasguru.core.uikit.theme.AccentRed
+import com.gasguru.core.uikit.theme.Primary800
 
 /**
  * Custom color providers for widget-specific accents (price category chips).
@@ -20,4 +21,6 @@ internal object WidgetColors {
     val accentGreenAlpha: ColorProvider = ColorProvider(AccentGreen.copy(alpha = 0.16f))
     val accentOrangeAlpha: ColorProvider = ColorProvider(AccentOrange.copy(alpha = 0.16f))
     val accentRedAlpha: ColorProvider = ColorProvider(AccentRed.copy(alpha = 0.16f))
+
+    val loading: ColorProvider = ColorProvider(Primary800)
 }
