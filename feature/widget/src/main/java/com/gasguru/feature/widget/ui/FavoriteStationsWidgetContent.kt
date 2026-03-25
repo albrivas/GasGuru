@@ -156,7 +156,7 @@ private fun StationWidgetItem(
         modifier = GlanceModifier
             .fillMaxWidth()
             .height(itemHeight)
-            .padding(horizontal = 12.dp)
+            .padding(horizontal = 16.dp)
             .clickable(
                 actionRunCallback<WidgetStationClickCallback>(
                     actionParametersOf(WidgetStationClickCallback.stationIdKey to stationItem.idServiceStation),
