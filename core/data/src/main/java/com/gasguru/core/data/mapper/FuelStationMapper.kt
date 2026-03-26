@@ -4,7 +4,7 @@ import com.gasguru.core.database.model.FuelStationEntity
 import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.PriceCategory
-import com.gasguru.core.network.model.NetworkPriceFuelStation
+import com.gasguru.core.supabase.model.NetworkPriceFuelStation
 
 fun NetworkPriceFuelStation.asEntity() = FuelStationEntity(
     bioEthanolPercentage = bioEthanolPercentage,

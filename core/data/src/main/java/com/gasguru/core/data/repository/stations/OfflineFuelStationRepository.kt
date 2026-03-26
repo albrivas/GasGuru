@@ -16,8 +16,8 @@ import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.OpeningHours
 import com.gasguru.core.model.data.principalVehicle
-import com.gasguru.core.network.datasource.RemoteDataSource
-import com.gasguru.core.network.model.NetworkPriceFuelStation
+import com.gasguru.core.supabase.datasource.RemoteDataSource
+import com.gasguru.core.supabase.model.NetworkPriceFuelStation
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
