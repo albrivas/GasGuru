@@ -17,6 +17,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -40,17 +41,14 @@ class SupabaseRemoteDataSourceTest {
                 headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()),
             )
         }
-
-        val supabaseClient = createSupabaseClient(
-            supabaseUrl = "https://fake.supabase.co",
-            supabaseKey = "fake-key",
-        ) {
-            install(Postgrest)
-            httpEngine = mockEngine
-        }
-
         sut = SupabaseRemoteDataSource(
-            supabaseClient = supabaseClient,
+            supabaseClient = createSupabaseClient(
+                supabaseUrl = "https://fake.supabase.co",
+                supabaseKey = "fake-key",
+            ) {
+                install(Postgrest)
+                httpEngine = mockEngine
+            },
             analyticsHelper = analyticsHelper,
         )
     }
@@ -83,22 +81,20 @@ class SupabaseRemoteDataSourceTest {
         """
     )
     fun fuelStationError() = runTest {
-        val errorEngine = MockEngine { _ ->
-            respond(
-                content = ByteReadChannel("Internal Server Error"),
-                status = HttpStatusCode.InternalServerError,
-                headers = headersOf(HttpHeaders.ContentType, ContentType.Text.Plain.toString()),
-            )
-        }
-        val supabaseClientWithError = createSupabaseClient(
-            supabaseUrl = "https://fake.supabase.co",
-            supabaseKey = "fake-key",
-        ) {
-            install(Postgrest)
-            httpEngine = errorEngine
-        }
         val sutWithError = SupabaseRemoteDataSource(
-            supabaseClient = supabaseClientWithError,
+            supabaseClient = createSupabaseClient(
+                supabaseUrl = "https://fake.supabase.co",
+                supabaseKey = "fake-key",
+            ) {
+                install(Postgrest)
+                httpEngine = MockEngine { _ ->
+                    respond(
+                        content = ByteReadChannel("Internal Server Error"),
+                        status = HttpStatusCode.InternalServerError,
+                        headers = headersOf(HttpHeaders.ContentType, ContentType.Text.Plain.toString()),
+                    )
+                }
+            },
             analyticsHelper = analyticsHelper,
         )
 
@@ -139,22 +135,20 @@ class SupabaseRemoteDataSourceTest {
         """
     )
     fun fuelStationErrorLogsAnalyticsEvents() = runTest {
-        val errorEngine = MockEngine { _ ->
-            respond(
-                content = ByteReadChannel("Internal Server Error"),
-                status = HttpStatusCode.InternalServerError,
-                headers = headersOf(HttpHeaders.ContentType, ContentType.Text.Plain.toString()),
-            )
-        }
-        val supabaseClientWithError = createSupabaseClient(
-            supabaseUrl = "https://fake.supabase.co",
-            supabaseKey = "fake-key",
-        ) {
-            install(Postgrest)
-            httpEngine = errorEngine
-        }
         SupabaseRemoteDataSource(
-            supabaseClient = supabaseClientWithError,
+            supabaseClient = createSupabaseClient(
+                supabaseUrl = "https://fake.supabase.co",
+                supabaseKey = "fake-key",
+            ) {
+                install(Postgrest)
+                httpEngine = MockEngine { _ ->
+                    respond(
+                        content = ByteReadChannel("Internal Server Error"),
+                        status = HttpStatusCode.InternalServerError,
+                        headers = headersOf(HttpHeaders.ContentType, ContentType.Text.Plain.toString()),
+                    )
+                }
+            },
             analyticsHelper = analyticsHelper,
         ).getListFuelStations()
 
@@ -185,8 +179,8 @@ class SupabaseRemoteDataSourceTest {
     fun fuelStationListSizeMatchesFixture() = runTest {
         val actual = sut.getListFuelStations()
 
-        actual.onRight { networkFuelStation ->
-            assertTrue(networkFuelStation.listPriceFuelStation.size == 2)
+        actual.onRight { stations ->
+            assertEquals(2, stations.size)
         }
     }
 
@@ -195,17 +189,17 @@ class SupabaseRemoteDataSourceTest {
         """
         GIVEN supabase returns a station with null prices
         WHEN fetching fuel stations
-        THEN null price fields are mapped to empty string in NetworkPriceFuelStation
+        THEN null price fields remain null in SupabaseFuelStation
         """
     )
-    fun nullPricesMappedToEmptyString() = runTest {
+    fun nullPricesRemainNull() = runTest {
         val actual = sut.getListFuelStations()
 
-        actual.onRight { networkFuelStation ->
-            val firstStation = networkFuelStation.listPriceFuelStation.first()
-            assertTrue(firstStation.priceGasoilPremium.isEmpty())
-            assertTrue(firstStation.priceHydrogen.isEmpty())
-            assertTrue(firstStation.priceBiodiesel.isEmpty())
+        actual.onRight { stations ->
+            val firstStation = stations.first()
+            assertTrue(firstStation.priceGasoilPremium == null)
+            assertTrue(firstStation.priceHydrogen == null)
+            assertTrue(firstStation.priceBiodiesel == null)
         }
     }
 }
