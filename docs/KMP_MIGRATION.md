@@ -54,14 +54,14 @@ El proyecto ya tiene un módulo KMP (`:core:network`) que sirve como referencia,
 - [ ] PR → develop y merge
 
 ### Phase 2: `:core:common`
-- [ ] Crear rama `feature/kmp-phase2-core-common` desde `develop`
-- [ ] Cambiar plugin a `gasguru.kmp.library`
-- [ ] `GeoUtils.kt` → commonMain (reemplazar `Math.toRadians`)
-- [ ] `KoinQualifiers.kt` → commonMain
-- [ ] `CoroutineModule.kt` → commonMain con expect/actual IO dispatcher
-- [ ] `CommonUtils.kt` → split: schedule parsing a commonMain, `getAppVersion()` expect/actual
-- [ ] `LocationUtils.kt` → androidMain
-- [ ] Tests en commonTest para `distanceTo()` e `isStationOpen()`
+- [x] Crear rama `claude/kmp-migration-phase-2-0MHo4` desde `develop`
+- [x] Cambiar plugin a `gasguru.kmp.library`
+- [x] `GeoUtils.kt` → commonMain (reemplazar `Math.toRadians` × 4)
+- [x] `KoinQualifiers.kt` → commonMain
+- [x] `CoroutineModule.kt` → commonMain con expect/actual IO dispatcher
+- [x] `CommonUtils.kt` → split: schedule parsing a commonMain (kotlinx-datetime), `getAppVersion()` expect/actual
+- [x] `LocationUtils.kt` → androidMain
+- [x] Tests en commonTest para `distanceTo()` e `isStationOpen()`
 - [ ] `./gradlew :core:common:build` compila Android + iOS
 - [ ] Todos los módulos downstream compilan
 - [ ] PR → develop y merge

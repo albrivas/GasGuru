@@ -34,7 +34,8 @@ class DetailStationScreenTest : BaseTest() {
                 DetailStationScreen(
                     uiState = DetailStationUiState.Success(
                         stationModel = station.toUiModel(),
-                        address = null
+                        address = null,
+                        isOpen = false,
                     ),
                     lastUpdate = 0,
                     staticMapUrl = "",
