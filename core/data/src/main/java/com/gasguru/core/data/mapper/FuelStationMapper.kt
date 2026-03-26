@@ -4,9 +4,9 @@ import com.gasguru.core.database.model.FuelStationEntity
 import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.PriceCategory
-import com.gasguru.core.supabase.model.NetworkPriceFuelStation
+import com.gasguru.core.supabase.model.SupabaseFuelStation
 
-fun NetworkPriceFuelStation.asEntity() = FuelStationEntity(
+fun SupabaseFuelStation.asEntity() = FuelStationEntity(
     bioEthanolPercentage = bioEthanolPercentage,
     esterMethylPercentage = esterMethylPercentage,
     postalCode = postalCode,
@@ -16,26 +16,26 @@ fun NetworkPriceFuelStation.asEntity() = FuelStationEntity(
     idServiceStation = idServiceStation.toInt(),
     idMunicipality = idMunicipality,
     idProvince = idProvince,
-    latitude = latitude.replace(",", ".").toDouble(),
+    latitude = latitude,
     locality = locality,
-    longitudeWGS84 = longitudeWGS84.replace(",", ".").toDouble(),
+    longitudeWGS84 = longitudeWGS84,
     margin = margin,
     municipality = municipality,
-    priceBiodiesel = priceBiodiesel.toSafeDouble(),
-    priceBioEthanol = priceBioEthanol.toSafeDouble(),
-    priceGasNaturalCompressed = priceGasNaturalCompressed.toSafeDouble(),
-    priceLiquefiedNaturalGas = priceLiquefiedNaturalGas.toSafeDouble(),
-    priceLiquefiedPetroleumGas = priceLiquefiedPetroleumGas.toSafeDouble(),
-    priceGasoilA = priceGasoilA.toSafeDouble(),
-    priceGasoilB = priceGasoilB.toSafeDouble(),
-    priceGasoilPremium = priceGasoilPremium.toSafeDouble(),
-    priceGasoline95E10 = priceGasoline95E10.toSafeDouble(),
-    priceGasoline95E5 = priceGasoline95E5.toSafeDouble(),
-    priceGasoline95E5Premium = priceGasoline95E5Premium.toSafeDouble(),
-    priceGasoline98E10 = priceGasoline98E10.toSafeDouble(),
-    priceGasoline98E5 = priceGasoline98E5.toSafeDouble(),
-    priceHydrogen = priceHydrogen.toSafeDouble(),
-    priceAdblue = priceAdblue.toSafeDouble(),
+    priceBiodiesel = priceBiodiesel ?: 0.0,
+    priceBioEthanol = priceBioEthanol ?: 0.0,
+    priceGasNaturalCompressed = priceGasNaturalCompressed ?: 0.0,
+    priceLiquefiedNaturalGas = priceLiquefiedNaturalGas ?: 0.0,
+    priceLiquefiedPetroleumGas = priceLiquefiedPetroleumGas ?: 0.0,
+    priceGasoilA = priceGasoilA ?: 0.0,
+    priceGasoilB = priceGasoilB ?: 0.0,
+    priceGasoilPremium = priceGasoilPremium ?: 0.0,
+    priceGasoline95E10 = priceGasoline95E10 ?: 0.0,
+    priceGasoline95E5 = priceGasoline95E5 ?: 0.0,
+    priceGasoline95E5Premium = priceGasoline95E5Premium ?: 0.0,
+    priceGasoline98E10 = priceGasoline98E10 ?: 0.0,
+    priceGasoline98E5 = priceGasoline98E5 ?: 0.0,
+    priceHydrogen = priceHydrogen ?: 0.0,
+    priceAdblue = priceAdblue ?: 0.0,
     province = province,
     referral = referral,
     brandStation = brandStation,
@@ -43,9 +43,6 @@ fun NetworkPriceFuelStation.asEntity() = FuelStationEntity(
     lastUpdate = System.currentTimeMillis(),
     isFavorite = false,
 )
-
-fun String.toSafeDouble(): Double =
-    this.takeIf { it.isNotEmpty() }?.replace(",", ".")?.toDoubleOrNull() ?: 0.0
 
 fun List<FuelStation>.calculateFuelPrices(fuelType: FuelType): Pair<Double, Double> {
     val prices = map { fuelType.extractPrice(it) }
