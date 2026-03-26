@@ -15,7 +15,7 @@ class SupabaseRemoteDataSource(
 ) : RemoteDataSource {
 
     companion object {
-        private const val TABLE_FUEL_STATION = "fuel-station"
+        private const val TABLE_FUEL_STATION = "fuel_stations"
     }
 
     override suspend fun getListFuelStations() =
