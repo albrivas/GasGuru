@@ -40,6 +40,13 @@ private fun FavoriteStationsWidgetContentWithStationsPreview() {
 @OptIn(ExperimentalGlancePreviewApi::class)
 @Preview(widthDp = 320, heightDp = 250)
 @Composable
+private fun FavoriteStationsWidgetContentLoadingPreview() {
+    FavoriteStationsWidgetContent(stations = null)
+}
+
+@OptIn(ExperimentalGlancePreviewApi::class)
+@Preview(widthDp = 320, heightDp = 250)
+@Composable
 private fun FavoriteStationsWidgetContentEmptyPreview() {
     FavoriteStationsWidgetContent(stations = emptyList())
 }
