@@ -17,7 +17,7 @@ import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.OpeningHours
 import com.gasguru.core.model.data.principalVehicle
 import com.gasguru.core.supabase.datasource.RemoteDataSource
-import com.gasguru.core.supabase.model.NetworkPriceFuelStation
+import com.gasguru.core.supabase.model.SupabaseFuelStation
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -47,9 +47,9 @@ class OfflineFuelStationRepository(
 
     override suspend fun addAllStations() {
         defaultScope.launch {
-            remoteDataSource.getListFuelStations().fold(ifLeft = {}, ifRight = { data ->
+            remoteDataSource.getListFuelStations().fold(ifLeft = {}, ifRight = { stations ->
                 fuelStationDao.insertFuelStation(
-                    data.listPriceFuelStation.map(NetworkPriceFuelStation::asEntity)
+                    stations.map(SupabaseFuelStation::asEntity),
                 )
                 offlineUserDataRepository.updateLastUpdate()
             })
