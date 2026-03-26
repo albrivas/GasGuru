@@ -1,11 +1,5 @@
 package com.gasguru.core.uikit.components.vehicle_item
 
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -26,17 +20,15 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.R
+import com.gasguru.core.uikit.components.pulse_dot.PulseDot
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
@@ -98,7 +90,7 @@ private fun ActiveVehicleRow(
                         color = GasGuruTheme.colors.textMain,
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    LiveDot()
+                    PulseDot(color = GasGuruTheme.colors.primary500)
                     Spacer(modifier = Modifier.width(2.dp))
                     Text(
                         text = stringResource(id = R.string.vehicle_in_use),
@@ -178,45 +170,6 @@ private fun InactiveVehicleRow(
             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = null,
             tint = GasGuruTheme.colors.neutral600,
-        )
-    }
-}
-
-@Composable
-private fun LiveDot() {
-    val infiniteTransition = rememberInfiniteTransition(label = "liveDot")
-    val rippleScale by infiniteTransition.animateFloat(
-        initialValue = 1f,
-        targetValue = 2.4f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1400, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart,
-        ),
-        label = "rippleScale",
-    )
-    val rippleAlpha by infiniteTransition.animateFloat(
-        initialValue = 0.5f,
-        targetValue = 0f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1400, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart,
-        ),
-        label = "rippleAlpha",
-    )
-    Box(contentAlignment = Alignment.Center) {
-        Box(
-            modifier = Modifier
-                .size(8.dp)
-                .scale(rippleScale)
-                .alpha(rippleAlpha)
-                .clip(CircleShape)
-                .background(GasGuruTheme.colors.primary500),
-        )
-        Box(
-            modifier = Modifier
-                .size(5.dp)
-                .clip(CircleShape)
-                .background(GasGuruTheme.colors.primary500),
         )
     }
 }
