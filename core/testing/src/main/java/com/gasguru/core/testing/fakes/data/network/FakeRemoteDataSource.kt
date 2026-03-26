@@ -1,13 +1,13 @@
 package com.gasguru.core.testing.fakes.data.network
 
 import arrow.core.Either
-import com.gasguru.core.network.datasource.RemoteDataSource
-import com.gasguru.core.network.model.NetworkError
-import com.gasguru.core.network.model.NetworkFuelStation
+import com.gasguru.core.supabase.datasource.RemoteDataSource
+import com.gasguru.core.supabase.model.NetworkError
+import com.gasguru.core.supabase.model.NetworkFuelStation
 
 class FakeRemoteDataSource(
     var result: Either<NetworkError, NetworkFuelStation> =
-        Either.Right(NetworkFuelStation(date = "", listPriceFuelStation = emptyList()))
+        Either.Right(NetworkFuelStation(date = "", listPriceFuelStation = emptyList())),
 ) : RemoteDataSource {
     var getListFuelStationsCalls = 0
         private set
