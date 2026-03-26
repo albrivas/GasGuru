@@ -33,21 +33,21 @@ class MockRemoteDataSource(
                     longitudeWGS84 = station.longitudeWGS84.replace(",", ".").toDoubleOrNull() ?: 0.0,
                     margin = station.margin,
                     municipality = station.municipality,
-                    priceBiodiesel = station.priceBiodiesel.toDoubleOrNull(),
-                    priceBioEthanol = station.priceBioEthanol.toDoubleOrNull(),
-                    priceGasNaturalCompressed = station.priceGasNaturalCompressed.toDoubleOrNull(),
-                    priceLiquefiedNaturalGas = station.priceLiquefiedNaturalGas.toDoubleOrNull(),
-                    priceLiquefiedPetroleumGas = station.priceLiquefiedPetroleumGas.toDoubleOrNull(),
-                    priceGasoilA = station.priceGasoilA.toDoubleOrNull(),
-                    priceGasoilB = station.priceGasoilB.toDoubleOrNull(),
-                    priceGasoilPremium = station.priceGasoilPremium.toDoubleOrNull(),
-                    priceGasoline95E10 = station.priceGasoline95E10.toDoubleOrNull(),
-                    priceGasoline95E5 = station.priceGasoline95E5.toDoubleOrNull(),
-                    priceGasoline95E5Premium = station.priceGasoline95E5Premium.toDoubleOrNull(),
-                    priceGasoline98E10 = station.priceGasoline98E10.toDoubleOrNull(),
-                    priceGasoline98E5 = station.priceGasoline98E5.toDoubleOrNull(),
-                    priceHydrogen = station.priceHydrogen.toDoubleOrNull(),
-                    priceAdblue = station.priceAdblue.toDoubleOrNull(),
+                    priceBiodiesel = station.priceBiodiesel.toSpanishDoubleOrNull(),
+                    priceBioEthanol = station.priceBioEthanol.toSpanishDoubleOrNull(),
+                    priceGasNaturalCompressed = station.priceGasNaturalCompressed.toSpanishDoubleOrNull(),
+                    priceLiquefiedNaturalGas = station.priceLiquefiedNaturalGas.toSpanishDoubleOrNull(),
+                    priceLiquefiedPetroleumGas = station.priceLiquefiedPetroleumGas.toSpanishDoubleOrNull(),
+                    priceGasoilA = station.priceGasoilA.toSpanishDoubleOrNull(),
+                    priceGasoilB = station.priceGasoilB.toSpanishDoubleOrNull(),
+                    priceGasoilPremium = station.priceGasoilPremium.toSpanishDoubleOrNull(),
+                    priceGasoline95E10 = station.priceGasoline95E10.toSpanishDoubleOrNull(),
+                    priceGasoline95E5 = station.priceGasoline95E5.toSpanishDoubleOrNull(),
+                    priceGasoline95E5Premium = station.priceGasoline95E5Premium.toSpanishDoubleOrNull(),
+                    priceGasoline98E10 = station.priceGasoline98E10.toSpanishDoubleOrNull(),
+                    priceGasoline98E5 = station.priceGasoline98E5.toSpanishDoubleOrNull(),
+                    priceHydrogen = station.priceHydrogen.toSpanishDoubleOrNull(),
+                    priceAdblue = station.priceAdblue.toSpanishDoubleOrNull(),
                     province = station.province,
                     referral = station.referral,
                     brandStation = station.brandStation,
@@ -58,3 +58,6 @@ class MockRemoteDataSource(
             NetworkError(exception = exception).left()
         }
 }
+
+private fun String.toSpanishDoubleOrNull(): Double? =
+    takeIf { it.isNotEmpty() }?.replace(",", ".")?.toDoubleOrNull()
