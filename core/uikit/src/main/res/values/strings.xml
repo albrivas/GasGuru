@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="preview_fuel_type">Gasoline 95</string>
+    <string name="preview_fuel_type_2">Gasoline 98</string>
+    <string name="preview_fuel_type_3">Diesel</string>
     <string name="filter_content_desc">Filter</string>
     <string name="content_description_fuel_item">Fuel station %1$s</string>
     <string name="content_description_fuel_item_price_box">Fuel station price color"</string>
@@ -12,4 +14,13 @@
     <string name="search_list_clear_description">Clear recent searches</string>
     <string name="tab_price">Price</string>
     <string name="tab_distance">Distance</string>
+    <string name="route_calculating">Calculating route…</string>
+    <string name="route_close_button">Close route</string>
+    <string name="full_tank_cost">Full tank cost</string>
+    <string name="change_litres">Change litres</string>
+    <string name="vehicle_in_use">In use</string>
+    <string name="vehicle_add">Add vehicle</string>
+    <string name="vehicle_default_name">My Vehicle</string>
+    <string name="vehicle_fuel_capacity">%1$s · %2$d L</string>
+    <string name="vehicle_capacity_litres">%1$d L</string>
 </resources>

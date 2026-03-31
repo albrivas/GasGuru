@@ -2,6 +2,7 @@ package com.gasguru.feature.favorite_list_station.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,20 +17,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.previewFuelStationDomain
+import com.gasguru.core.ui.mapper.toStationListItems
+import com.gasguru.core.ui.mapper.toUiModel
 import com.gasguru.core.ui.models.FuelStationUiModel
-import com.gasguru.core.ui.toStationListItems
-import com.gasguru.core.ui.toUiModel
-import com.gasguru.core.uikit.components.alert.AlertTemplate
-import com.gasguru.core.uikit.components.alert.AlertTemplateModel
 import com.gasguru.core.uikit.components.filterable_station_list.FilterableStationList
 import com.gasguru.core.uikit.components.filterable_station_list.FilterableStationListModel
 import com.gasguru.core.uikit.components.loading.GasGuruLoading
@@ -41,10 +40,11 @@ import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.favorite_list_station.R
 import com.gasguru.navigation.LocalNavigationManager
 import com.gasguru.navigation.manager.NavigationDestination
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun FavoriteListStationScreenRoute(
-    viewModel: FavoriteListStationViewModel = hiltViewModel(),
+    viewModel: FavoriteListStationViewModel = koinViewModel(),
 ) {
     val navigationManager = LocalNavigationManager.current
     val state by viewModel.favoriteStations.collectAsStateWithLifecycle()
@@ -76,7 +76,8 @@ internal fun FavoriteListStationScreen(
             .fillMaxSize()
             .background(color = GasGuruTheme.colors.neutral100)
             .padding(horizontal = 16.dp)
-            .statusBarsPadding(),
+            .statusBarsPadding()
+            .pointerInput(Unit) { detectTapGestures { } }, // For overlay map
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         when (uiState) {
@@ -96,13 +97,6 @@ internal fun FavoriteListStationScreen(
                 navigateToDetail = navigateToDetail,
                 selectedTab = tabState.selectedTab,
                 event = event
-            )
-
-            FavoriteStationListUiState.DisableLocation -> AlertTemplate(
-                model = AlertTemplateModel(
-                    animation = com.gasguru.core.ui.R.raw.enable_location,
-                    description = stringResource(id = R.string.location_disable_description),
-                )
             )
 
             is FavoriteStationListUiState.EmptyFavorites -> {

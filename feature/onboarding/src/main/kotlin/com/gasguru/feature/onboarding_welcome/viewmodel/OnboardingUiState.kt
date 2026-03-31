@@ -2,6 +2,8 @@ package com.gasguru.feature.onboarding_welcome.viewmodel
 
 import com.gasguru.core.model.data.FuelType
 
-sealed interface OnboardingUiState {
-    data class ListFuelPreferences(val list: List<FuelType>) : OnboardingUiState
-}
+data class OnboardingUiState(
+    val fuelList: List<FuelType> = FuelType.entries.toList(),
+    val isButtonEnabled: Boolean = false,
+    val selectedFuel: FuelType? = null
+)

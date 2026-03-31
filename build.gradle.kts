@@ -7,7 +7,6 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.kotlin.jvm) apply false
-    alias(libs.plugins.hilt.gradle) apply false
     alias(libs.plugins.gms) apply false
     alias(libs.plugins.firebase.crashlitycs) apply false
     alias(libs.plugins.compose.compiler) apply false
@@ -18,6 +17,7 @@ plugins {
     alias(libs.plugins.sonarqube) apply false
     alias(libs.plugins.gasguru.jacoco)
     alias(libs.plugins.gasguru.sonar)
+    alias(libs.plugins.stability.analyzer) apply false
 }
 
 allprojects {

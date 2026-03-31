@@ -1,15 +1,17 @@
 package com.gasguru.feature.favorite_list_station.ui
 
 import app.cash.turbine.test
+import com.gasguru.core.analytics.NoOpAnalyticsHelper
 import com.gasguru.core.domain.fuelstation.GetFavoriteStationsUseCase
 import com.gasguru.core.domain.fuelstation.RemoveFavoriteStationUseCase
 import com.gasguru.core.domain.location.GetLastKnownLocationUseCase
-import com.gasguru.core.domain.location.IsLocationEnabledUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.UserData
+import com.gasguru.core.model.data.Vehicle
+import com.gasguru.core.model.data.VehicleType
 import com.gasguru.core.model.data.previewFuelStationDomain
 import com.gasguru.core.testing.CoroutinesTestExtension
 import com.gasguru.core.testing.fakes.data.location.FakeLocationTracker
@@ -40,9 +42,9 @@ class FavoriteListStationViewModelTest {
         return FavoriteListStationViewModel(
             getUserDataUseCase = GetUserDataUseCase(fakeUserDataRepository),
             getFavoriteStationsUseCase = GetFavoriteStationsUseCase(fakeUserDataRepository),
-            isLocationEnabledUseCase = IsLocationEnabledUseCase(fakeLocationTracker),
             getLastKnownLocationUseCase = GetLastKnownLocationUseCase(fakeLocationTracker),
             removeFavoriteStationUseCase = RemoveFavoriteStationUseCase(fakeUserDataRepository),
+            analyticsHelper = NoOpAnalyticsHelper(),
         )
     }
 
@@ -55,7 +57,6 @@ class FavoriteListStationViewModelTest {
         viewModel.favoriteStations.test {
             advanceUntilIdle()
             assertEquals(FavoriteStationListUiState.Loading, awaitItem())
-            assertEquals(FavoriteStationListUiState.DisableLocation, awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -82,7 +83,20 @@ class FavoriteListStationViewModelTest {
     fun sortsByPriceByDefault() = runTest {
         fakeLocationTracker.setLocationEnabled(true)
         fakeLocationTracker.setLastKnownLocation(testLocation())
-        fakeUserDataRepository.setUserData(UserData(fuelSelection = FuelType.GASOLINE_95))
+        fakeUserDataRepository.setUserData(
+            UserData(
+                vehicles = listOf(
+                    Vehicle(
+                        id = 1L,
+                        fuelType = FuelType.GASOLINE_95,
+                        name = null,
+                        tankCapacity = 40,
+                        vehicleType = VehicleType.CAR,
+                        isPrincipal = true
+                    )
+                )
+            )
+        )
 
         val stationA = previewFuelStationDomain(idServiceStation = 1).copy(
             priceGasoline95E5 = 1.50,
@@ -111,7 +125,20 @@ class FavoriteListStationViewModelTest {
     fun changesSortingWhenTabChanges() = runTest {
         fakeLocationTracker.setLocationEnabled(true)
         fakeLocationTracker.setLastKnownLocation(testLocation())
-        fakeUserDataRepository.setUserData(UserData(fuelSelection = FuelType.GASOLINE_95))
+        fakeUserDataRepository.setUserData(
+            UserData(
+                vehicles = listOf(
+                    Vehicle(
+                        id = 1L,
+                        fuelType = FuelType.GASOLINE_95,
+                        name = null,
+                        tankCapacity = 40,
+                        vehicleType = VehicleType.CAR,
+                        isPrincipal = true
+                    )
+                )
+            )
+        )
 
         val stationA = previewFuelStationDomain(idServiceStation = 1).copy(
             priceGasoline95E5 = 1.50,

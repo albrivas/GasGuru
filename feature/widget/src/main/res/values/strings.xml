@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_description">Show your favorite gas stations with prices</string>
+    <string name="widget_empty_title">No favorites yet</string>
+    <string name="widget_empty_subtitle">Add stations from the app</string>
+    <string name="widget_open_app">Open app</string>
+    <string name="widget_price_cheap">Cheap</string>
+    <string name="widget_price_normal">Normal</string>
+    <string name="widget_price_expensive">Expensive</string>
+    <string name="widget_title">GasGuru - Favorites</string>
+</resources>
