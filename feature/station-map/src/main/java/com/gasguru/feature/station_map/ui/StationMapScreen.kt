@@ -1,5 +1,13 @@
 package com.gasguru.feature.station_map.ui
 
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
+import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -11,19 +19,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Directions
+import androidx.compose.material.icons.outlined.GppBad
+import androidx.compose.material.icons.outlined.MyLocation
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,6 +39,7 @@ import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -40,19 +47,21 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.common.centerOnLocation
 import com.gasguru.core.common.centerOnMap
@@ -61,12 +70,13 @@ import com.gasguru.core.components.searchbar.GasGuruSearchBar
 import com.gasguru.core.components.searchbar.GasGuruSearchBarModel
 import com.gasguru.core.model.data.FuelStationBrandsType
 import com.gasguru.core.model.data.FuelType
-import com.gasguru.core.model.data.Route
 import com.gasguru.core.ui.getPrice
-import com.gasguru.core.ui.models.FuelStationBrandsUiModel
+import com.gasguru.core.ui.mapper.toStationListItems
+import com.gasguru.core.ui.mapper.toUiModel
 import com.gasguru.core.ui.models.FuelStationUiModel
 import com.gasguru.core.ui.toColor
-import com.gasguru.core.ui.toStationListItems
+import com.gasguru.core.uikit.components.alert.GasGuruAlertDialog
+import com.gasguru.core.uikit.components.alert.GasGuruAlertDialogModel
 import com.gasguru.core.uikit.components.chip.FilterType
 import com.gasguru.core.uikit.components.chip.SelectableFilter
 import com.gasguru.core.uikit.components.chip.SelectableFilterModel
@@ -85,8 +95,11 @@ import com.gasguru.core.uikit.components.route_navigation_card.RouteNavigationCa
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
+import com.gasguru.core.uikit.utils.maestroTestTag
 import com.gasguru.feature.station_map.BuildConfig
 import com.gasguru.feature.station_map.R
+import com.gasguru.feature.station_map.ui.models.RouteUiModel
+import com.gasguru.navigation.LocalDeepLinkStateHolder
 import com.gasguru.navigation.LocalNavigationManager
 import com.gasguru.navigation.manager.NavigationDestination
 import com.gasguru.navigation.models.RoutePlanArgs
@@ -104,19 +117,124 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 import com.gasguru.core.uikit.R as RUikit
 
 @Composable
 fun StationMapScreenRoute(
     routePlanner: RoutePlanArgs?,
     onRoutePlanConsumed: () -> Unit = {},
-    viewModel: StationMapViewModel = hiltViewModel(),
+    viewModel: StationMapViewModel = koinViewModel(),
 ) {
+    val context = LocalContext.current
     val navigationManager = LocalNavigationManager.current
     val state by viewModel.state.collectAsStateWithLifecycle()
     val filterGroup by viewModel.filters.collectAsStateWithLifecycle()
     val tabState by viewModel.tabState.collectAsStateWithLifecycle()
+
+    // Access DeepLinkStateHolder via CompositionLocal
+    val deepLinkStateHolder = LocalDeepLinkStateHolder.current
+    val pendingStationId by deepLinkStateHolder.pendingStationId.collectAsStateWithLifecycle()
+
+    LaunchedEffect(key1 = pendingStationId) {
+        val stationId = pendingStationId ?: return@LaunchedEffect
+        snapshotFlow { state.loading to state.mapStations }
+            .first { (isLoading, stations) -> !isLoading && stations.isNotEmpty() }
+        deepLinkStateHolder.clear()
+        navigationManager.navigateTo(
+            destination = NavigationDestination.DetailStation(
+                idServiceStation = stationId,
+                presentAsDialog = true,
+            ),
+        )
+    }
+
+    fun hasLocationPermission(): Boolean =
+        ContextCompat.checkSelfPermission(
+            context,
+            ACCESS_FINE_LOCATION,
+        ) == PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(
+                context,
+                ACCESS_COARSE_LOCATION,
+            ) == PackageManager.PERMISSION_GRANTED
+
+    var locationPermissionGranted by remember { mutableStateOf(hasLocationPermission()) }
+    var permissionDenied by remember { mutableStateOf(false) }
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                locationPermissionGranted = hasLocationPermission()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions(),
+        onResult = { permissions ->
+            locationPermissionGranted =
+                permissions[ACCESS_FINE_LOCATION] == true || permissions[ACCESS_COARSE_LOCATION] == true
+            if (!locationPermissionGranted) {
+                permissionDenied = true
+            }
+        },
+    )
+
+    LaunchedEffect(locationPermissionGranted) {
+        if (locationPermissionGranted) {
+            viewModel.handleEvent(event = StationMapEvent.GetStationByCurrentLocation)
+        }
+    }
+
+    if (!locationPermissionGranted) {
+        if (permissionDenied) {
+            GasGuruAlertDialog(
+                model = GasGuruAlertDialogModel(
+                    icon = Icons.Outlined.GppBad,
+                    iconTint = GasGuruTheme.colors.red500,
+                    iconBackgroundColor = GasGuruTheme.colors.red500.copy(alpha = 0.2f),
+                    title = stringResource(id = com.gasguru.core.ui.R.string.alert_permission_denied_title),
+                    description = stringResource(id = com.gasguru.core.ui.R.string.alert_permission_denied_description),
+                    primaryButtonText = stringResource(
+                        id = com.gasguru.core.ui.R.string.alert_permission_denied_primary_button
+                    ),
+                ),
+                onPrimaryButtonClick = {
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = Uri.fromParts("package", context.packageName, null)
+                    }
+                    context.startActivity(intent)
+                },
+            )
+        } else {
+            GasGuruAlertDialog(
+                model = GasGuruAlertDialogModel(
+                    icon = Icons.Outlined.MyLocation,
+                    iconTint = Color(0xFF3B82F6),
+                    iconBackgroundColor = Color(0xFFEFF6FF),
+                    title = stringResource(id = com.gasguru.core.ui.R.string.alert_location_rationale_title),
+                    description = stringResource(
+                        id = com.gasguru.core.ui.R.string.alert_location_rationale_description
+                    ),
+                    primaryButtonText = stringResource(
+                        id = com.gasguru.core.ui.R.string.alert_location_rationale_primary_button
+                    ),
+                ),
+                onPrimaryButtonClick = {
+                    permissionLauncher.launch(
+                        arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION),
+                    )
+                },
+            )
+        }
+        return
+    }
 
     StationMapScreen(
         uiState = state,
@@ -124,6 +242,7 @@ fun StationMapScreenRoute(
         tabState = tabState,
         routePlanner = routePlanner,
         onRoutePlanConsumed = onRoutePlanConsumed,
+        isLocationPermissionGranted = locationPermissionGranted,
         event = viewModel::handleEvent,
         navigateToDetail = { stationId ->
             navigationManager.navigateTo(
@@ -147,6 +266,7 @@ internal fun StationMapScreen(
     tabState: SelectedTabUiState,
     routePlanner: RoutePlanArgs?,
     onRoutePlanConsumed: () -> Unit = {},
+    isLocationPermissionGranted: Boolean = false,
     event: (StationMapEvent) -> Unit = {},
     navigateToDetail: (Int) -> Unit = {},
     navigateToRoutePlanner: () -> Unit = {},
@@ -158,8 +278,6 @@ internal fun StationMapScreen(
     val peekHeight = 60.dp
     var isSearchActive by remember { mutableStateOf(false) }
     val isRouteActive = route != null || (loading && routeDestinationName != null)
-
-    val maxHeightSheetDp = calculateMaxSheetHeight(peekHeight = peekHeight)
 
     LaunchedEffect(mapBounds, shouldCenterMap) {
         if (mapBounds != null && shouldCenterMap) {
@@ -202,8 +320,7 @@ internal fun StationMapScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
-                    .heightIn(max = maxHeightSheetDp),
+                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Row(
@@ -267,8 +384,11 @@ internal fun StationMapScreen(
                     userSelectedFuelType = selectedType,
                     loading = loading,
                     route = route,
+                    selectedStationId = selectedStationId,
+                    isLocationPermissionGranted = isLocationPermissionGranted,
                     navigateToDetail = navigateToDetail,
-                    modifier = Modifier.fillMaxSize()
+                    event = event,
+                    modifier = Modifier.fillMaxSize(),
                 )
                 AnimatedContent(
                     targetState = isRouteActive,
@@ -282,12 +402,20 @@ internal fun StationMapScreen(
                         RouteNavigationCard(
                             model = RouteNavigationCardModel(
                                 destination = routeDestinationName.orEmpty(),
-                                stationCount = mapStations.size,
+                                stationCountText = stringResource(
+                                    id = R.string.route_station_count,
+                                    mapStations.size
+                                ),
                                 distance = route?.distanceText,
                                 duration = route?.durationText,
                                 onClose = { event(StationMapEvent.CancelRoute) },
                             ),
-                            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 48.dp, bottom = 16.dp),
+                            modifier = Modifier.padding(
+                                start = 16.dp,
+                                end = 16.dp,
+                                top = 56.dp,
+                                bottom = 16.dp
+                            ),
                         )
                     } else {
                         Column {
@@ -334,12 +462,14 @@ fun MapView(
     cameraState: CameraPositionState,
     userSelectedFuelType: FuelType?,
     loading: Boolean,
-    route: Route?,
+    route: RouteUiModel?,
+    selectedStationId: Int,
+    isLocationPermissionGranted: Boolean = true,
     modifier: Modifier = Modifier,
     navigateToDetail: (Int) -> Unit = {},
+    event: (StationMapEvent) -> Unit = {},
 ) {
     val context = LocalContext.current
-    var selectedLocation by remember { mutableStateOf<Int?>(null) }
     val uiSettings by remember {
         mutableStateOf(
             MapUiSettings(
@@ -350,11 +480,9 @@ fun MapView(
             )
         )
     }
-    val mapProperties by remember {
-        mutableStateOf(
-            MapProperties(
-                isMyLocationEnabled = true,
-            )
+    val mapProperties = remember(isLocationPermissionGranted) {
+        MapProperties(
+            isMyLocationEnabled = isLocationPermissionGranted,
         )
     }
 
@@ -366,7 +494,8 @@ fun MapView(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(GasGuruTheme.colors.neutralBlack.copy(alpha = 0.5f))
-                    .zIndex(1f),
+                    .zIndex(1f)
+                    .maestroTestTag("loading_map"),
                 model = GasGuruLoadingModel(color = GasGuruTheme.colors.primary800)
             )
         }
@@ -396,7 +525,7 @@ fun MapView(
                 val state = remember(station.fuelStation.idServiceStation) {
                     MarkerState(position = station.fuelStation.location.toGoogleLatLng())
                 }
-                val isSelected = selectedLocation == station.fuelStation.idServiceStation
+                val isSelected = selectedStationId == station.fuelStation.idServiceStation
 
                 val price by remember(userSelectedFuelType, station) {
                     derivedStateOf {
@@ -414,7 +543,7 @@ fun MapView(
                     keys = arrayOf(station.fuelStation.idServiceStation, price, color),
                     state = state,
                     onClick = {
-                        selectedLocation = station.fuelStation.idServiceStation
+                        event(StationMapEvent.SelectStation(stationId = station.fuelStation.idServiceStation))
                         navigateToDetail(station.fuelStation.idServiceStation)
                         false
                     },
@@ -423,8 +552,8 @@ fun MapView(
                     StationMarker(
                         model = StationMarkerModel(
                             icon = station.brandIcon,
-                            price = userSelectedFuelType.getPrice(fuelStation = station.fuelStation),
-                            color = station.fuelStation.priceCategory.toColor(),
+                            price = price,
+                            color = color,
                             isSelected = isSelected,
                         )
                     )
@@ -578,7 +707,7 @@ fun ShowFilterSheet(
                     onSaveButton = { event(StationMapEvent.UpdateBrandFilter(it)) },
                     type = FilterSheetType.ICON,
                     iconMap = brands.associate {
-                        it.value to FuelStationBrandsUiModel.fromBrandType(it).iconRes
+                        it.value to it.toUiModel().iconRes
                     }
                 )
             )
@@ -626,20 +755,6 @@ fun ShowFilterSheet(
 }
 
 @Composable
-internal fun calculateMaxSheetHeight(peekHeight: Dp): Dp {
-    val windowInfo = LocalWindowInfo.current
-    val density = LocalDensity.current
-    val systemBarsHeight = WindowInsets.systemBars.asPaddingValues().let {
-        it.calculateTopPadding() + it.calculateBottomPadding()
-    }
-    val appNavigationBarHeight = 80.dp
-
-    return with(density) {
-        windowInfo.containerSize.height.toDp()
-    } - systemBarsHeight - appNavigationBarHeight - peekHeight
-}
-
-@Composable
 @ThemePreviews
 private fun StationMapScreenPreview() {
     MyApplicationTheme {
@@ -648,7 +763,8 @@ private fun StationMapScreenPreview() {
             filterUiState = FilterUiState(),
             tabState = SelectedTabUiState(),
             routePlanner = null,
-            navigateToDetail = {}
+            isLocationPermissionGranted = false,
+            navigateToDetail = {},
         )
     }
 }

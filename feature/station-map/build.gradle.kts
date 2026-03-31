@@ -1,9 +1,10 @@
 plugins {
     alias(libs.plugins.gasguru.android.library)
-    alias(libs.plugins.gasguru.hilt)
+    alias(libs.plugins.gasguru.koin)
     alias(libs.plugins.gasguru.compose.library)
     alias(libs.plugins.gasguru.secrets.google)
     alias(libs.plugins.gasguru.proguard)
+    alias(libs.plugins.stability.analyzer)
 }
 
 android {
@@ -11,6 +12,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.analytics)
     implementation(projects.core.ui)
     implementation(projects.core.domain)
     implementation(projects.core.model)
@@ -19,6 +21,7 @@ dependencies {
     implementation(projects.core.components)
     implementation(projects.navigation)
 
+    implementation(libs.koin.androidx.compose)
     implementation(libs.kotlin.coroutines.play)
     implementation(libs.maps.compose)
     implementation(libs.play.services.maps)

@@ -2,7 +2,8 @@ package com.gasguru.feature.station_map.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gasguru.core.common.DefaultDispatcher
+import com.gasguru.core.analytics.AnalyticsEvent
+import com.gasguru.core.analytics.AnalyticsHelper
 import com.gasguru.core.common.toGoogleLatLng
 import com.gasguru.core.domain.filters.GetFiltersUseCase
 import com.gasguru.core.domain.filters.SaveFilterUseCase
@@ -16,11 +17,14 @@ import com.gasguru.core.model.data.Filter
 import com.gasguru.core.model.data.FilterType
 import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.UserData
+import com.gasguru.core.model.data.principalVehicle
+import com.gasguru.core.ui.mapper.toUiModel
 import com.gasguru.core.ui.models.FuelStationUiModel
-import com.gasguru.core.ui.toUiModel
+import com.gasguru.feature.station_map.ui.models.toUiModel
 import com.google.android.gms.maps.model.LatLngBounds
-import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -35,10 +39,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class StationMapViewModel @Inject constructor(
+class StationMapViewModel(
     private val fuelStationByLocation: FuelStationByLocationUseCase,
     private val getUserDataUseCase: GetUserDataUseCase,
     private val getLocationPlaceUseCase: GetLocationPlaceUseCase,
@@ -47,7 +49,8 @@ class StationMapViewModel @Inject constructor(
     private val saveFilterUseCase: SaveFilterUseCase,
     private val getRouteUseCase: GetRouteUseCase,
     private val getFuelStationsInRouteUseCase: GetFuelStationsInRouteUseCase,
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
+    private val defaultDispatcher: CoroutineDispatcher,
+    private val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(StationMapUiState())
@@ -56,9 +59,7 @@ class StationMapViewModel @Inject constructor(
     private val _tabState = MutableStateFlow(SelectedTabUiState())
     val tabState: StateFlow<SelectedTabUiState> = _tabState
 
-    init {
-        getStationByCurrentLocation()
-    }
+    private var routeCalculationJob: Job? = null
 
     fun handleEvent(event: StationMapEvent) {
         when (event) {
@@ -77,6 +78,7 @@ class StationMapViewModel @Inject constructor(
             )
             is StationMapEvent.CancelRoute -> cancelRoute()
             is StationMapEvent.ChangeTab -> changeTab(selectedTab = event.selected)
+            is StationMapEvent.SelectStation -> selectStation(stationId = event.stationId)
         }
     }
 
@@ -136,13 +138,15 @@ class StationMapViewModel @Inject constructor(
                 it.copy(
                     mapStations = uiStations,
                     listStations = sortedStations,
-                    route = route,
+                    route = route.toUiModel(),
                     routeDestinationName = destinationName,
                     mapBounds = bounds,
                     shouldCenterMap = true,
                     loading = false,
                 )
             }
+        } catch (error: CancellationException) {
+            throw error
         } catch (error: Exception) {
             handleRouteError(error = error)
         }
@@ -152,37 +156,41 @@ class StationMapViewModel @Inject constructor(
         originId: String?,
         destinationId: String?,
         destinationName: String?
-    ) = viewModelScope.launch {
-        _state.update {
-            it.copy(
-                loading = true,
-                listStations = emptyList(),
-                routeDestinationName = destinationName
-            )
-        }
+    ) {
+        routeCalculationJob?.cancel()
+        routeCalculationJob = viewModelScope.launch {
+            _state.update {
+                it.copy(
+                    loading = true,
+                    listStations = emptyList(),
+                    routeDestinationName = destinationName
+                )
+            }
 
-        try {
-            val (originLocation, destinationLocation) = getRouteLocations(
-                originId = originId,
-                destinationId = destinationId
-            )
-            val origin = originLocation
-            val destination = destinationLocation
+            try {
+                val (originLocation, destinationLocation) = getRouteLocations(
+                    originId = originId,
+                    destinationId = destinationId
+                )
 
-            getRouteUseCase(origin = origin, destination = destination).collect { route ->
-                route?.let { routeData ->
-                    launch(defaultDispatcher) {
-                        processRouteStations(
-                            origin = origin,
-                            route = routeData,
-                            destinationLocation = destinationLocation,
-                            destinationName = destinationName
-                        )
+                getRouteUseCase(origin = originLocation, destination = destinationLocation).collect { route ->
+                    route?.let { routeData ->
+                        analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.ROUTE_STARTED))
+                        launch(defaultDispatcher) {
+                            processRouteStations(
+                                origin = originLocation,
+                                route = routeData,
+                                destinationLocation = destinationLocation,
+                                destinationName = destinationName
+                            )
+                        }
                     }
                 }
+            } catch (error: CancellationException) {
+                throw error
+            } catch (error: Exception) {
+                handleRouteError(error = error)
             }
-        } catch (error: Exception) {
-            handleRouteError(error = error)
         }
     }
 
@@ -195,7 +203,10 @@ class StationMapViewModel @Inject constructor(
     }
 
     private fun cancelRoute() {
-        _state.update { it.copy(route = null, routeDestinationName = null) }
+        analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.ROUTE_CANCELLED))
+        routeCalculationJob?.cancel()
+        routeCalculationJob = null
+        _state.update { it.copy(route = null, routeDestinationName = null, loading = false) }
         getStationByCurrentLocation()
     }
 
@@ -250,12 +261,23 @@ class StationMapViewModel @Inject constructor(
                         location = location
                     )
                     val uiStations = fuelStations.map { station -> station.toUiModel() }
+                    analyticsHelper.logEvent(
+                        event = AnalyticsEvent(
+                            type = AnalyticsEvent.Types.MAP_STATIONS_LOADED,
+                            extras = listOf(
+                                AnalyticsEvent.Param(
+                                    key = AnalyticsEvent.ParamKeys.STATION_COUNT,
+                                    value = uiStations.size.toString()
+                                ),
+                            ),
+                        ),
+                    )
                     _state.update {
                         it.copy(
                             mapStations = uiStations,
                             listStations = sortStationsByTab(uiStations, _tabState.value.selectedTab, userData),
                             loading = false,
-                            selectedType = userData.fuelSelection,
+                            selectedType = userData.principalVehicle().fuelType,
                             mapBounds = bounds,
                             shouldCenterMap = true,
                         )
@@ -299,15 +321,46 @@ class StationMapViewModel @Inject constructor(
         )
 
     private fun updateFilterBrand(stationsSelected: List<String>) = viewModelScope.launch {
+        analyticsHelper.logEvent(
+            event = AnalyticsEvent(
+                type = AnalyticsEvent.Types.FILTER_BRAND_CHANGED,
+                extras = listOf(
+                    AnalyticsEvent.Param(
+                        key = AnalyticsEvent.ParamKeys.BRAND_COUNT,
+                        value = stationsSelected.size.toString()
+                    ),
+                    AnalyticsEvent.Param(
+                        key = AnalyticsEvent.ParamKeys.BRAND_NAMES,
+                        value = stationsSelected.joinToString(separator = ",")
+                    ),
+                ),
+            ),
+        )
         saveFilterUseCase(filterType = FilterType.BRAND, selection = stationsSelected)
     }
 
     private fun updateFilterNearby(numberSelected: String) = viewModelScope.launch {
+        analyticsHelper.logEvent(
+            event = AnalyticsEvent(
+                type = AnalyticsEvent.Types.FILTER_NEARBY_CHANGED,
+                extras = listOf(
+                    AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.NEARBY_KM, value = numberSelected),
+                ),
+            ),
+        )
         saveFilterUseCase(filterType = FilterType.NEARBY, selection = listOf(numberSelected))
     }
 
     private fun updateFilterSchedule(scheduleSelected: FilterUiState.OpeningHours) =
         viewModelScope.launch {
+            analyticsHelper.logEvent(
+                event = AnalyticsEvent(
+                    type = AnalyticsEvent.Types.FILTER_SCHEDULE_CHANGED,
+                    extras = listOf(
+                        AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.SCHEDULE, value = scheduleSelected.name),
+                    ),
+                ),
+            )
             saveFilterUseCase(
                 filterType = FilterType.SCHEDULE,
                 selection = listOf(scheduleSelected.name)
@@ -316,7 +369,27 @@ class StationMapViewModel @Inject constructor(
 
     private fun showListStation(show: Boolean) = _state.update { it.copy(showListStations = show) }
 
+    private fun selectStation(stationId: Int) {
+        analyticsHelper.logEvent(
+            event = AnalyticsEvent(
+                type = AnalyticsEvent.Types.STATION_SELECTED,
+                extras = listOf(
+                    AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.STATION_ID, value = stationId.toString()),
+                ),
+            ),
+        )
+        _state.update { it.copy(selectedStationId = stationId) }
+    }
+
     private fun changeTab(selectedTab: StationSortTab) {
+        analyticsHelper.logEvent(
+            event = AnalyticsEvent(
+                type = AnalyticsEvent.Types.MAP_TAB_CHANGED,
+                extras = listOf(
+                    AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.TAB, value = selectedTab.name),
+                ),
+            ),
+        )
         _tabState.update { it.copy(selectedTab = selectedTab) }
 
         val currentState = _state.value
@@ -334,7 +407,7 @@ class StationMapViewModel @Inject constructor(
         selectedTab: StationSortTab,
         userData: UserData
     ) = when (selectedTab) {
-        StationSortTab.PRICE -> stations.sortedBy { userData.fuelSelection.extractPrice(it.fuelStation) }
+        StationSortTab.PRICE -> stations.sortedBy { userData.principalVehicle().fuelType.extractPrice(it.fuelStation) }
         StationSortTab.DISTANCE -> stations.sortedBy { it.fuelStation.distance }
     }
 

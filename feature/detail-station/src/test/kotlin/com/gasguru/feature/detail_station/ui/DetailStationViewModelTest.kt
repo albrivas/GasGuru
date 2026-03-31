@@ -2,10 +2,14 @@ package com.gasguru.feature.detail_station.ui
 
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
+import com.gasguru.core.analytics.AnalyticsEvent
+import com.gasguru.core.analytics.AnalyticsHelper
+import com.gasguru.core.analytics.NoOpAnalyticsHelper
 import com.gasguru.core.data.repository.stations.OfflineFuelStationRepository
 import com.gasguru.core.data.repository.user.OfflineUserDataRepository
 import com.gasguru.core.database.model.FuelStationEntity
 import com.gasguru.core.database.model.UserDataEntity
+import com.gasguru.core.database.model.VehicleEntity
 import com.gasguru.core.domain.alerts.AddPriceAlertUseCase
 import com.gasguru.core.domain.alerts.RemovePriceAlertUseCase
 import com.gasguru.core.domain.fuelstation.GetFuelStationByIdUseCase
@@ -15,24 +19,30 @@ import com.gasguru.core.domain.location.GetLastKnownLocationUseCase
 import com.gasguru.core.domain.maps.GetStaticMapUrlUseCase
 import com.gasguru.core.domain.places.GetAddressFromLocationUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
+import com.gasguru.core.domain.vehicle.UpdateVehicleTankCapacityUseCase
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.UserData
+import com.gasguru.core.model.data.Vehicle
+import com.gasguru.core.model.data.VehicleType
 import com.gasguru.core.testing.CoroutinesTestExtension
 import com.gasguru.core.testing.fakes.data.alerts.FakePriceAlertRepository
 import com.gasguru.core.testing.fakes.data.database.FakeFavoriteStationDao
 import com.gasguru.core.testing.fakes.data.database.FakeFuelStationDao
 import com.gasguru.core.testing.fakes.data.database.FakePriceAlertDao
 import com.gasguru.core.testing.fakes.data.database.FakeUserDataDao
+import com.gasguru.core.testing.fakes.data.database.FakeVehicleDao
 import com.gasguru.core.testing.fakes.data.geocoder.FakeGeocoderAddress
 import com.gasguru.core.testing.fakes.data.location.FakeLocationTracker
 import com.gasguru.core.testing.fakes.data.maps.FakeStaticMapRepository
 import com.gasguru.core.testing.fakes.data.network.FakeRemoteDataSource
 import com.gasguru.core.testing.fakes.data.user.FakeUserDataRepository
+import com.gasguru.core.testing.fakes.data.vehicle.FakeVehicleRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -41,6 +51,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @ExtendWith(CoroutinesTestExtension::class)
+@DisplayName("DetailStationViewModel")
 class DetailStationViewModelTest {
 
     private lateinit var sut: DetailStationViewModel
@@ -50,9 +61,11 @@ class DetailStationViewModelTest {
     private lateinit var fakePriceAlertDao: FakePriceAlertDao
     private lateinit var fakeUserDataRepository: FakeUserDataRepository
     private lateinit var fakeUserDataDao: FakeUserDataDao
+    private lateinit var fakeVehicleDao: FakeVehicleDao
     private lateinit var fakeGeocoderAddress: FakeGeocoderAddress
     private lateinit var fakeStaticMapRepository: FakeStaticMapRepository
     private lateinit var fakePriceAlertRepository: FakePriceAlertRepository
+    private lateinit var fakeVehicleRepository: FakeVehicleRepository
 
     @BeforeEach
     fun setUp() {
@@ -61,24 +74,66 @@ class DetailStationViewModelTest {
         fakeFavoriteStationDao = FakeFavoriteStationDao()
         fakePriceAlertDao = FakePriceAlertDao()
         fakeUserDataRepository = FakeUserDataRepository(
-            initialUserData = UserData(fuelSelection = FuelType.GASOLINE_95, lastUpdate = 123L)
+            initialUserData = UserData(
+                lastUpdate = 123L,
+                vehicles = listOf(
+                    Vehicle(
+                        id = 1L,
+                        fuelType = FuelType.GASOLINE_95,
+                        name = null,
+                        tankCapacity = 40,
+                        vehicleType = VehicleType.CAR,
+                        isPrincipal = true,
+                    )
+                ),
+            )
         )
         fakeUserDataDao = FakeUserDataDao(
             initialUserData = UserDataEntity(
-                fuelSelection = FuelType.GASOLINE_95,
                 lastUpdate = 123L,
-                isOnboardingSuccess = true
+                isOnboardingSuccess = true,
             )
+        )
+        fakeVehicleDao = FakeVehicleDao(
+            initialVehicles = listOf(
+                VehicleEntity(
+                    id = 1L,
+                    userId = 0L,
+                    name = null,
+                    fuelType = FuelType.GASOLINE_95,
+                    tankCapacity = 40,
+                    vehicleType = VehicleType.CAR,
+                    isPrincipal = true,
+                )
+            ),
         )
         fakeGeocoderAddress = FakeGeocoderAddress(address = "Calle Mayor 1")
         fakeStaticMapRepository = FakeStaticMapRepository()
         fakePriceAlertRepository = FakePriceAlertRepository()
+        fakeVehicleRepository = FakeVehicleRepository(
+            initialVehicles = listOf(
+                Vehicle(
+                    id = 1L,
+                    fuelType = FuelType.GASOLINE_95,
+                    name = null,
+                    tankCapacity = 40,
+                    vehicleType = VehicleType.CAR,
+                    isPrincipal = true,
+                )
+            ),
+        )
 
         sut = createViewModel()
     }
 
     @Test
-    @DisplayName("GIVEN no location WHEN collecting fuel station THEN emits Error")
+    @DisplayName(
+        """
+        GIVEN no location available
+        WHEN collecting fuel station state
+        THEN emits Loading then Error
+        """
+    )
     fun emitsErrorWhenLocationMissing() = runTest {
         sut.fuelStation.test {
             assertEquals(DetailStationUiState.Loading, awaitItem())
@@ -87,7 +142,13 @@ class DetailStationViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN location and station WHEN collecting fuel station THEN emits Success with address")
+    @DisplayName(
+        """
+        GIVEN location and station available
+        WHEN collecting fuel station state
+        THEN emits Success with station id and address
+        """
+    )
     fun emitsSuccessWithAddress() = runTest {
         fakeLocationTracker.setLastKnownLocation(testLocation())
         fakeFuelStationDao.setStations(listOf(stationEntity(id = 10, price = 1.55)))
@@ -96,14 +157,21 @@ class DetailStationViewModelTest {
 
         sut.fuelStation.test {
             assertEquals(DetailStationUiState.Loading, awaitItem())
-            val state = awaitItem() as DetailStationUiState.Success
-            assertEquals(10, state.stationModel.fuelStation.idServiceStation)
-            assertEquals("Calle Mayor 1", state.address)
+            val successState = awaitItem() as DetailStationUiState.Success
+            assertEquals(10, successState.stationModel.fuelStation.idServiceStation)
+            assertEquals("Calle Mayor 1", successState.address)
+            assertEquals(false, successState.isOpen)
         }
     }
 
     @Test
-    @DisplayName("GIVEN geocoder error WHEN collecting fuel station THEN emits Success with null address")
+    @DisplayName(
+        """
+        GIVEN geocoder throws an error
+        WHEN collecting fuel station state
+        THEN emits Success with null address
+        """
+    )
     fun emitsSuccessWithNullAddressOnGeocoderError() = runTest {
         fakeGeocoderAddress.shouldThrow = true
         fakeLocationTracker.setLastKnownLocation(testLocation())
@@ -113,14 +181,20 @@ class DetailStationViewModelTest {
 
         sut.fuelStation.test {
             assertEquals(DetailStationUiState.Loading, awaitItem())
-            val state = awaitItem() as DetailStationUiState.Success
-            assertEquals(10, state.stationModel.fuelStation.idServiceStation)
-            assertNull(state.address)
+            val successState = awaitItem() as DetailStationUiState.Success
+            assertEquals(10, successState.stationModel.fuelStation.idServiceStation)
+            assertNull(successState.address)
         }
     }
 
     @Test
-    @DisplayName("GIVEN success state WHEN collecting static map THEN emits url")
+    @DisplayName(
+        """
+        GIVEN success state available
+        WHEN collecting static map url
+        THEN emits null then the map url
+        """
+    )
     fun emitsStaticMapUrl() = runTest {
         fakeStaticMapRepository.urlToReturn = "static://map"
         fakeLocationTracker.setLastKnownLocation(testLocation())
@@ -135,7 +209,13 @@ class DetailStationViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN toggle favorite WHEN handling THEN updates repository")
+    @DisplayName(
+        """
+        GIVEN ToggleFavorite events with true then false
+        WHEN handling events
+        THEN station is added and removed from favorites
+        """
+    )
     fun togglesFavorite() = runTest {
         sut.onEvent(DetailStationEvent.ToggleFavorite(isFavorite = true))
         sut.onEvent(DetailStationEvent.ToggleFavorite(isFavorite = false))
@@ -146,7 +226,13 @@ class DetailStationViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN toggle price alert WHEN handling THEN updates price alerts")
+    @DisplayName(
+        """
+        GIVEN station loaded and TogglePriceAlert events with true then false
+        WHEN handling events
+        THEN price alert is added and removed
+        """
+    )
     fun togglesPriceAlert() = runTest {
         fakeLocationTracker.setLastKnownLocation(testLocation())
         fakeFuelStationDao.setStations(listOf(stationEntity(id = 10, price = 1.55)))
@@ -154,7 +240,8 @@ class DetailStationViewModelTest {
 
         sut.fuelStation.test {
             assertEquals(DetailStationUiState.Loading, awaitItem())
-            awaitItem()
+            assertNotNull(awaitItem() as? DetailStationUiState.Success)
+            cancelAndIgnoreRemainingEvents()
         }
 
         sut.onEvent(DetailStationEvent.TogglePriceAlert(isEnabled = true))
@@ -166,7 +253,33 @@ class DetailStationViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN user data WHEN collecting lastUpdate THEN emits value")
+    @DisplayName(
+        """
+        GIVEN vehicle loaded in state
+        WHEN UpdateTankCapacity event is handled
+        THEN vehicle tank capacity is updated in repository
+        """
+    )
+    fun updatesTankCapacity() = runTest {
+        sut.vehicle.test {
+            awaitItem() // null (initial value)
+            awaitItem() // Vehicle loaded from repository
+        }
+
+        sut.onEvent(DetailStationEvent.UpdateTankCapacity(capacity = 60))
+        advanceUntilIdle()
+
+        assertEquals(listOf(1L to 60), fakeVehicleRepository.updatedTankCapacities)
+    }
+
+    @Test
+    @DisplayName(
+        """
+        GIVEN user data with lastUpdate set
+        WHEN collecting lastUpdate state
+        THEN emits initial 0 then actual value
+        """
+    )
     fun emitsLastUpdate() = runTest {
         sut.lastUpdate.test {
             assertEquals(0L, awaitItem())
@@ -174,10 +287,57 @@ class DetailStationViewModelTest {
         }
     }
 
-    private fun createViewModel(): DetailStationViewModel {
+    @Test
+    @DisplayName(
+        """
+        GIVEN user data with a principal vehicle
+        WHEN collecting vehicle state
+        THEN emits null then the correct vehicle
+        """
+    )
+    fun emitsVehicleFromUserData() = runTest {
+        sut.vehicle.test {
+            assertNull(awaitItem())
+            val loadedVehicle = awaitItem()
+            assertNotNull(loadedVehicle)
+            assertEquals(1L, loadedVehicle!!.id)
+            assertEquals(FuelType.GASOLINE_95, loadedVehicle.fuelType)
+            assertEquals(40, loadedVehicle.tankCapacity)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    @DisplayName(
+        """
+        GIVEN ShareStation event is dispatched
+        WHEN handling event
+        THEN logs STATION_SHARED analytics event with the correct station id
+        """
+    )
+    fun logsAnalyticsOnShareStation() = runTest {
+        val fakeAnalyticsHelper = FakeAnalyticsHelper()
+        sut = createViewModel(analyticsHelper = fakeAnalyticsHelper)
+
+        sut.onEvent(DetailStationEvent.ShareStation)
+        advanceUntilIdle()
+
+        assertEquals(1, fakeAnalyticsHelper.loggedEvents.size)
+        val loggedEvent = fakeAnalyticsHelper.loggedEvents.first()
+        assertEquals(AnalyticsEvent.Types.STATION_SHARED, loggedEvent.type)
+        assertEquals(
+            "10",
+            loggedEvent.extras.first { it.key == AnalyticsEvent.ParamKeys.STATION_ID }.value,
+        )
+    }
+
+    private fun createViewModel(
+        analyticsHelper: AnalyticsHelper = NoOpAnalyticsHelper(),
+    ): DetailStationViewModel {
         val offlineUserDataRepository = OfflineUserDataRepository(
             userDataDao = fakeUserDataDao,
-            favoriteStationDao = fakeFavoriteStationDao
+            favoriteStationDao = fakeFavoriteStationDao,
+            vehicleDao = fakeVehicleDao,
         )
         val offlineFuelStationRepository = OfflineFuelStationRepository(
             fuelStationDao = fakeFuelStationDao,
@@ -186,7 +346,7 @@ class DetailStationViewModelTest {
             ioDispatcher = kotlinx.coroutines.Dispatchers.Main,
             offlineUserDataRepository = offlineUserDataRepository,
             favoriteStationDao = fakeFavoriteStationDao,
-            priceAlertDao = fakePriceAlertDao
+            priceAlertDao = fakePriceAlertDao,
         )
 
         return DetailStationViewModel(
@@ -199,7 +359,11 @@ class DetailStationViewModelTest {
             getAddressFromLocationUseCase = GetAddressFromLocationUseCase(fakeGeocoderAddress),
             getStaticMapUrlUseCase = GetStaticMapUrlUseCase(fakeStaticMapRepository),
             addPriceAlertUseCase = AddPriceAlertUseCase(fakePriceAlertRepository),
-            removePriceAlertUseCase = RemovePriceAlertUseCase(fakePriceAlertRepository)
+            removePriceAlertUseCase = RemovePriceAlertUseCase(fakePriceAlertRepository),
+            updateVehicleTankCapacityUseCase = UpdateVehicleTankCapacityUseCase(
+                fakeVehicleRepository
+            ),
+            analyticsHelper = analyticsHelper,
         )
     }
 
@@ -246,6 +410,14 @@ class DetailStationViewModelTest {
             brandStation = "Repsol",
             typeSale = "",
             lastUpdate = 0,
-            isFavorite = false
+            isFavorite = false,
         )
+
+    private class FakeAnalyticsHelper : AnalyticsHelper {
+        val loggedEvents = mutableListOf<AnalyticsEvent>()
+
+        override fun logEvent(event: AnalyticsEvent) {
+            loggedEvents.add(event)
+        }
+    }
 }

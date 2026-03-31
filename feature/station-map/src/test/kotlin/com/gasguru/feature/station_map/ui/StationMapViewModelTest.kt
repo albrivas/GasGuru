@@ -1,9 +1,11 @@
 package com.gasguru.feature.station_map.ui
 
+import com.gasguru.core.analytics.NoOpAnalyticsHelper
 import com.gasguru.core.data.repository.stations.OfflineFuelStationRepository
 import com.gasguru.core.data.repository.user.OfflineUserDataRepository
 import com.gasguru.core.database.model.FuelStationEntity
 import com.gasguru.core.database.model.UserDataEntity
+import com.gasguru.core.database.model.VehicleEntity
 import com.gasguru.core.domain.filters.GetFiltersUseCase
 import com.gasguru.core.domain.filters.SaveFilterUseCase
 import com.gasguru.core.domain.fuelstation.FuelStationByLocationUseCase
@@ -17,11 +19,14 @@ import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.Route
 import com.gasguru.core.model.data.UserData
+import com.gasguru.core.model.data.Vehicle
+import com.gasguru.core.model.data.VehicleType
 import com.gasguru.core.testing.CoroutinesTestExtension
 import com.gasguru.core.testing.fakes.data.database.FakeFavoriteStationDao
 import com.gasguru.core.testing.fakes.data.database.FakeFuelStationDao
 import com.gasguru.core.testing.fakes.data.database.FakePriceAlertDao
 import com.gasguru.core.testing.fakes.data.database.FakeUserDataDao
+import com.gasguru.core.testing.fakes.data.database.FakeVehicleDao
 import com.gasguru.core.testing.fakes.data.filter.FakeFilterRepository
 import com.gasguru.core.testing.fakes.data.location.FakeLocationTracker
 import com.gasguru.core.testing.fakes.data.network.FakeRemoteDataSource
@@ -48,6 +53,7 @@ class StationMapViewModelTest {
     private lateinit var sut: StationMapViewModel
     private lateinit var fakeUserDataRepository: FakeUserDataRepository
     private lateinit var fakeUserDataDao: FakeUserDataDao
+    private lateinit var fakeVehicleDao: FakeVehicleDao
     private lateinit var fakeFavoriteStationDao: FakeFavoriteStationDao
     private lateinit var fakeFuelStationDao: FakeFuelStationDao
     private lateinit var fakePriceAlertDao: FakePriceAlertDao
@@ -59,14 +65,37 @@ class StationMapViewModelTest {
     @BeforeEach
     fun setUp() {
         fakeUserDataRepository = FakeUserDataRepository(
-            initialUserData = UserData(fuelSelection = FuelType.GASOLINE_95)
+            initialUserData = UserData(
+                vehicles = listOf(
+                    Vehicle(
+                        id = 1L,
+                        fuelType = FuelType.GASOLINE_95,
+                        name = null,
+                        tankCapacity = 40,
+                        vehicleType = VehicleType.CAR,
+                        isPrincipal = true,
+                    )
+                )
+            )
         )
         fakeUserDataDao = FakeUserDataDao(
             initialUserData = UserDataEntity(
-                fuelSelection = FuelType.GASOLINE_95,
                 lastUpdate = 0,
-                isOnboardingSuccess = true
+                isOnboardingSuccess = true,
             )
+        )
+        fakeVehicleDao = FakeVehicleDao(
+            initialVehicles = listOf(
+                VehicleEntity(
+                    id = 1L,
+                    userId = 0L,
+                    name = null,
+                    fuelType = FuelType.GASOLINE_95,
+                    tankCapacity = 40,
+                    vehicleType = VehicleType.CAR,
+                    isPrincipal = true,
+                )
+            ),
         )
         fakeFavoriteStationDao = FakeFavoriteStationDao()
         fakeFuelStationDao = FakeFuelStationDao()
@@ -80,8 +109,8 @@ class StationMapViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN current location WHEN initialized THEN loads stations and updates state")
-    fun loadsStationsOnInit() = runTest {
+    @DisplayName("GIVEN current location WHEN requesting stations THEN loads stations and updates state")
+    fun loadsStationsByCurrentLocation() = runTest {
         val stations = listOf(
             stationEntity(id = 1, latitude = 40.0, longitude = -3.0, price = 1.50),
             stationEntity(id = 2, latitude = 40.1, longitude = -3.1, price = 1.20),
@@ -90,6 +119,7 @@ class StationMapViewModelTest {
         fakeLocationTracker.setLastKnownLocation(LatLng(latitude = 40.0, longitude = -3.0))
 
         sut = createViewModel()
+        sut.handleEvent(StationMapEvent.GetStationByCurrentLocation)
 
         advanceUntilIdle()
 
@@ -112,6 +142,7 @@ class StationMapViewModelTest {
         fakeLocationTracker.setLastKnownLocation(userLocation)
 
         sut = createViewModel()
+        sut.handleEvent(StationMapEvent.GetStationByCurrentLocation)
 
         advanceUntilIdle()
 
@@ -131,6 +162,7 @@ class StationMapViewModelTest {
         fakeLocationTracker.setLastKnownLocation(LatLng(latitude = 40.0, longitude = -3.0))
 
         sut = createViewModel()
+        sut.handleEvent(StationMapEvent.GetStationByCurrentLocation)
 
         advanceUntilIdle()
 
@@ -262,10 +294,221 @@ class StationMapViewModelTest {
         assertEquals(1, state.mapStations.size)
     }
 
+    @Test
+    @DisplayName("GIVEN route in progress WHEN canceling THEN clears route state and stops loading")
+    fun cancelRouteStopsLoadingAndClearsState() = runTest {
+        val route = Route(
+            route = listOf(
+                LatLng(latitude = 40.0, longitude = -3.0),
+                LatLng(latitude = 40.2, longitude = -3.2),
+            ),
+            distanceText = "10 km",
+            durationText = "15 min"
+        )
+        fakeRoutesRepository.setRoute(route)
+        fakePlacesRepository.setLocationForId(
+            placeId = "dest",
+            location = LatLng(latitude = 40.2, longitude = -3.2)
+        )
+        fakeLocationTracker.setLastKnownLocation(LatLng(latitude = 40.0, longitude = -3.0))
+        fakeFuelStationDao.setStations(
+            listOf(stationEntity(id = 1, latitude = 40.0, longitude = -3.0, price = 1.30))
+        )
+
+        sut.handleEvent(
+            StationMapEvent.StartRoute(
+                originId = null,
+                destinationId = "dest",
+                destinationName = "Madrid"
+            )
+        )
+
+        sut.handleEvent(StationMapEvent.CancelRoute)
+
+        advanceUntilIdle()
+
+        val state = sut.state.value
+        assertNull(state.route)
+        assertNull(state.routeDestinationName)
+        assertFalse(state.loading)
+    }
+
+    @Test
+    @DisplayName("GIVEN cancelled route WHEN starting new route THEN new route loads successfully")
+    fun canStartNewRouteAfterCancellation() = runTest {
+        val route1 = Route(
+            route = listOf(
+                LatLng(latitude = 40.0, longitude = -3.0),
+                LatLng(latitude = 40.1, longitude = -3.1)
+            ),
+            distanceText = "5 km",
+            durationText = "10 min"
+        )
+        val route2 = Route(
+            route = listOf(
+                LatLng(latitude = 40.0, longitude = -3.0),
+                LatLng(latitude = 40.3, longitude = -3.3)
+            ),
+            distanceText = "15 km",
+            durationText = "20 min"
+        )
+
+        fakeRoutesRepository.setRoute(route1)
+        fakePlacesRepository.setLocationForId(
+            placeId = "dest1",
+            location = LatLng(latitude = 40.1, longitude = -3.1)
+        )
+        fakePlacesRepository.setLocationForId(
+            placeId = "dest2",
+            location = LatLng(latitude = 40.3, longitude = -3.3)
+        )
+        fakeLocationTracker.setLastKnownLocation(LatLng(latitude = 40.0, longitude = -3.0))
+        fakeFuelStationDao.setStations(
+            listOf(stationEntity(id = 1, latitude = 40.0, longitude = -3.0, price = 1.30))
+        )
+
+        sut.handleEvent(
+            StationMapEvent.StartRoute(
+                originId = null,
+                destinationId = "dest1",
+                destinationName = "Madrid"
+            )
+        )
+
+        sut.handleEvent(StationMapEvent.CancelRoute)
+
+        advanceUntilIdle()
+
+        fakeRoutesRepository.setRoute(route2)
+        sut.handleEvent(
+            StationMapEvent.StartRoute(
+                originId = null,
+                destinationId = "dest2",
+                destinationName = "Barcelona"
+            )
+        )
+
+        advanceUntilIdle()
+
+        val state = sut.state.value
+        assertNotNull(state.route)
+        assertEquals("Barcelona", state.routeDestinationName)
+        assertEquals("15 km", state.route?.distanceText)
+        assertEquals(1, state.mapStations.size)
+        assertFalse(state.loading)
+    }
+
+    @Test
+    @DisplayName("GIVEN no filters WHEN observing filters THEN returns default values")
+    fun returnsDefaultFilterValues() = runTest {
+        fakeFilterRepository.clearFilters()
+        fakeLocationTracker.setLastKnownLocation(LatLng(latitude = 40.0, longitude = -3.0))
+
+        sut = createViewModel()
+
+        advanceUntilIdle()
+
+        val filterState = sut.filters.value
+        assertEquals(emptyList<String>(), filterState.filterBrand)
+        assertEquals(10, filterState.filterStationsNearby)
+        assertEquals(FilterUiState.OpeningHours.NONE, filterState.filterSchedule)
+    }
+
+    @Test
+    @DisplayName("GIVEN invalid nearby filter WHEN observing filters THEN returns default 10")
+    fun returnsDefaultNearbyWhenInvalid() = runTest {
+        fakeFilterRepository.setFilter(
+            type = FilterType.NEARBY,
+            selection = listOf("invalid")
+        )
+        fakeLocationTracker.setLastKnownLocation(LatLng(latitude = 40.0, longitude = -3.0))
+
+        sut = createViewModel()
+
+        advanceUntilIdle()
+
+        val filterState = sut.filters.value
+        assertEquals(10, filterState.filterStationsNearby)
+    }
+
+    @Test
+    @DisplayName("GIVEN no current location WHEN getting station by current location THEN handles error")
+    fun handlesNoCurrentLocation() = runTest {
+        fakeLocationTracker.setLastKnownLocation(null)
+        fakeFuelStationDao.setStations(
+            listOf(stationEntity(id = 1, latitude = 40.0, longitude = -3.0, price = 1.30))
+        )
+
+        sut = createViewModel()
+        sut.handleEvent(StationMapEvent.GetStationByCurrentLocation)
+
+        advanceUntilIdle()
+
+        val state = sut.state.value
+        assertEquals(emptyList<Any>(), state.mapStations)
+    }
+
+    @Test
+    @DisplayName("GIVEN error getting route WHEN starting route THEN updates error state")
+    fun handlesRouteError() = runTest {
+        fakeLocationTracker.setLastKnownLocation(LatLng(latitude = 40.0, longitude = -3.0))
+        fakePlacesRepository.setLocationForId(
+            placeId = "dest",
+            location = LatLng(latitude = 40.2, longitude = -3.2)
+        )
+        fakeRoutesRepository.setShouldThrowError(true)
+
+        sut.handleEvent(
+            StationMapEvent.StartRoute(
+                originId = null,
+                destinationId = "dest",
+                destinationName = "Madrid"
+            )
+        )
+
+        advanceUntilIdle()
+
+        val state = sut.state.value
+        assertNotNull(state.error)
+        assertFalse(state.loading)
+        assertNull(state.routeDestinationName)
+    }
+
+    @Test
+    @DisplayName("GIVEN error getting place location WHEN getting stations THEN handles error")
+    fun handlesPlaceLocationError() = runTest {
+        fakeLocationTracker.setLastKnownLocation(LatLng(latitude = 40.0, longitude = -3.0))
+        fakePlacesRepository.setShouldThrowError(true)
+
+        sut.handleEvent(StationMapEvent.GetStationByPlace(placeId = "invalid"))
+
+        advanceUntilIdle()
+
+        val state = sut.state.value
+        assertFalse(state.loading)
+    }
+
+    @Test
+    @DisplayName("GIVEN error getting stations WHEN loading by location THEN updates error state")
+    fun handlesStationLoadingError() = runTest {
+        fakeLocationTracker.setLastKnownLocation(LatLng(latitude = 40.0, longitude = -3.0))
+        fakeFuelStationDao.setShouldThrowError(true)
+
+        sut = createViewModel()
+        sut.handleEvent(StationMapEvent.GetStationByCurrentLocation)
+
+        advanceUntilIdle()
+
+        val state = sut.state.value
+        assertNotNull(state.error)
+        assertFalse(state.loading)
+    }
+
     private fun createViewModel(): StationMapViewModel {
         val offlineUserDataRepository = OfflineUserDataRepository(
             userDataDao = fakeUserDataDao,
-            favoriteStationDao = fakeFavoriteStationDao
+            favoriteStationDao = fakeFavoriteStationDao,
+            vehicleDao = fakeVehicleDao,
         )
         val offlineFuelStationRepository = OfflineFuelStationRepository(
             fuelStationDao = fakeFuelStationDao,
@@ -285,8 +528,11 @@ class StationMapViewModelTest {
             getFiltersUseCase = GetFiltersUseCase(fakeFilterRepository),
             saveFilterUseCase = SaveFilterUseCase(fakeFilterRepository),
             getRouteUseCase = GetRouteUseCase(fakeRoutesRepository),
-            getFuelStationsInRouteUseCase = GetFuelStationsInRouteUseCase(offlineFuelStationRepository),
-            defaultDispatcher = Dispatchers.Main
+            getFuelStationsInRouteUseCase = GetFuelStationsInRouteUseCase(
+                offlineFuelStationRepository
+            ),
+            defaultDispatcher = Dispatchers.Main,
+            analyticsHelper = NoOpAnalyticsHelper(),
         )
     }
 
@@ -295,7 +541,7 @@ class StationMapViewModelTest {
         latitude: Double,
         longitude: Double,
         price: Double,
-        brand: String = "Repsol"
+        brand: String = "Repsol",
     ): FuelStationEntity =
         FuelStationEntity(
             bioEthanolPercentage = "",

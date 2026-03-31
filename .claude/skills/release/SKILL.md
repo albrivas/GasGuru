@@ -1,0 +1,120 @@
+---
+name: release
+description: Create a GasGuru release for store deployment. Use when the user asks to create a release, bump version, prepare a new version, deploy to stores, or publish a new version. Handles version bumping, whatsnew files, branch creation, and PR.
+---
+
+# Release Playbook
+
+## Key files
+
+- `versions.properties` — contains `versionCode`, `versionMajor`, `versionMinor`, `versionPatch`
+- `distribution/whatsnew/whatsnew-en-US` — English changelog (max 4 lines)
+- `distribution/whatsnew/whatsnew-es-ES` — Spanish changelog (max 4 lines)
+
+## Steps
+
+1. Ensure `develop` is up to date:
+   ```bash
+   git checkout develop && git pull
+   ```
+
+2. Check if `main` has the version bump commit from the last release that is not in `develop`:
+   ```bash
+   git fetch origin main
+   git log origin/main --oneline -- versions.properties distribution/whatsnew/ | head -5
+   ```
+   Find the latest `chore: bump version from X.X.X to X.X.X` commit. Check if that commit is already in develop:
+   ```bash
+   git branch --contains <commit-hash> develop
+   ```
+   If it is NOT in develop, create a sync branch from develop and cherry-pick ONLY that commit:
+   ```bash
+   git checkout -b sync/main-to-develop
+   git cherry-pick <commit-hash>
+   git push origin sync/main-to-develop -u
+   gh pr create --base develop --title "Sync - Update develop with main" --body ""
+   ```
+   Do NOT bring all commits from main — only cherry-pick the version bump commit.
+   Do NOT proceed with the release until this sync is merged and develop is pulled again.
+
+3. Read `versions.properties` to get the current version (`versionMajor.versionMinor.versionPatch`)
+
+4. Create the release branch from `main` (increment patch by default):
+   ```bash
+   git checkout main && git pull
+   git checkout -b release/X.X.X
+   ```
+
+5. Merge `develop` keeping develop's changes on conflicts:
+   ```bash
+   git merge develop --strategy-option=theirs
+   ```
+
+   **After the merge, always run these two cleanup steps:**
+
+   a) Resolve any pending modify/delete conflicts (files deleted in develop but conflicting):
+   ```bash
+   git status --short | grep "^DU\|^UD" | awk '{print $2}' | xargs -I{} git rm -f {} 2>/dev/null || true
+   ```
+
+   b) Remove files that were deleted in develop but silently kept in the release branch (git does not always auto-delete them even with `-X theirs`):
+   ```bash
+   MERGE_BASE=$(git merge-base HEAD develop)
+   git diff "$MERGE_BASE" develop --name-status | grep "^D" | awk '{print $2}' | while read f; do
+     if [ -f "$f" ]; then
+       echo "Removing file deleted in develop: $f"
+       git rm -f "$f"
+     fi
+   done
+   ```
+
+   c) Remove files that exist in the release branch (from main) but do NOT exist in develop — these are files added on main that were never merged to develop and should not be in the release:
+   ```bash
+   git diff develop HEAD --name-only --diff-filter=A | while read f; do
+     if [ -f "$f" ]; then
+       echo "Removing file not present in develop: $f"
+       git rm -f "$f"
+     fi
+   done
+   ```
+
+   If any files were removed in steps (b) or (c), amend the merge commit:
+   ```bash
+   git diff --cached --quiet || git commit --amend --no-edit
+   ```
+
+6. **Verify the project compiles** before continuing:
+   ```bash
+   ./gradlew assembleDebug
+   ```
+   If the build fails, fix the errors before proceeding. Common causes after a merge:
+   - Duplicate functions or classes (keep develop's version, remove the duplicate from main)
+   - References to removed methods or classes (remove the dead code)
+   - Missing imports caused by merge artifacts
+
+7. Update `versions.properties`:
+   - Increment `versionCode` by 1
+   - Increment `versionPatch` by 1
+   - Do NOT change `versionMajor` or `versionMinor` unless explicitly requested
+
+8. Update whatsnew files:
+   - These files appear in the **app store listing** — content must be user-facing (new features, UI changes, visible fixes). Never include technical changes (refactors, dependency updates, build infra, architecture changes).
+   - Review commits since last release and identify only user-facing changes.
+   - If there are no user-facing changes, use this generic message:
+     - EN: `- Bug fixes and performance improvements`
+     - ES: `- Corrección de errores y mejoras de rendimiento`
+   - Add new changes at the TOP of the file (newest first)
+   - Remove the LAST line(s) to keep max 4 lines per file
+
+9. Commit (no Claude references):
+   ```bash
+   git add . && git commit -m "chore: bump version from X.X.X to X.X.X"
+   ```
+
+10. Push and create PR:
+   ```bash
+   git push origin release/X.X.X -u
+   gh pr create --base main --title "Release - vX.X.X" --body ""
+   ```
+
+11. Return the PR URL when done.

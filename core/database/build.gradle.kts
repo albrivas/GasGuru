@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.gasguru.android.library)
-    alias(libs.plugins.gasguru.hilt)
+    alias(libs.plugins.gasguru.koin)
     alias(libs.plugins.gasguru.room)
     alias(libs.plugins.junit5)
     alias(libs.plugins.gasguru.proguard)
@@ -8,12 +8,18 @@ plugins {
 
 android {
     namespace = "com.gasguru.core.database"
+
+    sourceSets {
+        getByName("androidTest").assets.srcDir("$projectDir/schemas")
+    }
 }
 
 dependencies {
     implementation(projects.core.model)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.moshi.kotlin)
+
+    testImplementation(libs.mockk)
 
     androidTestImplementation(libs.junit5.api)
     androidTestImplementation(libs.junit5.extensions)
@@ -22,4 +28,5 @@ dependencies {
     androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.turbine)
+    androidTestImplementation(libs.androidx.room.testing)
 }

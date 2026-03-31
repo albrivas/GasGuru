@@ -3,6 +3,8 @@ package com.gasguru.core.components.searchbar
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gasguru.core.analytics.AnalyticsEvent
+import com.gasguru.core.analytics.AnalyticsHelper
 import com.gasguru.core.components.searchbar.state.GasGuruSearchBarEvent
 import com.gasguru.core.components.searchbar.state.SearchResultUiState
 import com.gasguru.core.domain.places.GetPlacesUseCase
@@ -11,7 +13,6 @@ import com.gasguru.core.domain.search.GetRecentSearchQueryUseCase
 import com.gasguru.core.domain.search.InsertRecentSearchQueryUseCase
 import com.gasguru.core.model.data.SearchPlace
 import com.gasguru.core.ui.RecentSearchQueriesUiState
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -21,18 +22,17 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 private const val SEARCH_QUERY = "searchQuery"
 private const val SEARCH_QUERY_MIN_LENGTH = 2
 
-@HiltViewModel
-class GasGuruSearchBarViewModel @Inject constructor(
+class GasGuruSearchBarViewModel(
     private val savedStateHandle: SavedStateHandle,
     private val getPlacesUseCase: GetPlacesUseCase,
     private val clearRecentSearchQueriesUseCase: ClearRecentSearchQueriesUseCase,
     private val insertRecentSearchQueryUseCase: InsertRecentSearchQueryUseCase,
     getRecentSearchQueryUseCase: GetRecentSearchQueryUseCase,
+    private val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
 
     val searchQuery = savedStateHandle.getStateFlow(key = SEARCH_QUERY, initialValue = "")
@@ -79,10 +79,12 @@ class GasGuruSearchBarViewModel @Inject constructor(
     }
 
     private fun clearRecentSearches() = viewModelScope.launch {
+        analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.SEARCH_HISTORY_CLEARED))
         clearRecentSearchQueriesUseCase()
     }
 
     private fun insertRecentSearch(searchQuery: SearchPlace) = viewModelScope.launch {
+        analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.SEARCH_PLACE_SELECTED))
         insertRecentSearchQueryUseCase(placeId = searchQuery.id, name = searchQuery.name)
     }
 }

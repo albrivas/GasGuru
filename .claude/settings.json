@@ -1,0 +1,47 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/env-block.js"
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(git checkout:*)",
+      "Bash(git pull:*)",
+      "Bash(git cherry-pick:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(gh:*)",
+      "Bash(git merge:*)",
+      "Bash(mkdir:*)",
+      "Bash(rm:*)",
+      "Bash(git fetch:*)",
+      "Bash(cat:*)",
+      "Bash(git merge:*)",
+      "Bash(git branch:*)",
+      "Bash(find:*)",
+      "Bash(for:*)",
+      "Bash(do)",
+      "Bash(if [ -f \"/Users/albertorivas/Documents/Proyectos/Personal/GasGuru/$module/build.gradle.kts\" ])",
+      "Bash(then)",
+      "Bash(echo:*)",
+      "Bash(fi)"
+    ]
+  },
+
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "teammateMode": "tmux"
+}
+
+

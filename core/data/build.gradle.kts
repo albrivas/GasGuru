@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.gasguru.android.library)
-    alias(libs.plugins.gasguru.hilt)
+    alias(libs.plugins.gasguru.koin)
     alias(libs.plugins.gasguru.proguard)
     alias(libs.plugins.gasguru.secrets.google)
 }
@@ -10,6 +10,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.analytics)
     implementation(projects.core.database)
     implementation(projects.core.network)
     implementation(projects.core.model)
@@ -24,4 +25,7 @@ dependencies {
     implementation(libs.maps.utils)
 
     testImplementation(projects.core.testing)
+    testImplementation(libs.junit5.api)
+    testImplementation(libs.junit5.extensions)
+    testRuntimeOnly(libs.junit5.engine)
 }

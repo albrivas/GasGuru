@@ -1,5 +1,6 @@
 package com.gasguru.core.data.di
 
+import com.gasguru.core.common.KoinQualifiers
 import com.gasguru.core.data.repository.alerts.PriceAlertRepository
 import com.gasguru.core.data.repository.alerts.PriceAlertRepositoryImpl
 import com.gasguru.core.data.repository.filter.FilterRepository
@@ -20,83 +21,106 @@ import com.gasguru.core.data.repository.stations.FuelStationRepository
 import com.gasguru.core.data.repository.stations.OfflineFuelStationRepository
 import com.gasguru.core.data.repository.user.OfflineUserDataRepository
 import com.gasguru.core.data.repository.user.UserDataRepository
+import com.gasguru.core.data.repository.vehicle.OfflineVehicleRepository
+import com.gasguru.core.data.repository.vehicle.VehicleRepository
+import com.gasguru.core.data.sync.SyncManager
 import com.gasguru.core.data.util.ConnectivityManagerNetworkMonitor
 import com.gasguru.core.data.util.NetworkMonitor
 import com.gasguru.core.network.datasource.PlacesDataSource
 import com.gasguru.core.network.datasource.PlacesDataSourceImp
 import com.gasguru.core.network.datasource.RoutesDataSource
 import com.gasguru.core.network.datasource.RoutesDataSourceImpl
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.qualifier.named
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-interface DataModule {
+val dataModule = module {
+    single<UserDataRepository> {
+        OfflineUserDataRepository(
+            userDataDao = get(),
+            favoriteStationDao = get(),
+            vehicleDao = get(),
+        )
+    }
 
-    @Binds
-    fun bindsFuelStationRepository(
-        fuelStationRepository: OfflineFuelStationRepository,
-    ): FuelStationRepository
+    single<VehicleRepository> {
+        OfflineVehicleRepository(vehicleDao = get())
+    }
 
-    @Binds
-    fun bindRouteDataSourceImp(
-        routesDataSource: RoutesDataSourceImpl
-    ): RoutesDataSource
+    single<FuelStationRepository> {
+        OfflineFuelStationRepository(
+            fuelStationDao = get(),
+            remoteDataSource = get(),
+            defaultDispatcher = get(named(KoinQualifiers.DEFAULT_DISPATCHER)),
+            ioDispatcher = get(named(KoinQualifiers.IO_DISPATCHER)),
+            offlineUserDataRepository = get(),
+            favoriteStationDao = get(),
+            priceAlertDao = get(),
+        )
+    }
 
-    @Binds
-    fun bindUserDataRepository(
-        userDataRepository: OfflineUserDataRepository,
-    ): UserDataRepository
+    single<LocationTracker> {
+        LocationTrackerRepository(
+            locationClient = get(),
+            context = androidContext(),
+        )
+    }
 
-    @Binds
-    fun bindLocationTrackerRepository(
-        locationTrackerRepository: LocationTrackerRepository,
-    ): LocationTracker
+    single<PlacesDataSource> { PlacesDataSourceImp(placesClient = get()) }
 
-    @Binds
-    fun bindPlacesRepository(
-        placesRepository: PlacesRepositoryImp,
-    ): PlacesRepository
+    single<PlacesRepository> { PlacesRepositoryImp(placesDataSource = get()) }
 
-    @Binds
-    fun bindPlacesDataSource(
-        placesDataSource: PlacesDataSourceImp,
-    ): PlacesDataSource
+    single<OfflineRecentSearchRepository> {
+        OfflineRecentSearchRepositoryImp(recentSearchQueryDao = get())
+    }
 
-    @Binds
-    fun bindRecentSearchRepository(
-        recentSearchRepository: OfflineRecentSearchRepositoryImp,
-    ): OfflineRecentSearchRepository
+    single<GeocoderAddress> {
+        GeocoderAddressImpl(
+            context = androidContext(),
+            ioDispatcher = get(named(KoinQualifiers.IO_DISPATCHER)),
+        )
+    }
 
-    @Binds
-    fun bindGeocoderAddress(
-        geocoderAddress: GeocoderAddressImpl,
-    ): GeocoderAddress
+    single<FilterRepository> { FilterRepositoryImpl(dao = get()) }
 
-    @Binds
-    fun bindFilterRepository(
-        filterRepository: FilterRepositoryImpl,
-    ): FilterRepository
+    single<NetworkMonitor> {
+        ConnectivityManagerNetworkMonitor(
+            context = androidContext(),
+            ioDispatcher = get(named(KoinQualifiers.IO_DISPATCHER)),
+            analyticsHelper = get(),
+        )
+    }
 
-    @Binds
-    fun bindConnectivityManager(
-        connectivityManagerNetworkMonitor: ConnectivityManagerNetworkMonitor,
-    ): NetworkMonitor
+    single<StaticMapRepository> {
+        GoogleStaticMapRepository(apiKey = get(named(KoinQualifiers.GOOGLE_API_KEY)))
+    }
 
-    @Binds
-    fun bindStaticMapRepository(
-        googleStaticMapRepository: GoogleStaticMapRepository,
-    ): StaticMapRepository
+    single<RoutesDataSource> { RoutesDataSourceImpl(routeApiServices = get()) }
 
-    @Binds
-    fun bindRoutesRepository(
-        routesRepository: RoutesRepositoryImpl
-    ): RoutesRepository
+    single<RoutesRepository> {
+        RoutesRepositoryImpl(
+            routesDataSource = get(),
+            ioDispatcher = get(named(KoinQualifiers.IO_DISPATCHER)),
+            defaultDispatcher = get(named(KoinQualifiers.DEFAULT_DISPATCHER)),
+        )
+    }
 
-    @Binds
-    fun bindPriceAlertRepository(
-        priceAlertRepository: PriceAlertRepositoryImpl
-    ): PriceAlertRepository
+    single<PriceAlertRepository> {
+        PriceAlertRepositoryImpl(
+            priceAlertDao = get(),
+            supabaseManager = get(),
+            networkMonitor = get(),
+            oneSignalManager = get(),
+            vehicleDao = get(),
+            analyticsHelper = get(),
+        )
+    }
+
+    single {
+        SyncManager(
+            networkMonitor = get(),
+            priceAlertRepository = get(),
+            scope = get(named(KoinQualifiers.APPLICATION_SCOPE)),
+        )
+    }
 }

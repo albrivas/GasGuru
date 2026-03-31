@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_description">Muestra tus gasolineras favoritas con precios</string>
+    <string name="widget_empty_title">Sin favoritas aún</string>
+    <string name="widget_empty_subtitle">Añade gasolineras desde la app</string>
+    <string name="widget_open_app">Abrir app</string>
+    <string name="widget_price_cheap">Barato</string>
+    <string name="widget_price_normal">Normal</string>
+    <string name="widget_price_expensive">Caro</string>
+    <string name="widget_title">GasGuru - Favoritas</string>
+</resources>

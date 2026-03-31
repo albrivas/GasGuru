@@ -18,11 +18,6 @@ sealed interface NavigationDestination {
     ) : NavigationDestination
 
     /**
-     * Navigate to onboarding welcome screen.
-     */
-    data object OnboardingWelcome : NavigationDestination
-
-    /**
      * Navigate to onboarding fuel preferences screen.
      */
     data object OnboardingFuelPreferences : NavigationDestination
@@ -42,4 +37,26 @@ sealed interface NavigationDestination {
      * Navigate to route planner screen.
      */
     data object RoutePlanner : NavigationDestination
+
+    /**
+     * Navigate to the new onboarding carousel screen.
+     */
+    data object NewOnboarding : NavigationDestination
+
+    /**
+     * Navigate to tank capacity selection screen during onboarding.
+     */
+    data object OnboardingTankCapacity : NavigationDestination
+
+    /**
+     * Navigate to add vehicle screen.
+     */
+    data object AddVehicle : NavigationDestination
+
+    /**
+     * Navigate to edit vehicle screen.
+     *
+     * @param vehicleId The ID of the vehicle to edit
+     */
+    data class EditVehicle(val vehicleId: Long) : NavigationDestination
 }

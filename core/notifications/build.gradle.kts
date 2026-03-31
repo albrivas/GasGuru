@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.gasguru.android.library)
-    alias(libs.plugins.gasguru.hilt)
+    alias(libs.plugins.gasguru.koin)
     alias(libs.plugins.gasguru.proguard)
 }
 
@@ -9,6 +9,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.analytics)
     implementation(libs.onesignal)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.io.arrow.kt.arrow.core)

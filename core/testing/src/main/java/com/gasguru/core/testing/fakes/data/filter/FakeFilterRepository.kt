@@ -28,4 +28,15 @@ class FakeFilterRepository(
     fun setFilters(filters: List<Filter>) {
         filtersFlow.value = filters
     }
+
+    fun setFilter(type: FilterType, selection: List<String>) {
+        val filter = Filter(type = type, selection = selection)
+        filtersFlow.update { filters ->
+            filters.filterNot { it.type == type } + filter
+        }
+    }
+
+    fun clearFilters() {
+        filtersFlow.value = emptyList()
+    }
 }

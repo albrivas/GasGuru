@@ -5,8 +5,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,32 +15,38 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.gasguru.core.analytics.AnalyticsHelper
+import com.gasguru.core.analytics.LocalAnalyticsHelper
 import com.gasguru.core.data.util.NetworkMonitor
+import com.gasguru.core.domain.location.IsLocationEnabledUseCase
+import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.feature.onboarding_welcome.navigation.OnboardingRoutes
-import com.gasguru.navigation.manager.NavigationDestination
+import com.gasguru.navigation.LocalDeepLinkStateHolder
+import com.gasguru.navigation.LocalNavigationManager
+import com.gasguru.navigation.deeplink.DeepLinkStateHolder
 import com.gasguru.navigation.manager.NavigationManager
 import com.gasguru.navigation.navigationbar.route.NavigationBarRoute
 import com.gasguru.ui.GasGuruApp
 import com.gasguru.ui.rememberGasGuruAppState
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val viewModel: SplashViewModel by viewModels()
+    private val viewModel: SplashViewModel by viewModel()
     private var returnedFromBackground = false
 
-    @Inject
-    lateinit var networkMonitor: NetworkMonitor
-
-    @Inject
-    lateinit var navigationManager: NavigationManager
+    private val networkMonitor: NetworkMonitor by inject()
+    private val isLocationEnabledUseCase: IsLocationEnabledUseCase by inject()
+    private val getUserDataUseCase: GetUserDataUseCase by inject()
+    private val navigationManager: NavigationManager by inject()
+    private val deepLinkStateHolder: DeepLinkStateHolder by inject()
+    private val analyticsHelper: AnalyticsHelper by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splash = installSplashScreen()
@@ -87,7 +93,11 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            val appState = rememberGasGuruAppState(networkMonitor)
+            val appState = rememberGasGuruAppState(
+                networkMonitor = networkMonitor,
+                isLocationEnabledUseCase = isLocationEnabledUseCase,
+                getUserDataUseCase = getUserDataUseCase,
+            )
             val themeMode by viewModel.themeMode.collectAsState()
 
             val darkTheme = when (themeMode) {
@@ -96,40 +106,38 @@ class MainActivity : ComponentActivity() {
                 ThemeMode.SYSTEM -> isSystemInDarkTheme()
             }
 
-            MyApplicationTheme(darkTheme = darkTheme) {
-                when (val state = uiState) {
-                    is SplashUiState.Success -> GasGuruApp(
-                        appState = appState,
-                        navigationManager = navigationManager,
-                        startDestination = if (state.isOnboardingSuccess) {
-                            NavigationBarRoute
-                        } else {
-                            OnboardingRoutes.OnboardingWelcomeRoute
-                        },
-                    )
+            CompositionLocalProvider(
+                LocalNavigationManager provides navigationManager,
+                LocalDeepLinkStateHolder provides deepLinkStateHolder,
+                LocalAnalyticsHelper provides analyticsHelper,
+            ) {
+                MyApplicationTheme(darkTheme = darkTheme) {
+                    when (val state = uiState) {
+                        is SplashUiState.Success -> GasGuruApp(
+                            appState = appState,
+                            startDestination = if (state.isOnboardingSuccess) {
+                                NavigationBarRoute
+                            } else {
+                                OnboardingRoutes.NewOnboardingRoute
+                            },
+                        )
 
-                    SplashUiState.Error -> GasGuruApp(
-                        appState = appState,
-                        navigationManager = navigationManager,
-                        startDestination = OnboardingRoutes.OnboardingWelcomeRoute,
-                    )
+                        SplashUiState.Error -> GasGuruApp(
+                            appState = appState,
+                            startDestination = OnboardingRoutes.NewOnboardingRoute,
+                        )
 
-                    else -> Unit
+                        else -> Unit
+                    }
                 }
             }
         }
     }
 
     private fun handleIntent(intent: Intent) {
-        val stationId = intent.getStringExtra("station_id")?.toIntOrNull()
-        stationId?.let {
-            navigationManager.navigateTo(
-                destination = NavigationDestination.DetailStation(
-                    idServiceStation = it,
-                    presentAsDialog = true,
-                ),
-            )
-        }
+        val stationId = intent.getStringExtra("station_id")?.toIntOrNull() ?: return
+        intent.removeExtra("station_id")
+        deepLinkStateHolder.setPendingStationId(stationId = stationId)
     }
 
     override fun onNewIntent(intent: Intent) {

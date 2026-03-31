@@ -2,13 +2,14 @@ package com.gasguru.feature.favorite_list_station.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gasguru.core.analytics.AnalyticsEvent
+import com.gasguru.core.analytics.AnalyticsHelper
 import com.gasguru.core.domain.fuelstation.GetFavoriteStationsUseCase
 import com.gasguru.core.domain.fuelstation.RemoveFavoriteStationUseCase
 import com.gasguru.core.domain.location.GetLastKnownLocationUseCase
-import com.gasguru.core.domain.location.IsLocationEnabledUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
-import com.gasguru.core.ui.toUiModel
-import dagger.hilt.android.lifecycle.HiltViewModel
+import com.gasguru.core.model.data.principalVehicle
+import com.gasguru.core.ui.mapper.toUiModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,20 +18,17 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class FavoriteListStationViewModel @Inject constructor(
+class FavoriteListStationViewModel(
     private val getUserDataUseCase: GetUserDataUseCase,
     private val getFavoriteStationsUseCase: GetFavoriteStationsUseCase,
-    isLocationEnabledUseCase: IsLocationEnabledUseCase,
     getLastKnownLocationUseCase: GetLastKnownLocationUseCase,
     private val removeFavoriteStationUseCase: RemoveFavoriteStationUseCase,
+    private val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
 
     private val _tabState = MutableStateFlow(SelectedTabUiState())
@@ -44,51 +42,67 @@ class FavoriteListStationViewModel @Inject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val favoriteStations: StateFlow<FavoriteStationListUiState> = isLocationEnabledUseCase()
-        .flatMapLatest { isLocationEnabled ->
-            if (!isLocationEnabled) {
-                flowOf(FavoriteStationListUiState.DisableLocation)
-            } else {
-                getLastKnownLocationUseCase()
-                    .map { location ->
-                        location ?: throw IllegalStateException("Location is null")
-                    }
-                    .flatMapLatest { location ->
-                        combine(
-                            getFavoriteStationsUseCase(userLocation = location),
-                            getUserDataUseCase(),
-                            _tabState,
-                        ) { stations, userData, tabState ->
-                            if (stations.favoriteStations.isEmpty()) {
-                                FavoriteStationListUiState.EmptyFavorites
-                            } else {
-                                val listUiModel = stations.favoriteStations.map { it.toUiModel() }
-                                val sortedStations = when (tabState.selectedTab) {
-                                    0 -> listUiModel.sortedBy { userData.fuelSelection.extractPrice(it.fuelStation) }
-                                    1 -> listUiModel.sortedBy { it.fuelStation.distance }
-                                    else -> listUiModel
-                                }
-                                FavoriteStationListUiState.Favorites(
-                                    favoriteStations = sortedStations,
-                                    userSelectedFuelType = userData.fuelSelection
+    val favoriteStations: StateFlow<FavoriteStationListUiState> =
+        getLastKnownLocationUseCase()
+            .map { location ->
+                location ?: throw IllegalStateException("Location is null")
+            }
+            .flatMapLatest { location ->
+                combine(
+                    getFavoriteStationsUseCase(userLocation = location),
+                    getUserDataUseCase(),
+                    _tabState,
+                ) { stations, userData, tabState ->
+                    if (stations.favoriteStations.isEmpty()) {
+                        FavoriteStationListUiState.EmptyFavorites
+                    } else {
+                        val listUiModel = stations.favoriteStations.map { it.toUiModel() }
+                        val sortedStations = when (tabState.selectedTab) {
+                            0 -> listUiModel.sortedBy {
+                                userData.principalVehicle().fuelType.extractPrice(
+                                    it.fuelStation
                                 )
                             }
+                            1 -> listUiModel.sortedBy { it.fuelStation.distance }
+                            else -> listUiModel
                         }
+                        FavoriteStationListUiState.Favorites(
+                            favoriteStations = sortedStations,
+                            userSelectedFuelType = userData.principalVehicle().fuelType
+                        )
                     }
+                }
             }
-        }
-        .catch {
-            emit(FavoriteStationListUiState.Error)
-        }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = FavoriteStationListUiState.Loading
-        )
+            .catch {
+                emit(FavoriteStationListUiState.Error)
+            }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = FavoriteStationListUiState.Loading
+            )
 
     private fun removeFavoriteStation(idStation: Int) = viewModelScope.launch {
+        analyticsHelper.logEvent(
+            event = AnalyticsEvent(
+                type = AnalyticsEvent.Types.STATION_UNFAVORITED_FROM_LIST,
+                extras = listOf(
+                    AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.STATION_ID, value = idStation.toString()),
+                ),
+            ),
+        )
         removeFavoriteStationUseCase.invoke(idStation)
     }
 
-    private fun changeTab(position: Int) = _tabState.update { it.copy(selectedTab = position) }
+    private fun changeTab(position: Int) {
+        analyticsHelper.logEvent(
+            event = AnalyticsEvent(
+                type = AnalyticsEvent.Types.FAVORITES_TAB_CHANGED,
+                extras = listOf(
+                    AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.TAB, value = position.toString()),
+                ),
+            ),
+        )
+        _tabState.update { it.copy(selectedTab = position) }
+    }
 }

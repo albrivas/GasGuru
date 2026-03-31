@@ -1,4 +1,4 @@
-- Añadido AdBlue como nuevo tipo de combustible seleccionable
-- Mejoras en la gestión de notificaciones push
-- Dependencias actualizadas para mejor rendimiento
-- Corrección de errores y mejoras de estabilidad
+- Desliza para eliminar vehículos desde el perfil
+- Gestiona y edita tus vehículos directamente desde el perfil
+- El vehículo principal aparece siempre el primero en la lista
+- Corrección de errores y mejoras de rendimiento

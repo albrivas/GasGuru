@@ -7,29 +7,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toLowerCase
-import com.gasguru.core.common.CommonUtils.isStationOpen
 import com.gasguru.core.model.data.LatLng
+import com.gasguru.core.ui.mapper.toPriceUiModel
 import com.gasguru.core.ui.models.FuelStationUiModel
 import com.gasguru.core.ui.models.FuelTypeUiModel
-import com.gasguru.core.ui.models.PriceUiModel
 import com.gasguru.core.uikit.components.price.PriceItemModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.feature.detail_station.R
 
 @Composable
-fun rememberDetailStationState(station: FuelStationUiModel) = remember(station) {
-    DetailStationState(station)
+fun rememberDetailStationState(station: FuelStationUiModel, isOpen: Boolean) = remember(station, isOpen) {
+    DetailStationState(station = station, isOpen = isOpen)
 }
 
 @Stable
-class DetailStationState(internal val station: FuelStationUiModel) {
+class DetailStationState(internal val station: FuelStationUiModel, internal val isOpen: Boolean) {
 
     internal val fuelItems: List<PriceItemModel>
         @Composable get() = FuelTypeUiModel.ALL_FUELS.mapNotNull { fuelUiModel ->
-            val priceModel = PriceUiModel.from(
-                fuelType = fuelUiModel.type,
-                fuelStation = station.fuelStation
-            )
+            val priceModel = fuelUiModel.type.toPriceUiModel(fuelStation = station.fuelStation)
             if (!priceModel.hasPrice) return@mapNotNull null
 
             PriceItemModel(
@@ -41,9 +37,6 @@ class DetailStationState(internal val station: FuelStationUiModel) {
 
     internal val formattedDistance: String
         get() = station.fuelStation.formatDistance()
-
-    internal val isOpen: Boolean
-        get() = station.fuelStation.isStationOpen()
 
     internal val openCloseText: String
         @Composable get() = if (isOpen) {
@@ -88,4 +81,28 @@ class DetailStationState(internal val station: FuelStationUiModel) {
 
     internal val formattedDirection: String
         get() = station.formattedDirection
+
+    @Composable
+    internal fun buildShareText(address: String?): String {
+        val displayAddress = address ?: formattedDirection
+        val mapsUrl = "https://maps.google.com/?q=${location.latitude},${location.longitude}"
+        val playStoreUrl = "https://play.google.com/store/apps/details?id=com.gasguru"
+        val fuelPricesLabel = stringResource(id = R.string.share_fuel_prices)
+        val fuelPricesText = fuelItems.joinToString(separator = "\n") {
+            "  ${it.fuelName}: ${it.price}"
+        }
+        val downloadText = stringResource(id = R.string.share_download)
+
+        return buildString {
+            appendLine("\u26FD $formattedName")
+            appendLine("\uD83D\uDCCD $displayAddress")
+            appendLine("\uD83D\uDDFA\uFE0F $mapsUrl")
+            appendLine()
+            appendLine("\uD83D\uDCB0 $fuelPricesLabel:")
+            appendLine(fuelPricesText)
+            appendLine()
+            appendLine("\uD83D\uDCF2 $downloadText:")
+            append(playStoreUrl)
+        }
+    }
 }

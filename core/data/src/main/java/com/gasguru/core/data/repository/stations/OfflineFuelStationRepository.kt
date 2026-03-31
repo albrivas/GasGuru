@@ -1,13 +1,11 @@
 package com.gasguru.core.data.repository.stations
 
 import com.gasguru.core.common.CommonUtils.isStationOpen
-import com.gasguru.core.common.DefaultDispatcher
-import com.gasguru.core.common.IoDispatcher
 import com.gasguru.core.common.distanceTo
 import com.gasguru.core.data.mapper.asEntity
 import com.gasguru.core.data.mapper.calculateFuelPrices
 import com.gasguru.core.data.mapper.getPriceCategory
-import com.gasguru.core.data.repository.user.OfflineUserDataRepository
+import com.gasguru.core.data.repository.user.UserDataRepository
 import com.gasguru.core.database.dao.FavoriteStationDao
 import com.gasguru.core.database.dao.FuelStationDao
 import com.gasguru.core.database.dao.PriceAlertDao
@@ -17,6 +15,7 @@ import com.gasguru.core.database.model.toLatLng
 import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.OpeningHours
+import com.gasguru.core.model.data.principalVehicle
 import com.gasguru.core.network.datasource.RemoteDataSource
 import com.gasguru.core.network.model.NetworkPriceFuelStation
 import kotlinx.coroutines.CoroutineDispatcher
@@ -32,15 +31,14 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.util.Locale
-import javax.inject.Inject
 import kotlin.math.cos
 
-class OfflineFuelStationRepository @Inject constructor(
+class OfflineFuelStationRepository(
     private val fuelStationDao: FuelStationDao,
     private val remoteDataSource: RemoteDataSource,
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    private val offlineUserDataRepository: OfflineUserDataRepository,
+    private val defaultDispatcher: CoroutineDispatcher,
+    private val ioDispatcher: CoroutineDispatcher,
+    private val offlineUserDataRepository: UserDataRepository,
     private val favoriteStationDao: FavoriteStationDao,
     private val priceAlertDao: PriceAlertDao,
 ) : FuelStationRepository {
@@ -68,9 +66,10 @@ class OfflineFuelStationRepository @Inject constructor(
         schedule: OpeningHours,
     ): Flow<List<FuelStation>> =
         offlineUserDataRepository.userData.flatMapLatest { user ->
+            val fuelType = user.principalVehicle().fuelType
             fuelStationDao.getFuelStations(
-                fuelType = user.fuelSelection.name,
-                brands = brands.map { it.uppercase() }
+                fuelType = fuelType.name,
+                brands = brands.map { it.uppercase() },
             ).map { items ->
                 val externalModel = items
                     .sortedBy {
@@ -91,17 +90,17 @@ class OfflineFuelStationRepository @Inject constructor(
                         }
                     }
 
-                val (minPrice, maxPrice) = externalModel.calculateFuelPrices(fuelType = user.fuelSelection)
+                val (minPrice, maxPrice) = externalModel.calculateFuelPrices(fuelType = fuelType)
 
                 externalModel.map { fuelStation ->
                     val priceCategory = fuelStation.getPriceCategory(
-                        user.fuelSelection,
+                        fuelType,
                         minPrice,
-                        maxPrice
+                        maxPrice,
                     )
                     fuelStation.copy(
                         priceCategory = priceCategory,
-                        distance = fuelStation.location.distanceTo(userLocation)
+                        distance = fuelStation.location.distanceTo(userLocation),
                     )
                 }
             }
@@ -121,7 +120,7 @@ class OfflineFuelStationRepository @Inject constructor(
             stationModel.copy(
                 isFavorite = isFavorite,
                 hasPriceAlert = hasPriceAlert,
-                distance = stationModel.location.distanceTo(userLocation)
+                distance = stationModel.location.distanceTo(userLocation),
             )
         }.flowOn(ioDispatcher)
 
@@ -132,9 +131,9 @@ class OfflineFuelStationRepository @Inject constructor(
         if (points.isEmpty()) return emptyList()
 
         val userData = offlineUserDataRepository.userData.first()
+        val fuelType = userData.principalVehicle().fuelType
         val radiusKm = 0.4
         val radiusMeters = radiusKm * 1000
-        val fuelTypeName = userData.fuelSelection.name
         val allStations = mutableSetOf<FuelStationEntity>()
 
         val reducedPoints = points.filterIndexed { index, _ -> index % 2 == 0 }
@@ -146,7 +145,7 @@ class OfflineFuelStationRepository @Inject constructor(
                 maxLat = bounds.maxLat,
                 minLng = bounds.minLng,
                 maxLng = bounds.maxLng,
-                fuelType = fuelTypeName
+                fuelType = fuelType.name,
             )
 
             stationsInBounds.forEach { station ->
@@ -158,16 +157,16 @@ class OfflineFuelStationRepository @Inject constructor(
         }
 
         val externalModel = allStations.map(FuelStationEntity::asExternalModel)
-        val (minPrice, maxPrice) = externalModel.calculateFuelPrices(fuelType = userData.fuelSelection)
+        val (minPrice, maxPrice) = externalModel.calculateFuelPrices(fuelType = fuelType)
         return externalModel.map { fuelStation ->
             val priceCategory = fuelStation.getPriceCategory(
-                fuelType = userData.fuelSelection,
+                fuelType = fuelType,
                 minPrice = minPrice,
-                maxPrice = maxPrice
+                maxPrice = maxPrice,
             )
             fuelStation.copy(
                 priceCategory = priceCategory,
-                distance = fuelStation.location.distanceTo(origin)
+                distance = fuelStation.location.distanceTo(origin),
             )
         }
     }
@@ -180,7 +179,7 @@ class OfflineFuelStationRepository @Inject constructor(
             minLat = center.latitude - latDiff,
             maxLat = center.latitude + latDiff,
             minLng = center.longitude - lngDiff,
-            maxLng = center.longitude + lngDiff
+            maxLng = center.longitude + lngDiff,
         )
     }
 

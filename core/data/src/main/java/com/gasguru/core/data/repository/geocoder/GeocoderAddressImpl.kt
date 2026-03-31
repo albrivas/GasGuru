@@ -5,8 +5,6 @@ import android.location.Address
 import android.location.Geocoder
 import android.location.Geocoder.GeocodeListener
 import android.os.Build
-import com.gasguru.core.common.IoDispatcher
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.awaitClose
@@ -17,11 +15,10 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.util.Locale
-import javax.inject.Inject
 
-class GeocoderAddressImpl @Inject constructor(
-    @ApplicationContext private val context: Context,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+class GeocoderAddressImpl(
+    private val context: Context,
+    private val ioDispatcher: CoroutineDispatcher,
 ) : GeocoderAddress {
     @OptIn(FlowPreview::class)
     override fun getAddressFromLocation(latitude: Double, longitude: Double): Flow<String?> = flow {

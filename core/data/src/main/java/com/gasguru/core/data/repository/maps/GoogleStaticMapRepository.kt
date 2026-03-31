@@ -1,11 +1,9 @@
 package com.gasguru.core.data.repository.maps
 
 import com.gasguru.core.model.data.LatLng
-import javax.inject.Inject
-import javax.inject.Named
 
-class GoogleStaticMapRepository @Inject constructor(
-    @Named("google_api_key") private val apiKey: String,
+class GoogleStaticMapRepository(
+    private val apiKey: String,
 ) : StaticMapRepository {
 
     override fun generateStaticMapUrl(

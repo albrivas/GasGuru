@@ -31,24 +31,35 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.NotificationsActive
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -62,22 +73,33 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.gasguru.core.model.data.FuelStationBrandsType
+import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.LatLng
+import com.gasguru.core.model.data.Vehicle
+import com.gasguru.core.model.data.VehicleType
 import com.gasguru.core.model.data.previewFuelStationDomain
 import com.gasguru.core.ui.iconTint
+import com.gasguru.core.ui.mapper.toPriceUiModel
+import com.gasguru.core.ui.mapper.toUiModel
+import com.gasguru.core.ui.models.FuelTypeUiModel
 import com.gasguru.core.ui.review.findActivity
 import com.gasguru.core.ui.review.rememberInAppReviewManager
-import com.gasguru.core.ui.toUiModel
+import com.gasguru.core.uikit.components.GasGuruButton
+import com.gasguru.core.uikit.components.fuel_type_chip.FuelTypeChipModel
 import com.gasguru.core.uikit.components.information_card.InformationCard
 import com.gasguru.core.uikit.components.information_card.InformationCardModel
 import com.gasguru.core.uikit.components.loading.GasGuruLoading
 import com.gasguru.core.uikit.components.loading.GasGuruLoadingModel
+import com.gasguru.core.uikit.components.number_wheel_picker.NumberWheelPicker
+import com.gasguru.core.uikit.components.number_wheel_picker.NumberWheelPickerModel
 import com.gasguru.core.uikit.components.price.PriceItem
 import com.gasguru.core.uikit.components.price.PriceItemModel
+import com.gasguru.core.uikit.components.pulse_dot.PulseDot
+import com.gasguru.core.uikit.components.tank_cost_card.TankCostCard
+import com.gasguru.core.uikit.components.tank_cost_card.TankCostCardModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
@@ -86,20 +108,24 @@ import com.gasguru.feature.detail_station.formatSchedule
 import com.gasguru.feature.detail_station.getTimeElapsedString
 import com.gasguru.navigation.LocalNavigationManager
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
+import java.text.DecimalFormat
 
 @Composable
 internal fun DetailStationScreenRoute(
-    viewModel: DetailStationViewModel = hiltViewModel(),
+    viewModel: DetailStationViewModel = koinViewModel(),
 ) {
     val navigationManager = LocalNavigationManager.current
     val uiState by viewModel.fuelStation.collectAsStateWithLifecycle()
     val staticMapUrl by viewModel.staticMapUrl.collectAsStateWithLifecycle()
     val lastUpdate by viewModel.lastUpdate.collectAsStateWithLifecycle()
+    val vehicle by viewModel.vehicle.collectAsStateWithLifecycle()
 
     DetailStationScreen(
         uiState = uiState,
         staticMapUrl = staticMapUrl,
         lastUpdate = lastUpdate,
+        vehicle = vehicle,
         onBack = { navigationManager.navigateBack() },
         onEvent = viewModel::onEvent,
     )
@@ -110,6 +136,7 @@ internal fun DetailStationScreen(
     uiState: DetailStationUiState,
     staticMapUrl: String?,
     lastUpdate: Long,
+    vehicle: Vehicle? = null,
     onBack: () -> Unit = {},
     onEvent: (DetailStationEvent) -> Unit = {},
 ) {
@@ -128,8 +155,9 @@ internal fun DetailStationScreen(
         }
 
         is DetailStationUiState.Success -> {
-            val stationState = rememberDetailStationState(uiState.stationModel)
+            val stationState = rememberDetailStationState(station = uiState.stationModel, isOpen = uiState.isOpen)
             val context = LocalContext.current
+            val shareText = stationState.buildShareText(address = uiState.address)
 
             val notificationPermissionLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.RequestPermission()
@@ -147,6 +175,13 @@ internal fun DetailStationScreen(
                         stationState = stationState,
                         staticMapUrl = staticMapUrl,
                         onBack = onBack,
+                        onShareClick = {
+                            onEvent(DetailStationEvent.ShareStation)
+                            shareStation(
+                                context = context,
+                                shareText = shareText,
+                            )
+                        },
                         onPriceAlertClick = {
                             handlePriceAlertWithPermissions(
                                 context = context,
@@ -169,6 +204,10 @@ internal fun DetailStationScreen(
                         stationState = stationState,
                         address = uiState.address,
                         lastUpdate = lastUpdate,
+                        vehicle = vehicle,
+                        onUpdateTankCapacity = { newCapacity ->
+                            onEvent(DetailStationEvent.UpdateTankCapacity(capacity = newCapacity))
+                        },
                     )
                 }
             }
@@ -181,7 +220,22 @@ fun DetailStationContent(
     stationState: DetailStationState,
     address: String?,
     lastUpdate: Long,
+    vehicle: Vehicle? = null,
+    onUpdateTankCapacity: (Int) -> Unit = {},
 ) {
+    var showCapacitySheet by remember { mutableStateOf(value = false) }
+
+    if (showCapacitySheet && vehicle != null) {
+        CapacityPickerSheet(
+            initialCapacity = vehicle.tankCapacity,
+            onDismiss = { showCapacitySheet = false },
+            onConfirm = { newCapacity ->
+                onUpdateTankCapacity(newCapacity)
+                showCapacitySheet = false
+            },
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -212,28 +266,16 @@ fun DetailStationContent(
                 )
 
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.wrapContentHeight()
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.wrapContentHeight().padding(top = 8.dp)
                 ) {
-                    Text(
-                        text = stationState.formattedDistance,
-                        style = GasGuruTheme.typography.baseRegular,
-                        color = GasGuruTheme.colors.textSubtle,
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 1,
-                        modifier = Modifier.testTag("distance")
+                    DistanceBadge(
+                        distance = stationState.formattedDistance,
+                        modifier = Modifier.testTag("distance"),
                     )
-                    Text(
-                        text = " · ",
-                        style = GasGuruTheme.typography.baseRegular,
-                        color = GasGuruTheme.colors.textSubtle
-                    )
-                    Text(
+                    StatusBadge(
                         text = stationState.openCloseText,
-                        style = GasGuruTheme.typography.baseRegular,
                         color = stationState.colorStationOpen,
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 1
                     )
                 }
             }
@@ -265,6 +307,28 @@ fun DetailStationContent(
         }
 
         Spacer(modifier = Modifier.height(24.dp))
+        vehicle?.let { currentVehicle ->
+            val fuelUiModel = FuelTypeUiModel.ALL_FUELS.find { it.type == currentVehicle.fuelType }
+            val priceModel = currentVehicle.fuelType.toPriceUiModel(fuelStation = stationState.station.fuelStation)
+            if (fuelUiModel != null && priceModel.hasPrice) {
+                TankCostCard(
+                    model = TankCostCardModel(
+                        fuelTypeChip = FuelTypeChipModel(
+                            nameRes = fuelUiModel.translationRes,
+                        ),
+                        totalCost = "${DecimalFormat(
+                            "0.00"
+                        ).format(priceModel.rawPrice * currentVehicle.tankCapacity)} €",
+                        litres = "${currentVehicle.tankCapacity} L",
+                        pricePerLitre = priceModel.formattedPrice,
+                        vehicleName = currentVehicle.name.takeUnless { it.isNullOrBlank() }
+                            ?: stringResource(id = R.string.vehicle_default_name),
+                        onEditClick = { showCapacitySheet = true },
+                    ),
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+        }
         FuelTypes(fuelItems = stationState.fuelItems, lastUpdate = lastUpdate)
         Spacer(modifier = Modifier.height(24.dp))
         InformationStation(
@@ -367,6 +431,7 @@ fun HeaderStation(
     stationState: DetailStationState,
     staticMapUrl: String?,
     onBack: () -> Unit,
+    onShareClick: () -> Unit,
     onPriceAlertClick: () -> Unit,
     onEvent: (DetailStationEvent) -> Unit,
 ) {
@@ -410,6 +475,20 @@ fun HeaderStation(
                 .statusBarsPadding()
                 .padding(end = 16.dp)
         ) {
+            IconButton(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .testTag("button_share"),
+                onClick = onShareClick,
+                colors = IconButtonDefaults.iconButtonColors(containerColor = GasGuruTheme.colors.neutralWhite)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Share,
+                    contentDescription = "Share station",
+                    tint = GasGuruTheme.colors.neutralBlack,
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
             IconButton(
                 modifier = Modifier
                     .clip(CircleShape)
@@ -470,6 +549,18 @@ fun HeaderStation(
             }
         }
     }
+}
+
+private fun shareStation(context: Context, shareText: String) {
+    val sendIntent = Intent(Intent.ACTION_SEND).apply {
+        putExtra(Intent.EXTRA_TEXT, shareText)
+        type = "text/plain"
+    }
+    val chooserIntent = Intent.createChooser(
+        sendIntent,
+        context.getString(R.string.share_with),
+    )
+    context.startActivity(chooserIntent)
 }
 
 @SuppressLint("QueryPermissionsNeeded")
@@ -534,6 +625,105 @@ fun handlePriceAlertWithPermissions(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CapacityPickerSheet(
+    initialCapacity: Int,
+    onDismiss: () -> Unit,
+    onConfirm: (Int) -> Unit,
+) {
+    var currentCapacity by remember { mutableIntStateOf(value = initialCapacity) }
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor = GasGuruTheme.colors.neutralWhite,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+                .padding(bottom = 32.dp),
+        ) {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(id = R.string.capacity_picker_title),
+                style = GasGuruTheme.typography.h5,
+                color = GasGuruTheme.colors.neutralBlack,
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(id = R.string.capacity_picker_range),
+                style = GasGuruTheme.typography.captionRegular,
+                color = GasGuruTheme.colors.neutral600,
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            NumberWheelPicker(
+                model = NumberWheelPickerModel(
+                    min = 40,
+                    max = 999,
+                    initialValue = initialCapacity,
+                    onValueChanged = { newCapacity -> currentCapacity = newCapacity },
+                ),
+                modifier = Modifier
+                    .height(156.dp)
+                    .fillMaxWidth(),
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            GasGuruButton(
+                onClick = { onConfirm(currentCapacity) },
+                text = stringResource(id = R.string.capacity_picker_confirm),
+            )
+        }
+    }
+}
+
+@Composable
+private fun DistanceBadge(distance: String, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier
+            .clip(RoundedCornerShape(50.dp))
+            .background(GasGuruTheme.colors.neutral200)
+            .padding(horizontal = 12.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Icon(
+            imageVector = Icons.Default.LocationOn,
+            contentDescription = null,
+            tint = GasGuruTheme.colors.textSubtle,
+            modifier = Modifier.size(14.dp),
+        )
+        Text(
+            text = distance,
+            style = GasGuruTheme.typography.smallBold,
+            color = GasGuruTheme.colors.textSubtle,
+            maxLines = 1,
+        )
+    }
+}
+
+@Composable
+private fun StatusBadge(text: String, color: Color) {
+    Row(
+        modifier = Modifier
+            .clip(RoundedCornerShape(50.dp))
+            .background(color.copy(alpha = 0.12f))
+            .padding(horizontal = 12.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        PulseDot(color = color)
+        Text(
+            text = text,
+            style = GasGuruTheme.typography.smallBold,
+            color = color,
+            maxLines = 1,
+        )
+    }
+}
+
 @Composable
 @ThemePreviews
 private fun DetailStationPreview() {
@@ -545,10 +735,18 @@ private fun DetailStationPreview() {
                     schedule = "L-V: 06:00-22:00; S: 07:00-22:00; D: 08:00-22:00",
                     brandStationBrandsType = FuelStationBrandsType.AZUL_OIL
                 ).toUiModel(),
-                address = null
+                address = null,
+                isOpen = true,
             ),
             staticMapUrl = null,
             lastUpdate = 0,
+            vehicle = Vehicle(
+                name = "Mi coche",
+                fuelType = FuelType.GASOLINE_95,
+                tankCapacity = 50,
+                vehicleType = VehicleType.CAR,
+                isPrincipal = true,
+            ),
             onEvent = {}
         )
     }

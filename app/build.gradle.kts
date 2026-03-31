@@ -2,16 +2,16 @@ import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 
 plugins {
     alias(libs.plugins.gasguru.android.application)
-    alias(libs.plugins.gasguru.hilt)
+    alias(libs.plugins.gasguru.koin)
     alias(libs.plugins.gasguru.firebase)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.gms)
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.ksp)
     alias(libs.plugins.gasguru.flavors)
     alias(libs.plugins.gasguru.jacoco)
     alias(libs.plugins.gasguru.secrets.google)
     alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.stability.analyzer)
 }
 
 tasks.withType<Test>().configureEach {
@@ -82,12 +82,17 @@ android {
 
 dependencies {
 
+    implementation(projects.core.analytics)
     implementation(projects.core.uikit)
     implementation(projects.core.ui)
     implementation(projects.core.data)
+    implementation(projects.core.database)
     implementation(projects.core.domain)
     implementation(projects.core.common)
+    implementation(projects.core.components)
+    implementation(projects.core.supabase)
     implementation(projects.feature.onboarding)
+    implementation(projects.feature.vehicle)
     implementation(projects.feature.detailStation)
     implementation(projects.feature.favoriteListStation)
     implementation(projects.feature.stationMap)
@@ -97,6 +102,7 @@ dependencies {
     implementation(projects.core.network)
     implementation(projects.feature.search)
     implementation(projects.feature.routePlanner)
+    implementation(projects.feature.widget)
     implementation(projects.navigation)
     implementation(projects.core.notifications)
     mockImplementation(projects.mocknetwork)
@@ -110,7 +116,7 @@ dependencies {
     // Arch Components
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.koin.androidx.compose)
 
     // Compose
     implementation(libs.androidx.compose.ui)
@@ -125,11 +131,15 @@ dependencies {
     implementation(libs.firebase.analytics)
 
     implementation(libs.splash.screen)
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.glance.appwidget)
 
     // Analytics
     implementation(libs.mixpanel)
     implementation(libs.onesignal)
 
     testImplementation(projects.core.testing)
+    testImplementation(libs.koin.test.junit5)
+    testImplementation(libs.mockk)
     testRuntimeOnly(libs.junit5.engine)
 }
