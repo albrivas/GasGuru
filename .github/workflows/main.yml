@@ -145,7 +145,7 @@ jobs:
 
       - name: Upload Maestro test results and logcat
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: maestro-test-results
           path: /home/runner/.maestro/tests/
