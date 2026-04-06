@@ -317,16 +317,18 @@ class DetailStationViewModelTest {
         """
     )
     fun logsAnalyticsOnShareStation() = runTest {
+        fakeLocationTracker.setLastKnownLocation(testLocation())
+        fakeFuelStationDao.setStations(listOf(stationEntity(id = 10, price = 1.55)))
         val fakeAnalyticsHelper = FakeAnalyticsHelper()
         sut = createViewModel(analyticsHelper = fakeAnalyticsHelper)
+        advanceUntilIdle()
 
         sut.onEvent(DetailStationEvent.ShareStation)
         advanceUntilIdle()
 
-        assertEquals(1, fakeAnalyticsHelper.loggedEvents.size)
-        val loggedEvent = fakeAnalyticsHelper.loggedEvents.first()
-        assertEquals(AnalyticsEvent.Types.STATION_SHARED, loggedEvent.type)
-        assertTrue(loggedEvent.extras.any { it.key == AnalyticsEvent.ParamKeys.STATION_BRAND })
+        val sharedEvents = fakeAnalyticsHelper.loggedEvents.filter { it.type == AnalyticsEvent.Types.STATION_SHARED }
+        assertEquals(1, sharedEvents.size)
+        assertTrue(sharedEvents.first().extras.any { it.key == AnalyticsEvent.ParamKeys.STATION_BRAND })
     }
 
     private fun createViewModel(
@@ -417,5 +419,7 @@ class DetailStationViewModelTest {
         override fun logEvent(event: AnalyticsEvent) {
             loggedEvents.add(event)
         }
+
+        override fun updateSuperProperties(properties: Map<String, Any>) = Unit
     }
 }
