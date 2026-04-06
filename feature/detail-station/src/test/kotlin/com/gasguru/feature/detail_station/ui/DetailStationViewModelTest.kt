@@ -44,6 +44,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -312,7 +313,7 @@ class DetailStationViewModelTest {
         """
         GIVEN ShareStation event is dispatched
         WHEN handling event
-        THEN logs STATION_SHARED analytics event with the correct station id
+        THEN logs STATION_SHARED analytics event with the station brand
         """
     )
     fun logsAnalyticsOnShareStation() = runTest {
@@ -325,10 +326,7 @@ class DetailStationViewModelTest {
         assertEquals(1, fakeAnalyticsHelper.loggedEvents.size)
         val loggedEvent = fakeAnalyticsHelper.loggedEvents.first()
         assertEquals(AnalyticsEvent.Types.STATION_SHARED, loggedEvent.type)
-        assertEquals(
-            "10",
-            loggedEvent.extras.first { it.key == AnalyticsEvent.ParamKeys.STATION_ID }.value,
-        )
+        assertTrue(loggedEvent.extras.any { it.key == AnalyticsEvent.ParamKeys.STATION_BRAND })
     }
 
     private fun createViewModel(

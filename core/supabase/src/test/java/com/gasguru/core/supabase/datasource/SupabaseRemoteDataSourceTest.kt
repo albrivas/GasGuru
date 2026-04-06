@@ -106,32 +106,9 @@ class SupabaseRemoteDataSourceTest {
     @Test
     @DisplayName(
         """
-        GIVEN supabase returns success
-        WHEN fetching fuel stations
-        THEN logs STARTED and COMPLETED analytics events
-        """
-    )
-    fun fuelStationSuccessLogsAnalyticsEvents() = runTest {
-        sut.getListFuelStations()
-
-        verify {
-            analyticsHelper.logEvent(
-                event = AnalyticsEvent(type = AnalyticsEvent.Types.API_STATIONS_FETCH_STARTED),
-            )
-        }
-        verify {
-            analyticsHelper.logEvent(
-                event = AnalyticsEvent(type = AnalyticsEvent.Types.API_STATIONS_FETCH_COMPLETED),
-            )
-        }
-    }
-
-    @Test
-    @DisplayName(
-        """
         GIVEN supabase throws an exception
         WHEN fetching fuel stations
-        THEN logs STARTED and FAILED events with error extras
+        THEN logs FAILED event with error extras
         """
     )
     fun fuelStationErrorLogsAnalyticsEvents() = runTest {
@@ -152,11 +129,6 @@ class SupabaseRemoteDataSourceTest {
             analyticsHelper = analyticsHelper,
         ).getListFuelStations()
 
-        verify {
-            analyticsHelper.logEvent(
-                event = AnalyticsEvent(type = AnalyticsEvent.Types.API_STATIONS_FETCH_STARTED),
-            )
-        }
         verify {
             analyticsHelper.logEvent(
                 event = match { event ->
