@@ -3,8 +3,8 @@ package com.gasguru.feature.onboarding_welcome.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gasguru.core.analytics.AnalyticsHelper
-import com.gasguru.feature.onboarding_welcome.analytics.trackOnboardingCompleted
 import com.gasguru.core.domain.vehicle.SaveDefaultVehicleCapacityUseCase
+import com.gasguru.feature.onboarding_welcome.analytics.trackOnboardingCompleted
 import com.gasguru.feature.onboarding_welcome.ui.CapacityTankEvent
 import com.gasguru.navigation.manager.NavigationDestination
 import com.gasguru.navigation.manager.NavigationManager

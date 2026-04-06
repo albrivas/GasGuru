@@ -9,7 +9,10 @@ fun AnalyticsHelper.trackVehicleDeleted(wasPrincipal: Boolean, vehiclesRemaining
             type = AnalyticsEvent.Types.VEHICLE_DELETED,
             extras = listOf(
                 AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.WAS_PRINCIPAL, value = wasPrincipal.toString()),
-                AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.VEHICLES_REMAINING, value = vehiclesRemaining.toString()),
+                AnalyticsEvent.Param(
+                    key = AnalyticsEvent.ParamKeys.VEHICLES_REMAINING,
+                    value = vehiclesRemaining.toString()
+                ),
             ),
         )
     )

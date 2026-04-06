@@ -8,7 +8,10 @@ fun AnalyticsHelper.trackRoutePlannerDestinationSet(isCurrentLocation: Boolean) 
         AnalyticsEvent(
             type = AnalyticsEvent.Types.ROUTE_PLANNER_DESTINATION_SET,
             extras = listOf(
-                AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.IS_CURRENT_LOCATION, value = isCurrentLocation.toString()),
+                AnalyticsEvent.Param(
+                    key = AnalyticsEvent.ParamKeys.IS_CURRENT_LOCATION,
+                    value = isCurrentLocation.toString()
+                ),
             ),
         )
     )
