@@ -1,7 +1,7 @@
 package com.gasguru.core.data.repository.alerts
 
-import com.gasguru.core.analytics.AnalyticsEvent
 import com.gasguru.core.analytics.AnalyticsHelper
+import com.gasguru.core.data.analytics.trackAlertsSyncFailed
 import com.gasguru.core.data.util.NetworkMonitor
 import com.gasguru.core.database.dao.PriceAlertDao
 import com.gasguru.core.database.dao.VehicleDao
@@ -111,34 +111,11 @@ class PriceAlertRepositoryImpl(
                 priceAlertDao.deleteByStationId(stationId = alert.stationId)
             }
 
-            val syncedCount = pendingInserts.size + pendingDeletes.size
-            analyticsHelper.logEvent(
-                event = AnalyticsEvent(
-                    type = AnalyticsEvent.Types.ALERTS_SYNC_COMPLETED,
-                    extras = listOf(
-                        AnalyticsEvent.Param(
-                            key = AnalyticsEvent.ParamKeys.SYNCED_COUNT,
-                            value = syncedCount.toString()
-                        ),
-                    ),
-                ),
-            )
             true
         } catch (exception: Exception) {
-            analyticsHelper.logEvent(
-                event = AnalyticsEvent(
-                    type = AnalyticsEvent.Types.ALERTS_SYNC_FAILED,
-                    extras = listOf(
-                        AnalyticsEvent.Param(
-                            key = AnalyticsEvent.ParamKeys.ERROR_MESSAGE,
-                            value = exception.message.orEmpty(),
-                        ),
-                        AnalyticsEvent.Param(
-                            key = AnalyticsEvent.ParamKeys.ERROR_TYPE,
-                            value = exception::class.simpleName.orEmpty(),
-                        ),
-                    ),
-                ),
+            analyticsHelper.trackAlertsSyncFailed(
+                errorMessage = exception.message.orEmpty(),
+                errorType = exception::class.simpleName.orEmpty(),
             )
             false
         }
