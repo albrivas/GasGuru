@@ -4,8 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import com.gasguru.core.analytics.AnalyticsEvent
 import com.gasguru.core.analytics.AnalyticsHelper
+import com.gasguru.feature.vehicle.analytics.trackVehicleCreated
+import com.gasguru.feature.vehicle.analytics.trackVehicleEdited
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.domain.vehicle.GetVehicleByIdUseCase
 import com.gasguru.core.domain.vehicle.SaveVehicleUseCase
@@ -125,44 +126,16 @@ class AddVehicleViewModel(
             )
 
             if (currentState.isEditMode) {
-                analyticsHelper.logEvent(
-                    event = AnalyticsEvent(
-                        type = AnalyticsEvent.Types.VEHICLE_EDITED,
-                        extras = listOf(
-                            AnalyticsEvent.Param(
-                                key = AnalyticsEvent.ParamKeys.VEHICLE_TYPE,
-                                value = vehicle.vehicleType.name
-                            ),
-                            AnalyticsEvent.Param(
-                                key = AnalyticsEvent.ParamKeys.FUEL_TYPE,
-                                value = vehicle.fuelType.name
-                            ),
-                        ),
-                    ),
+                analyticsHelper.trackVehicleEdited(
+                    vehicleType = vehicle.vehicleType.name,
+                    fuelType = vehicle.fuelType.name,
                 )
             } else {
-                analyticsHelper.logEvent(
-                    event = AnalyticsEvent(
-                        type = AnalyticsEvent.Types.VEHICLE_CREATED,
-                        extras = listOf(
-                            AnalyticsEvent.Param(
-                                key = AnalyticsEvent.ParamKeys.VEHICLE_TYPE,
-                                value = vehicle.vehicleType.name
-                            ),
-                            AnalyticsEvent.Param(
-                                key = AnalyticsEvent.ParamKeys.FUEL_TYPE,
-                                value = vehicle.fuelType.name
-                            ),
-                            AnalyticsEvent.Param(
-                                key = AnalyticsEvent.ParamKeys.CAPACITY_LITRES,
-                                value = tankCapacity.toString()
-                            ),
-                            AnalyticsEvent.Param(
-                                key = AnalyticsEvent.ParamKeys.IS_PRINCIPAL,
-                                value = vehicle.isPrincipal.toString()
-                            ),
-                        ),
-                    ),
+                analyticsHelper.trackVehicleCreated(
+                    vehicleType = vehicle.vehicleType.name,
+                    fuelType = vehicle.fuelType.name,
+                    capacityLitres = tankCapacity,
+                    isPrincipal = vehicle.isPrincipal,
                 )
             }
 

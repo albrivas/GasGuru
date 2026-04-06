@@ -2,8 +2,8 @@ package com.gasguru.feature.profile.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gasguru.core.analytics.AnalyticsEvent
 import com.gasguru.core.analytics.AnalyticsHelper
+import com.gasguru.feature.profile.analytics.trackVehicleDeleted
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.domain.user.SaveThemeModeUseCase
 import com.gasguru.core.domain.vehicle.DeleteVehicleUseCase
@@ -68,17 +68,6 @@ class ProfileViewModel(
     }
 
     private fun saveTheme(theme: ThemeModeUi) = viewModelScope.launch {
-        analyticsHelper.logEvent(
-            event = AnalyticsEvent(
-                type = AnalyticsEvent.Types.THEME_CHANGED,
-                extras = listOf(
-                    AnalyticsEvent.Param(
-                        key = AnalyticsEvent.ParamKeys.THEME_MODE,
-                        value = theme.mode.name
-                    ),
-                ),
-            ),
-        )
         saveThemeModeUseCase(themeMode = theme.mode)
     }
 
@@ -91,20 +80,9 @@ class ProfileViewModel(
             currentVehicles.firstOrNull { it.id == vehicleId } ?: return@launch
         val shouldPromotePrincipal = deletedVehicleModel.isSelected && currentVehicles.size == 2
 
-        analyticsHelper.logEvent(
-            event = AnalyticsEvent(
-                type = AnalyticsEvent.Types.VEHICLE_DELETED,
-                extras = listOf(
-                    AnalyticsEvent.Param(
-                        key = AnalyticsEvent.ParamKeys.WAS_PRINCIPAL,
-                        value = deletedVehicleModel.isSelected.toString()
-                    ),
-                    AnalyticsEvent.Param(
-                        key = AnalyticsEvent.ParamKeys.VEHICLES_REMAINING,
-                        value = (currentVehicles.size - 1).toString()
-                    ),
-                ),
-            ),
+        analyticsHelper.trackVehicleDeleted(
+            wasPrincipal = deletedVehicleModel.isSelected,
+            vehiclesRemaining = currentVehicles.size - 1,
         )
 
         if (shouldPromotePrincipal) {

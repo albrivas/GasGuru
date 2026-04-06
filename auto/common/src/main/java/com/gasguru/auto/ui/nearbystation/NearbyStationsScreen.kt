@@ -9,7 +9,7 @@ import androidx.car.app.model.Template
 import com.gasguru.auto.common.getAutomotiveThemeColor
 import com.gasguru.auto.navigation.StationNavigationHelper
 import com.gasguru.auto.ui.component.StationRowComponent
-import com.gasguru.core.analytics.AnalyticsEvent
+import com.gasguru.auto.analytics.trackAutoStationNavigationStarted
 import com.gasguru.core.analytics.AnalyticsHelper
 import com.gasguru.core.domain.fuelstation.FuelStationByLocationUseCase
 import com.gasguru.core.domain.location.GetCurrentLocationUseCase
@@ -100,11 +100,7 @@ class NearbyStationsScreen(carContext: CarContext) : Screen(carContext), KoinCom
                         theme = theme,
                         carContext = carContext
                     ) { lat, lng ->
-                        analyticsHelper.logEvent(
-                            event = AnalyticsEvent(
-                                type = AnalyticsEvent.Types.AUTO_STATION_NAVIGATION_STARTED,
-                            ),
-                        )
+                        analyticsHelper.trackAutoStationNavigationStarted(brand = station.fuelStation.brandStationBrandsType.name)
                         StationNavigationHelper.navigateToStationAndPopScreen(
                             screen = this@NearbyStationsScreen,
                             latitude = lat,

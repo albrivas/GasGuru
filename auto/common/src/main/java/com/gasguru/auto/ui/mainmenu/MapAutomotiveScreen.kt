@@ -12,7 +12,8 @@ import androidx.car.app.model.Template
 import com.gasguru.auto.common.R
 import com.gasguru.auto.ui.favoritestation.FavoriteStationsScreen
 import com.gasguru.auto.ui.nearbystation.NearbyStationsScreen
-import com.gasguru.core.analytics.AnalyticsEvent
+import com.gasguru.auto.analytics.trackAutoFavoriteStationsOpened
+import com.gasguru.auto.analytics.trackAutoNearbyStationsOpened
 import com.gasguru.core.analytics.AnalyticsHelper
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -39,11 +40,7 @@ class MapAutomotiveScreen(carContext: CarContext) : Screen(carContext), KoinComp
                 .setTitle(carContext.getString(CoreUiR.string.nearby_stations))
                 .setBrowsable(true)
                 .setOnClickListener {
-                    analyticsHelper.logEvent(
-                        event = AnalyticsEvent(
-                            type = AnalyticsEvent.Types.AUTO_NEARBY_STATIONS_OPENED,
-                        ),
-                    )
+                    analyticsHelper.trackAutoNearbyStationsOpened()
                     screenManager.push(NearbyStationsScreen(carContext))
                 }
                 .build()
@@ -54,11 +51,7 @@ class MapAutomotiveScreen(carContext: CarContext) : Screen(carContext), KoinComp
                 .setTitle(carContext.getString(CoreUiR.string.favorites))
                 .setBrowsable(true)
                 .setOnClickListener {
-                    analyticsHelper.logEvent(
-                        event = AnalyticsEvent(
-                            type = AnalyticsEvent.Types.AUTO_FAVORITE_STATIONS_OPENED,
-                        ),
-                    )
+                    analyticsHelper.trackAutoFavoriteStationsOpened()
                     screenManager.push(FavoriteStationsScreen(carContext))
                 }
                 .build()

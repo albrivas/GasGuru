@@ -2,8 +2,14 @@ package com.gasguru.feature.station_map.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gasguru.core.analytics.AnalyticsEvent
 import com.gasguru.core.analytics.AnalyticsHelper
+import com.gasguru.feature.station_map.analytics.trackFilterBrandChanged
+import com.gasguru.feature.station_map.analytics.trackFilterNearbyChanged
+import com.gasguru.feature.station_map.analytics.trackFilterScheduleChanged
+import com.gasguru.feature.station_map.analytics.trackMapTabChanged
+import com.gasguru.feature.station_map.analytics.trackRouteCancelled
+import com.gasguru.feature.station_map.analytics.trackRouteStarted
+import com.gasguru.feature.station_map.analytics.trackStationSelected
 import com.gasguru.core.common.toGoogleLatLng
 import com.gasguru.core.domain.filters.GetFiltersUseCase
 import com.gasguru.core.domain.filters.SaveFilterUseCase
@@ -76,6 +82,7 @@ class StationMapViewModel(
                 destinationId = event.destinationId,
                 destinationName = event.destinationName,
             )
+
             is StationMapEvent.CancelRoute -> cancelRoute()
             is StationMapEvent.ChangeTab -> changeTab(selectedTab = event.selected)
             is StationMapEvent.SelectStation -> selectStation(stationId = event.stationId)
@@ -92,7 +99,7 @@ class StationMapViewModel(
 
     private suspend fun getRouteLocations(
         originId: String?,
-        destinationId: String?
+        destinationId: String?,
     ): Pair<LatLng, LatLng> = coroutineScope {
         val originDeferred = async { getLocationById(placeId = originId) }
         val destinationDeferred = async { getLocationById(placeId = destinationId) }
@@ -114,7 +121,7 @@ class StationMapViewModel(
         origin: LatLng,
         route: com.gasguru.core.model.data.Route,
         destinationLocation: LatLng,
-        destinationName: String?
+        destinationName: String?,
     ) {
         try {
             val routeFuelStations = getFuelStationsInRouteUseCase(
@@ -155,7 +162,7 @@ class StationMapViewModel(
     private fun startRoute(
         originId: String?,
         destinationId: String?,
-        destinationName: String?
+        destinationName: String?,
     ) {
         routeCalculationJob?.cancel()
         routeCalculationJob = viewModelScope.launch {
@@ -173,9 +180,17 @@ class StationMapViewModel(
                     destinationId = destinationId
                 )
 
-                getRouteUseCase(origin = originLocation, destination = destinationLocation).collect { route ->
+                getRouteUseCase(
+                    origin = originLocation,
+                    destination = destinationLocation
+                ).collect { route ->
                     route?.let { routeData ->
-                        analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.ROUTE_STARTED))
+                        val selectedStation = _state.value.mapStations
+                            .firstOrNull {
+                                it.fuelStation.idServiceStation == _state.value.selectedStationId
+                            }
+                            ?.fuelStation
+                        analyticsHelper.trackRouteStarted(brand = selectedStation?.brandStationBrandsType?.name)
                         launch(defaultDispatcher) {
                             processRouteStations(
                                 origin = originLocation,
@@ -203,7 +218,12 @@ class StationMapViewModel(
     }
 
     private fun cancelRoute() {
-        analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.ROUTE_CANCELLED))
+        val selectedStation = _state.value.mapStations
+            .firstOrNull {
+                it.fuelStation.idServiceStation == _state.value.selectedStationId
+            }
+            ?.fuelStation
+        analyticsHelper.trackRouteCancelled(brand = selectedStation?.brandStationBrandsType?.name)
         routeCalculationJob?.cancel()
         routeCalculationJob = null
         _state.update { it.copy(route = null, routeDestinationName = null, loading = false) }
@@ -261,21 +281,14 @@ class StationMapViewModel(
                         location = location
                     )
                     val uiStations = fuelStations.map { station -> station.toUiModel() }
-                    analyticsHelper.logEvent(
-                        event = AnalyticsEvent(
-                            type = AnalyticsEvent.Types.MAP_STATIONS_LOADED,
-                            extras = listOf(
-                                AnalyticsEvent.Param(
-                                    key = AnalyticsEvent.ParamKeys.STATION_COUNT,
-                                    value = uiStations.size.toString()
-                                ),
-                            ),
-                        ),
-                    )
                     _state.update {
                         it.copy(
                             mapStations = uiStations,
-                            listStations = sortStationsByTab(uiStations, _tabState.value.selectedTab, userData),
+                            listStations = sortStationsByTab(
+                                uiStations,
+                                _tabState.value.selectedTab,
+                                userData
+                            ),
                             loading = false,
                             selectedType = userData.principalVehicle().fuelType,
                             mapBounds = bounds,
@@ -297,7 +310,7 @@ class StationMapViewModel(
 
     private fun calculateRouteBounds(
         origin: LatLng,
-        destination: LatLng
+        destination: LatLng,
     ): LatLngBounds {
         val allLocations = listOf(origin.toGoogleLatLng(), destination.toGoogleLatLng())
         val boundsBuilder = LatLngBounds.Builder()
@@ -321,46 +334,21 @@ class StationMapViewModel(
         )
 
     private fun updateFilterBrand(stationsSelected: List<String>) = viewModelScope.launch {
-        analyticsHelper.logEvent(
-            event = AnalyticsEvent(
-                type = AnalyticsEvent.Types.FILTER_BRAND_CHANGED,
-                extras = listOf(
-                    AnalyticsEvent.Param(
-                        key = AnalyticsEvent.ParamKeys.BRAND_COUNT,
-                        value = stationsSelected.size.toString()
-                    ),
-                    AnalyticsEvent.Param(
-                        key = AnalyticsEvent.ParamKeys.BRAND_NAMES,
-                        value = stationsSelected.joinToString(separator = ",")
-                    ),
-                ),
-            ),
+        analyticsHelper.trackFilterBrandChanged(
+            brandCount = stationsSelected.size,
+            brandNames = stationsSelected.joinToString(separator = ","),
         )
         saveFilterUseCase(filterType = FilterType.BRAND, selection = stationsSelected)
     }
 
     private fun updateFilterNearby(numberSelected: String) = viewModelScope.launch {
-        analyticsHelper.logEvent(
-            event = AnalyticsEvent(
-                type = AnalyticsEvent.Types.FILTER_NEARBY_CHANGED,
-                extras = listOf(
-                    AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.NEARBY_KM, value = numberSelected),
-                ),
-            ),
-        )
+        analyticsHelper.trackFilterNearbyChanged(nearbyKm = numberSelected)
         saveFilterUseCase(filterType = FilterType.NEARBY, selection = listOf(numberSelected))
     }
 
     private fun updateFilterSchedule(scheduleSelected: FilterUiState.OpeningHours) =
         viewModelScope.launch {
-            analyticsHelper.logEvent(
-                event = AnalyticsEvent(
-                    type = AnalyticsEvent.Types.FILTER_SCHEDULE_CHANGED,
-                    extras = listOf(
-                        AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.SCHEDULE, value = scheduleSelected.name),
-                    ),
-                ),
-            )
+            analyticsHelper.trackFilterScheduleChanged(schedule = scheduleSelected.name)
             saveFilterUseCase(
                 filterType = FilterType.SCHEDULE,
                 selection = listOf(scheduleSelected.name)
@@ -370,33 +358,24 @@ class StationMapViewModel(
     private fun showListStation(show: Boolean) = _state.update { it.copy(showListStations = show) }
 
     private fun selectStation(stationId: Int) {
-        analyticsHelper.logEvent(
-            event = AnalyticsEvent(
-                type = AnalyticsEvent.Types.STATION_SELECTED,
-                extras = listOf(
-                    AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.STATION_ID, value = stationId.toString()),
-                ),
-            ),
-        )
+        val selectedStation = _state.value.mapStations
+            .firstOrNull { it.fuelStation.idServiceStation == stationId }
+            ?.fuelStation
+        selectedStation?.let { analyticsHelper.trackStationSelected(brand = it.brandStationBrandsType.name) }
+            ?: analyticsHelper.trackStationSelectedWithoutBrand()
         _state.update { it.copy(selectedStationId = stationId) }
     }
 
     private fun changeTab(selectedTab: StationSortTab) {
-        analyticsHelper.logEvent(
-            event = AnalyticsEvent(
-                type = AnalyticsEvent.Types.MAP_TAB_CHANGED,
-                extras = listOf(
-                    AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.TAB, value = selectedTab.name),
-                ),
-            ),
-        )
+        analyticsHelper.trackMapTabChanged(tab = selectedTab.name)
         _tabState.update { it.copy(selectedTab = selectedTab) }
 
         val currentState = _state.value
         if (currentState.mapStations.isNotEmpty()) {
             viewModelScope.launch(defaultDispatcher) {
                 val userData = getUserDataUseCase().first()
-                val sortedStations = sortStationsByTab(currentState.mapStations, selectedTab, userData)
+                val sortedStations =
+                    sortStationsByTab(currentState.mapStations, selectedTab, userData)
                 _state.update { it.copy(listStations = sortedStations) }
             }
         }
@@ -405,9 +384,14 @@ class StationMapViewModel(
     private fun sortStationsByTab(
         stations: List<FuelStationUiModel>,
         selectedTab: StationSortTab,
-        userData: UserData
+        userData: UserData,
     ) = when (selectedTab) {
-        StationSortTab.PRICE -> stations.sortedBy { userData.principalVehicle().fuelType.extractPrice(it.fuelStation) }
+        StationSortTab.PRICE -> stations.sortedBy {
+            userData.principalVehicle().fuelType.extractPrice(
+                it.fuelStation
+            )
+        }
+
         StationSortTab.DISTANCE -> stations.sortedBy { it.fuelStation.distance }
     }
 
