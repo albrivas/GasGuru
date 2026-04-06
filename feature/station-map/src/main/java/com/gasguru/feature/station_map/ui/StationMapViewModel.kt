@@ -3,13 +3,6 @@ package com.gasguru.feature.station_map.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gasguru.core.analytics.AnalyticsHelper
-import com.gasguru.feature.station_map.analytics.trackFilterBrandChanged
-import com.gasguru.feature.station_map.analytics.trackFilterNearbyChanged
-import com.gasguru.feature.station_map.analytics.trackFilterScheduleChanged
-import com.gasguru.feature.station_map.analytics.trackMapTabChanged
-import com.gasguru.feature.station_map.analytics.trackRouteCancelled
-import com.gasguru.feature.station_map.analytics.trackRouteStarted
-import com.gasguru.feature.station_map.analytics.trackStationSelected
 import com.gasguru.core.common.toGoogleLatLng
 import com.gasguru.core.domain.filters.GetFiltersUseCase
 import com.gasguru.core.domain.filters.SaveFilterUseCase
@@ -26,6 +19,13 @@ import com.gasguru.core.model.data.UserData
 import com.gasguru.core.model.data.principalVehicle
 import com.gasguru.core.ui.mapper.toUiModel
 import com.gasguru.core.ui.models.FuelStationUiModel
+import com.gasguru.feature.station_map.analytics.trackFilterBrandChanged
+import com.gasguru.feature.station_map.analytics.trackFilterNearbyChanged
+import com.gasguru.feature.station_map.analytics.trackFilterScheduleChanged
+import com.gasguru.feature.station_map.analytics.trackMapTabChanged
+import com.gasguru.feature.station_map.analytics.trackRouteCancelled
+import com.gasguru.feature.station_map.analytics.trackRouteStarted
+import com.gasguru.feature.station_map.analytics.trackStationSelected
 import com.gasguru.feature.station_map.ui.models.toUiModel
 import com.google.android.gms.maps.model.LatLngBounds
 import kotlinx.coroutines.CancellationException

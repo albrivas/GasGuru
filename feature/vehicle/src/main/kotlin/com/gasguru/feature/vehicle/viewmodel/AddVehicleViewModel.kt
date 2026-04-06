@@ -5,14 +5,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.gasguru.core.analytics.AnalyticsHelper
-import com.gasguru.feature.vehicle.analytics.trackVehicleCreated
-import com.gasguru.feature.vehicle.analytics.trackVehicleEdited
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.domain.vehicle.GetVehicleByIdUseCase
 import com.gasguru.core.domain.vehicle.SaveVehicleUseCase
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.Vehicle
 import com.gasguru.core.model.data.VehicleType
+import com.gasguru.feature.vehicle.analytics.trackVehicleCreated
+import com.gasguru.feature.vehicle.analytics.trackVehicleEdited
 import com.gasguru.feature.vehicle.navigation.VehicleRoutes
 import com.gasguru.feature.vehicle.ui.AddVehicleEvent
 import com.gasguru.navigation.manager.NavigationManager

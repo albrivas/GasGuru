@@ -3,7 +3,6 @@ package com.gasguru.feature.profile.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gasguru.core.analytics.AnalyticsHelper
-import com.gasguru.feature.profile.analytics.trackVehicleDeleted
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.domain.user.SaveThemeModeUseCase
 import com.gasguru.core.domain.vehicle.DeleteVehicleUseCase
@@ -12,6 +11,7 @@ import com.gasguru.core.domain.vehicle.SaveVehicleUseCase
 import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.ui.mapper.toUi
 import com.gasguru.core.ui.models.ThemeModeUi
+import com.gasguru.feature.profile.analytics.trackVehicleDeleted
 import com.gasguru.feature.profile.ui.mapper.toVehicleItemCardModel
 import com.gasguru.navigation.manager.NavigationDestination
 import com.gasguru.navigation.manager.NavigationManager

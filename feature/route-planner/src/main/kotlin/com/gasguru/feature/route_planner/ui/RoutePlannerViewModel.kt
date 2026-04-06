@@ -3,12 +3,12 @@ package com.gasguru.feature.route_planner.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gasguru.core.analytics.AnalyticsHelper
-import com.gasguru.feature.route_planner.analytics.trackRecentSearchUsed
-import com.gasguru.feature.route_planner.analytics.trackRoutePlannerDestinationSet
-import com.gasguru.feature.route_planner.analytics.trackRoutePlannerDestinationsSwapped
 import com.gasguru.core.domain.search.ClearRecentSearchQueriesUseCase
 import com.gasguru.core.domain.search.GetRecentSearchQueryUseCase
 import com.gasguru.core.ui.RecentSearchQueriesUiState
+import com.gasguru.feature.route_planner.analytics.trackRecentSearchUsed
+import com.gasguru.feature.route_planner.analytics.trackRoutePlannerDestinationSet
+import com.gasguru.feature.route_planner.analytics.trackRoutePlannerDestinationsSwapped
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

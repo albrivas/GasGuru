@@ -4,12 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gasguru.core.analytics.AnalyticsHelper
-import com.gasguru.feature.detail_station.analytics.trackPriceAlertDisabled
-import com.gasguru.feature.detail_station.analytics.trackPriceAlertEnabled
-import com.gasguru.feature.detail_station.analytics.trackStationDetailViewed
-import com.gasguru.feature.detail_station.analytics.trackStationFavorited
-import com.gasguru.feature.detail_station.analytics.trackStationShared
-import com.gasguru.feature.detail_station.analytics.trackStationUnfavorited
 import com.gasguru.core.common.CommonUtils.isStationOpen
 import com.gasguru.core.domain.alerts.AddPriceAlertUseCase
 import com.gasguru.core.domain.alerts.RemovePriceAlertUseCase
@@ -25,6 +19,12 @@ import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.Vehicle
 import com.gasguru.core.model.data.principalVehicle
 import com.gasguru.core.ui.mapper.toUiModel
+import com.gasguru.feature.detail_station.analytics.trackPriceAlertDisabled
+import com.gasguru.feature.detail_station.analytics.trackPriceAlertEnabled
+import com.gasguru.feature.detail_station.analytics.trackStationDetailViewed
+import com.gasguru.feature.detail_station.analytics.trackStationFavorited
+import com.gasguru.feature.detail_station.analytics.trackStationShared
+import com.gasguru.feature.detail_station.analytics.trackStationUnfavorited
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -141,7 +141,12 @@ class DetailStationViewModel(
                 saveFavoriteStationUseCase(stationId = id)
             }
             false -> {
-                station?.let { analyticsHelper.trackStationUnfavorited(brand = it.brandStationBrandsType.name, source = "detail") }
+                station?.let {
+                    analyticsHelper.trackStationUnfavorited(
+                        brand = it.brandStationBrandsType.name,
+                        source = "detail"
+                    )
+                }
                 removeFavoriteStationUseCase(stationId = id)
             }
         }

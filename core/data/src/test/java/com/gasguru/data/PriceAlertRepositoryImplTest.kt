@@ -8,10 +8,10 @@ import com.gasguru.core.database.model.VehicleEntity
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.VehicleType
 import com.gasguru.core.testing.CoroutinesTestExtension
+import com.gasguru.core.testing.fakes.analytics.FakeAnalyticsHelper
 import com.gasguru.core.testing.fakes.data.database.FakePriceAlertDao
 import com.gasguru.core.testing.fakes.data.database.FakeVehicleDao
 import com.gasguru.core.testing.fakes.data.network.FakeNetworkMonitor
-import com.gasguru.core.testing.fakes.analytics.FakeAnalyticsHelper
 import com.gasguru.data.fakes.FakeOneSignalManager
 import com.gasguru.data.fakes.FakeSupabaseManager
 import kotlinx.coroutines.test.runTest

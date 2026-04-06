@@ -5,8 +5,8 @@ import androidx.car.app.CarAppService
 import androidx.car.app.Screen
 import androidx.car.app.Session
 import androidx.car.app.validation.HostValidator
-import com.gasguru.auto.ui.mainmenu.MapAutomotiveScreen
 import com.gasguru.auto.analytics.trackAutoSessionStarted
+import com.gasguru.auto.ui.mainmenu.MapAutomotiveScreen
 import com.gasguru.core.analytics.AnalyticsHelper
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject

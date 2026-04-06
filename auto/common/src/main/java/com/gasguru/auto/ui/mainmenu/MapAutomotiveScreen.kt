@@ -9,11 +9,11 @@ import androidx.car.app.model.MessageTemplate
 import androidx.car.app.model.PlaceListMapTemplate
 import androidx.car.app.model.Row
 import androidx.car.app.model.Template
+import com.gasguru.auto.analytics.trackAutoFavoriteStationsOpened
+import com.gasguru.auto.analytics.trackAutoNearbyStationsOpened
 import com.gasguru.auto.common.R
 import com.gasguru.auto.ui.favoritestation.FavoriteStationsScreen
 import com.gasguru.auto.ui.nearbystation.NearbyStationsScreen
-import com.gasguru.auto.analytics.trackAutoFavoriteStationsOpened
-import com.gasguru.auto.analytics.trackAutoNearbyStationsOpened
 import com.gasguru.core.analytics.AnalyticsHelper
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
