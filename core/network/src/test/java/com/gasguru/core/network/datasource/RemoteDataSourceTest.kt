@@ -60,38 +60,12 @@ class RemoteDataSourceTest {
     }
 
     @Test
-    @DisplayName("GIVEN server return success, WHEN fetching fuel stations, THEN logs STARTED and COMPLETED events")
-    fun fuelStationSuccessLogsAnalyticsEvents() = runTest {
-        server.enqueue(mockApi.listFuelStationOK())
-
-        sut.getListFuelStations()
-
-        verify {
-            analyticsHelper.logEvent(
-                event = AnalyticsEvent(type = AnalyticsEvent.Types.API_STATIONS_FETCH_STARTED)
-            )
-        }
-        verify {
-            analyticsHelper.logEvent(
-                event = AnalyticsEvent(type = AnalyticsEvent.Types.API_STATIONS_FETCH_COMPLETED)
-            )
-        }
-    }
-
-    @Test
-    @DisplayName(
-        "GIVEN server return error, WHEN fetching fuel stations, THEN logs STARTED and FAILED events with error extras"
-    )
+    @DisplayName("GIVEN server return error, WHEN fetching fuel stations, THEN logs FAILED event with error extras")
     fun fuelStationErrorLogsAnalyticsEvents() = runTest {
         server.enqueue(mockApi.listFuelStationKO())
 
         sut.getListFuelStations()
 
-        verify {
-            analyticsHelper.logEvent(
-                event = AnalyticsEvent(type = AnalyticsEvent.Types.API_STATIONS_FETCH_STARTED)
-            )
-        }
         verify {
             analyticsHelper.logEvent(
                 event = match { event ->

@@ -54,7 +54,7 @@ class LogcatAnalyticsHelperTest {
     @Test
     @DisplayName("logEvent logs dash when event has no extras")
     fun `logEvent logs dash when event has no extras`() {
-        val event = AnalyticsEvent(type = AnalyticsEvent.Types.WENT_OFFLINE)
+        val event = AnalyticsEvent(type = AnalyticsEvent.Types.APP_OPENED)
 
         analyticsHelper.logEvent(event = event)
 

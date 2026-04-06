@@ -11,7 +11,7 @@ import com.gasguru.core.testing.CoroutinesTestExtension
 import com.gasguru.core.testing.fakes.data.database.FakePriceAlertDao
 import com.gasguru.core.testing.fakes.data.database.FakeVehicleDao
 import com.gasguru.core.testing.fakes.data.network.FakeNetworkMonitor
-import com.gasguru.data.fakes.FakeAnalyticsHelper
+import com.gasguru.core.testing.fakes.analytics.FakeAnalyticsHelper
 import com.gasguru.data.fakes.FakeOneSignalManager
 import com.gasguru.data.fakes.FakeSupabaseManager
 import kotlinx.coroutines.test.runTest
@@ -244,10 +244,10 @@ class PriceAlertRepositoryImplTest {
             """
             GIVEN pending inserts exist
             WHEN sync is called
-            THEN syncs inserts to supabase, marks as synced, and logs COMPLETED with synced_count
+            THEN syncs inserts to supabase and marks as synced
             """
         )
-        fun syncsPendingInsertsAndLogsCompleted() = runTest {
+        fun syncsPendingInserts() = runTest {
             fakePriceAlertDao.insert(
                 PriceAlertEntity(stationId = 1, lastNotifiedPrice = 1.50, isSynced = false),
             )
@@ -260,13 +260,6 @@ class PriceAlertRepositoryImplTest {
             assertTrue(result)
             assertTrue(fakeSupabaseManager.addedAlerts.containsAll(listOf(1, 2)))
             assertFalse(fakePriceAlertDao.hasPendingSync())
-            val completedEvent = fakeAnalyticsHelper.loggedEvents.find {
-                it.type == AnalyticsEvent.Types.ALERTS_SYNC_COMPLETED
-            }
-            val syncedCount = completedEvent?.extras?.find {
-                it.key == AnalyticsEvent.ParamKeys.SYNCED_COUNT
-            }?.value
-            assertEquals("2", syncedCount)
         }
 
         @Test
@@ -329,20 +322,13 @@ class PriceAlertRepositoryImplTest {
             """
             GIVEN no pending changes exist
             WHEN sync is called
-            THEN returns true and logs COMPLETED with synced_count=0
+            THEN returns true
             """
         )
-        fun returnsTrueWithZeroCountWhenNoPendingChanges() = runTest {
+        fun returnsTrueWhenNoPendingChanges() = runTest {
             val result = sut.sync()
 
             assertTrue(result)
-            val completedEvent = fakeAnalyticsHelper.loggedEvents.find {
-                it.type == AnalyticsEvent.Types.ALERTS_SYNC_COMPLETED
-            }
-            val syncedCount = completedEvent?.extras?.find {
-                it.key == AnalyticsEvent.ParamKeys.SYNCED_COUNT
-            }?.value
-            assertEquals("0", syncedCount)
         }
     }
 
