@@ -119,27 +119,28 @@ jobs:
           curl --proto "=https" --tlsv1.2 -sSfL "https://get.maestro.mobile.dev" | bash
           echo "$HOME/.maestro/bin" >> $GITHUB_PATH
 
+      - name: Assemble APK for Maestro
+        run: ./gradlew assembleProdRelease
+        working-directory: ./
+
       - name: Start Android Emulator
         uses: ReactiveCircus/android-emulator-runner@e89f39f1abbbd05b1113a29cf4db69e7540cae5a # v2.37.0
         with:
           api-level: 34
-          target: google_apis
+          target: default
           arch: x86_64
           disable-animations: true
-          emulator-options: "-no-snapshot-save -no-window -no-boot-anim"
+          emulator-options: "-no-snapshot-save -no-window -no-boot-anim -no-audio -memory 3072"
           script: |
-            # Run UI test
+            # Run UI tests
             ./gradlew connectedCheck
-            
-            # Assemble APK for Maestro
-            ./gradlew assembleProdRelease
-            
+
             # Wait for emulator to be ready
             adb wait-for-device
-            
+
             # Install APK in the emulator
             adb install app/build/outputs/apk/prod/release/app-prod-release.apk
-            
+
             # Execute test with maestro
             maestro test .maestro/config.yaml
 
