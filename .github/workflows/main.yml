@@ -114,16 +114,6 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: Run instrumented tests
-        uses: ReactiveCircus/android-emulator-runner@e89f39f1abbbd05b1113a29cf4db69e7540cae5a # v2.37.0
-        with:
-          api-level: 34
-          target: google_apis
-          arch: x86_64
-          disable-animations: true
-          emulator-options: "-no-snapshot-save -no-window -no-boot-anim -no-audio"
-          script: ./gradlew connectedCheck
-
       - name: Install Maestro CLI
         run: |
           curl --proto "=https" --tlsv1.2 -sSfL "https://get.maestro.mobile.dev" | bash
@@ -133,7 +123,7 @@ jobs:
         run: ./gradlew assembleProdRelease
         working-directory: ./
 
-      - name: Run Maestro tests
+      - name: Start Android Emulator
         uses: ReactiveCircus/android-emulator-runner@e89f39f1abbbd05b1113a29cf4db69e7540cae5a # v2.37.0
         with:
           api-level: 34
@@ -142,6 +132,7 @@ jobs:
           disable-animations: true
           emulator-options: "-no-snapshot-save -no-window -no-boot-anim -no-audio"
           script: |
+            ./gradlew connectedCheck
             adb install app/build/outputs/apk/prod/release/app-prod-release.apk
             maestro test .maestro/config.yaml
 
