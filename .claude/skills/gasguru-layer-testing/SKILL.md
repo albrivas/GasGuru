@@ -11,6 +11,9 @@ Skill unificada para escribir o actualizar tests unitarios en GasGuru — cubre 
 
 ## Convenciones generales (obligatorias)
 
+> ⛔ **REGLA ABSOLUTA:** `@DisplayName` **NUNCA** va en la clase de test. Solo en cada método `@Test`.
+> Una clase de test no lleva ninguna anotación `@DisplayName`. Si se añade, es un error.
+
 - **JUnit5** (`org.junit.jupiter.api`): `@Test`, `@BeforeEach`, `@AfterEach`, `@DisplayName`
 - **NO `@DisplayName` en la clase**, SÍ en cada `@Test`
 - **`@DisplayName`** siempre con triple `"""` y GIVEN/WHEN/THEN en líneas separadas (nunca en una sola línea):
