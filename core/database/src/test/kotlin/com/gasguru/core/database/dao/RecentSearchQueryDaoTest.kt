@@ -33,7 +33,13 @@ class RecentSearchQueryDaoTest {
     fun closeDb() = db.close()
 
     @Test
-    @DisplayName("Retrieves recent search queries with limit")
+    @DisplayName(
+        """
+        GIVEN multiple queries in database
+        WHEN querying with a limit
+        THEN returns only up to limit queries ordered by recency
+        """
+    )
     fun getRecentSearchQueryEntitiesTest() = runTest {
         val query1 = RecentSearchQueryEntity(id = "1", name = "Query 1")
         val query2 = RecentSearchQueryEntity(id = "2", name = "Query 2")
@@ -51,7 +57,13 @@ class RecentSearchQueryDaoTest {
     }
 
     @Test
-    @DisplayName("Inserts recent search query")
+    @DisplayName(
+        """
+        GIVEN a valid recent search query
+        WHEN inserting it
+        THEN it is persisted and retrievable
+        """
+    )
     fun insertRecentSearchQueryTest() = runTest {
         val query1 = RecentSearchQueryEntity(id = "1", name = "Query 1")
         recentSearchQueryDao.insertOrReplaceRecentSearchQuery(query1)
@@ -62,7 +74,13 @@ class RecentSearchQueryDaoTest {
     }
 
     @Test
-    @DisplayName("Replaces recent search query")
+    @DisplayName(
+        """
+        GIVEN a query with the same id already exists
+        WHEN inserting again with same id
+        THEN the existing record is replaced
+        """
+    )
     fun replaceRecentSearchQueryTest() = runTest {
         val query1 = RecentSearchQueryEntity(id = "1", name = "Query 1")
         recentSearchQueryDao.insertOrReplaceRecentSearchQuery(query1)
@@ -77,7 +95,13 @@ class RecentSearchQueryDaoTest {
     }
 
     @Test
-    @DisplayName("Clears recent search queries")
+    @DisplayName(
+        """
+        GIVEN queries exist in database
+        WHEN clearing all queries
+        THEN database is empty
+        """
+    )
     fun clearRecentSearchQueriesTest() = runTest {
         val query1 = RecentSearchQueryEntity(id = "1", name = "Query 1")
         recentSearchQueryDao.insertOrReplaceRecentSearchQuery(query1)
@@ -86,5 +110,59 @@ class RecentSearchQueryDaoTest {
 
         val result = recentSearchQueryDao.getRecentSearchQueryEntities(limit = 5).first()
         assertTrue(result.isEmpty())
+    }
+
+    @Test
+    @DisplayName(
+        """GIVEN queries in db
+        WHEN limit is larger than total count
+        THEN all queries are returned"""
+    )
+    fun getRecentSearchQueryEntities_limitLargerThanCount_returnsAll() = runTest {
+        val query1 = RecentSearchQueryEntity(id = "1", name = "Query 1")
+        val query2 = RecentSearchQueryEntity(id = "2", name = "Query 2")
+        recentSearchQueryDao.insertOrReplaceRecentSearchQuery(query1)
+        recentSearchQueryDao.insertOrReplaceRecentSearchQuery(query2)
+
+        val result = recentSearchQueryDao.getRecentSearchQueryEntities(limit = 100).first()
+
+        assertEquals(2, result.size)
+    }
+
+    @Test
+    @DisplayName(
+        """GIVEN an empty database
+        WHEN querying with any limit
+        THEN returns empty list"""
+    )
+    fun getRecentSearchQueryEntities_withEmptyDatabase_returnsEmptyList() = runTest {
+        val result = recentSearchQueryDao.getRecentSearchQueryEntities(limit = 10).first()
+
+        assertTrue(result.isEmpty())
+    }
+
+    @Test
+    @DisplayName(
+        """GIVEN multiple queries
+        WHEN clearing and re-inserting one
+        THEN only the new query is present"""
+    )
+    fun clearAndReInsert_onlyNewQueryIsPresent() = runTest {
+        recentSearchQueryDao.insertOrReplaceRecentSearchQuery(
+            RecentSearchQueryEntity(id = "1", name = "Old")
+        )
+        recentSearchQueryDao.insertOrReplaceRecentSearchQuery(
+            RecentSearchQueryEntity(id = "2", name = "Older")
+        )
+
+        recentSearchQueryDao.clearRecentSearchQueries()
+
+        recentSearchQueryDao.insertOrReplaceRecentSearchQuery(
+            RecentSearchQueryEntity(id = "3", name = "New")
+        )
+
+        val result = recentSearchQueryDao.getRecentSearchQueryEntities(limit = 10).first()
+        assertEquals(1, result.size)
+        assertEquals("New", result.first().name)
     }
 }

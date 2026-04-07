@@ -5,6 +5,7 @@ import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.model.data.VehicleType
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFails
 
 class UserDataConvertersTest {
 
@@ -50,5 +51,95 @@ class UserDataConvertersTest {
         assertEquals(ThemeMode.SYSTEM, sut.toThemeMode(value = "SYSTEM"))
         assertEquals(ThemeMode.DARK, sut.toThemeMode(value = "DARK"))
         assertEquals(ThemeMode.LIGHT, sut.toThemeMode(value = "LIGHT"))
+    }
+
+    @Test
+    fun givenAllVehicleTypeValues_whenRoundTrip_thenIdempotent() {
+        VehicleType.entries.forEach { vehicleType ->
+            val encoded = sut.fromVehicleType(vehicleType = vehicleType)
+            val decoded = sut.toVehicleType(value = encoded)
+            assertEquals(vehicleType, decoded)
+        }
+    }
+
+    @Test
+    fun givenAllFuelTypeValues_whenRoundTrip_thenIdempotent() {
+        FuelType.entries.forEach { fuelType ->
+            val encoded = sut.fromFuelType(fuelType = fuelType)
+            val decoded = sut.toFuelType(value = encoded)
+            assertEquals(fuelType, decoded)
+        }
+    }
+
+    @Test
+    fun givenAllThemeModeValues_whenRoundTrip_thenIdempotent() {
+        ThemeMode.entries.forEach { themeMode ->
+            val encoded = sut.fromThemeMode(themeMode = themeMode)
+            val decoded = sut.toThemeMode(value = encoded)
+            assertEquals(themeMode, decoded)
+        }
+    }
+
+    @Test
+    fun givenInvalidVehicleTypeName_whenToVehicleTypeIsCalled_thenThrowsException() {
+        assertFails {
+            sut.toVehicleType(value = "INVALID_VEHICLE")
+        }
+    }
+
+    @Test
+    fun givenEmptyString_whenToVehicleTypeIsCalled_thenThrowsException() {
+        assertFails {
+            sut.toVehicleType(value = "")
+        }
+    }
+
+    @Test
+    fun givenLowercaseVehicleTypeName_whenToVehicleTypeIsCalled_thenThrowsException() {
+        assertFails {
+            sut.toVehicleType(value = "car")
+        }
+    }
+
+    @Test
+    fun givenInvalidFuelTypeName_whenToFuelTypeIsCalled_thenThrowsException() {
+        assertFails {
+            sut.toFuelType(value = "UNKNOWN_FUEL")
+        }
+    }
+
+    @Test
+    fun givenEmptyString_whenToFuelTypeIsCalled_thenThrowsException() {
+        assertFails {
+            sut.toFuelType(value = "")
+        }
+    }
+
+    @Test
+    fun givenInvalidThemeModeName_whenToThemeModeIsCalled_thenThrowsException() {
+        assertFails {
+            sut.toThemeMode(value = "INVALID_THEME")
+        }
+    }
+
+    @Test
+    fun givenEmptyString_whenToThemeModeIsCalled_thenThrowsException() {
+        assertFails {
+            sut.toThemeMode(value = "")
+        }
+    }
+
+    @Test
+    fun givenAllFuelTypeValues_whenFromFuelTypeIsCalled_thenReturnsEnumName() {
+        FuelType.entries.forEach { fuelType ->
+            assertEquals(fuelType.name, sut.fromFuelType(fuelType = fuelType))
+        }
+    }
+
+    @Test
+    fun givenAllThemeModeValues_whenFromThemeModeIsCalled_thenReturnsEnumName() {
+        ThemeMode.entries.forEach { themeMode ->
+            assertEquals(themeMode.name, sut.fromThemeMode(themeMode = themeMode))
+        }
     }
 }
