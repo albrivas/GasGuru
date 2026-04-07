@@ -2,11 +2,13 @@ package com.gasguru.feature.route_planner.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gasguru.core.analytics.AnalyticsEvent
 import com.gasguru.core.analytics.AnalyticsHelper
 import com.gasguru.core.domain.search.ClearRecentSearchQueriesUseCase
 import com.gasguru.core.domain.search.GetRecentSearchQueryUseCase
 import com.gasguru.core.ui.RecentSearchQueriesUiState
+import com.gasguru.feature.route_planner.analytics.trackRecentSearchUsed
+import com.gasguru.feature.route_planner.analytics.trackRoutePlannerDestinationSet
+import com.gasguru.feature.route_planner.analytics.trackRoutePlannerDestinationsSwapped
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -71,14 +73,7 @@ class RoutePlannerViewModel(
     }
 
     private fun selectedPlace(placeId: String, placeName: String) {
-        analyticsHelper.logEvent(
-            event = AnalyticsEvent(
-                type = AnalyticsEvent.Types.ROUTE_PLANNER_DESTINATION_SET,
-                extras = listOf(
-                    AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.IS_CURRENT_LOCATION, value = false.toString()),
-                ),
-            ),
-        )
+        analyticsHelper.trackRoutePlannerDestinationSet(isCurrentLocation = false)
         when (_state.value.currentInput) {
             InputField.START -> _state.update {
                 it.copy(
@@ -101,7 +96,7 @@ class RoutePlannerViewModel(
     }
 
     private fun changeDestinations() {
-        analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.ROUTE_PLANNER_DESTINATIONS_SWAPPED))
+        analyticsHelper.trackRoutePlannerDestinationsSwapped()
         val start = _state.value.startQuery
         val end = _state.value.endQuery
         _state.update { it.copy(startQuery = end, endQuery = start) }
@@ -115,7 +110,7 @@ class RoutePlannerViewModel(
     }
 
     private fun selectedRecentPlace(placeId: String, placeName: String) {
-        analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.RECENT_SEARCH_USED))
+        analyticsHelper.trackRecentSearchUsed()
         val currentState = _state.value
 
         when {
@@ -144,14 +139,7 @@ class RoutePlannerViewModel(
     }
 
     private fun selectCurrentLocation() {
-        analyticsHelper.logEvent(
-            event = AnalyticsEvent(
-                type = AnalyticsEvent.Types.ROUTE_PLANNER_DESTINATION_SET,
-                extras = listOf(
-                    AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.IS_CURRENT_LOCATION, value = true.toString()),
-                ),
-            ),
-        )
+        analyticsHelper.trackRoutePlannerDestinationSet(isCurrentLocation = true)
         val currentState = _state.value
 
         when {
