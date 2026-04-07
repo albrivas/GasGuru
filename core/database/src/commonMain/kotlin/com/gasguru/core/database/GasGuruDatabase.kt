@@ -38,7 +38,7 @@ expect object GasGuruDatabaseConstructor : RoomDatabaseConstructor<GasGuruDataba
         PriceAlertEntity::class,
         VehicleEntity::class,
     ],
-    version = 16,
+    version = 17,
     exportSchema = true,
 )
 @TypeConverters(UserDataConverters::class, ListConverters::class, FilterTypeConverter::class)

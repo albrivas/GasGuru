@@ -9,8 +9,7 @@ import com.gasguru.core.model.data.FilterType
     tableName = "filter"
 )
 data class FilterEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    @PrimaryKey
     val type: FilterType,
     val selection: List<String>,
 )

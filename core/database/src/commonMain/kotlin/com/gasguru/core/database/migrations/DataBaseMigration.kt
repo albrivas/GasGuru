@@ -133,6 +133,7 @@ internal val MIGRATION_12_13 = object : Migration(DB_VERSION_12, DB_VERSION_13) 
 const val DB_VERSION_14 = 14
 const val DB_VERSION_15 = 15
 const val DB_VERSION_16 = 16
+const val DB_VERSION_17 = 17
 
 internal val MIGRATION_13_14 = object : Migration(DB_VERSION_13, DB_VERSION_14) {
     override fun migrate(connection: SQLiteConnection) {
@@ -197,5 +198,27 @@ internal val MIGRATION_15_16 = object : Migration(DB_VERSION_15, DB_VERSION_16) 
         connection.execSQL(
             "UPDATE vehicles SET isPrincipal = 1 WHERE id IN (SELECT MIN(id) FROM vehicles GROUP BY userId)",
         )
+    }
+}
+
+internal val MIGRATION_16_17 = object : Migration(DB_VERSION_16, DB_VERSION_17) {
+    override fun migrate(connection: SQLiteConnection) {
+        connection.execSQL(
+            """
+                CREATE TABLE IF NOT EXISTS `filter_new` (
+                    `type` TEXT NOT NULL,
+                    `selection` TEXT NOT NULL,
+                    PRIMARY KEY(`type`)
+                )
+            """.trimIndent()
+        )
+        connection.execSQL(
+            """
+                INSERT OR IGNORE INTO `filter_new` (`type`, `selection`)
+                SELECT `type`, `selection` FROM `filter`
+            """.trimIndent()
+        )
+        connection.execSQL("DROP TABLE `filter`")
+        connection.execSQL("ALTER TABLE `filter_new` RENAME TO `filter`")
     }
 }
