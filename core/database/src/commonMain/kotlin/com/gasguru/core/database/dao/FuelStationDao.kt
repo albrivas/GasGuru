@@ -48,7 +48,7 @@ interface FuelStationDao {
             "(:fuelType = 'GASOIL_B' AND priceGasoilB > 0) OR " +
             "(:fuelType = 'ADBLUE' AND priceAdblue > 0)" +
             ")" +
-            "AND brandStation IN (:brands) COLLATE NOCASE"
+            "AND brandStation COLLATE NOCASE IN (:brands)"
     )
     fun getFuelStationsWithBrandFilter(fuelType: String, brands: List<String>): Flow<List<FuelStationEntity>>
 
