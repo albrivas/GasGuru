@@ -9,4 +9,6 @@ class FakeAnalyticsHelper : AnalyticsHelper {
     override fun logEvent(event: AnalyticsEvent) {
         loggedEvents.add(event)
     }
+
+    override fun updateSuperProperties(properties: Map<String, Any>) = Unit
 }

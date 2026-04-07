@@ -1,10 +1,9 @@
 package com.gasguru.di
 
-import com.gasguru.core.analytics.AnalyticsHelper
-import com.gasguru.core.network.datasource.RemoteDataSource
-import com.gasguru.core.network.datasource.RemoteDataSourceImp
+import com.gasguru.core.supabase.datasource.RemoteDataSource
+import com.gasguru.core.supabase.datasource.SupabaseRemoteDataSource
 import org.koin.dsl.module
 
 val remoteDataSourceModule = module {
-    single<RemoteDataSource> { RemoteDataSourceImp(api = get(), analyticsHelper = get<AnalyticsHelper>()) }
+    single<RemoteDataSource> { get<SupabaseRemoteDataSource>() }
 }
