@@ -7,31 +7,46 @@ import com.gasguru.core.database.model.RecentSearchQueryEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
-import kotlin.test.assertTrue
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
 
+@DisplayName(
+    """
+    GIVEN a RecentSearchQueryDao
+    WHEN performing recent search query operations
+    THEN the results are correct
+    """
+)
 class RecentSearchQueryDaoTest {
 
     private lateinit var recentSearchQueryDao: RecentSearchQueryDao
     private lateinit var db: GasGuruDatabase
 
-    @BeforeTest
+    @BeforeEach
     fun createDb() {
-        db = Room.databaseBuilder<GasGuruDatabase>(name = ":memory:")
+        db = Room.inMemoryDatabaseBuilder<GasGuruDatabase>()
             .setDriver(BundledSQLiteDriver())
             .setQueryCoroutineContext(Dispatchers.IO)
             .build()
         recentSearchQueryDao = db.recentDao()
     }
 
-    @AfterTest
+    @AfterEach
     fun closeDb() = db.close()
 
     @Test
+    @DisplayName(
+        """
+        GIVEN three queries inserted
+        WHEN getting recent queries with limit 2
+        THEN returns the two most recent in descending order
+        """
+    )
     fun getRecentSearchQueryEntitiesTest() = runTest {
         val query1 = RecentSearchQueryEntity(id = "1", name = "Query 1")
         val query2 = RecentSearchQueryEntity(id = "2", name = "Query 2")
@@ -49,6 +64,13 @@ class RecentSearchQueryDaoTest {
     }
 
     @Test
+    @DisplayName(
+        """
+        GIVEN one query inserted
+        WHEN getting recent queries
+        THEN returns that query
+        """
+    )
     fun insertRecentSearchQueryTest() = runTest {
         val query1 = RecentSearchQueryEntity(id = "1", name = "Query 1")
         recentSearchQueryDao.insertOrReplaceRecentSearchQuery(query1)
@@ -59,6 +81,13 @@ class RecentSearchQueryDaoTest {
     }
 
     @Test
+    @DisplayName(
+        """
+        GIVEN a query inserted then replaced with the same id
+        WHEN getting recent queries
+        THEN only the second query exists
+        """
+    )
     fun replaceRecentSearchQueryTest() = runTest {
         val query1 = RecentSearchQueryEntity(id = "1", name = "Query 1")
         recentSearchQueryDao.insertOrReplaceRecentSearchQuery(query1)
@@ -73,6 +102,13 @@ class RecentSearchQueryDaoTest {
     }
 
     @Test
+    @DisplayName(
+        """
+        GIVEN a query is inserted
+        WHEN clearing all recent queries
+        THEN returns empty list
+        """
+    )
     fun clearRecentSearchQueriesTest() = runTest {
         val query1 = RecentSearchQueryEntity(id = "1", name = "Query 1")
         recentSearchQueryDao.insertOrReplaceRecentSearchQuery(query1)
@@ -84,6 +120,13 @@ class RecentSearchQueryDaoTest {
     }
 
     @Test
+    @DisplayName(
+        """
+        GIVEN two queries inserted
+        WHEN getting with limit larger than count
+        THEN returns all queries
+        """
+    )
     fun getRecentSearchQueryEntities_limitLargerThanCount_returnsAll() = runTest {
         val query1 = RecentSearchQueryEntity(id = "1", name = "Query 1")
         val query2 = RecentSearchQueryEntity(id = "2", name = "Query 2")
@@ -96,6 +139,13 @@ class RecentSearchQueryDaoTest {
     }
 
     @Test
+    @DisplayName(
+        """
+        GIVEN empty database
+        WHEN getting recent queries
+        THEN returns empty list
+        """
+    )
     fun getRecentSearchQueryEntities_withEmptyDatabase_returnsEmptyList() = runTest {
         val result = recentSearchQueryDao.getRecentSearchQueryEntities(limit = 10).first()
 
@@ -103,6 +153,13 @@ class RecentSearchQueryDaoTest {
     }
 
     @Test
+    @DisplayName(
+        """
+        GIVEN two queries, then all are cleared, then a new query is inserted
+        WHEN getting recent queries
+        THEN only the new query is present
+        """
+    )
     fun clearAndReInsert_onlyNewQueryIsPresent() = runTest {
         recentSearchQueryDao.insertOrReplaceRecentSearchQuery(
             RecentSearchQueryEntity(id = "1", name = "Old")

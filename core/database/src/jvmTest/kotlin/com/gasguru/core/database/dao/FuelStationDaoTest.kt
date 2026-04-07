@@ -9,30 +9,45 @@ import com.gasguru.core.model.data.FuelType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
 
+@DisplayName(
+    """
+    GIVEN a FuelStationDao
+    WHEN performing fuel station operations
+    THEN the results are correct
+    """
+)
 class FuelStationDaoTest {
 
     private lateinit var fuelStationDao: FuelStationDao
     private lateinit var db: GasGuruDatabase
 
-    @BeforeTest
+    @BeforeEach
     fun createDb() {
-        db = Room.databaseBuilder<GasGuruDatabase>(name = ":memory:")
+        db = Room.inMemoryDatabaseBuilder<GasGuruDatabase>()
             .setDriver(BundledSQLiteDriver())
             .setQueryCoroutineContext(Dispatchers.IO)
             .build()
         fuelStationDao = db.fuelStationDao()
     }
 
-    @AfterTest
+    @AfterEach
     fun closeDb() = db.close()
 
     @Test
+    @DisplayName(
+        """
+        GIVEN two stations are inserted
+        WHEN getting all stations
+        THEN returns all inserted stations
+        """
+    )
     fun getAllStations() = runTest {
         val listStations = listOf(
             testFuelStationEntity(brand = "Repsol", isFavorite = false, idServiceStation = 1),
@@ -52,6 +67,13 @@ class FuelStationDaoTest {
     }
 
     @Test
+    @DisplayName(
+        """
+        GIVEN two stations of different brands
+        WHEN getting stations with a brand filter
+        THEN returns only stations matching the brand
+        """
+    )
     fun getStationBrandFilter() = runTest {
         val listStations = listOf(
             testFuelStationEntity(brand = "Repsol", isFavorite = false, idServiceStation = 1),
@@ -68,6 +90,13 @@ class FuelStationDaoTest {
     }
 
     @Test
+    @DisplayName(
+        """
+        GIVEN two stations where one is favorite
+        WHEN getting station by id
+        THEN returns the correct station
+        """
+    )
     fun getFavorites() = runTest {
         val listStations = listOf(
             testFuelStationEntity(brand = "Repsol", isFavorite = false, idServiceStation = 1),
@@ -81,6 +110,13 @@ class FuelStationDaoTest {
     }
 
     @Test
+    @DisplayName(
+        """
+        GIVEN empty database
+        WHEN getting all stations
+        THEN returns empty list
+        """
+    )
     fun getFuelStations_withEmptyDatabase_returnsEmptyList() = runTest {
         val result = fuelStationDao.getFuelStations(
             fuelType = FuelType.GASOLINE_95.name,
@@ -94,6 +130,13 @@ class FuelStationDaoTest {
     }
 
     @Test
+    @DisplayName(
+        """
+        GIVEN a diesel station and a gasoline-only station
+        WHEN getting stations for diesel fuel type
+        THEN returns only the diesel station
+        """
+    )
     fun getFuelStations_withDieselFuelType_returnsOnlyDieselStations() = runTest {
         val dieselStation = testFuelStationEntity(
             brand = "Repsol",
@@ -117,6 +160,13 @@ class FuelStationDaoTest {
     }
 
     @Test
+    @DisplayName(
+        """
+        GIVEN a station with adblue price
+        WHEN getting stations for adblue fuel type
+        THEN returns only that station
+        """
+    )
     fun getFuelStations_withAdBlueFuelType_returnsOnlyAdBlueStations() = runTest {
         val adblueStation = testFuelStationEntity(
             brand = "Shell",
@@ -135,6 +185,13 @@ class FuelStationDaoTest {
     }
 
     @Test
+    @DisplayName(
+        """
+        GIVEN a station with lowercase brand
+        WHEN filtering with uppercase brand
+        THEN returns the matching station (case insensitive)
+        """
+    )
     fun getFuelStations_brandFilterCaseInsensitive_returnsMatchingStations() = runTest {
         val station = testFuelStationEntity(
             brand = "repsol",
@@ -152,6 +209,13 @@ class FuelStationDaoTest {
     }
 
     @Test
+    @DisplayName(
+        """
+        GIVEN a Repsol station is inserted
+        WHEN filtering by Galp brand
+        THEN returns empty list
+        """
+    )
     fun getFuelStations_brandFilterNoMatch_returnsEmptyList() = runTest {
         val station = testFuelStationEntity(
             brand = "Repsol",
@@ -169,6 +233,13 @@ class FuelStationDaoTest {
     }
 
     @Test
+    @DisplayName(
+        """
+        GIVEN one station inside bounds and one outside
+        WHEN getting stations in bounds
+        THEN returns only the station inside bounds
+        """
+    )
     fun getFuelStationsInBounds_withMatchingStations_returnsThem() = runTest {
         val insideBounds = testFuelStationEntity(
             brand = "Repsol",
@@ -195,6 +266,13 @@ class FuelStationDaoTest {
     }
 
     @Test
+    @DisplayName(
+        """
+        GIVEN empty database
+        WHEN getting stations in bounds
+        THEN returns empty list
+        """
+    )
     fun getFuelStationsInBounds_withEmptyDatabase_returnsEmptyList() = runTest {
         val result = fuelStationDao.getFuelStationsInBounds(
             minLat = 40.0,
@@ -208,6 +286,13 @@ class FuelStationDaoTest {
     }
 
     @Test
+    @DisplayName(
+        """
+        GIVEN a station with zero gasoline price within bounds
+        WHEN getting stations in bounds for gasoline fuel type
+        THEN station is not included
+        """
+    )
     fun getFuelStationsInBounds_fuelTypePriceZero_notIncluded() = runTest {
         val station = testFuelStationEntity(
             brand = "Repsol",
@@ -233,6 +318,13 @@ class FuelStationDaoTest {
     }
 
     @Test
+    @DisplayName(
+        """
+        GIVEN a station is inserted then another with same id is inserted
+        WHEN getting station by id
+        THEN the second station replaces the first
+        """
+    )
     fun insertFuelStation_duplicateId_replacesExistingRecord() = runTest {
         val original = testFuelStationEntity(brand = "Repsol", isFavorite = false, idServiceStation = 1)
         val updated = original.copy(brandStation = "Cepsa")

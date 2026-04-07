@@ -10,6 +10,8 @@ android {
 }
 
 kotlin {
+    jvm()
+
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.model)
@@ -22,14 +24,19 @@ kotlin {
         commonTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.kotest.assertions.core)
-            implementation(libs.kotlinx.coroutines.test)
-            implementation(libs.turbine)
-            implementation(libs.androidx.sqlite.bundled)
         }
-        androidUnitTest.dependencies {
-            implementation(libs.mockk)
-            implementation(libs.junit5.api)
-            runtimeOnly(libs.junit5.engine)
+        val jvmTest by getting {
+            dependencies {
+                implementation(libs.junit5.api)
+                runtimeOnly(libs.junit5.engine)
+                implementation(libs.kotlinx.coroutines.test)
+                implementation(libs.turbine)
+                implementation(libs.androidx.sqlite.bundled)
+            }
         }
     }
+}
+
+dependencies {
+    add("kspJvm", libs.androidx.room.compiler)
 }
