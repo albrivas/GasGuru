@@ -5,9 +5,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
+import androidx.glance.Image
+import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
 import androidx.glance.action.actionParametersOf
 import androidx.glance.action.clickable
+import androidx.glance.appwidget.CircularProgressIndicator
 import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.cornerRadius
@@ -20,7 +23,9 @@ import androidx.glance.layout.Column
 import androidx.glance.layout.Row
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
+import androidx.glance.layout.height
 import androidx.glance.layout.padding
+import androidx.glance.layout.size
 import androidx.glance.layout.wrapContentHeight
 import androidx.glance.text.Text
 import com.gasguru.core.model.data.PriceCategory
@@ -34,10 +39,11 @@ import com.gasguru.feature.widget.theme.WidgetStyleEmptySubtitle
 import com.gasguru.feature.widget.theme.WidgetStyleEmptyTitle
 import com.gasguru.feature.widget.theme.WidgetStyleHeader
 import com.gasguru.feature.widget.theme.WidgetStylePrice
+import com.gasguru.core.ui.R as CoreUiR
 
 @Composable
 fun FavoriteStationsWidgetContent(
-    stations: List<FavoriteWidgetItemModel>,
+    stations: List<FavoriteWidgetItemModel>?,
     isCompact: Boolean = false,
 ) {
     GlanceTheme(colors = WidgetColorScheme.colors) {
@@ -47,10 +53,10 @@ fun FavoriteStationsWidgetContent(
                 .background(GlanceTheme.colors.widgetBackground),
         ) {
             WidgetHeader(isCompact = isCompact)
-            if (stations.isEmpty()) {
-                EmptyWidgetContent()
-            } else {
-                StationsListContent(
+            when {
+                stations == null -> LoadingWidgetContent()
+                stations.isEmpty() -> EmptyWidgetContent()
+                else -> StationsListContent(
                     stations = stations,
                     isCompact = isCompact,
                 )
@@ -75,9 +81,26 @@ private fun WidgetHeader(isCompact: Boolean) {
             .clickable(actionStartActivity(openAppIntent)),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        Image(
+            provider = ImageProvider(CoreUiR.mipmap.ic_launcher),
+            contentDescription = null,
+            modifier = GlanceModifier.size(32.dp).padding(end = 6.dp),
+        )
         Text(
             text = context.getString(R.string.widget_title),
             style = WidgetStyleHeader.copy(color = GlanceTheme.colors.onSurface),
+        )
+    }
+}
+
+@Composable
+private fun LoadingWidgetContent() {
+    Box(
+        modifier = GlanceModifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        CircularProgressIndicator(
+            color = WidgetColors.loading,
         )
     }
 }
@@ -128,12 +151,12 @@ private fun StationWidgetItem(
     stationItem: FavoriteWidgetItemModel,
     isCompact: Boolean,
 ) {
-    val verticalPadding = if (isCompact) 4.dp else 8.dp
+    val itemHeight = if (isCompact) 40.dp else 52.dp
     Row(
         modifier = GlanceModifier
             .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(horizontal = 12.dp, vertical = verticalPadding)
+            .height(itemHeight)
+            .padding(horizontal = 16.dp)
             .clickable(
                 actionRunCallback<WidgetStationClickCallback>(
                     actionParametersOf(WidgetStationClickCallback.stationIdKey to stationItem.idServiceStation),
@@ -141,7 +164,7 @@ private fun StationWidgetItem(
             ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Column(modifier = GlanceModifier.defaultWeight()) {
+        Column(modifier = GlanceModifier.defaultWeight().padding(end = 8.dp)) {
             Text(
                 text = stationItem.name,
                 style = WidgetStyleBodyMedium.copy(color = GlanceTheme.colors.onSurface),

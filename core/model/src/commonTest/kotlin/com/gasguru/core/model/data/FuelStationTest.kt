@@ -44,13 +44,18 @@ class FuelStationTest {
     // --- formatDistance ---
 
     @Test
-    fun `GIVEN distance above 1000m WHEN formatDistance THEN returns kilometers with 2 decimals`() {
-        buildStation(distance = 1500f).formatDistance() shouldBe "1.50 Km"
+    fun `GIVEN distance above 1000m WHEN formatDistance THEN returns kilometers rounded up without decimals`() {
+        buildStation(distance = 1500f).formatDistance() shouldBe "2 Km"
     }
 
     @Test
-    fun `GIVEN distance exactly 1000m WHEN formatDistance THEN returns 1_00 Km`() {
-        buildStation(distance = 1000f).formatDistance() shouldBe "1.00 Km"
+    fun `GIVEN distance exactly 1000m WHEN formatDistance THEN returns 1 Km`() {
+        buildStation(distance = 1000f).formatDistance() shouldBe "1 Km"
+    }
+
+    @Test
+    fun `GIVEN distance with fractional km WHEN formatDistance THEN rounds up to next km`() {
+        buildStation(distance = 1234f).formatDistance() shouldBe "2 Km"
     }
 
     @Test
@@ -59,8 +64,8 @@ class FuelStationTest {
     }
 
     @Test
-    fun `GIVEN decimal distance below 1000m WHEN formatDistance THEN returns meters with 2 decimals`() {
-        buildStation(distance = 123.45f).formatDistance() shouldBe "123.45 m"
+    fun `GIVEN decimal distance below 1000m WHEN formatDistance THEN returns meters rounded up`() {
+        buildStation(distance = 123.45f).formatDistance() shouldBe "124 m"
     }
 
     @Test

@@ -36,22 +36,6 @@ class AnalyticsEventCategoriesTest {
             )
 
         @Test
-        @DisplayName("ONBOARDING_FUEL_SELECTED maps to onboarding")
-        fun `ONBOARDING_FUEL_SELECTED maps to onboarding`() =
-            assertEquals(
-                AnalyticsEvent.Categories.ONBOARDING,
-                AnalyticsEvent.Categories.fromType(AnalyticsEvent.Types.ONBOARDING_FUEL_SELECTED)
-            )
-
-        @Test
-        @DisplayName("ONBOARDING_TANK_CAPACITY_SET maps to onboarding")
-        fun `ONBOARDING_TANK_CAPACITY_SET maps to onboarding`() =
-            assertEquals(
-                AnalyticsEvent.Categories.ONBOARDING,
-                AnalyticsEvent.Categories.fromType(AnalyticsEvent.Types.ONBOARDING_TANK_CAPACITY_SET)
-            )
-
-        @Test
         @DisplayName("ONBOARDING_COMPLETED maps to onboarding")
         fun `ONBOARDING_COMPLETED maps to onboarding`() =
             assertEquals(
@@ -90,16 +74,21 @@ class AnalyticsEventCategoriesTest {
     }
 
     @Nested
-    @DisplayName("map")
-    inner class MapCategoryTest {
+    @DisplayName("session")
+    inner class SessionCategoryTest {
 
         @Test
-        @DisplayName("MAP_STATIONS_LOADED maps to map")
-        fun `MAP_STATIONS_LOADED maps to map`() =
+        @DisplayName("APP_OPENED maps to session")
+        fun `APP_OPENED maps to session`() =
             assertEquals(
-                AnalyticsEvent.Categories.MAP,
-                AnalyticsEvent.Categories.fromType(AnalyticsEvent.Types.MAP_STATIONS_LOADED)
+                AnalyticsEvent.Categories.SESSION,
+                AnalyticsEvent.Categories.fromType(AnalyticsEvent.Types.APP_OPENED)
             )
+    }
+
+    @Nested
+    @DisplayName("map")
+    inner class MapCategoryTest {
 
         @Test
         @DisplayName("STATION_SELECTED maps to map")
@@ -163,6 +152,14 @@ class AnalyticsEventCategoriesTest {
     inner class StationDetailCategoryTest {
 
         @Test
+        @DisplayName("STATION_DETAIL_VIEWED maps to station_detail")
+        fun `STATION_DETAIL_VIEWED maps to station_detail`() =
+            assertEquals(
+                AnalyticsEvent.Categories.STATION_DETAIL,
+                AnalyticsEvent.Categories.fromType(AnalyticsEvent.Types.STATION_DETAIL_VIEWED)
+            )
+
+        @Test
         @DisplayName("STATION_FAVORITED maps to station_detail")
         fun `STATION_FAVORITED maps to station_detail`() =
             assertEquals(
@@ -201,26 +198,13 @@ class AnalyticsEventCategoriesTest {
                 AnalyticsEvent.Categories.STATION_DETAIL,
                 AnalyticsEvent.Categories.fromType(AnalyticsEvent.Types.PRICE_ALERT_DISABLED)
             )
-    }
-
-    @Nested
-    @DisplayName("search")
-    inner class SearchCategoryTest {
 
         @Test
-        @DisplayName("SEARCH_PLACE_SELECTED maps to search")
-        fun `SEARCH_PLACE_SELECTED maps to search`() =
+        @DisplayName("PRICE_ALERT_TRIGGERED maps to station_detail")
+        fun `PRICE_ALERT_TRIGGERED maps to station_detail`() =
             assertEquals(
-                AnalyticsEvent.Categories.SEARCH,
-                AnalyticsEvent.Categories.fromType(AnalyticsEvent.Types.SEARCH_PLACE_SELECTED)
-            )
-
-        @Test
-        @DisplayName("SEARCH_HISTORY_CLEARED maps to search")
-        fun `SEARCH_HISTORY_CLEARED maps to search`() =
-            assertEquals(
-                AnalyticsEvent.Categories.SEARCH,
-                AnalyticsEvent.Categories.fromType(AnalyticsEvent.Types.SEARCH_HISTORY_CLEARED)
+                AnalyticsEvent.Categories.STATION_DETAIL,
+                AnalyticsEvent.Categories.fromType(AnalyticsEvent.Types.PRICE_ALERT_TRIGGERED)
             )
     }
 
@@ -254,71 +238,8 @@ class AnalyticsEventCategoriesTest {
     }
 
     @Nested
-    @DisplayName("profile")
-    inner class ProfileCategoryTest {
-
-        @Test
-        @DisplayName("THEME_CHANGED maps to profile")
-        fun `THEME_CHANGED maps to profile`() =
-            assertEquals(
-                AnalyticsEvent.Categories.PROFILE,
-                AnalyticsEvent.Categories.fromType(AnalyticsEvent.Types.THEME_CHANGED)
-            )
-    }
-
-    @Nested
-    @DisplayName("favorites")
-    inner class FavoritesCategoryTest {
-
-        @Test
-        @DisplayName("FAVORITES_TAB_CHANGED maps to favorites")
-        fun `FAVORITES_TAB_CHANGED maps to favorites`() =
-            assertEquals(
-                AnalyticsEvent.Categories.FAVORITES,
-                AnalyticsEvent.Categories.fromType(AnalyticsEvent.Types.FAVORITES_TAB_CHANGED)
-            )
-
-        @Test
-        @DisplayName("STATION_UNFAVORITED_FROM_LIST maps to favorites")
-        fun `STATION_UNFAVORITED_FROM_LIST maps to favorites`() =
-            assertEquals(
-                AnalyticsEvent.Categories.FAVORITES,
-                AnalyticsEvent.Categories.fromType(AnalyticsEvent.Types.STATION_UNFAVORITED_FROM_LIST)
-            )
-    }
-
-    @Nested
-    @DisplayName("network")
-    inner class NetworkCategoryTest {
-
-        @Test
-        @DisplayName("WENT_OFFLINE maps to network")
-        fun `WENT_OFFLINE maps to network`() =
-            assertEquals(
-                AnalyticsEvent.Categories.NETWORK,
-                AnalyticsEvent.Categories.fromType(AnalyticsEvent.Types.WENT_OFFLINE)
-            )
-
-        @Test
-        @DisplayName("CAME_ONLINE maps to network")
-        fun `CAME_ONLINE maps to network`() =
-            assertEquals(
-                AnalyticsEvent.Categories.NETWORK,
-                AnalyticsEvent.Categories.fromType(AnalyticsEvent.Types.CAME_ONLINE)
-            )
-    }
-
-    @Nested
     @DisplayName("sync")
     inner class SyncCategoryTest {
-
-        @Test
-        @DisplayName("ALERTS_SYNC_COMPLETED maps to sync")
-        fun `ALERTS_SYNC_COMPLETED maps to sync`() =
-            assertEquals(
-                AnalyticsEvent.Categories.SYNC,
-                AnalyticsEvent.Categories.fromType(AnalyticsEvent.Types.ALERTS_SYNC_COMPLETED)
-            )
 
         @Test
         @DisplayName("ALERTS_SYNC_FAILED maps to sync")
@@ -326,22 +247,6 @@ class AnalyticsEventCategoriesTest {
             assertEquals(
                 AnalyticsEvent.Categories.SYNC,
                 AnalyticsEvent.Categories.fromType(AnalyticsEvent.Types.ALERTS_SYNC_FAILED)
-            )
-
-        @Test
-        @DisplayName("STATION_SYNC_WORKER_STARTED maps to sync")
-        fun `STATION_SYNC_WORKER_STARTED maps to sync`() =
-            assertEquals(
-                AnalyticsEvent.Categories.SYNC,
-                AnalyticsEvent.Categories.fromType(AnalyticsEvent.Types.STATION_SYNC_WORKER_STARTED)
-            )
-
-        @Test
-        @DisplayName("STATION_SYNC_WORKER_COMPLETED maps to sync")
-        fun `STATION_SYNC_WORKER_COMPLETED maps to sync`() =
-            assertEquals(
-                AnalyticsEvent.Categories.SYNC,
-                AnalyticsEvent.Categories.fromType(AnalyticsEvent.Types.STATION_SYNC_WORKER_COMPLETED)
             )
 
         @Test
@@ -356,22 +261,6 @@ class AnalyticsEventCategoriesTest {
     @Nested
     @DisplayName("api")
     inner class ApiCategoryTest {
-
-        @Test
-        @DisplayName("API_STATIONS_FETCH_STARTED maps to api")
-        fun `API_STATIONS_FETCH_STARTED maps to api`() =
-            assertEquals(
-                AnalyticsEvent.Categories.API,
-                AnalyticsEvent.Categories.fromType(AnalyticsEvent.Types.API_STATIONS_FETCH_STARTED)
-            )
-
-        @Test
-        @DisplayName("API_STATIONS_FETCH_COMPLETED maps to api")
-        fun `API_STATIONS_FETCH_COMPLETED maps to api`() =
-            assertEquals(
-                AnalyticsEvent.Categories.API,
-                AnalyticsEvent.Categories.fromType(AnalyticsEvent.Types.API_STATIONS_FETCH_COMPLETED)
-            )
 
         @Test
         @DisplayName("API_STATIONS_FETCH_FAILED maps to api")
@@ -405,6 +294,14 @@ class AnalyticsEventCategoriesTest {
             assertEquals(
                 AnalyticsEvent.Categories.WIDGET,
                 AnalyticsEvent.Categories.fromType(AnalyticsEvent.Types.WIDGET_STATION_TAPPED)
+            )
+
+        @Test
+        @DisplayName("WIDGET_ADDED_TO_HOME maps to widget")
+        fun `WIDGET_ADDED_TO_HOME maps to widget`() =
+            assertEquals(
+                AnalyticsEvent.Categories.WIDGET,
+                AnalyticsEvent.Categories.fromType(AnalyticsEvent.Types.WIDGET_ADDED_TO_HOME)
             )
     }
 

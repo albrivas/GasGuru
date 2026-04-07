@@ -8,6 +8,12 @@ plugins {
 
 android {
     namespace = "com.gasguru.core.supabase"
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
@@ -16,6 +22,9 @@ dependencies {
     implementation(libs.ktor.client.android)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
+    implementation(projects.core.analytics)
+    implementation(libs.io.arrow.kt.arrow.core)
 
     testImplementation(projects.core.testing)
+    testImplementation(libs.ktor.client.mock)
 }

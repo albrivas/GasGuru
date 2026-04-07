@@ -13,6 +13,7 @@ import androidx.glance.appwidget.provideContent
 import com.gasguru.core.domain.fuelstation.GetFavoriteStationsWithoutDistanceUseCase
 import com.gasguru.core.model.data.principalVehicle
 import com.gasguru.feature.widget.model.toWidgetItemModel
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -36,9 +37,10 @@ class FavoriteStationsWidget : GlanceAppWidget(), KoinComponent {
                     .sortedBy { station -> fuelType.extractPrice(station) }
                     .map { station -> station.toWidgetItemModel(fuelType = fuelType) }
             }
+            .catch { emit(emptyList()) }
 
         provideContent {
-            val stations by stationsFlow.collectAsState(initial = emptyList())
+            val stations by stationsFlow.collectAsState(initial = null)
             val isCompact = LocalSize.current.height < 150.dp
             FavoriteStationsWidgetContent(
                 stations = stations,

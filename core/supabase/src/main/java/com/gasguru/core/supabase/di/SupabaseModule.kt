@@ -1,8 +1,10 @@
 package com.gasguru.core.supabase.di
 
+import com.gasguru.core.analytics.AnalyticsHelper
 import com.gasguru.core.supabase.BuildConfig
 import com.gasguru.core.supabase.SupabaseManager
 import com.gasguru.core.supabase.SupabaseManagerImpl
+import com.gasguru.core.supabase.datasource.SupabaseRemoteDataSource
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
@@ -19,4 +21,11 @@ val supabaseModule = module {
     }
 
     single<SupabaseManager> { SupabaseManagerImpl(supabaseClient = get()) }
+
+    single {
+        SupabaseRemoteDataSource(
+            supabaseClient = get(),
+            analyticsHelper = get<AnalyticsHelper>(),
+        )
+    }
 }
