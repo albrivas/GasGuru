@@ -9,39 +9,30 @@ import com.gasguru.core.model.data.FuelType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Test
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class FuelStationDaoTest {
 
     private lateinit var fuelStationDao: FuelStationDao
     private lateinit var db: GasGuruDatabase
 
-    @BeforeEach
+    @BeforeTest
     fun createDb() {
-        db = Room.inMemoryDatabaseBuilder<GasGuruDatabase>()
+        db = Room.databaseBuilder<GasGuruDatabase>(name = ":memory:")
             .setDriver(BundledSQLiteDriver())
             .setQueryCoroutineContext(Dispatchers.IO)
             .build()
         fuelStationDao = db.fuelStationDao()
     }
 
-    @AfterEach
+    @AfterTest
     fun closeDb() = db.close()
 
     @Test
-    @DisplayName(
-        """
-        GIVEN fuel stations exist in database
-        WHEN querying without brand filter
-        THEN returns all stations
-        """
-    )
     fun getAllStations() = runTest {
         val listStations = listOf(
             testFuelStationEntity(brand = "Repsol", isFavorite = false, idServiceStation = 1),
@@ -55,19 +46,12 @@ class FuelStationDaoTest {
         )
 
         result.test {
-            Assertions.assertEquals(awaitItem(), listStations)
+            assertEquals(awaitItem(), listStations)
             cancel()
         }
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN stations with different brands
-        WHEN querying with brand filter
-        THEN returns only matching stations
-        """
-    )
     fun getStationBrandFilter() = runTest {
         val listStations = listOf(
             testFuelStationEntity(brand = "Repsol", isFavorite = false, idServiceStation = 1),
@@ -80,17 +64,10 @@ class FuelStationDaoTest {
             brands = listOf("Repsol"),
         ).first()
 
-        Assertions.assertEquals(result, listOf(listStations.first()))
+        assertEquals(result, listOf(listStations.first()))
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN a station exists in database
-        WHEN getting fuel station by id
-        THEN returns the matching station
-        """
-    )
     fun getFavorites() = runTest {
         val listStations = listOf(
             testFuelStationEntity(brand = "Repsol", isFavorite = false, idServiceStation = 1),
@@ -100,15 +77,10 @@ class FuelStationDaoTest {
 
         val result = fuelStationDao.getFuelStationById(2).first()
 
-        Assertions.assertEquals(result, listStations.last())
+        assertEquals(result, listStations.last())
     }
 
     @Test
-    @DisplayName(
-        """GIVEN empty database
-        WHEN querying fuel stations without brand filter
-        THEN returns empty list"""
-    )
     fun getFuelStations_withEmptyDatabase_returnsEmptyList() = runTest {
         val result = fuelStationDao.getFuelStations(
             fuelType = FuelType.GASOLINE_95.name,
@@ -122,11 +94,6 @@ class FuelStationDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """GIVEN stations with diesel price
-        WHEN querying with DIESEL fuel type
-        THEN returns only stations with diesel price > 0"""
-    )
     fun getFuelStations_withDieselFuelType_returnsOnlyDieselStations() = runTest {
         val dieselStation = testFuelStationEntity(
             brand = "Repsol",
@@ -150,11 +117,6 @@ class FuelStationDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """GIVEN stations with adblue price
-        WHEN querying with ADBLUE fuel type
-        THEN returns only stations with adblue price > 0"""
-    )
     fun getFuelStations_withAdBlueFuelType_returnsOnlyAdBlueStations() = runTest {
         val adblueStation = testFuelStationEntity(
             brand = "Shell",
@@ -173,11 +135,6 @@ class FuelStationDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """GIVEN stations with different brands with mixed case
-        WHEN querying with brand filter in uppercase
-        THEN returns stations regardless of original case (NOCASE)"""
-    )
     fun getFuelStations_brandFilterCaseInsensitive_returnsMatchingStations() = runTest {
         val station = testFuelStationEntity(
             brand = "repsol",
@@ -195,11 +152,6 @@ class FuelStationDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """GIVEN stations with brand filter applied
-        WHEN brand list does not match any station
-        THEN returns empty list"""
-    )
     fun getFuelStations_brandFilterNoMatch_returnsEmptyList() = runTest {
         val station = testFuelStationEntity(
             brand = "Repsol",
@@ -217,11 +169,6 @@ class FuelStationDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """GIVEN stations inside a geographic bounding box
-        WHEN querying getFuelStationsInBounds
-        THEN returns only stations within bounds with matching fuel type"""
-    )
     fun getFuelStationsInBounds_withMatchingStations_returnsThem() = runTest {
         val insideBounds = testFuelStationEntity(
             brand = "Repsol",
@@ -248,11 +195,6 @@ class FuelStationDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """GIVEN empty database
-        WHEN querying getFuelStationsInBounds
-        THEN returns empty list"""
-    )
     fun getFuelStationsInBounds_withEmptyDatabase_returnsEmptyList() = runTest {
         val result = fuelStationDao.getFuelStationsInBounds(
             minLat = 40.0,
@@ -266,11 +208,6 @@ class FuelStationDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """GIVEN stations inside bounds but with fuel type price = 0
-        WHEN querying getFuelStationsInBounds with that fuel type
-        THEN returns empty list"""
-    )
     fun getFuelStationsInBounds_fuelTypePriceZero_notIncluded() = runTest {
         val station = testFuelStationEntity(
             brand = "Repsol",
@@ -296,11 +233,6 @@ class FuelStationDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """GIVEN a station in db
-        WHEN inserting a station with the same id (REPLACE conflict)
-        THEN the new record replaces the old one"""
-    )
     fun insertFuelStation_duplicateId_replacesExistingRecord() = runTest {
         val original = testFuelStationEntity(brand = "Repsol", isFavorite = false, idServiceStation = 1)
         val updated = original.copy(brandStation = "Cepsa")

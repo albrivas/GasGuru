@@ -9,39 +9,31 @@ import com.gasguru.core.database.model.PriceAlertEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Test
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class PriceAlertDaoTest {
 
     private lateinit var priceAlertDao: PriceAlertDao
     private lateinit var db: GasGuruDatabase
 
-    @BeforeEach
+    @BeforeTest
     fun createDb() {
-        db = Room.inMemoryDatabaseBuilder<GasGuruDatabase>()
+        db = Room.databaseBuilder<GasGuruDatabase>(name = ":memory:")
             .setDriver(BundledSQLiteDriver())
             .setQueryCoroutineContext(Dispatchers.IO)
             .build()
         priceAlertDao = db.priceAlertDao()
     }
 
-    @AfterEach
+    @AfterTest
     fun closeDb() {
         db.close()
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN valid price alert
-        WHEN inserting
-        THEN should save successfully
-        """
-    )
     fun insertPriceAlert() = runTest {
         val alert = PriceAlertEntity(
             stationId = 123,
@@ -59,13 +51,6 @@ class PriceAlertDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN existing alert
-        WHEN inserting delete record
-        THEN should not appear in active alerts
-        """
-    )
     fun insertDeleteRecord() = runTest {
         val insertAlert = PriceAlertEntity(
             stationId = 123,
@@ -89,31 +74,24 @@ class PriceAlertDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN mixed alerts
-        WHEN getting pending inserts
-        THEN should return only unsynced insert alerts
-        """
-    )
     fun getPendingInserts() = runTest {
         val alert1 = PriceAlertEntity(
             stationId = 123,
             lastNotifiedPrice = 1.50,
             typeModification = ModificationType.INSERT,
-            isSynced = false
+            isSynced = false,
         )
         val alert2 = PriceAlertEntity(
             stationId = 456,
             lastNotifiedPrice = 1.60,
             typeModification = ModificationType.INSERT,
-            isSynced = true
+            isSynced = true,
         )
         val alert3 = PriceAlertEntity(
             stationId = 789,
             lastNotifiedPrice = 1.70,
             typeModification = ModificationType.DELETE,
-            isSynced = false
+            isSynced = false,
         )
 
         priceAlertDao.insert(alert1)
@@ -126,31 +104,24 @@ class PriceAlertDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN mixed alerts
-        WHEN getting pending deletes
-        THEN should return only unsynced delete alerts
-        """
-    )
     fun getPendingDeletes() = runTest {
         val alert1 = PriceAlertEntity(
             stationId = 123,
             lastNotifiedPrice = 1.50,
             typeModification = ModificationType.DELETE,
-            isSynced = false
+            isSynced = false,
         )
         val alert2 = PriceAlertEntity(
             stationId = 456,
             lastNotifiedPrice = 1.60,
             typeModification = ModificationType.INSERT,
-            isSynced = false
+            isSynced = false,
         )
         val alert3 = PriceAlertEntity(
             stationId = 789,
             lastNotifiedPrice = 1.70,
             typeModification = ModificationType.DELETE,
-            isSynced = true
+            isSynced = true,
         )
 
         priceAlertDao.insert(alert1)
@@ -163,13 +134,6 @@ class PriceAlertDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN unsynced alert
-        WHEN marking as synced
-        THEN should not appear in pending inserts
-        """
-    )
     fun markAsSynced() = runTest {
         val alert = PriceAlertEntity(
             stationId = 123,
@@ -186,31 +150,24 @@ class PriceAlertDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN mixed alerts
-        WHEN counting total
-        THEN should return only active alerts count
-        """
-    )
     fun getActiveAlertsCount() = runTest {
         val alert1 = PriceAlertEntity(
             stationId = 123,
             lastNotifiedPrice = 1.50,
             typeModification = ModificationType.INSERT,
-            isSynced = true
+            isSynced = true,
         )
         val alert2 = PriceAlertEntity(
             stationId = 456,
             lastNotifiedPrice = 1.60,
             typeModification = ModificationType.INSERT,
-            isSynced = false
+            isSynced = false,
         )
         val alert3 = PriceAlertEntity(
             stationId = 789,
             lastNotifiedPrice = 1.70,
             typeModification = ModificationType.DELETE,
-            isSynced = false
+            isSynced = false,
         )
 
         priceAlertDao.insert(alert1)
@@ -222,25 +179,18 @@ class PriceAlertDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN alerts
-        WHEN deleting by station ID
-        THEN should remove all records for that station
-        """
-    )
     fun deleteByStationId() = runTest {
         val alert1 = PriceAlertEntity(
             stationId = 123,
             lastNotifiedPrice = 1.50,
             typeModification = ModificationType.INSERT,
-            isSynced = true
+            isSynced = true,
         )
         val alert2 = PriceAlertEntity(
             stationId = 123,
             lastNotifiedPrice = 1.60,
             typeModification = ModificationType.DELETE,
-            isSynced = false
+            isSynced = false,
         )
 
         priceAlertDao.insert(alert1)
@@ -253,25 +203,18 @@ class PriceAlertDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN active alerts
-        WHEN deleting by station ID
-        THEN should not affect other stations
-        """
-    )
     fun deleteByStationId_shouldNotAffectOtherStations() = runTest {
         val alert1 = PriceAlertEntity(
             stationId = 123,
             lastNotifiedPrice = 1.50,
             typeModification = ModificationType.INSERT,
-            isSynced = true
+            isSynced = true,
         )
         val alert2 = PriceAlertEntity(
             stationId = 456,
             lastNotifiedPrice = 1.60,
             typeModification = ModificationType.INSERT,
-            isSynced = false
+            isSynced = false,
         )
 
         priceAlertDao.insert(alert1)
@@ -285,13 +228,6 @@ class PriceAlertDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN price alerts flow
-        WHEN inserting and deleting
-        THEN should emit correct updates
-        """
-    )
     fun getAllPriceAlertsFlow() = runTest {
         priceAlertDao.getAllPriceAlerts().test {
             assertEquals(0, awaitItem().size)
@@ -317,13 +253,6 @@ class PriceAlertDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN duplicate station ID
-        WHEN inserting
-        THEN should replace existing record
-        """
-    )
     fun handleDuplicateStationIds() = runTest {
         val alert1 = PriceAlertEntity(
             stationId = 123,
@@ -347,13 +276,6 @@ class PriceAlertDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN alerts
-        WHEN checking has pending sync
-        THEN should return correct status
-        """
-    )
     fun hasPendingSync() = runTest {
         val alert1 = PriceAlertEntity(
             stationId = 123,
@@ -381,11 +303,6 @@ class PriceAlertDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """GIVEN an existing price alert
-        WHEN querying getByStationId
-        THEN returns the matching entity"""
-    )
     fun getByStationId_whenAlertExists_returnsEntity() = runTest {
         val alert = PriceAlertEntity(
             stationId = 100,
@@ -403,11 +320,6 @@ class PriceAlertDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """GIVEN no alerts in database
-        WHEN querying getByStationId
-        THEN returns null"""
-    )
     fun getByStationId_whenAlertDoesNotExist_returnsNull() = runTest {
         val result = priceAlertDao.getByStationId(stationId = 999)
 
@@ -415,11 +327,6 @@ class PriceAlertDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """GIVEN an alert that was replaced by a DELETE record
-        WHEN querying getByStationId
-        THEN returns the latest (DELETE) record"""
-    )
     fun getByStationId_afterReplaceWithDeleteRecord_returnsDeleteRecord() = runTest {
         val insertAlert = PriceAlertEntity(
             stationId = 200,
@@ -442,11 +349,6 @@ class PriceAlertDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """GIVEN an alert that was deleted by stationId
-        WHEN querying getByStationId
-        THEN returns null"""
-    )
     fun getByStationId_afterDeleteByStationId_returnsNull() = runTest {
         val alert = PriceAlertEntity(
             stationId = 300,
@@ -463,11 +365,6 @@ class PriceAlertDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """GIVEN empty database
-        WHEN checking hasPendingSync
-        THEN returns false"""
-    )
     fun hasPendingSync_withEmptyDatabase_returnsFalse() = runTest {
         val hasPending = priceAlertDao.hasPendingSync()
 
@@ -475,11 +372,6 @@ class PriceAlertDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """GIVEN empty database
-        WHEN calling getPendingInserts
-        THEN returns empty list"""
-    )
     fun getPendingInserts_withEmptyDatabase_returnsEmptyList() = runTest {
         val result = priceAlertDao.getPendingInserts()
 
@@ -487,11 +379,6 @@ class PriceAlertDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """GIVEN empty database
-        WHEN calling getPendingDeletes
-        THEN returns empty list"""
-    )
     fun getPendingDeletes_withEmptyDatabase_returnsEmptyList() = runTest {
         val result = priceAlertDao.getPendingDeletes()
 
@@ -499,11 +386,6 @@ class PriceAlertDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """GIVEN empty database
-        WHEN calling getActiveAlertsCount
-        THEN returns 0"""
-    )
     fun getActiveAlertsCount_withEmptyDatabase_returnsZero() = runTest {
         val count = priceAlertDao.getActiveAlertsCount()
 
@@ -511,11 +393,6 @@ class PriceAlertDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """GIVEN only synced INSERT alerts
-        WHEN calling getPendingInserts
-        THEN returns empty list"""
-    )
     fun getPendingInserts_withAllSynced_returnsEmptyList() = runTest {
         priceAlertDao.insert(
             PriceAlertEntity(

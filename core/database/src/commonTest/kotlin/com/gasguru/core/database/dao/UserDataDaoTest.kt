@@ -8,38 +8,30 @@ import com.gasguru.core.model.data.ThemeMode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNull
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Test
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 class UserDataDaoTest {
 
     private lateinit var userDataDao: UserDataDao
     private lateinit var db: GasGuruDatabase
 
-    @BeforeEach
+    @BeforeTest
     fun createDb() {
-        db = Room.inMemoryDatabaseBuilder<GasGuruDatabase>()
+        db = Room.databaseBuilder<GasGuruDatabase>(name = ":memory:")
             .setDriver(BundledSQLiteDriver())
             .setQueryCoroutineContext(Dispatchers.IO)
             .build()
         userDataDao = db.userDataDao()
     }
 
-    @AfterEach
+    @AfterTest
     fun closeDb() = db.close()
 
     @Test
-    @DisplayName(
-        """
-        GIVEN user data exists in database
-        WHEN querying getUserData
-        THEN returns the stored user data
-        """
-    )
     fun getUserDataTest() = runTest {
         val userData = UserDataEntity(id = 1, lastUpdate = 0, isOnboardingSuccess = true)
         userDataDao.insertUserData(userData)
@@ -48,13 +40,6 @@ class UserDataDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN valid user data
-        WHEN inserting into database
-        THEN data is persisted and retrievable
-        """
-    )
     fun insertUserDataTest() = runTest {
         val userData = UserDataEntity(id = 1, lastUpdate = 0, isOnboardingSuccess = true)
         userDataDao.insertUserData(userData)
@@ -63,11 +48,6 @@ class UserDataDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """GIVEN empty database
-        WHEN querying getUserData
-        THEN returns null"""
-    )
     fun getUserData_withEmptyDatabase_returnsNull() = runTest {
         val result = userDataDao.getUserData().first()
 
@@ -75,11 +55,6 @@ class UserDataDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """GIVEN existing user data
-        WHEN updating it
-        THEN the updated values are persisted"""
-    )
     fun updateUserData_persistsChanges() = runTest {
         val original = UserDataEntity(
             id = 0L,
@@ -101,11 +76,6 @@ class UserDataDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """GIVEN an existing user data record
-        WHEN inserting a second record with the same id (IGNORE conflict)
-        THEN only the first record is preserved"""
-    )
     fun insertUserData_duplicateId_isIgnored() = runTest {
         val first = UserDataEntity(id = 0L, lastUpdate = 0L, isOnboardingSuccess = false)
         val duplicate = UserDataEntity(id = 0L, lastUpdate = 999L, isOnboardingSuccess = true)
@@ -119,11 +89,6 @@ class UserDataDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """GIVEN user data with default theme mode
-        WHEN retrieving it
-        THEN themeModeId matches SYSTEM"""
-    )
     fun insertUserData_defaultThemeModeIsSystem() = runTest {
         val userData = UserDataEntity(id = 0L, lastUpdate = 0L, isOnboardingSuccess = false)
         userDataDao.insertUserData(userData)
