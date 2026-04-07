@@ -473,15 +473,16 @@ Phase 7: Features (CMP) + iOS app target
 
 ### 4A: `:core:supabase`
 
-**Estado actual**: Supabase SDK (3.2.6) ya es KMP. Usa `ktor-client-android`.
+**Estado actual**: Módulo Android-only creado en develop (PR #480). Contiene el datasource remoto de estaciones. Supabase SDK (3.2.6) ya es KMP pero el módulo usa `ktor-client-android`.
 
 | Destino | Archivos |
 |---------|----------|
-| commonMain | `SupabaseManager.kt` (interfaz), `SupabaseManagerImpl.kt`, `PriceAlertSupabase.kt`, `SupabaseModule.kt` (Koin) |
+| commonMain | `RemoteDataSource.kt` (interfaz), `SupabaseRemoteDataSource.kt`, `SupabaseFuelStation.kt`, `NetworkError.kt`, `ApiAnalyticsExt.kt`, `SupabaseModule.kt` (Koin) |
 
 **Cambios**:
 - Plugin → `gasguru.kmp.library` + `gasguru.koin`
-- Reemplazar `ktor-client-android` por engines platform-specific en dependencies
+- Mover todos los archivos de `src/main/java/` → `commonMain`
+- Reemplazar `ktor-client-android` por engines platform-specific
 - commonMain: `supabase-postgrest`, `ktor-client-core`
 - androidMain: `ktor-client-okhttp`
 - iosMain: `ktor-client-darwin`
