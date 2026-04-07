@@ -8,6 +8,7 @@ import com.gasguru.core.database.migrations.MIGRATION_12_13
 import com.gasguru.core.database.migrations.MIGRATION_13_14
 import com.gasguru.core.database.migrations.MIGRATION_14_15
 import com.gasguru.core.database.migrations.MIGRATION_15_16
+import com.gasguru.core.database.migrations.MIGRATION_16_17
 import com.gasguru.core.database.migrations.MIGRATION_2_3
 import com.gasguru.core.database.migrations.MIGRATION_3_4
 import com.gasguru.core.database.migrations.MIGRATION_4_5
@@ -18,8 +19,8 @@ import com.gasguru.core.database.migrations.MIGRATION_8_9
 import com.gasguru.core.database.migrations.MIGRATION_9_10
 import kotlinx.cinterop.ExperimentalForeignApi
 import org.koin.dsl.module
-import platform.Foundation.NSFileManager
 import platform.Foundation.NSDocumentDirectory
+import platform.Foundation.NSFileManager
 import platform.Foundation.NSUserDomainMask
 
 @OptIn(ExperimentalForeignApi::class)
@@ -48,6 +49,7 @@ val databaseModule = module {
                 MIGRATION_13_14,
                 MIGRATION_14_15,
                 MIGRATION_15_16,
+                MIGRATION_16_17,
             )
             .build()
     }

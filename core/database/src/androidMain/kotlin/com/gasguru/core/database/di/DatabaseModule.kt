@@ -11,6 +11,7 @@ import com.gasguru.core.database.migrations.MIGRATION_12_13
 import com.gasguru.core.database.migrations.MIGRATION_13_14
 import com.gasguru.core.database.migrations.MIGRATION_14_15
 import com.gasguru.core.database.migrations.MIGRATION_15_16
+import com.gasguru.core.database.migrations.MIGRATION_16_17
 import com.gasguru.core.database.migrations.MIGRATION_2_3
 import com.gasguru.core.database.migrations.MIGRATION_3_4
 import com.gasguru.core.database.migrations.MIGRATION_4_5
@@ -42,6 +43,7 @@ val databaseModule = module {
             MIGRATION_13_14,
             MIGRATION_14_15,
             MIGRATION_15_16,
+            MIGRATION_16_17,
         ).addCallback(
             object : RoomDatabase.Callback() {
                 override fun onCreate(connection: SQLiteConnection) {
