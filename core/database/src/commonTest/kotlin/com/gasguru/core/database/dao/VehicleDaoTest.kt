@@ -10,14 +10,13 @@ import com.gasguru.core.model.data.VehicleType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertNull
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Test
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class VehicleDaoTest {
 
@@ -25,9 +24,9 @@ class VehicleDaoTest {
     private lateinit var userDataDao: UserDataDao
     private lateinit var db: GasGuruDatabase
 
-    @BeforeEach
+    @BeforeTest
     fun createDb() {
-        db = Room.inMemoryDatabaseBuilder<GasGuruDatabase>()
+        db = Room.databaseBuilder<GasGuruDatabase>(name = ":memory:")
             .setDriver(BundledSQLiteDriver())
             .setQueryCoroutineContext(Dispatchers.IO)
             .build()
@@ -35,7 +34,7 @@ class VehicleDaoTest {
         userDataDao = db.userDataDao()
     }
 
-    @AfterEach
+    @AfterTest
     fun closeDb() = db.close()
 
     private suspend fun insertUser(): Long {
@@ -50,13 +49,6 @@ class VehicleDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN a new vehicle
-        WHEN upserting
-        THEN it is persisted and a valid id is returned
-        """
-    )
     fun upsertVehicle_insertsAndReturnsId() = runTest {
         val userId = insertUser()
         val vehicle = VehicleEntity(
@@ -77,13 +69,6 @@ class VehicleDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN an existing vehicle
-        WHEN updating tank capacity
-        THEN the new value is persisted
-        """
-    )
     fun updateTankCapacity_updatesCorrectly() = runTest {
         val userId = insertUser()
         val id = vehicleDao.upsertVehicle(
@@ -104,13 +89,6 @@ class VehicleDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN an existing vehicle
-        WHEN updating fuel type
-        THEN the new fuel type is persisted
-        """
-    )
     fun updateFuelType_updatesCorrectly() = runTest {
         val userId = insertUser()
         val id = vehicleDao.upsertVehicle(
@@ -131,13 +109,6 @@ class VehicleDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN a user with one vehicle
-        WHEN querying vehicles by user
-        THEN only that vehicle is returned
-        """
-    )
     fun getVehiclesByUser_returnsVehiclesForUser() = runTest {
         val userId = insertUser()
         vehicleDao.upsertVehicle(
@@ -158,11 +129,6 @@ class VehicleDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """GIVEN no vehicles for a user
-        WHEN querying getVehiclesByUser
-        THEN returns empty list"""
-    )
     fun getVehiclesByUser_withNoVehicles_returnsEmptyList() = runTest {
         val userId = insertUser()
 
@@ -172,11 +138,6 @@ class VehicleDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """GIVEN a non-existent vehicle id
-        WHEN calling getVehicleById
-        THEN returns null"""
-    )
     fun getVehicleById_nonExistentId_returnsNull() = runTest {
         val result = vehicleDao.getVehicleById(vehicleId = 9999L)
 
@@ -184,11 +145,6 @@ class VehicleDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """GIVEN an existing vehicle
-        WHEN deleting it
-        THEN getVehicleById returns null"""
-    )
     fun deleteVehicle_removesVehicleFromDatabase() = runTest {
         val userId = insertUser()
         val vehicleId = vehicleDao.upsertVehicle(
@@ -209,11 +165,6 @@ class VehicleDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """GIVEN a non-existent vehicle id
-        WHEN deleting it
-        THEN no error is thrown and other vehicles remain"""
-    )
     fun deleteVehicle_nonExistentId_doesNothing() = runTest {
         val userId = insertUser()
         val vehicleId = vehicleDao.upsertVehicle(
@@ -234,11 +185,6 @@ class VehicleDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """GIVEN a user with two principal vehicles
-        WHEN calling clearPrincipalVehiclesForUser
-        THEN all vehicles for that user have isPrincipal = false"""
-    )
     fun clearPrincipalVehiclesForUser_setsAllIsPrincipalToFalse() = runTest {
         val userId = insertUser()
         val id1 = vehicleDao.upsertVehicle(
@@ -271,11 +217,6 @@ class VehicleDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """GIVEN an existing vehicle with an id
-        WHEN upserting a vehicle with the same id
-        THEN the vehicle is updated not duplicated"""
-    )
     fun upsertVehicle_withExistingId_replacesExistingVehicle() = runTest {
         val userId = insertUser()
         val vehicleId = vehicleDao.upsertVehicle(
@@ -309,11 +250,6 @@ class VehicleDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """GIVEN no vehicles for a user
-        WHEN calling clearPrincipalVehiclesForUser
-        THEN no error is thrown and nothing changes"""
-    )
     fun clearPrincipalVehiclesForUser_withNoVehicles_doesNotThrow() = runTest {
         val userId = insertUser()
 
@@ -324,11 +260,6 @@ class VehicleDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """GIVEN multiple users each with a principal vehicle
-        WHEN clearing principal vehicles for one user
-        THEN the other user's vehicles are not affected"""
-    )
     fun clearPrincipalVehiclesForUser_doesNotAffectOtherUsers() = runTest {
         // Insert first user
         userDataDao.insertUserData(
@@ -369,11 +300,6 @@ class VehicleDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """GIVEN a vehicle with a name
-        WHEN upserting it
-        THEN the name is correctly persisted"""
-    )
     fun upsertVehicle_withName_persistsNameCorrectly() = runTest {
         val userId = insertUser()
         val vehicleId = vehicleDao.upsertVehicle(
@@ -393,11 +319,6 @@ class VehicleDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """GIVEN two vehicles for the same user
-        WHEN updating tank capacity on one
-        THEN only that vehicle is updated"""
-    )
     fun updateTankCapacity_doesNotAffectOtherVehicles() = runTest {
         val userId = insertUser()
         val vehicleId1 = vehicleDao.upsertVehicle(
@@ -430,21 +351,11 @@ class VehicleDaoTest {
     }
 
     @Test
-    @DisplayName(
-        """GIVEN a non-existent vehicle id
-        WHEN updating tank capacity
-        THEN no error is thrown"""
-    )
     fun updateTankCapacity_nonExistentVehicle_doesNotThrow() = runTest {
         vehicleDao.updateTankCapacity(vehicleId = 9999L, tankCapacity = 80)
     }
 
     @Test
-    @DisplayName(
-        """GIVEN a non-existent vehicle id
-        WHEN updating fuel type
-        THEN no error is thrown"""
-    )
     fun updateFuelType_nonExistentVehicle_doesNotThrow() = runTest {
         vehicleDao.updateFuelType(vehicleId = 9999L, fuelType = FuelType.DIESEL)
     }

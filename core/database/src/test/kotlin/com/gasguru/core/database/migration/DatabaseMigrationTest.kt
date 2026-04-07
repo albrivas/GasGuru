@@ -2,6 +2,20 @@ package com.gasguru.core.database.migration
 
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import androidx.sqlite.execSQL
+import com.gasguru.core.database.migrations.MIGRATION_10_11
+import com.gasguru.core.database.migrations.MIGRATION_11_12
+import com.gasguru.core.database.migrations.MIGRATION_12_13
+import com.gasguru.core.database.migrations.MIGRATION_13_14
+import com.gasguru.core.database.migrations.MIGRATION_14_15
+import com.gasguru.core.database.migrations.MIGRATION_15_16
+import com.gasguru.core.database.migrations.MIGRATION_2_3
+import com.gasguru.core.database.migrations.MIGRATION_3_4
+import com.gasguru.core.database.migrations.MIGRATION_4_5
+import com.gasguru.core.database.migrations.MIGRATION_5_6
+import com.gasguru.core.database.migrations.MIGRATION_6_7
+import com.gasguru.core.database.migrations.MIGRATION_7_8
+import com.gasguru.core.database.migrations.MIGRATION_8_9
+import com.gasguru.core.database.migrations.MIGRATION_9_10
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.DisplayName
