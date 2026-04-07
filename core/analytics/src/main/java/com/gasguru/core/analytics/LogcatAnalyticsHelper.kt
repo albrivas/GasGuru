@@ -14,4 +14,9 @@ class LogcatAnalyticsHelper : AnalyticsHelper {
         }
         Log.d(TAG, "▶ [${event.category}] ${event.type} | $paramsString")
     }
+
+    override fun updateSuperProperties(properties: Map<String, Any>) {
+        val propsString = properties.entries.joinToString(separator = ", ") { (key, value) -> "$key=$value" }
+        Log.d(TAG, "⚙ [super_properties] $propsString")
+    }
 }
