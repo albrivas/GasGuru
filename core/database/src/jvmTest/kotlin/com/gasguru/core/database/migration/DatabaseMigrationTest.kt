@@ -8,6 +8,7 @@ import com.gasguru.core.database.migrations.MIGRATION_12_13
 import com.gasguru.core.database.migrations.MIGRATION_13_14
 import com.gasguru.core.database.migrations.MIGRATION_14_15
 import com.gasguru.core.database.migrations.MIGRATION_15_16
+import com.gasguru.core.database.migrations.MIGRATION_16_17
 import com.gasguru.core.database.migrations.MIGRATION_2_3
 import com.gasguru.core.database.migrations.MIGRATION_3_4
 import com.gasguru.core.database.migrations.MIGRATION_4_5
@@ -800,6 +801,85 @@ class DatabaseMigrationTest {
         MIGRATION_15_16.migrate(connection)
 
         val stmt = connection.prepare("SELECT isPrincipal FROM vehicles WHERE id = 10")
+        assertTrue(stmt.step())
+        assertEquals(1L, stmt.getLong(0))
+        stmt.close()
+        connection.close()
+    }
+
+    // endregion
+
+    // region Migration 16 → 17
+
+    @Test
+    @DisplayName(
+        """
+        GIVEN a filter table with auto-generated id in v16
+        WHEN migrating to v17
+        THEN filter table uses type as primary key and data is preserved
+        """
+    )
+    fun migrate16to17_filterData_isPreserved() {
+        val connection = BundledSQLiteDriver().open(":memory:")
+
+        connection.execSQL(
+            "CREATE TABLE IF NOT EXISTS `filter` " +
+                "(`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "`type` TEXT NOT NULL, `selection` TEXT NOT NULL)",
+        )
+        connection.execSQL(
+            "INSERT INTO `filter` (type, selection) VALUES ('BRAND', '[\"Repsol\"]')",
+        )
+
+        MIGRATION_16_17.migrate(connection)
+
+        val stmt = connection.prepare("SELECT type, selection FROM `filter`")
+        assertTrue(stmt.step())
+        assertEquals("BRAND", stmt.getText(0))
+        assertEquals("[\"Repsol\"]", stmt.getText(1))
+        stmt.close()
+
+        val pragmaStmt = connection.prepare("PRAGMA table_info(`filter`)")
+        var columnCount = 0
+        val columnNames = mutableListOf<String>()
+        while (pragmaStmt.step()) {
+            columnNames.add(pragmaStmt.getText(1))
+            columnCount++
+        }
+        pragmaStmt.close()
+        assertEquals(2, columnCount)
+        assertTrue("type" in columnNames)
+        assertTrue("selection" in columnNames)
+
+        connection.close()
+    }
+
+    @Test
+    @DisplayName(
+        """
+        GIVEN a filter table with duplicate types in v16
+        WHEN migrating to v17
+        THEN only one row per type is kept
+        """
+    )
+    fun migrate16to17_duplicateTypes_onlyOneRowPerTypeKept() {
+        val connection = BundledSQLiteDriver().open(":memory:")
+
+        connection.execSQL(
+            "CREATE TABLE IF NOT EXISTS `filter` " +
+                "(`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "`type` TEXT NOT NULL, `selection` TEXT NOT NULL)",
+        )
+        connection.execSQL(
+            "INSERT INTO `filter` (type, selection) VALUES ('BRAND', '[\"Repsol\"]')",
+        )
+        connection.execSQL(
+            "INSERT INTO `filter` (type, selection) VALUES ('BRAND', '[\"Cepsa\"]')",
+        )
+
+        MIGRATION_16_17.migrate(connection)
+
+        val stmt = connection.prepare("SELECT COUNT(*) FROM `filter`")
         assertTrue(stmt.step())
         assertEquals(1L, stmt.getLong(0))
         stmt.close()

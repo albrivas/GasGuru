@@ -8,30 +8,45 @@ import com.gasguru.core.model.data.FilterType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
 
+@DisplayName(
+    """
+    GIVEN a FilterDao
+    WHEN performing filter operations
+    THEN the results are correct
+    """
+)
 class FiltersDaoTest {
 
     private lateinit var filterDao: FilterDao
     private lateinit var db: GasGuruDatabase
 
-    @BeforeTest
+    @BeforeEach
     fun createDb() {
-        db = Room.databaseBuilder<GasGuruDatabase>(name = ":memory:")
+        db = Room.inMemoryDatabaseBuilder<GasGuruDatabase>()
             .setDriver(BundledSQLiteDriver())
             .setQueryCoroutineContext(Dispatchers.IO)
             .build()
         filterDao = db.filterDao()
     }
 
-    @AfterTest
+    @AfterEach
     fun closeDb() = db.close()
 
     @Test
+    @DisplayName(
+        """
+        GIVEN a filter is inserted
+        WHEN getting all filters
+        THEN returns that filter
+        """
+    )
     fun getAllFilters() = runTest {
         val filter = FilterEntity(type = FilterType.BRAND, selection = listOf("Repsol"))
         filterDao.insertFilter(filter)
@@ -42,6 +57,13 @@ class FiltersDaoTest {
     }
 
     @Test
+    @DisplayName(
+        """
+        GIVEN a filter is inserted with one selection
+        WHEN updating the filter selection
+        THEN the new selection is persisted
+        """
+    )
     fun updateFilter() = runTest {
         val filter = FilterEntity(type = FilterType.BRAND, selection = listOf("Repsol"))
         filterDao.insertFilter(filter)
@@ -53,6 +75,13 @@ class FiltersDaoTest {
     }
 
     @Test
+    @DisplayName(
+        """
+        GIVEN a filter was inserted
+        WHEN checking if it exists
+        THEN returns count of 1
+        """
+    )
     fun filterExist() = runTest {
         val filter = FilterEntity(type = FilterType.BRAND, selection = listOf("Repsol"))
         filterDao.insertFilter(filter)
@@ -63,6 +92,13 @@ class FiltersDaoTest {
     }
 
     @Test
+    @DisplayName(
+        """
+        GIVEN empty database
+        WHEN checking if filter exists
+        THEN returns count of 0
+        """
+    )
     fun filterNotExist() = runTest {
         val result = filterDao.isFilterExist(filterType = FilterType.BRAND)
 
@@ -70,6 +106,13 @@ class FiltersDaoTest {
     }
 
     @Test
+    @DisplayName(
+        """
+        GIVEN empty database
+        WHEN getting filters
+        THEN returns empty list
+        """
+    )
     fun emptyFilters() = runTest {
         val result = filterDao.getFilters()
 
@@ -77,6 +120,13 @@ class FiltersDaoTest {
     }
 
     @Test
+    @DisplayName(
+        """
+        GIVEN no filter exists for the given type
+        WHEN updating filter by type
+        THEN no filter is created
+        """
+    )
     fun updateFilterByType_whenFilterDoesNotExist_doesNotCreateFilter() = runTest {
         filterDao.updateFilterByType(
             filterType = FilterType.BRAND,
@@ -88,6 +138,13 @@ class FiltersDaoTest {
     }
 
     @Test
+    @DisplayName(
+        """
+        GIVEN one filter of type BRAND is inserted
+        WHEN getting all filters
+        THEN returns one filter with correct type
+        """
+    )
     fun getFilters_withMultipleFilterTypes_returnsAll() = runTest {
         val brandFilter = FilterEntity(type = FilterType.BRAND, selection = listOf("Repsol"))
         filterDao.insertFilter(brandFilter)
@@ -99,6 +156,13 @@ class FiltersDaoTest {
     }
 
     @Test
+    @DisplayName(
+        """
+        GIVEN a filter is inserted then another with same type is inserted
+        WHEN getting all filters
+        THEN only the second filter exists with its selection
+        """
+    )
     fun insertFilter_duplicateType_replacesExistingFilter() = runTest {
         val first = FilterEntity(type = FilterType.BRAND, selection = listOf("Repsol"))
         val second = FilterEntity(type = FilterType.BRAND, selection = listOf("Cepsa", "Galp"))
@@ -112,6 +176,13 @@ class FiltersDaoTest {
     }
 
     @Test
+    @DisplayName(
+        """
+        GIVEN a filter with empty selection is inserted
+        WHEN getting all filters
+        THEN the empty selection is persisted
+        """
+    )
     fun insertFilter_withEmptySelection_persistsEmptyList() = runTest {
         val filter = FilterEntity(type = FilterType.BRAND, selection = emptyList())
         filterDao.insertFilter(filter)
@@ -123,6 +194,13 @@ class FiltersDaoTest {
     }
 
     @Test
+    @DisplayName(
+        """
+        GIVEN a filter was inserted and updated
+        WHEN checking if it exists
+        THEN returns count of 1
+        """
+    )
     fun isFilterExist_afterUpdate_returnsOne() = runTest {
         filterDao.insertFilter(FilterEntity(type = FilterType.BRAND, selection = listOf("Repsol")))
         filterDao.updateFilterByType(

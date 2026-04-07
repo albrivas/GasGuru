@@ -8,30 +8,45 @@ import com.gasguru.core.model.data.ThemeMode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
 
+@DisplayName(
+    """
+    GIVEN a UserDataDao
+    WHEN performing user data operations
+    THEN the results are correct
+    """
+)
 class UserDataDaoTest {
 
     private lateinit var userDataDao: UserDataDao
     private lateinit var db: GasGuruDatabase
 
-    @BeforeTest
+    @BeforeEach
     fun createDb() {
-        db = Room.databaseBuilder<GasGuruDatabase>(name = ":memory:")
+        db = Room.inMemoryDatabaseBuilder<GasGuruDatabase>()
             .setDriver(BundledSQLiteDriver())
             .setQueryCoroutineContext(Dispatchers.IO)
             .build()
         userDataDao = db.userDataDao()
     }
 
-    @AfterTest
+    @AfterEach
     fun closeDb() = db.close()
 
     @Test
+    @DisplayName(
+        """
+        GIVEN user data is inserted
+        WHEN getting user data
+        THEN returns the inserted entity
+        """
+    )
     fun getUserDataTest() = runTest {
         val userData = UserDataEntity(id = 1, lastUpdate = 0, isOnboardingSuccess = true)
         userDataDao.insertUserData(userData)
@@ -40,6 +55,13 @@ class UserDataDaoTest {
     }
 
     @Test
+    @DisplayName(
+        """
+        GIVEN user data is inserted
+        WHEN inserting and then retrieving
+        THEN returns the same entity
+        """
+    )
     fun insertUserDataTest() = runTest {
         val userData = UserDataEntity(id = 1, lastUpdate = 0, isOnboardingSuccess = true)
         userDataDao.insertUserData(userData)
@@ -48,6 +70,13 @@ class UserDataDaoTest {
     }
 
     @Test
+    @DisplayName(
+        """
+        GIVEN empty database
+        WHEN getting user data
+        THEN returns null
+        """
+    )
     fun getUserData_withEmptyDatabase_returnsNull() = runTest {
         val result = userDataDao.getUserData().first()
 
@@ -55,6 +84,13 @@ class UserDataDaoTest {
     }
 
     @Test
+    @DisplayName(
+        """
+        GIVEN user data is inserted
+        WHEN updating it with new values
+        THEN persists the updated values
+        """
+    )
     fun updateUserData_persistsChanges() = runTest {
         val original = UserDataEntity(
             id = 0L,
@@ -76,6 +112,13 @@ class UserDataDaoTest {
     }
 
     @Test
+    @DisplayName(
+        """
+        GIVEN user data is inserted with id 0
+        WHEN inserting another entity with the same id
+        THEN the duplicate is ignored and original persists
+        """
+    )
     fun insertUserData_duplicateId_isIgnored() = runTest {
         val first = UserDataEntity(id = 0L, lastUpdate = 0L, isOnboardingSuccess = false)
         val duplicate = UserDataEntity(id = 0L, lastUpdate = 999L, isOnboardingSuccess = true)
@@ -89,6 +132,13 @@ class UserDataDaoTest {
     }
 
     @Test
+    @DisplayName(
+        """
+        GIVEN user data is inserted without explicit theme mode
+        WHEN getting user data
+        THEN theme mode defaults to SYSTEM
+        """
+    )
     fun insertUserData_defaultThemeModeIsSystem() = runTest {
         val userData = UserDataEntity(id = 0L, lastUpdate = 0L, isOnboardingSuccess = false)
         userDataDao.insertUserData(userData)
