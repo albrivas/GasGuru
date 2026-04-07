@@ -5,8 +5,8 @@ import androidx.car.app.CarAppService
 import androidx.car.app.Screen
 import androidx.car.app.Session
 import androidx.car.app.validation.HostValidator
+import com.gasguru.auto.analytics.trackAutoSessionStarted
 import com.gasguru.auto.ui.mainmenu.MapAutomotiveScreen
-import com.gasguru.core.analytics.AnalyticsEvent
 import com.gasguru.core.analytics.AnalyticsHelper
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -26,7 +26,7 @@ class GasGuruSession : Session(), KoinComponent {
     private val analyticsHelper: AnalyticsHelper by inject()
 
     override fun onCreateScreen(intent: Intent): Screen {
-        analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.AUTO_SESSION_STARTED))
+        analyticsHelper.trackAutoSessionStarted()
         return MapAutomotiveScreen(carContext)
     }
 }
