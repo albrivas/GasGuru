@@ -107,10 +107,15 @@ Room.databaseBuilder<GasGuruDatabase>(
 |------|-----------|--------|
 | `ListConvertersTest` | commonTest | Lógica pura kotlinx-serialization |
 | `UserDataConvertersTest` | commonTest | Lógica pura Kotlin, sin Android |
-| DAO tests (6 ficheros) | androidUnitTest (`src/test/kotlin/`) | `BundledSQLiteDriver` — JVM puro, sin dispositivo |
-| `DatabaseMigrationTest` | androidUnitTest (`src/test/kotlin/`) | `BundledSQLiteDriver` + `SQLiteConnection` directo, sin dispositivo |
+| DAO tests (7 ficheros) | **jvmTest** | `BundledSQLiteDriver` + `inMemoryDatabaseBuilder<T>()` sin contexto — solo disponibles en target JVM |
+| `DatabaseMigrationTest` | **jvmTest** | `BundledSQLiteDriver` + `SQLiteConnection` directo, sin dispositivo |
 
-> No hay tests en `androidInstrumentedTest`. Todos los tests de Room corren en JVM via `BundledSQLiteDriver`.
+> No hay tests en `androidInstrumentedTest` ni en `androidUnitTest`. Todos los tests de Room corren en JVM puro via `jvmTest`.
+
+**Por qué `jvmTest` y no `commonTest` ni `androidUnitTest`:**
+- `inMemoryDatabaseBuilder<T>()` sin `Context` no existe en el target Android — falla en compilación con `No value passed for parameter 'context'`.
+- `BundledSQLiteDriver` en `androidUnitTest` falla en runtime con `UnsatisfiedLinkError` porque intenta cargar un `.so` ARM Android desde JVM de host.
+- El target `jvm` (source set `jvmTest`) resuelve ambos problemas: la API sin contexto existe y `BundledSQLiteDriver` carga la versión nativa del host.
 
 **Patrón DAO tests** (`BundledSQLiteDriver`):
 ```kotlin
@@ -157,8 +162,8 @@ core/database/src/
 ├── commonTest/kotlin/com/gasguru/core/database/
 │   ├── converters/ListConvertersTest.kt
 │   └── converters/UserDataConvertersTest.kt
-└── test/kotlin/com/gasguru/core/database/
-    ├── dao/                        (6 DAO tests — BundledSQLiteDriver, sin dispositivo)
+└── jvmTest/kotlin/com/gasguru/core/database/
+    ├── dao/                        (7 DAO tests — BundledSQLiteDriver + inMemoryDatabaseBuilder sin Context)
     └── migration/DatabaseMigrationTest.kt  (BundledSQLiteDriver + SQLiteConnection directo)
 ```
 
@@ -194,6 +199,6 @@ core/database/src/
 - [x] `./gradlew :core:database:compileKotlinIosSimulatorArm64` ✅
 - [x] `./gradlew :core:data:assembleDebug` ✅ (downstream)
 - [x] Tests comunes en commonTest
-- [x] DAO tests en androidUnitTest con `BundledSQLiteDriver` (sin dispositivo)
-- [x] `DatabaseMigrationTest` en androidUnitTest con `BundledSQLiteDriver` (sin dispositivo)
-- [x] `./gradlew :core:database:testDebugUnitTest` ✅ (sin dispositivo)
+- [x] DAO tests en `jvmTest` con `BundledSQLiteDriver` (sin dispositivo)
+- [x] `DatabaseMigrationTest` en `jvmTest` con `BundledSQLiteDriver` (sin dispositivo)
+- [x] `./gradlew :core:database:jvmTest` ✅ (sin dispositivo)

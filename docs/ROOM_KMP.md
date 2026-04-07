@@ -95,11 +95,13 @@ En Room Android, el driver SQLite era implícito (usaba la implementación del S
 
 | Driver | Dónde usar | SQLite |
 |--------|-----------|--------|
-| `BundledSQLiteDriver` | Tests JVM (unit tests), opcionalmente en producción | Compilado desde fuentes, versión fija y actualizada |
+| `BundledSQLiteDriver` | **`jvmTest`** (tests KMP) | Compilado desde fuentes, versión fija y actualizada |
 | `AndroidSQLiteDriver` | `androidMain` producción | El del sistema operativo Android |
 | `NativeSQLiteDriver` | `iosMain` producción | El del sistema operativo iOS |
 
 **Por qué `BundledSQLiteDriver` en tests:** permite ejecutar tests de Room en JVM (sin dispositivo, sin emulador) porque el driver incluye SQLite compilado como binario nativo para cada plataforma de escritorio.
+
+**Importante:** `BundledSQLiteDriver` solo funciona correctamente en el target `jvm` (source set `jvmTest`). En `androidUnitTest` falla con `UnsatisfiedLinkError` porque el artefacto `jvmAndroid` intenta cargar una librería JNI de ARM Android.
 
 ```kotlin
 // androidMain — producción
@@ -108,14 +110,14 @@ Room.databaseBuilder<GasGuruDatabase>(
     name = "fuel-pump-database",
 )
 
-// androidUnitTest — tests sin dispositivo
+// jvmTest — tests sin dispositivo
 Room.inMemoryDatabaseBuilder<GasGuruDatabase>()
     .setDriver(BundledSQLiteDriver())
     .setQueryCoroutineContext(Dispatchers.IO)
     .build()
 ```
 
-**Nota:** `Room.inMemoryDatabaseBuilder<T>()` sin `Context` es la nueva API KMP. La antigua `Room.inMemoryDatabaseBuilder(context, Class)` es Android-only y es incompatible con `@ConstructedBy`.
+**Nota:** `Room.inMemoryDatabaseBuilder<T>()` sin `Context` es la nueva API KMP, pero **solo existe en el target JVM**. En `commonTest` (que compila también para Android), el compilador Android no la encuentra y falla. Usar siempre desde `jvmTest`.
 
 ---
 
@@ -173,7 +175,15 @@ startKoin {
 
 ## 7. Tests — sin dispositivo con BundledSQLiteDriver
 
-El patrón para **DAO tests** en `androidUnitTest` (`src/test/kotlin/`):
+Los tests de Room viven en **`jvmTest`** (source set del target JVM puro). No en `commonTest` ni en `androidUnitTest`.
+
+**Por qué `jvmTest` y no `commonTest`:**
+- `Room.inMemoryDatabaseBuilder<T>()` sin `Context` solo existe en el target JVM. En `commonTest`, el compilador Android no encuentra esta sobrecarga y falla con `No value passed for parameter 'context'`.
+
+**Por qué `jvmTest` y no `androidUnitTest`:**
+- `BundledSQLiteDriver` en el artefacto `jvmAndroid` intenta cargar un `.so` compilado para ARM Android, lo que causa `UnsatisfiedLinkError: no sqliteJni in java.library.path` en JVM de host (macOS/Linux). El artefacto del target `jvm` carga la versión nativa del host correctamente.
+
+El patrón para **DAO tests** en `jvmTest`:
 
 ```kotlin
 @BeforeEach
@@ -220,4 +230,4 @@ fun testMigration() {
 | API de migraciones | `SupportSQLiteDatabase` | `SQLiteConnection` |
 | Driver SQLite | Implícito (SO Android) | `AndroidSQLiteDriver` / `BundledSQLiteDriver` |
 | `System.currentTimeMillis()` | JVM-only | `kotlin.time.Clock` |
-| Tests de DAO/migraciones | `androidInstrumentedTest` (necesita dispositivo) | `androidUnitTest` con `BundledSQLiteDriver` (JVM puro) |
+| Tests de DAO/migraciones | `androidInstrumentedTest` (necesita dispositivo) | `jvmTest` con `BundledSQLiteDriver` (JVM puro) |
