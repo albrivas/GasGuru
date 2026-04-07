@@ -1,5 +1,8 @@
 package com.gasguru.core.analytics
 
+import android.content.Context
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import io.mockk.every
 import io.mockk.just
@@ -13,14 +16,38 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
+@DisplayName("MixpanelAnalyticsHelper")
 class MixpanelAnalyticsHelperTest {
 
     private val mixpanelApi: MixpanelAPI = mockk(relaxed = true)
+    private val packageManager: PackageManager = mockk(relaxed = true)
+    private val context: Context = mockk(relaxed = true)
     private lateinit var analyticsHelper: MixpanelAnalyticsHelper
 
     @BeforeEach
     fun setUp() {
-        analyticsHelper = MixpanelAnalyticsHelper(mixpanel = mixpanelApi)
+        every { context.packageName } returns "com.gasguru"
+        every { context.packageManager } returns packageManager
+        every { packageManager.getPackageInfo("com.gasguru", 0) } returns PackageInfo().apply {
+            versionName = "1.0.0"
+        }
+        analyticsHelper = MixpanelAnalyticsHelper(context = context, mixpanel = mixpanelApi)
+    }
+
+    @Test
+    @DisplayName(
+        """
+        GIVEN analytics helper is created
+        WHEN init runs
+        THEN registers app_version and platform as super properties once
+        """
+    )
+    fun initRegistersStaticSuperProperties() {
+        val propertiesSlot = slot<JSONObject>()
+        verify { mixpanelApi.registerSuperPropertiesOnce(capture(propertiesSlot)) }
+
+        assertEquals("1.0.0", propertiesSlot.captured.getString("app_version"))
+        assertEquals("android", propertiesSlot.captured.getString("platform"))
     }
 
     @Test
@@ -103,13 +130,36 @@ class MixpanelAnalyticsHelperTest {
     fun logEventWithNoExtrasTracksOnlyCategory() {
         val propertiesSlot = slot<JSONObject>()
         every { mixpanelApi.track(any(), capture(propertiesSlot)) } just runs
-        val event = AnalyticsEvent(type = AnalyticsEvent.Types.WENT_OFFLINE)
+        val event = AnalyticsEvent(type = AnalyticsEvent.Types.APP_OPENED)
 
         analyticsHelper.logEvent(event = event)
 
         assertEquals(
-            AnalyticsEvent.Categories.NETWORK,
+            AnalyticsEvent.Categories.SESSION,
             propertiesSlot.captured.getString(AnalyticsEvent.ParamKeys.CATEGORY),
         )
+    }
+
+    @Test
+    @DisplayName(
+        """
+        GIVEN a map of dynamic properties
+        WHEN updateSuperProperties is called
+        THEN registers them via mixpanel.registerSuperProperties
+        """
+    )
+    fun updateSuperPropertiesRegistersPropertiesAsSuperProperties() {
+        val propertiesSlot = slot<JSONObject>()
+        every { mixpanelApi.registerSuperProperties(capture(propertiesSlot)) } just runs
+
+        analyticsHelper.updateSuperProperties(
+            properties = mapOf(
+                "primary_fuel_type" to "GASOLINE_95",
+                "vehicle_count" to 2,
+            ),
+        )
+
+        assertEquals("GASOLINE_95", propertiesSlot.captured.getString("primary_fuel_type"))
+        assertEquals(2, propertiesSlot.captured.getInt("vehicle_count"))
     }
 }

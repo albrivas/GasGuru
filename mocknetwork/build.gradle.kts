@@ -12,6 +12,7 @@ android {
 
 dependencies {
     implementation(projects.core.network)
+    implementation(projects.core.supabase)
     implementation(projects.core.common)
     implementation(libs.bundles.moshi)
     ksp(libs.moshi.codegen)
