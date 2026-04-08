@@ -123,6 +123,10 @@ jobs:
         run: ./gradlew assembleProdRelease
         working-directory: ./
 
+      - name: Build Android Test APKs
+        run: ./gradlew assembleAndroidTest
+        working-directory: ./
+
       - name: Start Android Emulator
         uses: ReactiveCircus/android-emulator-runner@e89f39f1abbbd05b1113a29cf4db69e7540cae5a # v2.37.0
         with:
