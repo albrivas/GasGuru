@@ -320,6 +320,186 @@ class FuelStationDaoTest {
     @Test
     @DisplayName(
         """
+        GIVEN a station with gasoline 95 premium price and a station without it
+        WHEN getting stations for gasoline 95 premium fuel type
+        THEN returns only the station with that price
+        """
+    )
+    fun getFuelStations_withGasoline95PremiumFuelType_returnsOnlyMatchingStations() = runTest {
+        val premiumStation = testFuelStationEntity(
+            brand = "Repsol",
+            isFavorite = false,
+            idServiceStation = 1,
+        ).copy(priceGasoline95E5 = 0.0, priceGasoline95E5Premium = 1.65)
+        val noMatchStation = testFuelStationEntity(
+            brand = "Cepsa",
+            isFavorite = false,
+            idServiceStation = 2,
+        ).copy(priceGasoline95E5 = 1.52, priceGasoline95E5Premium = 0.0)
+        fuelStationDao.insertFuelStation(listOf(premiumStation, noMatchStation))
+
+        val result = fuelStationDao.getFuelStations(
+            fuelType = FuelType.GASOLINE_95_PREMIUM.name,
+            brands = emptyList(),
+        ).first()
+
+        assertEquals(1, result.size)
+        assertEquals(1, result.first().idServiceStation)
+    }
+
+    @Test
+    @DisplayName(
+        """
+        GIVEN a station with gasoline 95 E10 price and a station without it
+        WHEN getting stations for gasoline 95 E10 fuel type
+        THEN returns only the station with that price
+        """
+    )
+    fun getFuelStations_withGasoline95E10FuelType_returnsOnlyMatchingStations() = runTest {
+        val e10Station = testFuelStationEntity(
+            brand = "BP",
+            isFavorite = false,
+            idServiceStation = 3,
+        ).copy(priceGasoline95E5 = 0.0, priceGasoline95E10 = 1.48)
+        val noMatchStation = testFuelStationEntity(
+            brand = "Shell",
+            isFavorite = false,
+            idServiceStation = 4,
+        ).copy(priceGasoline95E5 = 1.50, priceGasoline95E10 = 0.0)
+        fuelStationDao.insertFuelStation(listOf(e10Station, noMatchStation))
+
+        val result = fuelStationDao.getFuelStations(
+            fuelType = FuelType.GASOLINE_95_E10.name,
+            brands = emptyList(),
+        ).first()
+
+        assertEquals(1, result.size)
+        assertEquals(3, result.first().idServiceStation)
+    }
+
+    @Test
+    @DisplayName(
+        """
+        GIVEN a station with gasoline 98 price and a station without it
+        WHEN getting stations for gasoline 98 fuel type
+        THEN returns only the station with that price
+        """
+    )
+    fun getFuelStations_withGasoline98FuelType_returnsOnlyMatchingStations() = runTest {
+        val gasoline98Station = testFuelStationEntity(
+            brand = "Galp",
+            isFavorite = false,
+            idServiceStation = 5,
+        ).copy(priceGasoline95E5 = 0.0, priceGasoline98E5 = 1.72)
+        val noMatchStation = testFuelStationEntity(
+            brand = "Repsol",
+            isFavorite = false,
+            idServiceStation = 6,
+        ).copy(priceGasoline95E5 = 1.55, priceGasoline98E5 = 0.0)
+        fuelStationDao.insertFuelStation(listOf(gasoline98Station, noMatchStation))
+
+        val result = fuelStationDao.getFuelStations(
+            fuelType = FuelType.GASOLINE_98.name,
+            brands = emptyList(),
+        ).first()
+
+        assertEquals(1, result.size)
+        assertEquals(5, result.first().idServiceStation)
+    }
+
+    @Test
+    @DisplayName(
+        """
+        GIVEN a station with gasoline 98 premium price and a station without it
+        WHEN getting stations for gasoline 98 premium fuel type
+        THEN returns only the station with that price
+        """
+    )
+    fun getFuelStations_withGasoline98PremiumFuelType_returnsOnlyMatchingStations() = runTest {
+        val gasoline98PremiumStation = testFuelStationEntity(
+            brand = "Cepsa",
+            isFavorite = false,
+            idServiceStation = 7,
+        ).copy(priceGasoline95E5 = 0.0, priceGasoline98E10 = 1.80)
+        val noMatchStation = testFuelStationEntity(
+            brand = "BP",
+            isFavorite = false,
+            idServiceStation = 8,
+        ).copy(priceGasoline95E5 = 1.60, priceGasoline98E10 = 0.0)
+        fuelStationDao.insertFuelStation(listOf(gasoline98PremiumStation, noMatchStation))
+
+        val result = fuelStationDao.getFuelStations(
+            fuelType = FuelType.GASOLINE_98_PREMIUM.name,
+            brands = emptyList(),
+        ).first()
+
+        assertEquals(1, result.size)
+        assertEquals(7, result.first().idServiceStation)
+    }
+
+    @Test
+    @DisplayName(
+        """
+        GIVEN a station with diesel plus price and a station without it
+        WHEN getting stations for diesel plus fuel type
+        THEN returns only the station with that price
+        """
+    )
+    fun getFuelStations_withDieselPlusFuelType_returnsOnlyMatchingStations() = runTest {
+        val dieselPlusStation = testFuelStationEntity(
+            brand = "Shell",
+            isFavorite = false,
+            idServiceStation = 9,
+        ).copy(priceGasoline95E5 = 0.0, priceGasoilA = 0.0, priceGasoilPremium = 1.55)
+        val noMatchStation = testFuelStationEntity(
+            brand = "Galp",
+            isFavorite = false,
+            idServiceStation = 11,
+        ).copy(priceGasoline95E5 = 1.50, priceGasoilA = 1.40, priceGasoilPremium = 0.0)
+        fuelStationDao.insertFuelStation(listOf(dieselPlusStation, noMatchStation))
+
+        val result = fuelStationDao.getFuelStations(
+            fuelType = FuelType.DIESEL_PLUS.name,
+            brands = emptyList(),
+        ).first()
+
+        assertEquals(1, result.size)
+        assertEquals(9, result.first().idServiceStation)
+    }
+
+    @Test
+    @DisplayName(
+        """
+        GIVEN a station with gasoil B price and a station without it
+        WHEN getting stations for gasoil B fuel type
+        THEN returns only the station with that price
+        """
+    )
+    fun getFuelStations_withGasoilBFuelType_returnsOnlyMatchingStations() = runTest {
+        val gasoilBStation = testFuelStationEntity(
+            brand = "Repsol",
+            isFavorite = false,
+            idServiceStation = 12,
+        ).copy(priceGasoline95E5 = 0.0, priceGasoilA = 0.0, priceGasoilB = 1.10)
+        val noMatchStation = testFuelStationEntity(
+            brand = "Cepsa",
+            isFavorite = false,
+            idServiceStation = 13,
+        ).copy(priceGasoline95E5 = 1.52, priceGasoilA = 1.40, priceGasoilB = 0.0)
+        fuelStationDao.insertFuelStation(listOf(gasoilBStation, noMatchStation))
+
+        val result = fuelStationDao.getFuelStations(
+            fuelType = FuelType.GASOIL_B.name,
+            brands = emptyList(),
+        ).first()
+
+        assertEquals(1, result.size)
+        assertEquals(12, result.first().idServiceStation)
+    }
+
+    @Test
+    @DisplayName(
+        """
         GIVEN a station is inserted then another with same id is inserted
         WHEN getting station by id
         THEN the second station replaces the first
