@@ -124,7 +124,7 @@ jobs:
         working-directory: ./
 
       - name: Build Android Test APKs
-        run: ./gradlew assembleAndroidTest
+        run: ./gradlew assembleDebug assembleAndroidTest
         working-directory: ./
 
       - name: Start Android Emulator
