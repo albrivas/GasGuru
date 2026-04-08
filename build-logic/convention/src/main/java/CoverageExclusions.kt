@@ -31,6 +31,7 @@ object CoverageExclusions {
         "**/*ComposableSingletons*.*",
         "**/*Preview*.*",
         "**/*\$*\$*.*",
+        "**/*\$DefaultImpls.*",
         "**/*UiState*.*",
         "**/*UiModel*.*",
         "**/*Screen*.*",
