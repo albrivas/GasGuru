@@ -1,5 +1,6 @@
 
 import com.android.build.gradle.LibraryExtension
+import com.gasguru.build_logic.convention.configureDetekt
 import com.gasguru.build_logic.convention.configureKotlinAndroid
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -16,6 +17,7 @@ class KmpLibraryConventionPlugin : Plugin<Project> {
                 apply("com.android.library")
                 apply("gasguru.jacoco")
             }
+            configureDetekt()
             extensions.configure<LibraryExtension> {
                 configureKotlinAndroid(this)
             }

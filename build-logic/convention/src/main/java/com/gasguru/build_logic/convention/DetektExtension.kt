@@ -16,3 +16,11 @@ internal fun Project.configureDetekt(
         }
     }
 }
+
+internal fun Project.configureDetekt() {
+    apply(plugin = "io.gitlab.arturbosch.detekt")
+
+    dependencies {
+        add("detektPlugins", getLibrary("detekt.formatting"))
+    }
+}
