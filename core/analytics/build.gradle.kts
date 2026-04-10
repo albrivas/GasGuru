@@ -25,7 +25,7 @@ kotlin {
         ios.deploymentTarget = "15.0"
 
         pod("Mixpanel-swift") {
-            version = "~> 4.2"
+            version = "~> 6.2"
         }
     }
 

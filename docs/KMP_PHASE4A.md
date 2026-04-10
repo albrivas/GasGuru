@@ -17,13 +17,13 @@ El SDK de Mixpanel no tiene versión KMP única, pero sí SDKs nativos para Andr
 `MixpanelAnalyticsHelper` usa `com.mixpanel.android:mixpanel-android` (Android-only). `LocalAnalyticsHelper` usa `staticCompositionLocalOf` de `androidx.compose.runtime` (Android-only). Ambas quedan en `androidMain`.
 
 ### 3. iosMain: Mixpanel iOS SDK via CocoaPods
-`MixpanelAnalyticsHelperIos` usa el pod `Mixpanel-swift ~> 4.2` via el plugin `kotlin("native.cocoapods")`. La importación es `cocoapods.Mixpanel_swift.Mixpanel`.
+`MixpanelAnalyticsHelperIos` usa el pod `Mixpanel-swift ~> 6.2` via el plugin `kotlin("native.cocoapods")`. La importación es `cocoapods.Mixpanel_swift.Mixpanel`.
 
 ```kotlin
 // build.gradle.kts
 kotlin {
     cocoapods {
-        pod("Mixpanel-swift") { version = "~> 4.2" }
+        pod("Mixpanel-swift") { version = "~> 6.2" }
     }
 }
 ```
