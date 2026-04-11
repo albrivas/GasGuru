@@ -12,22 +12,50 @@ es anónima por dispositivo (`distinctId` auto-generado por el SDK de Mixpanel).
 
 ---
 
+## Arquitectura KMP
+
+El módulo `core:analytics` es **KMP-native** (migrado en Phase 4a). La interfaz y el modelo viven en `commonMain`; las implementaciones Mixpanel son plataforma-específicas:
+
+```
+                  commonMain
+              ┌───────────────────┐
+              │ AnalyticsHelper   │  ← interfaz
+              │ AnalyticsEvent    │  ← modelo
+              │ NoOpAnalyticsHelper│
+              └────────┬──────────┘
+           ┌───────────┴────────────┐
+      androidMain               iosMain
+   ┌──────────────┐         ┌────────────────────┐
+   │ MixpanelAH   │         │ MixpanelAHIos       │
+   │ (Android SDK)│         │ (iOS SDK via pod)   │
+   │ LogcatAH     │         │ AnalyticsModuleIos  │
+   │ LocalAH      │         └────────────────────┘
+   │ AnalyticsModule│       pod: Mixpanel-swift ~> 4.2
+   └──────────────┘
+```
+
 ## Estructura del módulo `core:analytics`
 
 ```
 core/analytics/
-├── build.gradle.kts
+├── build.gradle.kts                 — gasguru.kmp.library + cocoapods
+├── proguard-rules.pro
 └── src/
-    ├── main/java/com/gasguru/core/analytics/
-    │   ├── AnalyticsEvent.kt           — data class + Types, Categories y ParamKeys
-    │   ├── AnalyticsHelper.kt          — interface: logEvent + updateSuperProperties
-    │   ├── NoOpAnalyticsHelper.kt      — implementación vacía para tests y previews
-    │   ├── LogcatAnalyticsHelper.kt    — implementación de debug (Log.d por evento)
-    │   ├── MixpanelAnalyticsHelper.kt  — implementación de producción (wraps MixpanelAPI)
-    │   ├── LocalAnalyticsHelper.kt     — staticCompositionLocalOf<AnalyticsHelper>
-    │   └── di/
-    │       └── AnalyticsModule.kt      — Koin single<AnalyticsHelper> y single<MixpanelAPI>
-    └── test/java/com/gasguru/core/analytics/
+    ├── commonMain/kotlin/com/gasguru/core/analytics/
+    │   ├── AnalyticsEvent.kt        — data class + Types, Categories y ParamKeys
+    │   ├── AnalyticsHelper.kt       — interface: logEvent + updateSuperProperties
+    │   └── NoOpAnalyticsHelper.kt   — implementación vacía para tests y previews
+    ├── androidMain/kotlin/com/gasguru/core/analytics/
+    │   ├── LogcatAnalyticsHelper.kt — debug (android.util.Log)
+    │   ├── MixpanelAnalyticsHelper.kt — producción (Mixpanel Android SDK)
+    │   ├── LocalAnalyticsHelper.kt  — staticCompositionLocalOf<AnalyticsHelper>
+    │   └── di/AnalyticsModule.kt    — Koin Android: DEBUG→Logcat, PROD→Mixpanel
+    ├── iosMain/kotlin/com/gasguru/core/analytics/
+    │   ├── MixpanelAnalyticsHelperIos.kt — producción (Mixpanel iOS SDK via CocoaPods)
+    │   └── di/AnalyticsModuleIos.kt — Koin: single<AnalyticsHelper>
+    ├── commonTest/kotlin/com/gasguru/core/analytics/
+    │   └── AnalyticsEventCategoriesTest.kt — kotlin.test
+    └── test/kotlin/com/gasguru/core/analytics/
         ├── AnalyticsEventCategoriesTest.kt
         ├── LogcatAnalyticsHelperTest.kt
         └── MixpanelAnalyticsHelperTest.kt

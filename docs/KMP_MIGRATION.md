@@ -30,6 +30,36 @@ El proyecto ya tiene un módulo KMP (`:core:network`) que sirve como referencia,
 
 ---
 
+## Patrón: SDK sin soporte KMP → Interfaz en commonMain + implementaciones por plataforma
+
+Cuando un SDK de terceros **no tiene versión KMP** pero sí tiene SDKs nativos para cada plataforma (Android, iOS), el patrón es:
+
+1. **Definir la interfaz en `commonMain`** — el contrato que usa el resto del código KMP
+2. **Implementar en `androidMain`** con el SDK Android nativo
+3. **Implementar en `iosMain`** con el SDK iOS nativo (via CocoaPods/cinterop)
+4. **DI por plataforma** — cada plataforma wirea su implementación vía Koin
+
+```
+         commonMain
+       ┌────────────┐
+       │ MiInterfaz │  ← única referencia en todo el código compartido
+       └─────┬──────┘
+     ┌───────┴────────┐
+androidMain        iosMain
+┌──────────────┐  ┌──────────────┐
+│ ImplAndroid  │  │  ImplIos     │
+│ (SDK Android)│  │ (SDK iOS via │
+└──────────────┘  │  CocoaPods)  │
+                  └──────────────┘
+```
+
+**Ejemplo aplicado en GasGuru:** `core:analytics` con Mixpanel.  
+**Próximos candidatos:** OneSignal (notificaciones push), Firebase Crashlytics.
+
+> **Regla de orden de migración:** Si el módulo A depende de B, y B es Android-only, migrar B primero. Ejemplo: `core:supabase` dependía de `AnalyticsHelper` (Android-only) → se migró `core:analytics` primero, desbloqueando `core:supabase`.
+
+---
+
 ## Checklist General de Progreso
 
 ### Phase 0: Build Infrastructure
@@ -86,14 +116,28 @@ El proyecto ya tiene un módulo KMP (`:core:network`) que sirve como referencia,
 - [ ] PR → develop y merge
 
 ### Phase 4: Lógica de Negocio
-- [ ] Crear rama `feature/kmp-phase4-business-logic` desde `develop`
-- [ ] 4A: `:core:supabase` → KMP (engine split okhttp/darwin)
-- [ ] 4B: `:core:notifications` → KMP (interfaz commonMain, impl androidMain, no-op iosMain)
-- [ ] 4C: `:core:data` → KMP (repos commonMain, platform impls androidMain/iosMain)
-- [ ] 4D: `:core:domain` → KMP (todo a commonMain)
-- [ ] Implementaciones iOS stub (Location, Network, Geocoder, Places)
-- [ ] Tests migrados a commonTest donde aplique
-- [ ] Los 4 módulos compilan Android + iOS
+
+#### Phase 4a: `:core:analytics` → KMP ✅
+- [x] Plugin cambiado a `gasguru.kmp.library` + `kotlin("native.cocoapods")`
+- [x] `AnalyticsEvent`, `AnalyticsHelper`, `NoOpAnalyticsHelper` → commonMain
+- [x] `LocalAnalyticsHelper`, `LogcatAnalyticsHelper`, `MixpanelAnalyticsHelper`, `AnalyticsModule` → androidMain
+- [x] `MixpanelAnalyticsHelperIos`, `AnalyticsModuleIos` → iosMain (Mixpanel iOS SDK via CocoaPods pod `Mixpanel-swift ~> 4.2`)
+- [x] `AnalyticsEventCategoriesTest` → commonTest con kotlin.test
+- [x] `LogcatAnalyticsHelperTest`, `MixpanelAnalyticsHelperTest` → src/test/kotlin (JUnit5+MockK, Android-specific)
+- [x] `proguard-rules.pro` creado para el módulo
+- [x] `assembleDebug` ✅ | `testDebugUnitTest` ✅ | `app:assembleDebug` ✅
+- [ ] `compileKotlinIosArm64` ✅ (requiere CocoaPods + `pod install` cuando haya app iOS)
+- [ ] PR → develop y merge
+
+#### Phase 4b: `:core:supabase` → KMP (en progreso, stasheado)
+- [ ] Recuperar stash: `git stash pop`
+- [ ] `SupabaseRemoteDataSource` → commonMain (desbloqueado por Phase 4a)
+- [ ] Tests en commonTest con FakeAnalyticsHelper local
+
+#### Phase 4c: Restantes
+- [ ] `:core:notifications` → KMP
+- [ ] `:core:data` → KMP
+- [ ] `:core:domain` → KMP
 - [ ] PR → develop y merge
 
 ### Phase 5: Infraestructura
