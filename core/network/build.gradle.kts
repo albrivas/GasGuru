@@ -32,3 +32,11 @@ dependencies {
     testImplementation(libs.mock.webserver)
     testImplementation(projects.core.testing)
 }
+
+// ktor-client-okhttp (transitivo via core:testing → core:supabase) fuerza OkHttp 5.x,
+// incompatible con mockwebserver 4.x (okhttp3.internal.Util eliminado en 5.x).
+configurations.matching { it.name.contains("UnitTest", ignoreCase = true) || it.name.startsWith("test") }.configureEach {
+    resolutionStrategy {
+        force("com.squareup.okhttp3:okhttp:4.12.0")
+    }
+}
