@@ -129,10 +129,14 @@ androidMain        iosMain
 - [ ] `compileKotlinIosArm64` ✅ (requiere CocoaPods + `pod install` cuando haya app iOS)
 - [ ] PR → develop y merge
 
-#### Phase 4b: `:core:supabase` → KMP (en progreso, stasheado)
-- [ ] Recuperar stash: `git stash pop`
-- [ ] `SupabaseRemoteDataSource` → commonMain (desbloqueado por Phase 4a)
-- [ ] Tests en commonTest con FakeAnalyticsHelper local
+#### Phase 4b: `:core:supabase` → KMP ✅
+- [x] Plugin cambiado a `gasguru.kmp.library`
+- [x] `SupabaseManager`, `SupabaseManagerImpl`, modelos → `commonMain`
+- [x] `SupabaseRemoteDataSource`, `ApiAnalyticsExt` → `commonMain` (desbloqueado por Phase 4a)
+- [x] `SupabaseModule` (Koin + BuildConfig) → `androidMain`
+- [x] `ktor-client-android` en `androidMain`, `ktor-client-darwin` en `iosMain`
+- [x] Tests migrados a `commonTest` con `kotlin.test` + `FakeAnalyticsHelper` local
+- [x] Sin `expect/actual` — `createSupabaseClient` es KMP nativo, credenciales vía BuildConfig en androidMain
 
 #### Phase 4c: Restantes
 - [ ] `:core:notifications` → KMP
