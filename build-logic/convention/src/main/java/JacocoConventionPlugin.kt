@@ -111,8 +111,8 @@ class JacocoConventionPlugin : Plugin<Project> {
         } else if (isKmpModule()) {
             fileTree(layout.buildDirectory) {
                 include(
-                    "classes/kotlin/jvm/main/**",      // KMP modules with jvm() target
-                    "tmp/kotlin-classes/debug/**",      // KMP modules with androidTarget()
+                    "classes/kotlin/jvm/main/**",
+                    "tmp/kotlin-classes/debug/**",
                 )
                 exclude(jacocoExcludes)
             }
