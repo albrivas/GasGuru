@@ -110,7 +110,10 @@ class JacocoConventionPlugin : Plugin<Project> {
             }
         } else if (isKmpModule()) {
             fileTree(layout.buildDirectory) {
-                include("classes/kotlin/jvm/main/**")
+                include(
+                    "classes/kotlin/jvm/main/**",
+                    "tmp/kotlin-classes/debug/**",
+                )
                 exclude(jacocoExcludes)
             }
         } else {
