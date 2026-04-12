@@ -1,0 +1,78 @@
+package com.gasguru.core.supabase.stubs
+
+object StubsSupabaseResponse {
+
+    val fuelStationListSuccess = """
+        [
+          {
+            "id_service_station": "4375",
+            "postal_code": "02250",
+            "direction": "AVENIDA CASTILLA LA MANCHA, 26",
+            "schedule": "L-D: 07:00-22:00",
+            "latitude": 39.211417,
+            "locality": "ABENGIBRE",
+            "longitude_wgs84": -1.539167,
+            "margin": "D",
+            "municipality": "Abengibre",
+            "bio_ethanol_percentage": "0.0",
+            "ester_methyl_percentage": "0.0",
+            "id_autonomous_community": "07",
+            "id_municipality": "52",
+            "id_province": "02",
+            "province": "ALBACETE",
+            "referral": "dm",
+            "brand_station": "REPSOL",
+            "type_sale": "P",
+            "price_gasoil_a": 1.399,
+            "price_gasoil_b": 0.979,
+            "price_gasoil_premium": null,
+            "price_gasoline_95_e5": 1.449,
+            "price_gasoline_95_e5_premium": null,
+            "price_gasoline_95_e10": null,
+            "price_gasoline_98_e5": 1.539,
+            "price_gasoline_98_e10": null,
+            "price_biodiesel": null,
+            "price_bio_ethanol": null,
+            "price_gas_natural_compressed": null,
+            "price_liquefied_natural_gas": null,
+            "price_liquefied_petroleum_gas": null,
+            "price_hydrogen": null,
+            "price_adblue": null
+          },
+          {
+            "id_service_station": "5001",
+            "postal_code": "28001",
+            "direction": "CALLE GRAN VIA, 1",
+            "schedule": "L-D: 24H",
+            "latitude": 40.416775,
+            "locality": "MADRID",
+            "longitude_wgs84": -3.703790,
+            "margin": "I",
+            "municipality": "Madrid",
+            "bio_ethanol_percentage": "0.0",
+            "ester_methyl_percentage": "7.0",
+            "id_autonomous_community": "13",
+            "id_municipality": "79",
+            "id_province": "28",
+            "province": "MADRID",
+            "referral": "dm",
+            "brand_station": "CEPSA",
+            "type_sale": "P",
+            "price_gasoil_a": 1.389,
+            "price_gasoil_b": null,
+            "price_gasoil_premium": 1.469,
+            "price_gasoline_95_e5": 1.439,
+            "price_gasoline_95_e5_premium": 1.559,
+            "price_gasoline_95_e10": null,
+            "price_gasoline_98_e5": 1.529,
+            "price_gasoline_98_e10": null,
+            "price_biodiesel": null,
+            "price_bio_ethanol": null,
+            "price_gas_natural_compressed": null,
+            "price_liquefied_natural_gas": null,
+            "price_hydrogen": null,
+            "price_adblue": 0.349
+          }
+        ]
+    """.trimIndent()
+}

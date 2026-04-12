@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.gasguru.android.library)
+    alias(libs.plugins.gasguru.kmp.library)
     alias(libs.plugins.gasguru.koin)
     alias(libs.plugins.gasguru.proguard)
     alias(libs.plugins.kotlin.serialization)
@@ -8,23 +8,33 @@ plugins {
 
 android {
     namespace = "com.gasguru.core.supabase"
+    buildFeatures {
+        buildConfig = true
+    }
+}
 
-    testOptions {
-        unitTests {
-            isIncludeAndroidResources = true
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            implementation(libs.supabase.postgrest)
+            implementation(libs.ktor.client.core)
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.io.arrow.kt.arrow.core)
+            implementation(projects.core.analytics)
+        }
+        androidMain.dependencies {
+            implementation(libs.ktor.client.okhttp)
+            implementation(libs.kotlinx.coroutines.android)
+        }
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
+        }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.ktor.client.mock)
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }
 
-dependencies {
-    implementation(platform(libs.supabase.bom))
-    implementation(libs.supabase.postgrest)
-    implementation(libs.ktor.client.android)
-    implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.kotlinx.serialization.json)
-    implementation(projects.core.analytics)
-    implementation(libs.io.arrow.kt.arrow.core)
-
-    testImplementation(projects.core.testing)
-    testImplementation(libs.ktor.client.mock)
-}
