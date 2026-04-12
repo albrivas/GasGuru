@@ -20,7 +20,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import okhttp3.internal.toImmutableList
 
 class ProfileViewModel(
     getUserData: GetUserDataUseCase,
@@ -33,7 +32,7 @@ class ProfileViewModel(
 ) : ViewModel() {
 
     private val allThemesUi by lazy(LazyThreadSafetyMode.NONE) {
-        ThemeMode.entries.map { it.toUi() }.toImmutableList()
+        ThemeMode.entries.map { it.toUi() }
     }
 
     val userData: StateFlow<ProfileUiState> = getUserData().map { userData ->
