@@ -109,11 +109,13 @@ class JacocoConventionPlugin : Plugin<Project> {
                 exclude(jacocoExcludes)
             }
         } else if (isKmpModule()) {
+            val classPath = if (tasks.names.contains("jvmTest")) {
+                "classes/kotlin/jvm/main/**"
+            } else {
+                "tmp/kotlin-classes/debug/**"
+            }
             fileTree(layout.buildDirectory) {
-                include(
-                    "classes/kotlin/jvm/main/**",
-                    "tmp/kotlin-classes/debug/**",
-                )
+                include(classPath)
                 exclude(jacocoExcludes)
             }
         } else {
