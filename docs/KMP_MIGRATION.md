@@ -30,6 +30,36 @@ El proyecto ya tiene un módulo KMP (`:core:network`) que sirve como referencia,
 
 ---
 
+## Patrón: SDK sin soporte KMP → Interfaz en commonMain + implementaciones por plataforma
+
+Cuando un SDK de terceros **no tiene versión KMP** pero sí tiene SDKs nativos para cada plataforma (Android, iOS), el patrón es:
+
+1. **Definir la interfaz en `commonMain`** — el contrato que usa el resto del código KMP
+2. **Implementar en `androidMain`** con el SDK Android nativo
+3. **Implementar en `iosMain`** con el SDK iOS nativo (via CocoaPods/cinterop)
+4. **DI por plataforma** — cada plataforma wirea su implementación vía Koin
+
+```
+         commonMain
+       ┌────────────┐
+       │ MiInterfaz │  ← única referencia en todo el código compartido
+       └─────┬──────┘
+     ┌───────┴────────┐
+androidMain        iosMain
+┌──────────────┐  ┌──────────────┐
+│ ImplAndroid  │  │  ImplIos     │
+│ (SDK Android)│  │ (SDK iOS via │
+└──────────────┘  │  CocoaPods)  │
+                  └──────────────┘
+```
+
+**Ejemplo aplicado en GasGuru:** `core:analytics` con Mixpanel.  
+**Próximos candidatos:** OneSignal (notificaciones push), Firebase Crashlytics.
+
+> **Regla de orden de migración:** Si el módulo A depende de B, y B es Android-only, migrar B primero. Ejemplo: `core:supabase` dependía de `AnalyticsHelper` (Android-only) → se migró `core:analytics` primero, desbloqueando `core:supabase`.
+
+---
+
 ## Checklist General de Progreso
 
 ### Phase 0: Build Infrastructure
@@ -67,26 +97,51 @@ El proyecto ya tiene un módulo KMP (`:core:network`) que sirve como referencia,
 - [ ] PR → develop y merge
 
 ### Phase 3: `:core:database`
-- [ ] Crear rama `feature/kmp-phase3-core-database` desde `develop`
-- [ ] Cambiar plugin a `gasguru.kmp.room`
-- [ ] Migrar `ListConverters` de Moshi a kotlinx-serialization
-- [ ] Mover entities, DAOs, migrations, type converters a commonMain
-- [ ] Añadir `@ConstructedBy` a `GasGuruDatabase`
-- [ ] DI split: DatabaseModule androidMain/iosMain, DaoModule commonMain
-- [ ] Test de compatibilidad JSON (Moshi vs kotlinx-serialization)
-- [ ] DAO tests Android pasan
-- [ ] `./gradlew :core:database:build` compila Android + iOS
+- [x] Crear rama `feature/kmp-phase-3` desde `develop`
+- [x] Subir Room a `2.8.4` (latest stable KMP)
+- [x] Cambiar plugin a `gasguru.kmp.room` + `gasguru.kmp.library` + `kotlin.serialization`
+- [x] Migrar `ListConverters` de Moshi a kotlinx-serialization
+- [x] Mover entities, DAOs, migrations, type converters a commonMain
+- [x] Añadir `@ConstructedBy` a `GasGuruDatabase`
+- [x] Actualizar 14 migraciones: `SupportSQLiteDatabase` → `SQLiteConnection` (Room KMP API)
+- [x] Reemplazar `System.currentTimeMillis()` → `Clock.System.now()` (`kotlin.time`) en `PriceAlertEntity`
+- [x] DI split: DatabaseModule androidMain/iosMain, DaoModule commonMain
+- [x] Tests de compatibilidad JSON (Moshi vs kotlinx-serialization) en commonTest
+- [x] `UserDataConvertersTest` y `ListConvertersTest` en commonTest
+- [x] `DataBaseMigrationUnitTest` en androidUnitTest (actualizado para SQLiteConnection)
+- [x] `./gradlew :core:database:assembleDebug` compila ✅
+- [x] `./gradlew :core:database:compileKotlinIosSimulatorArm64` compila ✅
+- [x] `./gradlew :core:data:assembleDebug` compila ✅
+- [ ] `./gradlew :core:database:connectedAndroidTest` pasa en dispositivo
 - [ ] PR → develop y merge
 
 ### Phase 4: Lógica de Negocio
-- [ ] Crear rama `feature/kmp-phase4-business-logic` desde `develop`
-- [ ] 4A: `:core:supabase` → KMP (engine split okhttp/darwin)
-- [ ] 4B: `:core:notifications` → KMP (interfaz commonMain, impl androidMain, no-op iosMain)
-- [ ] 4C: `:core:data` → KMP (repos commonMain, platform impls androidMain/iosMain)
-- [ ] 4D: `:core:domain` → KMP (todo a commonMain)
-- [ ] Implementaciones iOS stub (Location, Network, Geocoder, Places)
-- [ ] Tests migrados a commonTest donde aplique
-- [ ] Los 4 módulos compilan Android + iOS
+
+#### Phase 4a: `:core:analytics` → KMP ✅
+- [x] Plugin cambiado a `gasguru.kmp.library` + `kotlin("native.cocoapods")`
+- [x] `AnalyticsEvent`, `AnalyticsHelper`, `NoOpAnalyticsHelper` → commonMain
+- [x] `LocalAnalyticsHelper`, `LogcatAnalyticsHelper`, `MixpanelAnalyticsHelper`, `AnalyticsModule` → androidMain
+- [x] `MixpanelAnalyticsHelperIos`, `AnalyticsModuleIos` → iosMain (Mixpanel iOS SDK via CocoaPods pod `Mixpanel-swift ~> 4.2`)
+- [x] `AnalyticsEventCategoriesTest` → commonTest con kotlin.test
+- [x] `LogcatAnalyticsHelperTest`, `MixpanelAnalyticsHelperTest` → src/test/kotlin (JUnit5+MockK, Android-specific)
+- [x] `proguard-rules.pro` creado para el módulo
+- [x] `assembleDebug` ✅ | `testDebugUnitTest` ✅ | `app:assembleDebug` ✅
+- [ ] `compileKotlinIosArm64` ✅ (requiere CocoaPods + `pod install` cuando haya app iOS)
+- [ ] PR → develop y merge
+
+#### Phase 4b: `:core:supabase` → KMP ✅
+- [x] Plugin cambiado a `gasguru.kmp.library`
+- [x] `SupabaseManager`, `SupabaseManagerImpl`, modelos → `commonMain`
+- [x] `SupabaseRemoteDataSource`, `ApiAnalyticsExt` → `commonMain` (desbloqueado por Phase 4a)
+- [x] `SupabaseModule` (Koin + BuildConfig) → `androidMain`
+- [x] `ktor-client-android` en `androidMain`, `ktor-client-darwin` en `iosMain`
+- [x] Tests migrados a `commonTest` con `kotlin.test` + `FakeAnalyticsHelper` local
+- [x] Sin `expect/actual` — `createSupabaseClient` es KMP nativo, credenciales vía BuildConfig en androidMain
+
+#### Phase 4c: Restantes
+- [ ] `:core:notifications` → KMP
+- [ ] `:core:data` → KMP
+- [ ] `:core:domain` → KMP
 - [ ] PR → develop y merge
 
 ### Phase 5: Infraestructura
@@ -466,15 +521,16 @@ Phase 7: Features (CMP) + iOS app target
 
 ### 4A: `:core:supabase`
 
-**Estado actual**: Supabase SDK (3.2.6) ya es KMP. Usa `ktor-client-android`.
+**Estado actual**: Módulo Android-only creado en develop (PR #480). Contiene el datasource remoto de estaciones. Supabase SDK (3.2.6) ya es KMP pero el módulo usa `ktor-client-android`.
 
 | Destino | Archivos |
 |---------|----------|
-| commonMain | `SupabaseManager.kt` (interfaz), `SupabaseManagerImpl.kt`, `PriceAlertSupabase.kt`, `SupabaseModule.kt` (Koin) |
+| commonMain | `RemoteDataSource.kt` (interfaz), `SupabaseRemoteDataSource.kt`, `SupabaseFuelStation.kt`, `NetworkError.kt`, `ApiAnalyticsExt.kt`, `SupabaseModule.kt` (Koin) |
 
 **Cambios**:
 - Plugin → `gasguru.kmp.library` + `gasguru.koin`
-- Reemplazar `ktor-client-android` por engines platform-specific en dependencies
+- Mover todos los archivos de `src/main/java/` → `commonMain`
+- Reemplazar `ktor-client-android` por engines platform-specific
 - commonMain: `supabase-postgrest`, `ktor-client-core`
 - androidMain: `ktor-client-okhttp`
 - iosMain: `ktor-client-darwin`

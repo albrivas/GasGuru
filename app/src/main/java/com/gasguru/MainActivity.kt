@@ -15,12 +15,14 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.gasguru.analytics.trackAppOpened
 import com.gasguru.core.analytics.AnalyticsHelper
 import com.gasguru.core.analytics.LocalAnalyticsHelper
 import com.gasguru.core.data.util.NetworkMonitor
 import com.gasguru.core.domain.location.IsLocationEnabledUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.model.data.ThemeMode
+import com.gasguru.core.model.data.principalVehicle
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.feature.onboarding_welcome.navigation.OnboardingRoutes
 import com.gasguru.navigation.LocalDeepLinkStateHolder
@@ -31,6 +33,7 @@ import com.gasguru.navigation.navigationbar.route.NavigationBarRoute
 import com.gasguru.ui.GasGuruApp
 import com.gasguru.ui.rememberGasGuruAppState
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -52,6 +55,27 @@ class MainActivity : ComponentActivity() {
         val splash = installSplashScreen()
         super.onCreate(savedInstanceState)
 
+        if (savedInstanceState == null) {
+            val source = if (intent.hasExtra("station_id")) "notification" else "direct"
+            analyticsHelper.trackAppOpened(source = source)
+            lifecycleScope.launch {
+                runCatching {
+                    val userData = getUserDataUseCase().first()
+                    val primaryFuelType = if (userData.vehicles.isNotEmpty()) {
+                        userData.principalVehicle().fuelType.name
+                    } else {
+                        ""
+                    }
+                    analyticsHelper.updateSuperProperties(
+                        mapOf(
+                            "primary_fuel_type" to primaryFuelType,
+                            "vehicle_count" to userData.vehicles.size,
+                        )
+                    )
+                }
+            }
+        }
+
         var uiState: SplashUiState by mutableStateOf(SplashUiState.Loading)
 
         lifecycleScope.launch {
@@ -71,6 +95,7 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
                 if (returnedFromBackground) {
+                    analyticsHelper.trackAppOpened(source = "direct")
                     viewModel.updateFuelStations()
                     returnedFromBackground = false
                 }
