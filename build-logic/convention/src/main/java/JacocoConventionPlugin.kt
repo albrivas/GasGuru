@@ -72,29 +72,32 @@ class JacocoConventionPlugin : Plugin<Project> {
                 group = "verification"
                 description = "Generates JaCoCo coverage report."
 
-                val debugClassesDir = layout.buildDirectory.dir("intermediates/classes/debug")
                 val testTaskName = if (tasks.names.contains("testProdDebugUnitTest")) {
                     "testProdDebugUnitTest"
                 } else {
                     "testDebugUnitTest"
                 }
-                val execDataFile = layout.buildDirectory.file("jacoco/$testTaskName.exec")
 
-                dependsOn(testTaskName)
+                val testTasksToDepend = buildList {
+                    add(testTaskName)
+                    if (isKmpModule() && tasks.names.contains("jvmTest")) add("jvmTest")
+                }
+                dependsOn(testTasksToDepend)
 
                 configureJacocoReport(
                     report = this,
-                    classDirectoriesFiles = listOf(
-                        fileTree(debugClassesDir.get().asFile) { exclude(jacocoExcludes) }
-                    ),
+                    classDirectoriesFiles = listOf(jacocoClassDirectories()),
                     sourceDirectoriesFiles = listOf(jacocoSourceDirectories()),
-                    executionDataFiles = listOf(execDataFile.get().asFile)
+                    executionDataFiles = listOf(jacocoExecutionData()),
                 )
             }
         }
     }
 
     private val jacocoExcludes = CoverageExclusions.excludedFilePatterns
+
+    private fun Project.isKmpModule() =
+        pluginManager.hasPlugin("org.jetbrains.kotlin.multiplatform")
 
     private fun Project.jacocoClassDirectories() =
         if (path == ":app") {
@@ -103,6 +106,16 @@ class JacocoConventionPlugin : Plugin<Project> {
                     "tmp/kotlin-classes/prodDebug/**",
                     "intermediates/javac/prodDebug/classes/**"
                 )
+                exclude(jacocoExcludes)
+            }
+        } else if (isKmpModule()) {
+            val classPath = if (tasks.names.contains("jvmTest")) {
+                "classes/kotlin/jvm/main/**"
+            } else {
+                "tmp/kotlin-classes/debug/**"
+            }
+            fileTree(layout.buildDirectory) {
+                include(classPath)
                 exclude(jacocoExcludes)
             }
         } else {
@@ -118,7 +131,8 @@ class JacocoConventionPlugin : Plugin<Project> {
     private fun Project.jacocoSourceDirectories() =
         files(
             "${projectDir}/src/main/java",
-            "${projectDir}/src/main/kotlin"
+            "${projectDir}/src/main/kotlin",
+            "${projectDir}/src/commonMain/kotlin",
         )
 
     private fun Project.jacocoExecutionData() =

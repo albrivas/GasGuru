@@ -1,7 +1,7 @@
 [versions]
 androidGradlePlugin = "8.13.2"
 kotlin = "2.3.0"
-androidx-room = "2.7.1"
+androidx-room = "2.8.4"
 androidxActivity = "1.12.1"
 androidxComposeCompiler = "1.5.14"
 androidxComposeMaterial3 = "1.4.0"
@@ -64,10 +64,12 @@ arrow="2.0.1"
 kotest = "6.0.2"
 glance = "1.1.1"
 work = "2.10.1"
+androidx-sqlite-bundled = "2.5.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
 androidx-compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "androidxComposeMaterial3" }
+androidx-compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "androidxComposeUi" }
 androidx-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "androidxComposeUi" }
 androidx-compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "androidxComposeUi" }
 androidx-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "androidxComposeUi" }
@@ -84,6 +86,7 @@ androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref =
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "androidx-room" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "androidx-room" }
 androidx-room-testing = { module = "androidx.room:room-testing", version.ref = "androidx-room" }
+androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "androidx-sqlite-bundled" }
 androidx-test-core = { module = "androidx.test:core", version.ref = "androidxTestCore" }
 androidx-test-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "androidxEspresso" }
 androidx-test-ext-junit = { module = "androidx.test.ext:junit", version.ref = "androidxTestExt" }
@@ -140,7 +143,7 @@ androidx-auto = { module = "androidx.car.app:app-projected", version.ref = "andr
 onesignal = { module = "com.onesignal:OneSignal", version.ref = "onesignal" }
 mixpanel = { module = "com.mixpanel.android:mixpanel-android", version.ref = "mixpanel" }
 supabase-bom = { module = "io.github.jan-tennert.supabase:bom", version.ref = "supabase" }
-supabase-postgrest = { module = "io.github.jan-tennert.supabase:postgrest-kt" }
+supabase-postgrest = { module = "io.github.jan-tennert.supabase:postgrest-kt", version.ref = "supabase" }
 ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktorClientAndroid" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }

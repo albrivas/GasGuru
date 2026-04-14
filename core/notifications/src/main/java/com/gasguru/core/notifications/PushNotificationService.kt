@@ -2,8 +2,8 @@ package com.gasguru.core.notifications
 
 import android.content.Context
 import android.content.Intent
-import com.gasguru.core.analytics.AnalyticsEvent
 import com.gasguru.core.analytics.AnalyticsHelper
+import com.gasguru.core.notifications.analytics.trackPushNotificationTapped
 import com.onesignal.OneSignal
 import com.onesignal.notifications.INotificationClickEvent
 import com.onesignal.notifications.INotificationClickListener
@@ -34,14 +34,7 @@ class PushNotificationService(
         val stationId = data?.optString(KEY_STATION_ID)
 
         if (!stationId.isNullOrBlank()) {
-            analyticsHelper.logEvent(
-                event = AnalyticsEvent(
-                    type = AnalyticsEvent.Types.PUSH_NOTIFICATION_TAPPED,
-                    extras = listOf(
-                        AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.STATION_ID, value = stationId),
-                    ),
-                ),
-            )
+            analyticsHelper.trackPushNotificationTapped(notificationType = "price_alert")
             val intent = Intent(Intent.ACTION_MAIN).apply {
                 setClassName(context, "com.gasguru.MainActivity")
                 addCategory(Intent.CATEGORY_LAUNCHER)

@@ -111,6 +111,10 @@ property("sonar.coverage.exclusions", CoverageExclusions.sonarCoverageExclusions
 
 > **Nota:** si solo usaras `sonar.coverage.exclusions`, los archivos excluidos seguirian apareciendo en la UI de Sonar con "0 lines to cover", lo que puede generar confusion sobre si realmente estan excluidos.
 
+## JaCoCo en módulos KMP
+
+JaCoCo no distingue entre módulos Android o KMP — simplemente necesita los `.class` files y el `.exec`. En módulos KMP las clases compiladas están en `tmp/kotlin-classes/debug/**`. Si esa ruta no está configurada en `jacocoClassDirectories()`, JaCoCo no encuentra las clases y reporta 0% aunque los tests pasen.
+
 ## Por que pueden salir duplicados
 JaCoCo falla si analiza la **misma clase dos veces** desde diferentes carpetas.
 Por eso el plugin solo toma clases desde:

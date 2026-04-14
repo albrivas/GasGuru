@@ -1,8 +1,10 @@
 package com.gasguru.feature.onboarding_welcome.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.gasguru.core.analytics.AnalyticsEvent
 import com.gasguru.core.analytics.AnalyticsHelper
+import com.gasguru.feature.onboarding_welcome.analytics.trackOnboardingPageViewed
+import com.gasguru.feature.onboarding_welcome.analytics.trackOnboardingSkipped
+import com.gasguru.feature.onboarding_welcome.analytics.trackOnboardingStarted
 import com.gasguru.feature.onboarding_welcome.ui.NewOnboardingEvent
 import com.gasguru.feature.onboarding_welcome.ui.OnboardingPageUiModel
 import com.gasguru.navigation.manager.NavigationDestination
@@ -21,7 +23,7 @@ class NewOnboardingViewModel(
     val uiState: StateFlow<NewOnboardingUiState> = _uiState.asStateFlow()
 
     init {
-        analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.ONBOARDING_STARTED))
+        analyticsHelper.trackOnboardingStarted()
     }
 
     fun handleEvent(event: NewOnboardingEvent) {
@@ -55,19 +57,12 @@ class NewOnboardingViewModel(
     private fun onPageChanged(page: Int) {
         if (page in 0 until OnboardingPageUiModel.entries.size) {
             _uiState.update { it.copy(currentPage = page) }
-            analyticsHelper.logEvent(
-                event = AnalyticsEvent(
-                    type = AnalyticsEvent.Types.ONBOARDING_PAGE_VIEWED,
-                    extras = listOf(
-                        AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.PAGE_NUMBER, value = page.toString()),
-                    ),
-                ),
-            )
+            analyticsHelper.trackOnboardingPageViewed(page = page)
         }
     }
 
     private fun onSkip() {
-        analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.ONBOARDING_SKIPPED))
+        analyticsHelper.trackOnboardingSkipped(page = _uiState.value.currentPage)
         navigateToFuelPreferences()
     }
 

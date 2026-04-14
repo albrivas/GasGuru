@@ -2,10 +2,10 @@
 
 Historial de migraciones de la base de datos Room de GasGuru. Cada entrada explica qué cambió y por qué.
 
-**Versión actual**: 16
-**Archivo de migraciones**: `core/database/src/main/java/com/gasguru/core/database/migrations/DataBaseMigration.kt`
-**Configuración de la DB**: `core/database/src/main/java/com/gasguru/core/database/di/DatabaseModule.kt`
-**Tests de migración**: `core/database/src/androidTest/java/com/gasguru/core/database/migration/DatabaseMigrationTest.kt`
+**Versión actual**: 17
+**Archivo de migraciones**: `core/database/src/commonMain/kotlin/com/gasguru/core/database/migrations/DataBaseMigration.kt`
+**Configuración de la DB**: `core/database/src/androidMain/kotlin/com/gasguru/core/database/di/DatabaseModule.kt`
+**Tests de migración**: `core/database/src/jvmTest/kotlin/com/gasguru/core/database/migration/DatabaseMigrationTest.kt`
 
 ---
 
@@ -114,3 +114,14 @@ Al crear la base de datos por primera vez, `DatabaseModule` registra un `RoomDat
 **Qué**: `UPDATE vehicles SET isPrincipal = 1 WHERE id IN (SELECT MIN(id) FROM vehicles GROUP BY userId)`
 
 **Por qué**: Corrección de datos para usuarios que actualizaron a v15. La migración 14→15 dejó `isPrincipal = false` en todos los vehículos existentes (DEFAULT 0), lo que provocaba que en la pantalla de perfil ningún vehículo apareciera marcado como "principal". Esta migración selecciona el vehículo más antiguo (menor id) de cada usuario y lo marca como principal, reproduciendo el comportamiento esperado. Las instalaciones nuevas no se ven afectadas porque el onboarding ya crea el primer vehículo con `isPrincipal = true`.
+
+---
+
+### v16 → v17
+**Qué**: Recrea la tabla `filter` con `type` como clave primaria (en lugar de `id` autoincremental).
+
+**Por qué**: La tabla `filter` fue creada en v6→v7 con `id INTEGER PRIMARY KEY AUTOINCREMENT`. Esto hacía que `@Insert(onConflict = OnConflictStrategy.REPLACE)` no funcionara como upsert por tipo — al tener `id` distinto en cada insert, nunca había conflicto y se creaban filas duplicadas para el mismo `FilterType`. El diseño correcto es que haya exactamente un filtro por tipo de filtro.
+
+**Cómo**: Crea `filter_new` con `type TEXT PRIMARY KEY`, migra datos existentes con `INSERT OR IGNORE` (conserva la primera fila por tipo si hubiera duplicados), elimina la tabla antigua y renombra la nueva.
+
+**Regla**: Si `OnConflictStrategy.REPLACE` necesita comportarse como upsert sobre un campo de negocio, ese campo debe ser la `@PrimaryKey` o tener restricción `UNIQUE`.
