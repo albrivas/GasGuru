@@ -8,10 +8,10 @@ import com.gasguru.feature.search.navigation.searchScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object RouteSearchGraph
+data object RoutePlannerNavigationGraph
 
 fun NavGraphBuilder.routeSearchGraph() {
-    navigation<RouteSearchGraph>(
+    navigation<RoutePlannerNavigationGraph>(
         startDestination = RoutePlannerRoute
     ) {
         routePlannerScreen()

@@ -45,7 +45,7 @@ Glob: <module>/src/main/**/*.kt
 | Helper/Utils | Archivo `*Utils.kt`, `*Helper.kt` |
 | Extension | Funciones de extensión con lógica no trivial |
 
-Descartar: interfaces puras, data classes sin lógica, Retrofit interfaces, módulos DI, Composables sin lógica.
+Descartar: interfaces puras, data classes sin lógica, Retrofit interfaces, módulos DI, Composables sin lógica, **clases de entidad de base de datos** (`*Entity.kt`) — aunque tengan funciones de extensión como `asExternalModel()`, estas se testean indirectamente vía Repository o DAO, no directamente.
 
 ### 3. Detectar cobertura existente
 ```
@@ -87,7 +87,20 @@ testImplementation(libs.junit5.api)
 testRuntimeOnly(libs.junit5.engine)
 ```
 
-### 8. Compilar y autocorregir
+### 8. Validar @DisplayName
+
+**Antes de compilar**, verificar que ningún archivo de test generado o modificado tiene `@DisplayName` en la línea de la clase:
+
+```bash
+grep -n "@DisplayName" <archivo>Test.kt | grep -v "@Test" | grep -v "fun "
+```
+
+Si aparece `@DisplayName` directamente sobre una declaración `class`, eliminarlo. La regla es absoluta: `@DisplayName` solo en métodos `@Test`, nunca en la clase.
+
+### 9. Compilar y autocorregir
+
+**Este paso es obligatorio. No emitir el reporte final sin haberlo ejecutado.**
+
 ```bash
 ./gradlew :<module>:compileDebugUnitTestKotlin
 ```
@@ -99,7 +112,7 @@ Si hay errores:
 
 Si tras 3 intentos el error persiste, anotarlo en el reporte como **bloqueante** y continuar con las demás clases.
 
-### 9. Generar reporte final
+### 10. Generar reporte final
 
 Al terminar, imprimir el siguiente reporte en consola:
 ```

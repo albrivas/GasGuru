@@ -44,6 +44,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -312,23 +313,22 @@ class DetailStationViewModelTest {
         """
         GIVEN ShareStation event is dispatched
         WHEN handling event
-        THEN logs STATION_SHARED analytics event with the correct station id
+        THEN logs STATION_SHARED analytics event with the station brand
         """
     )
     fun logsAnalyticsOnShareStation() = runTest {
+        fakeLocationTracker.setLastKnownLocation(testLocation())
+        fakeFuelStationDao.setStations(listOf(stationEntity(id = 10, price = 1.55)))
         val fakeAnalyticsHelper = FakeAnalyticsHelper()
         sut = createViewModel(analyticsHelper = fakeAnalyticsHelper)
+        advanceUntilIdle()
 
         sut.onEvent(DetailStationEvent.ShareStation)
         advanceUntilIdle()
 
-        assertEquals(1, fakeAnalyticsHelper.loggedEvents.size)
-        val loggedEvent = fakeAnalyticsHelper.loggedEvents.first()
-        assertEquals(AnalyticsEvent.Types.STATION_SHARED, loggedEvent.type)
-        assertEquals(
-            "10",
-            loggedEvent.extras.first { it.key == AnalyticsEvent.ParamKeys.STATION_ID }.value,
-        )
+        val sharedEvents = fakeAnalyticsHelper.loggedEvents.filter { it.type == AnalyticsEvent.Types.STATION_SHARED }
+        assertEquals(1, sharedEvents.size)
+        assertTrue(sharedEvents.first().extras.any { it.key == AnalyticsEvent.ParamKeys.STATION_BRAND })
     }
 
     private fun createViewModel(
@@ -419,5 +419,7 @@ class DetailStationViewModelTest {
         override fun logEvent(event: AnalyticsEvent) {
             loggedEvents.add(event)
         }
+
+        override fun updateSuperProperties(properties: Map<String, Any>) = Unit
     }
 }

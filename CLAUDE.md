@@ -56,8 +56,10 @@
 | [KMP Migration Plan](docs/KMP_MIGRATION.md) | Plan de migración a Kotlin Multiplatform: fases, checklist y estrategia de testing |
 | [KMP Phase 0](docs/KMP_PHASE0.md) | Explicación detallada de la infraestructura de build creada en Phase 0: convention plugins, source sets, dependencias |
 | [KMP Phase 1](docs/KMP_PHASE1.md) | Migración de :core:model a commonMain: cambios de plugin, sustituciones de APIs JVM, tests en commonTest |
+| [KMP Phase 3](docs/KMP_PHASE3.md) | Migración de :core:database a Room KMP: @ConstructedBy, SQLiteConnection API, Moshi→kotlinx-serialization, DI split |
 | [Widget](docs/WIDGET.md) | Widget de pantalla de inicio con gasolineras favoritas: arquitectura Glance + WorkManager, ciclo de vida y limitaciones |
 | [Analytics](docs/ANALYTICS.md) | Sistema de analíticas con Mixpanel: arquitectura, catálogo de eventos, uso en ViewModels y Composables |
+| [Git Worktree](docs/GIT_WORKTREE.md) | Cómo crear y eliminar worktrees, el problema de local.properties y cómo resolverlo con symlinks |
 
 ## Orquestación del Flujo de Trabajo
 

@@ -7,8 +7,6 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest.Builder
 import androidx.core.content.getSystemService
-import com.gasguru.core.analytics.AnalyticsEvent
-import com.gasguru.core.analytics.AnalyticsHelper
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -16,12 +14,10 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.onEach
 
 class ConnectivityManagerNetworkMonitor(
     private val context: Context,
     private val ioDispatcher: CoroutineDispatcher,
-    private val analyticsHelper: AnalyticsHelper,
 ) : NetworkMonitor {
     override val isOnline: Flow<Boolean> = callbackFlow {
         val connectivityManager = context.getSystemService<ConnectivityManager>()
@@ -61,13 +57,6 @@ class ConnectivityManagerNetworkMonitor(
         }
     }
         .distinctUntilChanged()
-        .onEach { isOnline ->
-            if (isOnline) {
-                analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.CAME_ONLINE))
-            } else {
-                analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.WENT_OFFLINE))
-            }
-        }
         .flowOn(ioDispatcher)
         .conflate()
 
