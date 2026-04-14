@@ -3,7 +3,6 @@ package com.gasguru.feature.detail_station.ui
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gasguru.core.analytics.AnalyticsEvent
 import com.gasguru.core.analytics.AnalyticsHelper
 import com.gasguru.core.common.CommonUtils.isStationOpen
 import com.gasguru.core.domain.alerts.AddPriceAlertUseCase
@@ -16,9 +15,16 @@ import com.gasguru.core.domain.maps.GetStaticMapUrlUseCase
 import com.gasguru.core.domain.places.GetAddressFromLocationUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.domain.vehicle.UpdateVehicleTankCapacityUseCase
+import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.Vehicle
 import com.gasguru.core.model.data.principalVehicle
 import com.gasguru.core.ui.mapper.toUiModel
+import com.gasguru.feature.detail_station.analytics.trackPriceAlertDisabled
+import com.gasguru.feature.detail_station.analytics.trackPriceAlertEnabled
+import com.gasguru.feature.detail_station.analytics.trackStationDetailViewed
+import com.gasguru.feature.detail_station.analytics.trackStationFavorited
+import com.gasguru.feature.detail_station.analytics.trackStationShared
+import com.gasguru.feature.detail_station.analytics.trackStationUnfavorited
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -97,6 +103,18 @@ class DetailStationViewModel(
             initialValue = null,
         )
 
+    init {
+        viewModelScope.launch {
+            val successState = fuelStation.first { it is DetailStationUiState.Success }
+            val station = (successState as DetailStationUiState.Success).stationModel.fuelStation
+            analyticsHelper.trackStationDetailViewed(
+                brand = station.brandStationBrandsType.name,
+                isFavorite = station.isFavorite,
+                hasPriceAlert = station.hasPriceAlert,
+            )
+        }
+    }
+
     fun onEvent(event: DetailStationEvent) {
         when (event) {
             is DetailStationEvent.ToggleFavorite -> {
@@ -116,27 +134,19 @@ class DetailStationViewModel(
     }
 
     private fun onFavoriteClick(isFavorite: Boolean) = viewModelScope.launch {
+        val station = currentStation()
         when (isFavorite) {
             true -> {
-                analyticsHelper.logEvent(
-                    event = AnalyticsEvent(
-                        type = AnalyticsEvent.Types.STATION_FAVORITED,
-                        extras = listOf(
-                            AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.STATION_ID, value = id.toString()),
-                        ),
-                    ),
-                )
+                station?.let { analyticsHelper.trackStationFavorited(brand = it.brandStationBrandsType.name) }
                 saveFavoriteStationUseCase(stationId = id)
             }
             false -> {
-                analyticsHelper.logEvent(
-                    event = AnalyticsEvent(
-                        type = AnalyticsEvent.Types.STATION_UNFAVORITED,
-                        extras = listOf(
-                            AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.STATION_ID, value = id.toString()),
-                        ),
-                    ),
-                )
+                station?.let {
+                    analyticsHelper.trackStationUnfavorited(
+                        brand = it.brandStationBrandsType.name,
+                        source = "detail"
+                    )
+                }
                 removeFavoriteStationUseCase(stationId = id)
             }
         }
@@ -148,48 +158,29 @@ class DetailStationViewModel(
     }
 
     private fun onShareStation() {
-        analyticsHelper.logEvent(
-            event = AnalyticsEvent(
-                type = AnalyticsEvent.Types.STATION_SHARED,
-                extras = listOf(
-                    AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.STATION_ID, value = id.toString()),
-                ),
-            ),
-        )
+        val station = currentStation()
+        station?.let { analyticsHelper.trackStationShared(brand = it.brandStationBrandsType.name) }
     }
 
     private fun onPriceAlertClick(isEnabled: Boolean) = viewModelScope.launch {
         when (isEnabled) {
             true -> {
-                analyticsHelper.logEvent(
-                    event = AnalyticsEvent(
-                        type = AnalyticsEvent.Types.PRICE_ALERT_ENABLED,
-                        extras = listOf(
-                            AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.STATION_ID, value = id.toString()),
-                        ),
-                    ),
-                )
                 val userData = userDataUseCase().first()
-                val station =
-                    (fuelStation.value as DetailStationUiState.Success).stationModel.fuelStation
+                val station = (fuelStation.value as DetailStationUiState.Success).stationModel.fuelStation
                 val price = userData.principalVehicle().fuelType.extractPrice(station)
-
+                analyticsHelper.trackPriceAlertEnabled()
                 addPriceAlertUseCase(stationId = id, lastNotifiedPrice = price)
             }
 
             false -> {
-                analyticsHelper.logEvent(
-                    event = AnalyticsEvent(
-                        type = AnalyticsEvent.Types.PRICE_ALERT_DISABLED,
-                        extras = listOf(
-                            AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.STATION_ID, value = id.toString()),
-                        ),
-                    ),
-                )
+                analyticsHelper.trackPriceAlertDisabled()
                 removePriceAlertUseCase(stationId = id)
             }
         }
     }
+
+    private fun currentStation(): FuelStation? =
+        (fuelStation.value as? DetailStationUiState.Success)?.stationModel?.fuelStation
 
     val lastUpdate: StateFlow<Long> = userDataUseCase().map {
         it.lastUpdate

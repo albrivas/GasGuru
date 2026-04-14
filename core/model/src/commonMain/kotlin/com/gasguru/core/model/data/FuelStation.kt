@@ -1,5 +1,6 @@
 package com.gasguru.core.model.data
 
+import kotlin.math.ceil
 import kotlin.math.roundToInt
 
 const val DISTANCE_KM_IN_METERS = 1000
@@ -44,9 +45,8 @@ data class FuelStation(
             return "${n / 100}.${(n % 100).toString().padStart(2, '0')}"
         }
         return when {
-            distance >= DISTANCE_KM_IN_METERS -> "${(distance / DISTANCE_KM_IN_METERS).fmt()} Km"
-            distance == distance.toInt().toFloat() -> "${distance.toInt()} m"
-            else -> "${distance.fmt()} m"
+            distance >= DISTANCE_KM_IN_METERS -> "${ceil(distance / DISTANCE_KM_IN_METERS).toInt()} Km"
+            else -> "${ceil(distance).toInt()} m"
         }
     }
 

@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.glance.appwidget.updateAll
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.gasguru.core.analytics.AnalyticsEvent
+import com.gasguru.analytics.trackStationSyncWorkerRetried
 import com.gasguru.core.analytics.AnalyticsHelper
 import com.gasguru.core.domain.fuelstation.GetFuelStationUseCase
 import com.gasguru.feature.widget.ui.FavoriteStationsWidget
@@ -20,27 +20,14 @@ class StationSyncWorker(
     private val analyticsHelper: AnalyticsHelper by inject()
 
     override suspend fun doWork(): Result {
-        analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.STATION_SYNC_WORKER_STARTED))
         return try {
             getFuelStationUseCase.getFuelInAllStations()
             FavoriteStationsWidget().updateAll(applicationContext)
-            analyticsHelper.logEvent(event = AnalyticsEvent(type = AnalyticsEvent.Types.STATION_SYNC_WORKER_COMPLETED))
             Result.success()
         } catch (exception: Exception) {
-            analyticsHelper.logEvent(
-                event = AnalyticsEvent(
-                    type = AnalyticsEvent.Types.STATION_SYNC_WORKER_RETRIED,
-                    extras = listOf(
-                        AnalyticsEvent.Param(
-                            key = AnalyticsEvent.ParamKeys.ERROR_MESSAGE,
-                            value = exception.message.orEmpty(),
-                        ),
-                        AnalyticsEvent.Param(
-                            key = AnalyticsEvent.ParamKeys.ERROR_TYPE,
-                            value = exception::class.simpleName.orEmpty(),
-                        ),
-                    ),
-                ),
+            analyticsHelper.trackStationSyncWorkerRetried(
+                errorMessage = exception.message.orEmpty(),
+                errorType = exception::class.simpleName.orEmpty(),
             )
             Result.retry()
         }

@@ -9,6 +9,8 @@ object CoverageExclusions {
 
     val excludedFilePatterns = listOf(
         "**/di/**",
+        "**/analytics/**",
+        "**/*AnalyticsHelper*.*",
         "**/theme/**",
         "**/*Widget*.*",
         "**/BuildConfig.*",
@@ -29,6 +31,7 @@ object CoverageExclusions {
         "**/*ComposableSingletons*.*",
         "**/*Preview*.*",
         "**/*\$*\$*.*",
+        "**/*\$DefaultImpls.*",
         "**/*UiState*.*",
         "**/*UiModel*.*",
         "**/*Screen*.*",
