@@ -102,3 +102,65 @@
 **Fix**: Cambiar `AND brandStation IN (:brands) COLLATE NOCASE` por `AND brandStation COLLATE NOCASE IN (:brands)`.
 
 **Regla**: En SQLite, `COLLATE collation-name` debe ir inmediatamente después de la expresión de la columna, no al final de la cláusula. Forma correcta: `expr COLLATE NOCASE IN (...)` o `expr COLLATE NOCASE = ?`.
+
+---
+
+## L008 — KMP: MockK y JUnit5 son JVM-only; en commonTest se usan fakes y kotlin.test
+
+**Fecha**: 2026-04-09
+**Contexto**: Migración de tests de módulos Android a KMP (Phase 4).
+
+**Regla**: Al migrar un módulo a KMP, los tests que van a `commonTest` deben abandonar MockK y JUnit5:
+- **MockK** → No soporta Kotlin/Native. En `commonTest` se usan **fakes escritos a mano** que implementan las interfaces.
+- **JUnit5** (`@Test`, `@BeforeEach`, `@DisplayName` de `org.junit.jupiter`) → No existe en KMP. En `commonTest` se usa **`kotlin.test`** (`kotlin.test.Test`, `kotlin.test.BeforeTest`, etc.).
+- **`runTest`** de `kotlinx-coroutines-test` → SÍ es KMP-compatible, se puede usar en `commonTest`.
+- **`ktor-client-mock` (`MockEngine`)** → SÍ es KMP-compatible, se puede usar en `commonTest`.
+- **`classLoader!!.getResourceAsStream(...)`** → JVM-only. En `commonTest` se inlinea el JSON directamente en el fichero de stub.
+
+**Qué va dónde**:
+- `commonTest` → `kotlin.test` + fakes manuales + `runTest` + `MockEngine` (Ktor). Tests de lógica compartida.
+- `jvmTest` → `kotlin.test` + JUnit5 + MockK + `classLoader`. Tests JVM-específicos (Room DAO, etc.).
+- `androidUnitTest` → JUnit5 + MockK. Tests con APIs Android o que dependen de `core:testing` (que es Android-only).
+
+**Implicación de diseño**: Migrar tests a `commonTest` obliga a diseñar la testabilidad con interfaces + fakes, lo que mejora la arquitectura general.
+
+**Regla práctica**: Al migrar un módulo a KMP, revisar cada test y decidir si puede ir a `commonTest` (reemplazando MockK por fake + JUnit5 por kotlin.test) o si debe quedarse en `jvmTest`/`androidUnitTest` por dependencias de plataforma.
+
+---
+
+## L009 — KMP commonTest: carga de resources de test sin `classLoader`
+
+**Fecha**: 2026-04-09
+**Contexto**: Tests de `core:supabase` usan `classLoader!!.getResourceAsStream(...)` para cargar JSON fixtures. Al migrar a `commonTest`, `classLoader` no existe en Kotlin/Native.
+
+**Opciones disponibles**:
+
+**Opción A — JSON inlineado (simple, recomendado para fixtures pequeños)**:
+```kotlin
+object StubsSupabaseResponse {
+    val fuelStationListSuccess = """[{"id":1,"province":"Albacete",...}]""".trimIndent()
+}
+```
+Pro: Sin dependencias de plataforma. Contra: Difícil de mantener si el JSON es grande.
+
+**Opción B — `expect/actual` para lectura de resources (patrón KMP formal)**:
+```kotlin
+// commonTest/kotlin/utils/TestResources.kt
+expect fun readTestResource(path: String): String
+
+// jvmTest/kotlin/utils/TestResources.kt
+actual fun readTestResource(path: String): String =
+    Thread.currentThread().contextClassLoader!!
+        .getResourceAsStream(path)!!.bufferedReader().readText()
+
+// iosTest/kotlin/utils/TestResources.kt
+actual fun readTestResource(path: String): String {
+    val resourcePath = NSBundle.mainBundle.pathForResource(
+        path.substringBeforeLast("."), path.substringAfterLast(".")
+    )!!
+    return NSString.stringWithContentsOfFile(resourcePath, NSUTF8StringEncoding, null) as String
+}
+```
+Los ficheros JSON se colocan en `src/commonTest/resources/` y cada plataforma los lee con su API nativa.
+
+**Regla**: Para fixtures pequeños (< 200 líneas), inline con `trimIndent()`. Para fixtures grandes o reutilizados entre módulos, usar el patrón `expect/actual readTestResource(path)`.
