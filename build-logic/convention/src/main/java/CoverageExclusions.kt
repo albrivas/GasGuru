@@ -3,6 +3,7 @@ object CoverageExclusions {
         ":core:testing",
         ":core:uikit",
         ":core:ui",
+        ":core:notifications",
         ":navigation",
         ":mocknetwork",
     )
