@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import java.util.Locale
+import kotlin.math.PI
 import kotlin.math.cos
 
 class OfflineFuelStationRepository(
@@ -84,7 +84,7 @@ class OfflineFuelStationRepository(
                         when (schedule) {
                             OpeningHours.OPEN_NOW -> it.isStationOpen()
                             OpeningHours.OPEN_24H -> it.schedule.trim()
-                                .uppercase(Locale.ROOT) == "L-D: 24H"
+                                .uppercase() == "L-D: 24H"
 
                             OpeningHours.NONE -> true
                         }
@@ -173,7 +173,7 @@ class OfflineFuelStationRepository(
 
     private fun calculateBoundingBox(center: LatLng, radiusKm: Double): BoundingBox {
         val latDiff = radiusKm / 110.574
-        val lngDiff = radiusKm / (111.320 * cos(Math.toRadians(center.latitude)))
+        val lngDiff = radiusKm / (111.320 * cos(center.latitude * PI / 180.0))
 
         return BoundingBox(
             minLat = center.latitude - latDiff,
