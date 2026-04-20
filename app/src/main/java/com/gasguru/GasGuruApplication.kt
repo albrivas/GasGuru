@@ -17,7 +17,7 @@ import com.gasguru.core.database.di.databaseModule
 import com.gasguru.core.domain.di.domainModule
 import com.gasguru.core.network.di.networkModule
 import com.gasguru.core.network.di.placesModule
-import com.gasguru.core.notifications.PushNotificationService
+import com.gasguru.core.notifications.NotificationService
 import com.gasguru.core.notifications.di.notificationModule
 import com.gasguru.core.supabase.di.supabaseModule
 import com.gasguru.di.appModule
@@ -45,7 +45,7 @@ import java.util.concurrent.TimeUnit
 class GasGuruApplication : Application() {
 
     private val syncManager: SyncManager by inject()
-    private val pushNotificationService: PushNotificationService by inject()
+    private val pushNotificationService: NotificationService by inject()
     private val widgetFavoriteSyncManager: WidgetFavoriteSyncManager by inject()
 
     override fun onCreate() {

@@ -12,13 +12,13 @@ import org.json.JSONObject
 class PushNotificationService(
     private val context: Context,
     private val analyticsHelper: AnalyticsHelper,
-) {
+) : NotificationService {
 
     companion object {
         private const val KEY_STATION_ID = "station_id"
     }
 
-    fun init() {
+    override fun init() {
         setupNotificationClickListener()
     }
 
