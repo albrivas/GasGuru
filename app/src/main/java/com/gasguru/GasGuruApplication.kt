@@ -9,7 +9,8 @@ import androidx.work.WorkManager
 import com.gasguru.core.analytics.di.analyticsModule
 import com.gasguru.core.common.coroutineModule
 import com.gasguru.core.components.searchbar.di.searchBarModule
-import com.gasguru.core.data.di.dataModule
+import com.gasguru.core.data.di.androidDataModule
+import com.gasguru.core.data.di.commonDataModule
 import com.gasguru.core.data.di.dataProviderModule
 import com.gasguru.core.data.sync.SyncManager
 import com.gasguru.core.database.di.daoModule
@@ -106,7 +107,8 @@ class GasGuruApplication : Application() {
                 placesModule,
                 supabaseModule,
                 notificationModule,
-                dataModule,
+                commonDataModule,
+                androidDataModule,
                 dataProviderModule,
                 domainModule,
                 navigationModule,
