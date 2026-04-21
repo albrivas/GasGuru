@@ -33,11 +33,5 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.turbine)
         }
-        androidUnitTest.dependencies {
-            implementation(projects.core.testing)
-            implementation(libs.junit5.api)
-            implementation(libs.junit5.extensions)
-            runtimeOnly(libs.junit5.engine)
-        }
     }
 }
