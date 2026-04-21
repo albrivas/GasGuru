@@ -6,17 +6,14 @@ import com.gasguru.core.database.model.VehicleEntity
 import com.gasguru.core.database.model.asExternalModel
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.VehicleType
-import com.gasguru.core.testing.CoroutinesTestExtension
-import com.gasguru.core.testing.fakes.data.database.FakeVehicleDao
+import com.gasguru.data.fakes.FakeVehicleDao
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNull
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 
-@ExtendWith(CoroutinesTestExtension::class)
 class OfflineVehicleRepositoryTest {
 
     private lateinit var fakeVehicleDao: FakeVehicleDao
@@ -41,26 +38,17 @@ class OfflineVehicleRepositoryTest {
         isPrincipal = false,
     )
 
-    @BeforeEach
+    @BeforeTest
     fun setUp() {
         fakeVehicleDao = FakeVehicleDao()
         sut = OfflineVehicleRepository(vehicleDao = fakeVehicleDao)
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN vehicles exist for a user
-        WHEN getVehiclesForUser is called
-        THEN returns mapped vehicles for that user only
-        """
-    )
-    fun getVehiclesForUserReturnsMappedVehicles() = runTest {
+    fun getVehiclesForUser_withExistingVehicles_returnsMappedVehiclesForThatUserOnly() = runTest {
         fakeVehicleDao.upsertVehicle(vehicle = vehicleEntityA)
         fakeVehicleDao.upsertVehicle(vehicle = vehicleEntityB)
-        fakeVehicleDao.upsertVehicle(
-            vehicle = vehicleEntityA.copy(id = 3L, userId = 99L),
-        )
+        fakeVehicleDao.upsertVehicle(vehicle = vehicleEntityA.copy(id = 3L, userId = 99L))
 
         sut.getVehiclesForUser(userId = 10L).test {
             val vehicles = awaitItem()
@@ -73,14 +61,7 @@ class OfflineVehicleRepositoryTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN no vehicles exist
-        WHEN upsertVehicle is called
-        THEN vehicle is persisted and returned by getVehiclesForUser
-        """
-    )
-    fun upsertVehiclePersistsNewVehicle() = runTest {
+    fun upsertVehicle_withNoExistingVehicles_persistsAndReturnsByGetVehiclesForUser() = runTest {
         sut.upsertVehicle(vehicle = vehicleEntityA.asExternalModel())
 
         sut.getVehiclesForUser(userId = 10L).test {
@@ -92,14 +73,7 @@ class OfflineVehicleRepositoryTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN a vehicle exists
-        WHEN upsertVehicle is called with the same id
-        THEN vehicle is updated not duplicated
-        """
-    )
-    fun upsertVehicleUpdatesExistingVehicle() = runTest {
+    fun upsertVehicle_withSameId_updatesExistingVehicleNotDuplicates() = runTest {
         fakeVehicleDao.upsertVehicle(vehicle = vehicleEntityA)
         sut.upsertVehicle(vehicle = vehicleEntityA.copy(name = "Golf VIII").asExternalModel())
 
@@ -112,14 +86,7 @@ class OfflineVehicleRepositoryTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN a vehicle exists
-        WHEN getVehicleById is called with its id
-        THEN returns the mapped vehicle
-        """
-    )
-    fun getVehicleByIdReturnsMappedVehicle() = runTest {
+    fun getVehicleById_withExistingId_returnsMappedVehicle() = runTest {
         fakeVehicleDao.upsertVehicle(vehicle = vehicleEntityA)
 
         val result = sut.getVehicleById(vehicleId = 1L)
@@ -130,27 +97,13 @@ class OfflineVehicleRepositoryTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN no vehicle exists with given id
-        WHEN getVehicleById is called
-        THEN returns null
-        """
-    )
-    fun getVehicleByIdReturnsNullWhenNotFound() = runTest {
+    fun getVehicleById_withNonExistingId_returnsNull() = runTest {
         val result = sut.getVehicleById(vehicleId = 999L)
         assertNull(result)
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN vehicles exist for a user
-        WHEN clearPrincipalVehiclesForUser is called
-        THEN all vehicles for that user have isPrincipal set to false
-        """
-    )
-    fun clearPrincipalVehiclesForUserClearsAllPrincipals() = runTest {
+    fun clearPrincipalVehiclesForUser_withExistingVehicles_clearsAllPrincipals() = runTest {
         fakeVehicleDao.upsertVehicle(vehicle = vehicleEntityA)
         fakeVehicleDao.upsertVehicle(vehicle = vehicleEntityB.copy(isPrincipal = true))
 
@@ -164,22 +117,13 @@ class OfflineVehicleRepositoryTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN vehicles exist for multiple users
-        WHEN clearPrincipalVehiclesForUser is called for one user
-        THEN only that user's vehicles are affected
-        """
-    )
-    fun clearPrincipalVehiclesDoesNotAffectOtherUsers() = runTest {
-        fakeVehicleDao.upsertVehicle(vehicle = vehicleEntityA) // userId = 10, isPrincipal = true
-        fakeVehicleDao.upsertVehicle(
-            vehicle = vehicleEntityA.copy(id = 3L, userId = 99L, isPrincipal = true),
-        )
+    fun clearPrincipalVehiclesForUser_withMultipleUsers_doesNotAffectOtherUsers() = runTest {
+        fakeVehicleDao.upsertVehicle(vehicle = vehicleEntityA)
+        fakeVehicleDao.upsertVehicle(vehicle = vehicleEntityA.copy(id = 3L, userId = 99L, isPrincipal = true))
 
         sut.clearPrincipalVehiclesForUser(userId = 10L)
 
         val otherUserVehicle = sut.getVehicleById(vehicleId = 3L)
-        assertEquals(true, otherUserVehicle?.isPrincipal)
+        assertTrue(otherUserVehicle?.isPrincipal == true)
     }
 }
