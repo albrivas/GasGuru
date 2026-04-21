@@ -32,6 +32,9 @@ import com.gasguru.feature.vehicle.di.vehicleModule
 import com.gasguru.navigation.di.navigationModule
 import com.gasguru.widget.WidgetFavoriteSyncManager
 import com.gasguru.worker.StationSyncWorker
+import com.microsoft.clarity.Clarity
+import com.microsoft.clarity.ClarityConfig
+import com.microsoft.clarity.models.LogLevel as ClarityLogLevel
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.onesignal.OneSignal
 import com.onesignal.debug.LogLevel
@@ -54,6 +57,7 @@ class GasGuruApplication : Application() {
         oneSignalSetUp()
         initPushNotifications()
         mixpanelSetUp()
+        claritySetUp()
         initSyncManager()
         initStationSync()
         widgetFavoriteSyncManager.observe()
@@ -71,6 +75,14 @@ class GasGuruApplication : Application() {
 
     private fun mixpanelSetUp() {
         MixpanelAPI.getInstance(this, BuildConfig.mixpanelProjectToken, true)
+    }
+
+    private fun claritySetUp() {
+        val config = ClarityConfig(
+            projectId = BuildConfig.clarityProjectId,
+            logLevel = if (BuildConfig.DEBUG) ClarityLogLevel.Verbose else ClarityLogLevel.None,
+        )
+        Clarity.initialize(applicationContext, config)
     }
 
     private fun initPushNotifications() {
