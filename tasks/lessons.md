@@ -164,3 +164,22 @@ actual fun readTestResource(path: String): String {
 Los ficheros JSON se colocan en `src/commonTest/resources/` y cada plataforma los lee con su API nativa.
 
 **Regla**: Para fixtures pequeños (< 200 líneas), inline con `trimIndent()`. Para fixtures grandes o reutilizados entre módulos, usar el patrón `expect/actual readTestResource(path)`.
+
+---
+
+## L010 — KMP: `dataModule` renombrado tras migración rompe tests del `app`
+
+**Fecha**: 2026-04-21
+**Contexto**: Migración de `core:data` a KMP (Phase 4c). El módulo Koin `dataModule` fue dividido en `commonDataModule` + `androidDataModule`.
+
+**Error**: `KoinModulesTest.kt` (en `:app`) seguía importando `com.gasguru.core.data.di.dataModule`, que ya no existía. El build de CI fallaba con:
+```
+e: Unresolved reference 'dataModule'
+```
+en `app/src/test/kotlin/com/gasguru/KoinModulesTest.kt:9` y `:61`.
+
+**Causa raíz**: Al migrar un módulo a KMP y dividir su DI, solo se actualizó `GasGuruApplication.kt` (producción) pero no `KoinModulesTest.kt` (tests del `:app`).
+
+**Fix**: Reemplazar `dataModule` por `commonDataModule` + `androidDataModule` en el test, igual que en la `Application`.
+
+**Regla**: Al renombrar o dividir un módulo Koin durante una migración KMP, buscar siempre todas las referencias con `grep -r "dataModule"` (o el nombre afectado) en el proyecto completo — incluyendo `src/test/` — antes de dar la tarea por terminada. No basta con actualizar el punto de entrada de producción.
