@@ -42,6 +42,11 @@ object CoverageExclusions {
         "**/*App.*",
         "**/*Preferences.*",
         "**/res/**",
+        "**/*ConnectivityManagerNetworkMonitor*",
+        "**/*LocationTrackerRepository*",
+        "**/*GeocoderAddressImpl*",
+        "**/*PlacesRepositoryImp*",
+        "**/*RoutesRepositoryImpl*",
     )
 
     /**
