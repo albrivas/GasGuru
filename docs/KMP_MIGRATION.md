@@ -149,7 +149,15 @@ androidMain        iosMain
   - [x] DI split: `androidMain/di/NotificationModule.kt` y `iosMain/di/NotificationModule.kt`
   - [x] `GasGuruApplication` actualizado para inyectar `NotificationService` (interfaz)
   - [x] Tests `commonTest` con `FakeAnalyticsHelper` para `PushAnalyticsExt`
-- [ ] `:core:data` → KMP
+- [x] `:core:data` → KMP
+  - [x] Plugin cambiado a `gasguru.kmp.library`
+  - [x] Interfaces + repos offline + mappers → `commonMain`
+  - [x] `LocationTrackerRepository`, `GeocoderAddressImpl`, `ConnectivityManagerNetworkMonitor`, `SearchPlaceMapper`, `RouteMapper`, `RoutesRepositoryImpl`, `PlacesRepositoryImp` → `androidMain`
+  - [x] Stubs iOS V1: `LocationTrackerIos`, `GeocoderAddressIos`, `NetworkMonitorIos`, `PlacesRepositoryIos` → `iosMain`
+  - [x] DI split: `CommonDataModule` (commonMain) + `AndroidDataModule` (androidMain) + `IosDataModule` (iosMain)
+  - [x] `java.util.Locale` y `Math.toRadians` eliminados de `OfflineFuelStationRepository`
+  - [x] `assembleDebug` ✅ | `testDebugUnitTest` ✅ | `app:assembleDebug` ✅
+  - [ ] `compileKotlinIosSimulatorArm64` ✅ (requiere CocoaPods + Mixpanel para `core:analytics`, igual que Phase 4a)
 - [ ] `:core:domain` → KMP
 - [ ] PR → develop y merge
 
