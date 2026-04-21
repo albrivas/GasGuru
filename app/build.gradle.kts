@@ -137,6 +137,7 @@ dependencies {
     // Analytics
     implementation(libs.mixpanel)
     implementation(libs.onesignal)
+    implementation(libs.clarity.compose)
 
     testImplementation(projects.core.testing)
     testImplementation(libs.koin.test.junit5)
