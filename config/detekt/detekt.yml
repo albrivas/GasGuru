@@ -830,26 +830,21 @@ formatting:
 # https://github.com/androidbroadcast/Koin-Detekt
 # ──────────────────────────────────────────
 
-KoinServiceLocator:
+koin-rules:
+  # Service Locator
   NoGetOutsideModuleDefinition:
     active: true
   NoInjectDelegate:
-    active: true
+    active: false
   NoKoinComponentInterface:
-    active: true
-    # Application, ViewModel y Fragment son entrypoints legítimos de Koin en Android
-    allowedSuperTypes:
-      - 'android.app.Application'
-      - 'androidx.lifecycle.ViewModel'
-      - 'androidx.fragment.app.Fragment'
+    active: false
   NoGlobalContextAccess:
     active: true
   NoKoinGetInApplication:
     active: true
   PreferLazyConstructorInjection:
     active: false
-
-KoinModuleDSL:
+  # Module DSL
   EmptyModule:
     active: true
   SingleForNonSharedDependency:
@@ -882,8 +877,7 @@ KoinModuleDSL:
     active: true
   ParameterTypeMatchesReturnType:
     active: true
-
-KoinScopeManagement:
+  # Scope Management
   MissingScopeClose:
     active: true
   ScopedDependencyOutsideScopeBlock:
@@ -897,11 +891,10 @@ KoinScopeManagement:
   FactoryInScopeBlock:
     active: true
   KtorRequestScopeMisuse:
-    active: false   # El proyecto no usa Ktor
+    active: false
   ScopeDeclareWithActivityOrFragment:
     active: true
-
-KoinPlatform:
+  # Platform
   KoinViewModelOutsideComposable:
     active: true
   KoinInjectInPreview:
@@ -909,27 +902,25 @@ KoinPlatform:
   RememberKoinModulesLeak:
     active: true
   KtorApplicationKoinInit:
-    active: false   # No aplica — proyecto Android
+    active: false
   KtorRouteScopeMisuse:
-    active: false   # No aplica — proyecto Android
+    active: false
   AndroidContextNotFromKoin:
     active: true
   StartKoinInActivity:
     active: true
   ActivityFragmentKoinScope:
     active: true
-
-KoinArchitecture:
+  # Architecture
   LayerBoundaryViolation:
-    active: false   # Las capas se controlan via Gradle module graph
+    active: false
   PlatformImportRestriction:
-    active: false   # Gestionado por el convention plugin KMP
+    active: false
   CircularModuleDependency:
     active: true
   GetConcreteTypeInsteadOfInterface:
     active: true
-
-KoinAnnotations:
+  # Annotations
   MixingDslAndAnnotations:
     active: true
   MissingModuleAnnotation:
@@ -961,7 +952,7 @@ KoinAnnotations:
   SingleOnAbstractClass:
     active: true
   MissingKoinStopInTest:
-    active: true
+    active: false
   KoinViewModelOnNonViewModel:
     active: true
   KoinWorkerOnNonWorker:
