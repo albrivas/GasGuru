@@ -35,7 +35,6 @@ import com.gasguru.widget.WidgetFavoriteSyncManager
 import com.gasguru.worker.StationSyncWorker
 import com.microsoft.clarity.Clarity
 import com.microsoft.clarity.ClarityConfig
-import com.microsoft.clarity.models.LogLevel as ClarityLogLevel
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.onesignal.OneSignal
 import com.onesignal.debug.LogLevel
@@ -45,6 +44,7 @@ import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 import java.util.concurrent.TimeUnit
+import com.microsoft.clarity.models.LogLevel as ClarityLogLevel
 
 class GasGuruApplication : Application() {
 
