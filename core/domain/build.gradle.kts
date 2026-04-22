@@ -1,19 +1,24 @@
 plugins {
-    alias(libs.plugins.gasguru.android.library)
+    alias(libs.plugins.gasguru.kmp.library)
     alias(libs.plugins.gasguru.koin)
-    alias(libs.plugins.gasguru.proguard)
 }
 
 android {
     namespace = "com.gasguru.core.domain"
 }
 
-dependencies {
-    implementation(projects.core.data)
-    implementation(projects.core.model)
-    implementation(projects.core.common)
-    implementation(projects.core.notifications)
-    implementation(libs.androidx.core.ktx)
-
-    testImplementation(projects.core.testing)
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            implementation(projects.core.data)
+            implementation(projects.core.model)
+            implementation(projects.core.common)
+            implementation(projects.core.notifications)
+        }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.turbine)
+        }
+    }
 }

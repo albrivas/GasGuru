@@ -158,7 +158,7 @@ androidMain        iosMain
   - [x] `java.util.Locale` y `Math.toRadians` eliminados de `OfflineFuelStationRepository`
   - [x] `assembleDebug` ✅ | `testDebugUnitTest` ✅ | `app:assembleDebug` ✅
   - [ ] `compileKotlinIosSimulatorArm64` ✅ (requiere CocoaPods + Mixpanel para `core:analytics`, igual que Phase 4a)
-- [ ] `:core:domain` → KMP
+- [x] `:core:domain` → KMP
 - [ ] PR → develop y merge
 
 ### Phase 5: Infraestructura
