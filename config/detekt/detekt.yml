@@ -824,3 +824,147 @@ formatting:
     spacing: 1
   PackageName:
     active: false
+
+# ──────────────────────────────────────────
+# Koin-Detekt rules (dev.androidbroadcast.rules.koin:detekt-koin4-rules)
+# https://github.com/androidbroadcast/Koin-Detekt
+# ──────────────────────────────────────────
+
+KoinServiceLocator:
+  NoGetOutsideModuleDefinition:
+    active: true
+  NoInjectDelegate:
+    active: true
+  NoKoinComponentInterface:
+    active: true
+    # Application, ViewModel y Fragment son entrypoints legítimos de Koin en Android
+    allowedSuperTypes:
+      - 'android.app.Application'
+      - 'androidx.lifecycle.ViewModel'
+      - 'androidx.fragment.app.Fragment'
+  NoGlobalContextAccess:
+    active: true
+  NoKoinGetInApplication:
+    active: true
+  PreferLazyConstructorInjection:
+    active: false
+
+KoinModuleDSL:
+  EmptyModule:
+    active: true
+  SingleForNonSharedDependency:
+    active: true
+    namePatterns:
+      - '.*UseCase'
+      - '.*Repository'
+      - '.*DataSource'
+  MissingScopedDependencyQualifier:
+    active: true
+  DeprecatedKoinApi:
+    active: true
+  ModuleIncludesOrganization:
+    active: false
+  UnassignedQualifierInWithOptions:
+    active: true
+  DuplicateBindingWithoutQualifier:
+    active: true
+  GenericDefinitionWithoutQualifier:
+    active: true
+  EnumQualifierCollision:
+    active: true
+  ExcessiveCreatedAtStart:
+    active: true
+  ModuleAsTopLevelVal:
+    active: true
+  OverrideInIncludedModule:
+    active: true
+  ConstructorDslAmbiguousParameters:
+    active: true
+  ParameterTypeMatchesReturnType:
+    active: true
+
+KoinScopeManagement:
+  MissingScopeClose:
+    active: true
+  ScopedDependencyOutsideScopeBlock:
+    active: true
+  ViewModelAsSingleton:
+    active: true
+  CloseableWithoutOnClose:
+    active: true
+  ScopeAccessInOnDestroy:
+    active: true
+  FactoryInScopeBlock:
+    active: true
+  KtorRequestScopeMisuse:
+    active: false   # El proyecto no usa Ktor
+  ScopeDeclareWithActivityOrFragment:
+    active: true
+
+KoinPlatform:
+  KoinViewModelOutsideComposable:
+    active: true
+  KoinInjectInPreview:
+    active: true
+  RememberKoinModulesLeak:
+    active: true
+  KtorApplicationKoinInit:
+    active: false   # No aplica — proyecto Android
+  KtorRouteScopeMisuse:
+    active: false   # No aplica — proyecto Android
+  AndroidContextNotFromKoin:
+    active: true
+  StartKoinInActivity:
+    active: true
+  ActivityFragmentKoinScope:
+    active: true
+
+KoinArchitecture:
+  LayerBoundaryViolation:
+    active: false   # Las capas se controlan via Gradle module graph
+  PlatformImportRestriction:
+    active: false   # Gestionado por el convention plugin KMP
+  CircularModuleDependency:
+    active: true
+  GetConcreteTypeInsteadOfInterface:
+    active: true
+
+KoinAnnotations:
+  MixingDslAndAnnotations:
+    active: true
+  MissingModuleAnnotation:
+    active: true
+  ConflictingBindings:
+    active: true
+  MultipleKoinDefinitionAnnotations:
+    active: true
+  ScopedWithoutQualifier:
+    active: true
+  AnnotationProcessorNotConfigured:
+    active: true
+  SingleAnnotationOnObject:
+    active: true
+  TooManyInjectedParams:
+    active: true
+  InvalidNamedQualifierCharacters:
+    active: true
+  KoinAnnotationOnExtensionFunction:
+    active: true
+  ViewModelAnnotatedAsSingle:
+    active: true
+  AnnotatedClassImplementsNestedInterface:
+    active: true
+  InjectedParamWithNestedGenericType:
+    active: true
+  InjectedParamAnnotationOrder:
+    active: true
+  SingleOnAbstractClass:
+    active: true
+  MissingKoinStopInTest:
+    active: true
+  KoinViewModelOnNonViewModel:
+    active: true
+  KoinWorkerOnNonWorker:
+    active: true
+  QualifierObfuscationRisk:
+    active: true
