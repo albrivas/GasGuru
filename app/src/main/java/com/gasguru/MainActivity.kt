@@ -41,6 +41,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
 
+    @Suppress("DeprecatedKoinApi")
     private val viewModel: SplashViewModel by viewModel()
     private var returnedFromBackground = false
 
