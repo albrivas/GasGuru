@@ -39,7 +39,7 @@ import com.gasguru.core.domain.vehicle.UpdateVehicleTankCapacityUseCase
 import com.gasguru.core.domain.vehicle.UpdateVehicleUseCase
 import org.koin.dsl.module
 
-val domainModule = module {
+fun domainModule() = module {
     // Alerts
     factory { AddPriceAlertUseCase(priceAlertRepository = get()) }
     factory { RemovePriceAlertUseCase(priceAlertRepository = get()) }
