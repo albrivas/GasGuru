@@ -5,7 +5,7 @@ import com.gasguru.mocknetwork.MockRemoteDataSource
 import com.gasguru.mocknetwork.di.mockWebServerModule
 import org.koin.dsl.module
 
-val remoteDataSourceModule = module {
-    includes(mockWebServerModule)
+fun remoteDataSourceModule() = module {
+    includes(mockWebServerModule())
     single<RemoteDataSource> { MockRemoteDataSource(mockWebServerManager = get()) }
 }

@@ -4,7 +4,8 @@ import com.gasguru.feature.vehicle.viewmodel.AddVehicleViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
-val vehicleModule = module {
+@Suppress("DeprecatedKoinApi")
+fun vehicleModule() = module {
     viewModel {
         AddVehicleViewModel(
             savedStateHandle = get(),
