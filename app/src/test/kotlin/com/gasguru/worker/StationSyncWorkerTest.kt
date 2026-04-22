@@ -7,6 +7,7 @@ import androidx.work.ListenableWorker.Result
 import androidx.work.WorkerParameters
 import com.gasguru.core.analytics.AnalyticsHelper
 import com.gasguru.core.analytics.NoOpAnalyticsHelper
+import com.gasguru.core.data.repository.stations.FuelStationRepository
 import com.gasguru.core.domain.fuelstation.GetFuelStationUseCase
 import com.gasguru.core.testing.CoroutinesTestExtension
 import com.gasguru.feature.widget.ui.FavoriteStationsWidget
@@ -32,7 +33,8 @@ class StationSyncWorkerTest {
 
     private val context = mockk<Context>(relaxed = true)
     private val workerParameters = mockk<WorkerParameters>(relaxed = true)
-    private val getFuelStationUseCase = mockk<GetFuelStationUseCase>()
+    private val fuelStationRepository = mockk<FuelStationRepository>()
+    private val getFuelStationUseCase = GetFuelStationUseCase(repository = fuelStationRepository)
 
     @BeforeEach
     fun setUp() {
@@ -62,7 +64,7 @@ class StationSyncWorkerTest {
     """
     )
     fun returnsSuccessWhenUseCaseSucceeds() = runTest {
-        coEvery { getFuelStationUseCase.getFuelInAllStations() } just Runs
+        coEvery { fuelStationRepository.addAllStations() } just Runs
         coEvery { any<FavoriteStationsWidget>().updateAll(any()) } just Runs
 
         val worker = StationSyncWorker(context, workerParameters)
@@ -80,7 +82,7 @@ class StationSyncWorkerTest {
     """
     )
     fun returnsRetryWhenUseCaseFails() = runTest {
-        coEvery { getFuelStationUseCase.getFuelInAllStations() } throws RuntimeException("network error")
+        coEvery { fuelStationRepository.addAllStations() } throws RuntimeException("network error")
 
         val worker = StationSyncWorker(context, workerParameters)
         val result = worker.doWork()
