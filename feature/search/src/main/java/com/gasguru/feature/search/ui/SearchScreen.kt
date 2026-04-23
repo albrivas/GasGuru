@@ -12,6 +12,8 @@ import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.navigation.LocalNavigationManager
 import com.gasguru.navigation.constants.NavigationKeys
 import com.gasguru.navigation.models.PlaceArgs
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 @Composable
 fun SearchScreenRoute() {
@@ -20,7 +22,7 @@ fun SearchScreenRoute() {
         onPlaceSelected = { place ->
             navigationManager.navigateBackWithData(
                 key = NavigationKeys.SELECTED_PLACE,
-                value = PlaceArgs(name = place.name, id = place.id)
+                value = Json.encodeToString(PlaceArgs(name = place.name, id = place.id)),
             )
         },
         onBackPressed = { navigationManager.navigateBack() }

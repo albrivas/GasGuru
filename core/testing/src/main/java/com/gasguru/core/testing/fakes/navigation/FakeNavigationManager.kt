@@ -28,7 +28,7 @@ class FakeNavigationManager : NavigationManager {
         // No-op
     }
 
-    override fun navigateBackWithData(key: String, value: Any) {
+    override fun navigateBackWithData(key: String, value: String) {
         // No-op
     }
 }
