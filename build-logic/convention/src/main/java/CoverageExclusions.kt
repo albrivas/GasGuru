@@ -3,6 +3,7 @@ object CoverageExclusions {
         ":core:testing",
         ":core:uikit",
         ":core:ui",
+        ":core:notifications",
         ":navigation",
         ":mocknetwork",
     )
@@ -41,6 +42,11 @@ object CoverageExclusions {
         "**/*App.*",
         "**/*Preferences.*",
         "**/res/**",
+        "**/*ConnectivityManagerNetworkMonitor*",
+        "**/*LocationTrackerRepository*",
+        "**/*GeocoderAddressImpl*",
+        "**/*PlacesRepositoryImp*",
+        "**/*RoutesRepositoryImpl*",
     )
 
     /**

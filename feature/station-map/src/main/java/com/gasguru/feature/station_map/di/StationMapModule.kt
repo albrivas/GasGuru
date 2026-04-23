@@ -6,7 +6,8 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-val stationMapModule = module {
+@Suppress("DeprecatedKoinApi")
+fun stationMapModule() = module {
     viewModel {
         StationMapViewModel(
             fuelStationByLocation = get(),

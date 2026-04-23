@@ -6,7 +6,8 @@ import com.gasguru.core.analytics.di.analyticsModule
 import com.gasguru.core.common.coroutineModule
 import com.gasguru.core.components.searchbar.GasGuruSearchBarViewModel
 import com.gasguru.core.components.searchbar.di.searchBarModule
-import com.gasguru.core.data.di.dataModule
+import com.gasguru.core.data.di.androidDataModule
+import com.gasguru.core.data.di.commonDataModule
 import com.gasguru.core.data.di.dataProviderModule
 import com.gasguru.core.database.di.daoModule
 import com.gasguru.core.database.di.databaseModule
@@ -54,24 +55,25 @@ class KoinModulesTest {
                 coroutineModule,
                 databaseModule,
                 daoModule,
-                networkModule,
-                placesModule,
+                networkModule(),
+                placesModule(),
                 supabaseModule,
                 notificationModule,
-                dataModule,
+                commonDataModule,
+                androidDataModule,
                 dataProviderModule,
-                domainModule,
-                navigationModule,
-                remoteDataSourceModule,
-                appModule,
-                stationMapModule,
-                detailStationModule,
-                favoriteListStationModule,
-                profileModule,
-                routePlannerModule,
-                onboardingModule,
-                vehicleModule,
-                searchBarModule,
+                domainModule(),
+                navigationModule(),
+                remoteDataSourceModule(),
+                appModule(),
+                stationMapModule(),
+                detailStationModule(),
+                favoriteListStationModule(),
+                profileModule(),
+                routePlannerModule(),
+                onboardingModule(),
+                vehicleModule(),
+                searchBarModule(),
             )
         }.verify(
             extraTypes = listOf(
