@@ -4,7 +4,8 @@ import com.gasguru.core.components.searchbar.GasGuruSearchBarViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
-val searchBarModule = module {
+@Suppress("DeprecatedKoinApi")
+fun searchBarModule() = module {
     viewModel {
         GasGuruSearchBarViewModel(
             savedStateHandle = get(),

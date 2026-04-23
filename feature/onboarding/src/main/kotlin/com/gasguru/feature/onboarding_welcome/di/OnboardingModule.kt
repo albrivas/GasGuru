@@ -6,7 +6,8 @@ import com.gasguru.feature.onboarding_welcome.viewmodel.OnboardingViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
-val onboardingModule = module {
+@Suppress("DeprecatedKoinApi")
+fun onboardingModule() = module {
     viewModel {
         OnboardingViewModel(
             saveDefaultVehicleFuelTypeUseCase = get(),

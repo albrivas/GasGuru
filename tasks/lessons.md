@@ -183,3 +183,64 @@ en `app/src/test/kotlin/com/gasguru/KoinModulesTest.kt:9` y `:61`.
 **Fix**: Reemplazar `dataModule` por `commonDataModule` + `androidDataModule` en el test, igual que en la `Application`.
 
 **Regla**: Al renombrar o dividir un módulo Koin durante una migración KMP, buscar siempre todas las referencias con `grep -r "dataModule"` (o el nombre afectado) en el proyecto completo — incluyendo `src/test/` — antes de dar la tarea por terminada. No basta con actualizar el punto de entrada de producción.
+
+---
+
+## L011 — Koin-Detekt: el ID del rule set en detekt.yml debe coincidir con `ruleSetId` del provider
+
+**Fecha**: 2026-04-22
+**Contexto**: Integración de `detekt-koin4-rules` en el proyecto.
+
+**Error**: Usé nombres de categoría inventados (`KoinServiceLocator`, `KoinModuleDSL`, etc.) como claves de primer nivel en `detekt.yml`. Detekt los rechazó con "Property X is misspelled or does not exist".
+
+**Causa raíz**: Detekt usa el valor de `RuleSetProvider.ruleSetId` como clave en el YAML. No hay un bloque por categoría; todas las reglas van anidadas bajo esa única clave.
+
+**Fix**: Leer el `KoinRuleSetProvider.kt` del repo para obtener el `ruleSetId` real. En este caso: `koin-rules:` como clave raíz con todas las reglas dentro.
+
+**Regla**: Antes de configurar un plugin de Detekt externo en `detekt.yml`, consultar el `RuleSetProvider` del repo para obtener el `ruleSetId` exacto.
+
+---
+
+## L012 — Worktrees: los edits deben ir a la ruta del worktree, no al repo principal
+
+**Fecha**: 2026-04-22
+**Contexto**: Tras crear un worktree con `EnterWorktree`, usé rutas absolutas al repo principal.
+
+**Error**: Los cambios se aplicaron en el repo principal (rama equivocada) y el worktree quedó limpio. Hubo que revertir el repo principal y replicar los cambios en el worktree.
+
+**Regla**: Tras `EnterWorktree`, todas las rutas de ficheros deben apuntar al directorio del worktree. Verificar con `git status` en el worktree antes de empezar.
+
+---
+
+## L013 — `org.gradle.java.home` es necesario cuando el terminal tiene un JAVA_HOME diferente al JDK de Gradle
+
+**Fecha**: 2026-04-22
+**Contexto**: Librería compilada con Java 21 en proyecto cuyo terminal tiene JAVA_HOME apuntando a Java 19.
+
+**Error**: Cambiar `jvmTarget` a 21 NO cambia el JDK con el que corre el daemon de Gradle. El daemon usa `JAVA_HOME` del sistema y fallaba al cargar la librería.
+
+**Fix**: Añadir `org.gradle.java.home=/ruta/al/jdk21` en `gradle.properties` para fijar el JDK del daemon a nivel de proyecto.
+
+**Regla**: `jvmTarget` controla el bytecode generado. `org.gradle.java.home` controla qué JVM ejecuta el daemon. Son configuraciones distintas.
+
+---
+
+## L014 — Workers necesitan `KoinComponent`; suprimir `NoInjectDelegate` y `NoKoinComponentInterface`
+
+**Fecha**: 2026-04-22
+**Contexto**: Reglas de Koin-Detekt sobre `StationSyncWorker`.
+
+**Motivo**: `CoroutineWorker` es instanciado por WorkManager, que no soporta constructor injection sin un `WorkerFactory` personalizado. `KoinComponent` + `by inject()` es el patrón correcto para Workers en Koin.
+
+**Regla**: En clases que extiendan `CoroutineWorker`/`ListenableWorker`, suprimir `NoInjectDelegate` y `NoKoinComponentInterface` con `@Suppress`.
+
+---
+
+## L015 — `MissingKoinStopInTest` genera falso positivo en clases `Application`
+
+**Fecha**: 2026-04-22
+**Contexto**: Regla `MissingKoinStopInTest` aplicada sobre `GasGuruApplication`.
+
+**Error**: La regla detecta `startKoin {}` en `Application` y la trata como clase de test.
+
+**Fix**: Suprimir `MissingKoinStopInTest` en la clase `Application` con `@Suppress`.
