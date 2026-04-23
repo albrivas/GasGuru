@@ -33,7 +33,10 @@ interface NavigationManager {
     fun navigateBackTo(route: Any, inclusive: Boolean = false)
 
     /**
-     * Navigate back and pass data to the previous screen.
+     * Navigate back and pass data to the previous screen as a JSON-encoded string.
+     *
+     * @param key The key to store the data under
+     * @param value The JSON-encoded string value to pass back
      */
-    fun navigateBackWithData(key: String, value: Any)
+    fun navigateBackWithData(key: String, value: String)
 }
