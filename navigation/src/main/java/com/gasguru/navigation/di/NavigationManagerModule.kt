@@ -5,7 +5,7 @@ import com.gasguru.navigation.manager.NavigationManager
 import com.gasguru.navigation.manager.NavigationManagerImpl
 import org.koin.dsl.module
 
-val navigationModule = module {
+fun navigationModule() = module {
     single<NavigationManager> { NavigationManagerImpl() }
     single { DeepLinkStateHolder() }
 }

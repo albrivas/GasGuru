@@ -13,6 +13,7 @@ internal fun Project.configureDetekt(
 
         dependencies {
             add("detektPlugins", getLibrary("detekt.formatting"))
+            add("detektPlugins", getLibrary("detekt.koin.rules"))
         }
     }
 }
@@ -22,5 +23,6 @@ internal fun Project.configureDetekt() {
 
     dependencies {
         add("detektPlugins", getLibrary("detekt.formatting"))
+        add("detektPlugins", getLibrary("detekt.koin.rules"))
     }
 }

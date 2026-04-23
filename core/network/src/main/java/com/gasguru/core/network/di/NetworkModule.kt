@@ -21,7 +21,7 @@ private const val READ_TIMEOUT = 60L
 private const val BASE_URL = "https://sedeaplicaciones.minetur.gob.es/"
 private const val ROUTE_BASE_URL = "https://routes.googleapis.com/"
 
-val networkModule = module {
+fun networkModule() = module {
     single<HttpLoggingInterceptor> {
         HttpLoggingInterceptor().apply {
             level = if (BuildConfig.DEBUG) {

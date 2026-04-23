@@ -36,6 +36,7 @@ playServicesLocation = "21.3.0"
 lottie = "6.6.2"
 googleGmsGoogleServices = "4.4.2"
 detekt = "1.23.8"
+detekt-koin-rules = "1.1.0"
 mapsCompose = "6.7.1"
 playServicesMaps = "19.2.0"
 secrets = "2.0.1"
@@ -126,6 +127,7 @@ play-services-location = { group = "com.google.android.gms", name = "play-servic
 kotlin-coroutines-play = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "coroutines" }
 lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
+detekt-koin-rules = { module = "dev.androidbroadcast.rules.koin:detekt-koin4-rules", version.ref = "detekt-koin-rules" }
 maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
 maps-utils = { module = "com.google.maps.android:android-maps-utils", version.ref = "mapsUtil" }
 play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
