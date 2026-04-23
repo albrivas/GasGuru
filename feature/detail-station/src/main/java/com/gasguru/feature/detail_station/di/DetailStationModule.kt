@@ -4,7 +4,8 @@ import com.gasguru.feature.detail_station.ui.DetailStationViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
-val detailStationModule = module {
+@Suppress("DeprecatedKoinApi")
+fun detailStationModule() = module {
     viewModel {
         DetailStationViewModel(
             savedStateHandle = get(),

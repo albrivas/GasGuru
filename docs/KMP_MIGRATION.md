@@ -139,9 +139,26 @@ androidMain        iosMain
 - [x] Sin `expect/actual` — `createSupabaseClient` es KMP nativo, credenciales vía BuildConfig en androidMain
 
 #### Phase 4c: Restantes
-- [ ] `:core:notifications` → KMP
-- [ ] `:core:data` → KMP
-- [ ] `:core:domain` → KMP
+- [x] `:core:notifications` → KMP
+  - [x] Plugin cambiado a `gasguru.kmp.library`
+  - [x] `OneSignalManager` interface → `commonMain`
+  - [x] `NotificationService` interface → `commonMain` (wrapper unificador para entry points de plataforma)
+  - [x] `PushAnalyticsExt` → `commonMain` (solo usa `AnalyticsHelper` KMP)
+  - [x] `OneSignalManagerImpl` + `PushNotificationService` → `androidMain`
+  - [x] `OneSignalManagerIos` (no-op) + `PushNotificationServiceIos` (stub V1) → `iosMain`
+  - [x] DI split: `androidMain/di/NotificationModule.kt` y `iosMain/di/NotificationModule.kt`
+  - [x] `GasGuruApplication` actualizado para inyectar `NotificationService` (interfaz)
+  - [x] Tests `commonTest` con `FakeAnalyticsHelper` para `PushAnalyticsExt`
+- [x] `:core:data` → KMP
+  - [x] Plugin cambiado a `gasguru.kmp.library`
+  - [x] Interfaces + repos offline + mappers → `commonMain`
+  - [x] `LocationTrackerRepository`, `GeocoderAddressImpl`, `ConnectivityManagerNetworkMonitor`, `SearchPlaceMapper`, `RouteMapper`, `RoutesRepositoryImpl`, `PlacesRepositoryImp` → `androidMain`
+  - [x] Stubs iOS V1: `LocationTrackerIos`, `GeocoderAddressIos`, `NetworkMonitorIos`, `PlacesRepositoryIos` → `iosMain`
+  - [x] DI split: `CommonDataModule` (commonMain) + `AndroidDataModule` (androidMain) + `IosDataModule` (iosMain)
+  - [x] `java.util.Locale` y `Math.toRadians` eliminados de `OfflineFuelStationRepository`
+  - [x] `assembleDebug` ✅ | `testDebugUnitTest` ✅ | `app:assembleDebug` ✅
+  - [ ] `compileKotlinIosSimulatorArm64` ✅ (requiere CocoaPods + Mixpanel para `core:analytics`, igual que Phase 4a)
+- [x] `:core:domain` → KMP
 - [ ] PR → develop y merge
 
 ### Phase 5: Infraestructura

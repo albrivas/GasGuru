@@ -10,7 +10,8 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-val appModule = module {
+@Suppress("DeprecatedKoinApi")
+fun appModule() = module {
     single<MixpanelAPI> {
         MixpanelAPI.getInstance(androidContext(), BuildConfig.mixpanelProjectToken, true)
     }
