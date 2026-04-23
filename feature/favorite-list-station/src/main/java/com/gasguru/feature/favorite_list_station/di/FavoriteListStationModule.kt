@@ -4,7 +4,8 @@ import com.gasguru.feature.favorite_list_station.ui.FavoriteListStationViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
-val favoriteListStationModule = module {
+@Suppress("DeprecatedKoinApi")
+fun favoriteListStationModule() = module {
     viewModel {
         FavoriteListStationViewModel(
             getUserDataUseCase = get(),

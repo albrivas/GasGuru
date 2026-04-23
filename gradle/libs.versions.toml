@@ -36,6 +36,7 @@ playServicesLocation = "21.3.0"
 lottie = "6.6.2"
 googleGmsGoogleServices = "4.4.2"
 detekt = "1.23.8"
+detekt-koin-rules = "1.1.0"
 mapsCompose = "6.7.1"
 playServicesMaps = "19.2.0"
 secrets = "2.0.1"
@@ -52,6 +53,7 @@ androidTools = "31.13.2"
 androidxCarApp = "1.7.0"
 onesignal = "5.4.1"
 mixpanel = "7.+"
+clarity = "3.+"
 supabase = "3.2.6"
 ktorClientAndroid = "3.3.1"
 ktor = "3.4.0"
@@ -125,6 +127,7 @@ play-services-location = { group = "com.google.android.gms", name = "play-servic
 kotlin-coroutines-play = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "coroutines" }
 lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
+detekt-koin-rules = { module = "dev.androidbroadcast.rules.koin:detekt-koin4-rules", version.ref = "detekt-koin-rules" }
 maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
 maps-utils = { module = "com.google.maps.android:android-maps-utils", version.ref = "mapsUtil" }
 play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
@@ -141,6 +144,7 @@ constraint-layout = { module = "androidx.constraintlayout:constraintlayout-compo
 androidx-car-app = { module = "androidx.car.app:app", version.ref = "androidxCarApp" }
 androidx-auto = { module = "androidx.car.app:app-projected", version.ref = "androidxCarApp" }
 onesignal = { module = "com.onesignal:OneSignal", version.ref = "onesignal" }
+clarity-compose = { module = "com.microsoft.clarity:clarity-compose", version.ref = "clarity" }
 mixpanel = { module = "com.mixpanel.android:mixpanel-android", version.ref = "mixpanel" }
 supabase-bom = { module = "io.github.jan-tennert.supabase:bom", version.ref = "supabase" }
 supabase-postgrest = { module = "io.github.jan-tennert.supabase:postgrest-kt", version.ref = "supabase" }

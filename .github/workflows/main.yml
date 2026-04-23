@@ -29,10 +29,10 @@ jobs:
           docker-images: true
           swap-storage: true
 
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v5
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'zulu'
           cache: gradle
 
@@ -59,6 +59,7 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           ONE_SIGNAL: ${{ secrets.ONE_SIGNAL }}
           MIXPANEL: ${{ secrets.MIXPANEL }}
+          CLARITY_PROJECT_ID: ${{ secrets.CLARITY_PROJECT_ID }}
           SHA1_DEBUG: ${{ secrets.SHA1_DEBUG }}
           SHA1_PLAY_STORE: ${{ secrets.SHA1_PLAY_STORE }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -71,6 +72,7 @@ jobs:
           echo "keyPassword=$KEY_PASSWORD" >> local.properties
           echo "onesignalAppId=$ONE_SIGNAL" >> local.properties
           echo "mixpanelProjectToken=$MIXPANEL" >> local.properties
+          echo "clarityProjectId=$CLARITY_PROJECT_ID" >> local.properties
           echo "sha1Debug=$SHA1_DEBUG" >> local.properties
           echo "sha1PlayStore=$SHA1_PLAY_STORE" >> local.properties
           echo "supabaseUrl=$SUPABASE_URL" >> local.properties

@@ -6,7 +6,7 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
-val placesModule = module {
+fun placesModule() = module {
     single<PlacesClient> {
         Places.initialize(androidContext(), BuildConfig.googleApiKey)
         Places.createClient(androidContext())
