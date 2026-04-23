@@ -20,6 +20,7 @@ dependencies {
     implementation(projects.core.components)
     implementation(projects.navigation)
     
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlin.coroutines.play)
     implementation(libs.maps.compose)
     implementation(libs.play.services.maps)
