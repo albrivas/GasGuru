@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
+import kotlin.time.Clock
 
 class FakeUserDataRepository(
     initialUserData: UserData = UserData(),
@@ -36,7 +37,7 @@ class FakeUserDataRepository(
     }
 
     override suspend fun updateLastUpdate() {
-        userDataFlow.update { it.copy(lastUpdate = System.currentTimeMillis()) }
+        userDataFlow.update { it.copy(lastUpdate = Clock.System.now().toEpochMilliseconds()) }
     }
 
     override suspend fun addFavoriteStation(stationId: Int) {
