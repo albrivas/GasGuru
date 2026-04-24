@@ -26,7 +26,6 @@ dependencies {
     implementation(libs.play.services.maps)
 
     androidTestImplementation(projects.core.testing)
-    androidTestImplementation(projects.core.testing)
     androidTestImplementation(libs.junit5.api)
     androidTestImplementation(libs.junit5.extensions)
 }
