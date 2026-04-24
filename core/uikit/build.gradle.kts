@@ -8,7 +8,7 @@ android {
 }
 
 dependencies {
-    implementation(projects.core.testing)
+    androidTestImplementation(projects.core.testing)
     implementation(libs.androidx.core.ktx)
     implementation(libs.constraint.layout)
     implementation(libs.lottie.compose)
