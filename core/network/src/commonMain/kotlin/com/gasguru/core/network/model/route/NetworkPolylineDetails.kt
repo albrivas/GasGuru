@@ -1,6 +1,8 @@
 package com.gasguru.core.network.model.route
 
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+
+@Serializable
 class NetworkPolylineDetails

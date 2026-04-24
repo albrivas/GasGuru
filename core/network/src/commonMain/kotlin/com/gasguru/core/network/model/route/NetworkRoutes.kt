@@ -1,12 +1,13 @@
 package com.gasguru.core.network.model.route
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+
+@Serializable
 data class NetworkRoutes(
-    @Json(name = "geocodingResults")
+    @SerialName("geocodingResults")
     val geocodingResults: NetworkGeocodingResults,
-    @Json(name = "routes")
+    @SerialName("routes")
     val routes: List<NetworkRoute>
 )
