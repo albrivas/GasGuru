@@ -165,7 +165,7 @@ androidMain        iosMain
 - [ ] Crear rama `feature/kmp-phase5-infrastructure` desde `develop`
 - [x] 5A: `:navigation` → KMP (100% commonMain con Navigation Compose CMP)
 - [x] 5B: `:core:testing` → KMP (fakes commonMain, BaseTest + CoroutinesTestRuleExtension androidMain)
-- [ ] 5C: `:mocknetwork` → KMP (Ktor MockEngine commonMain)
+- [x] 5C: `:core:network` → KMP (Ktor commonMain, modelos @Serializable, `routesPlugin` expect/actual, `KtorModule` Koin); `:mocknetwork` simplificado (lectura directa JSON Supabase, sin Retrofit/MockWebServer)
 - [ ] Todas las fakes compilan para todas las plataformas
 - [ ] PR → develop y merge
 
