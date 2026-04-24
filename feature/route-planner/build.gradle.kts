@@ -18,6 +18,7 @@ dependencies {
     implementation(projects.core.uikit)
     implementation(projects.core.common)
     implementation(projects.navigation)
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.koin.androidx.compose)
     implementation(libs.kotlin.coroutines.play)
     implementation(libs.places)
