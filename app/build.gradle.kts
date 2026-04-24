@@ -115,7 +115,7 @@ dependencies {
 
     // Arch Components
     implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation(libs.androidx.navigation.compose)
+    implementation(libs.jetbrains.navigation.compose)
     implementation(libs.koin.androidx.compose)
 
     // Compose

@@ -12,6 +12,6 @@ sealed interface NavigationCommand {
     ) : NavigationCommand
     data class BackWithData(
         val key: String,
-        val value: Any,
+        val value: String,
     ) : NavigationCommand
 }

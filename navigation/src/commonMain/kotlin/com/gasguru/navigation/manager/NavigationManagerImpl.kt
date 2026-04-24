@@ -32,7 +32,7 @@ class NavigationManagerImpl : NavigationManager {
         )
     }
 
-    override fun navigateBackWithData(key: String, value: Any) {
+    override fun navigateBackWithData(key: String, value: String) {
         _navigationFlow.tryEmit(
             value = NavigationCommand.BackWithData(key = key, value = value)
         )
