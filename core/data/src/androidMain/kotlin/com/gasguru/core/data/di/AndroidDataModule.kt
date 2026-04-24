@@ -14,7 +14,6 @@ import com.gasguru.core.data.util.NetworkMonitor
 import com.gasguru.core.network.datasource.PlacesDataSource
 import com.gasguru.core.network.datasource.PlacesDataSourceImp
 import com.gasguru.core.network.datasource.RoutesDataSource
-import com.gasguru.core.network.datasource.RoutesDataSourceImpl
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -44,8 +43,6 @@ val androidDataModule = module {
     single<PlacesDataSource> { PlacesDataSourceImp(placesClient = get()) }
 
     single<PlacesRepository> { PlacesRepositoryImp(placesDataSource = get()) }
-
-    single<RoutesDataSource> { RoutesDataSourceImpl(routeApiServices = get()) }
 
     single<RoutesRepository> {
         RoutesRepositoryImpl(
