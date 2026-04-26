@@ -12,7 +12,7 @@ import com.gasguru.core.data.di.dataProviderModule
 import com.gasguru.core.database.di.daoModule
 import com.gasguru.core.database.di.databaseModule
 import com.gasguru.core.domain.di.domainModule
-import com.gasguru.core.network.di.networkModule
+import com.gasguru.core.network.di.ktorModule
 import com.gasguru.core.network.di.placesModule
 import com.gasguru.core.notifications.di.notificationModule
 import com.gasguru.core.supabase.di.supabaseModule
@@ -29,6 +29,7 @@ import com.gasguru.feature.vehicle.di.vehicleModule
 import com.gasguru.feature.vehicle.viewmodel.AddVehicleViewModel
 import com.gasguru.navigation.di.navigationModule
 import com.mixpanel.android.mpmetrics.MixpanelAPI
+import io.ktor.client.engine.HttpClientEngine
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -55,7 +56,7 @@ class KoinModulesTest {
                 coroutineModule,
                 databaseModule,
                 daoModule,
-                networkModule(),
+                ktorModule,
                 placesModule(),
                 supabaseModule,
                 notificationModule,
@@ -79,6 +80,7 @@ class KoinModulesTest {
             extraTypes = listOf(
                 Context::class,
                 MixpanelAPI::class,
+                HttpClientEngine::class,
             ),
             injections = injectedParameters(
                 definition<DetailStationViewModel>(SavedStateHandle::class),
