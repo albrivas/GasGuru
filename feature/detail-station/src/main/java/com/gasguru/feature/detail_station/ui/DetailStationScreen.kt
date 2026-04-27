@@ -63,7 +63,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import org.jetbrains.compose.resources.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
@@ -109,6 +108,7 @@ import com.gasguru.feature.detail_station.formatSchedule
 import com.gasguru.feature.detail_station.getTimeElapsedString
 import com.gasguru.navigation.LocalNavigationManager
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.painterResource
 import org.koin.androidx.compose.koinViewModel
 import java.text.DecimalFormat
 

@@ -35,8 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import com.gasguru.core.uikit.components.icon.UiKitIcons
-import org.jetbrains.compose.resources.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
@@ -46,6 +44,7 @@ import com.gasguru.core.ui.models.FuelTypeUiModel
 import com.gasguru.core.ui.models.VehicleTypeUiModel
 import com.gasguru.core.uikit.components.GasGuruButton
 import com.gasguru.core.uikit.components.capacity_picker.CapacityPickerBottomSheet
+import com.gasguru.core.uikit.components.icon.UiKitIcons
 import com.gasguru.core.uikit.components.selectedItem.SelectedItem
 import com.gasguru.core.uikit.components.selectedItem.SelectedItemModel
 import com.gasguru.core.uikit.components.vehicle_type.VehicleTypeCard
@@ -56,6 +55,7 @@ import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.vehicle.R
 import com.gasguru.feature.vehicle.viewmodel.AddVehicleUiState
 import com.gasguru.feature.vehicle.viewmodel.AddVehicleViewModel
+import org.jetbrains.compose.resources.painterResource
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
