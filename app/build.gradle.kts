@@ -142,5 +142,6 @@ dependencies {
     testImplementation(projects.core.testing)
     testImplementation(libs.koin.test.junit5)
     testImplementation(libs.mockk)
+    testImplementation(libs.ktor.client.core)
     testRuntimeOnly(libs.junit5.engine)
 }
