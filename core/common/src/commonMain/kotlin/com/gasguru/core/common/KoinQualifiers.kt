@@ -8,9 +8,5 @@ object KoinQualifiers {
     const val APPLICATION_SCOPE = "applicationScope"
     const val MAIN_SCOPE = "mainScope"
     const val IO_SCOPE = "ioScope"
-    const val FUEL_OK_HTTP = "fuelOkHttp"
-    const val ROUTE_OK_HTTP = "routeOkHttp"
-    const val FUEL_RETROFIT = "fuelRetrofit"
-    const val ROUTE_RETROFIT = "routeRetrofit"
     const val GOOGLE_API_KEY = "google_api_key"
 }

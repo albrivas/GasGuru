@@ -16,7 +16,7 @@ import com.gasguru.core.data.sync.SyncManager
 import com.gasguru.core.database.di.daoModule
 import com.gasguru.core.database.di.databaseModule
 import com.gasguru.core.domain.di.domainModule
-import com.gasguru.core.network.di.networkModule
+import com.gasguru.core.network.di.ktorModule
 import com.gasguru.core.network.di.placesModule
 import com.gasguru.core.notifications.NotificationService
 import com.gasguru.core.notifications.di.notificationModule
@@ -115,7 +115,7 @@ class GasGuruApplication : Application() {
                 coroutineModule,
                 databaseModule,
                 daoModule,
-                networkModule(),
+                ktorModule,
                 placesModule(),
                 supabaseModule,
                 notificationModule,
