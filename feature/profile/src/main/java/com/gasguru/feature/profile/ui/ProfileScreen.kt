@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -56,7 +57,6 @@ import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.profile.R
 import org.koin.androidx.compose.koinViewModel
-import com.gasguru.core.uikit.R as RUikit
 
 @Composable
 internal fun ProfileScreenRoute(viewModel: ProfileViewModel = koinViewModel()) {
@@ -182,7 +182,7 @@ fun SuccessContent(
                 if (content.vehicles.size > 1) {
                     SwipeItem(
                         model = SwipeItemModel(
-                            iconAnimated = com.gasguru.core.ui.R.raw.trash_animated,
+                            icon = Icons.Default.Delete,
                             backgroundColor = GasGuruTheme.colors.red500,
                             onClick = { onDeleteVehicle(vehicle.id) },
                         ),
@@ -281,7 +281,7 @@ private fun AddVehicleButton(onClick: () -> Unit) {
         )
         Spacer(modifier = Modifier.padding(4.dp))
         Text(
-            text = stringResource(id = RUikit.string.vehicle_add),
+            text = stringResource(id = R.string.vehicle_add),
             style = GasGuruTheme.typography.smallRegular,
             color = GasGuruTheme.colors.textSubtle,
         )

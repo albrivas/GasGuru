@@ -7,4 +7,5 @@
     <string name="theme_mode">Tema</string>
     <string name="my_vehicles">Mis vehículos</string>
     <string name="settings">Ajustes</string>
+    <string name="vehicle_add">Añadir vehículo</string>
 </resources>

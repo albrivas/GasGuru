@@ -63,7 +63,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
+import org.jetbrains.compose.resources.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
@@ -89,6 +89,7 @@ import com.gasguru.core.ui.review.findActivity
 import com.gasguru.core.ui.review.rememberInAppReviewManager
 import com.gasguru.core.uikit.components.GasGuruButton
 import com.gasguru.core.uikit.components.fuel_type_chip.FuelTypeChipModel
+import com.gasguru.core.uikit.components.icon.UiKitIcons
 import com.gasguru.core.uikit.components.information_card.InformationCard
 import com.gasguru.core.uikit.components.information_card.InformationCardModel
 import com.gasguru.core.uikit.components.loading.GasGuruLoading
@@ -296,7 +297,7 @@ fun DetailStationContent(
                     }
             ) {
                 Image(
-                    painter = painterResource(id = stationState.brandIcon),
+                    painter = painterResource(stationState.brandIcon),
                     contentDescription = "Fuel station brand",
                     modifier = Modifier
                         .fillMaxSize()
@@ -314,7 +315,7 @@ fun DetailStationContent(
                 TankCostCard(
                     model = TankCostCardModel(
                         fuelTypeChip = FuelTypeChipModel(
-                            nameRes = fuelUiModel.translationRes,
+                            nameRes = stringResource(id = fuelUiModel.translationRes),
                         ),
                         totalCost = "${DecimalFormat(
                             "0.00"
@@ -417,7 +418,7 @@ fun InformationStation(
             model = InformationCardModel(
                 title = stringResource(id = R.string.direction),
                 subtitle = address ?: stationState.formattedDirection,
-                icon = com.gasguru.core.uikit.R.drawable.ic_direction,
+                icon = UiKitIcons.Direction,
                 onClick = navigateToGoogleMaps,
                 type = InformationCardModel.InformationCardType.NONE,
                 subtitleColor = GasGuruTheme.colors.textMain

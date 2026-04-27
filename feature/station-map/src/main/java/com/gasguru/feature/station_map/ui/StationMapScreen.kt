@@ -120,7 +120,6 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
-import com.gasguru.core.uikit.R as RUikit
 
 @Composable
 fun StationMapScreenRoute(
@@ -365,8 +364,8 @@ internal fun StationMapScreen(
                         swipeConfig = null,
                         testTag = "map_station_list",
                         tabNames = listOf(
-                            stringResource(com.gasguru.core.uikit.R.string.tab_price),
-                            stringResource(com.gasguru.core.uikit.R.string.tab_distance)
+                            stringResource(R.string.tab_price),
+                            stringResource(R.string.tab_distance)
                         )
                     )
                 )
@@ -586,7 +585,7 @@ fun FloatingButtons(
                 contentColor = GasGuruTheme.colors.neutralBlack,
             ) {
                 Icon(
-                    imageVector = ImageVector.vectorResource(id = RUikit.drawable.ic_my_location),
+                    painter = org.jetbrains.compose.resources.painterResource(com.gasguru.core.uikit.components.icon.UiKitIcons.MyLocation),
                     tint = GasGuruTheme.colors.textSubtle,
                     contentDescription = "User location",
                 )

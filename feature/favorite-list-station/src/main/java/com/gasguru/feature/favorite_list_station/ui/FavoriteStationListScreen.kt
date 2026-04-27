@@ -16,6 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
@@ -166,14 +168,14 @@ fun ListFuelStations(
                 onTabChange = { event(FavoriteStationEvent.ChangeTab(selected = it)) },
                 onStationClick = navigateToDetail,
                 swipeConfig = StationListSwipeModel(
-                    iconAnimated = com.gasguru.core.ui.R.raw.trash_animated,
+                    icon = Icons.Default.Delete,
                     backgroundColor = GasGuruTheme.colors.red500,
                     onSwipe = { event(FavoriteStationEvent.RemoveFavoriteStation(it)) }
                 ),
                 testTag = "favorite_list",
                 tabNames = listOf(
-                    stringResource(com.gasguru.core.uikit.R.string.tab_price),
-                    stringResource(com.gasguru.core.uikit.R.string.tab_distance)
+                    stringResource(R.string.tab_price),
+                    stringResource(R.string.tab_distance)
                 )
             ),
             modifier = modifier

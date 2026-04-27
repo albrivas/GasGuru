@@ -11,4 +11,6 @@
     <string name="filter_brand_title">Fuel stations</string>
     <string name="filter_number_nearby_title">Nº Cercanas</string>
     <string name="route_station_count">%1$d gasolineras</string>
+    <string name="tab_price">Precio</string>
+    <string name="tab_distance">Distancia</string>
 </resources>
