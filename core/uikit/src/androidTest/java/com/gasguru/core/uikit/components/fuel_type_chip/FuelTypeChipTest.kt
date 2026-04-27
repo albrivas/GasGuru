@@ -4,7 +4,6 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import com.gasguru.core.testing.BaseTest
-import com.gasguru.core.uikit.R
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -12,7 +11,7 @@ import org.junit.jupiter.api.Test
 class FuelTypeChipTest : BaseTest() {
 
     private val defaultModel = FuelTypeChipModel(
-        nameRes = R.string.preview_fuel_type,
+        nameRes = "Gasoline 95",
     )
 
     @Test
@@ -25,7 +24,7 @@ class FuelTypeChipTest : BaseTest() {
         }
 
         onNodeWithTag("fuel_type_chip_name").assertIsDisplayed()
-        onNodeWithText(getStringResource(R.string.preview_fuel_type)).assertIsDisplayed()
+        onNodeWithText("Gasoline 95").assertIsDisplayed()
     }
 
     @Test

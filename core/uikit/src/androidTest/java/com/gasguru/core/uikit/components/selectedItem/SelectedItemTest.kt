@@ -7,7 +7,8 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.gasguru.core.testing.BaseTest
-import com.gasguru.core.uikit.R
+import com.gasguru.core.uikit.generated.resources.Res
+import com.gasguru.core.uikit.generated.resources.ic_gasoline_95
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -21,16 +22,16 @@ class SelectedItemTest : BaseTest() {
             MyApplicationTheme {
                 SelectedItem(
                     model = SelectedItemModel(
-                        title = R.string.preview_fuel_type,
+                        title = "Gasoline 95",
                         isSelected = false,
-                        image = R.drawable.ic_gasoline_95,
+                        image = Res.drawable.ic_gasoline_95,
                     ),
                 )
             }
         }
 
-        onNodeWithText(getStringResource(R.string.preview_fuel_type)).assertIsDisplayed()
-        onNodeWithTag("radio_button_${R.string.preview_fuel_type}")
+        onNodeWithText("Gasoline 95").assertIsDisplayed()
+        onNodeWithTag("radio_button_Gasoline 95")
             .assertIsDisplayed()
             .assertIsNotSelected()
     }
@@ -42,16 +43,16 @@ class SelectedItemTest : BaseTest() {
             MyApplicationTheme {
                 SelectedItem(
                     model = SelectedItemModel(
-                        title = R.string.preview_fuel_type,
+                        title = "Gasoline 95",
                         isSelected = true,
-                        image = R.drawable.ic_gasoline_95,
+                        image = Res.drawable.ic_gasoline_95,
                     ),
                 )
             }
         }
 
-        onNodeWithText(getStringResource(R.string.preview_fuel_type)).assertIsDisplayed()
-        onNodeWithTag("radio_button_${R.string.preview_fuel_type}")
+        onNodeWithText("Gasoline 95").assertIsDisplayed()
+        onNodeWithTag("radio_button_Gasoline 95")
             .assertIsDisplayed()
             .assertIsSelected()
     }
@@ -65,9 +66,9 @@ class SelectedItemTest : BaseTest() {
             MyApplicationTheme {
                 SelectedItem(
                     model = SelectedItemModel(
-                        title = R.string.preview_fuel_type,
+                        title = "Gasoline 95",
                         isSelected = false,
-                        image = R.drawable.ic_gasoline_95,
+                        image = Res.drawable.ic_gasoline_95,
                         onItemSelected = { model ->
                             clickedModel = model
                         },
@@ -76,10 +77,10 @@ class SelectedItemTest : BaseTest() {
             }
         }
 
-        onNodeWithText(getStringResource(R.string.preview_fuel_type)).performClick()
+        onNodeWithText("Gasoline 95").performClick()
 
         assert(clickedModel != null)
-        assert(clickedModel?.title == R.string.preview_fuel_type)
+        assert(clickedModel?.title == "Gasoline 95")
     }
 
     @Test
@@ -91,9 +92,9 @@ class SelectedItemTest : BaseTest() {
             MyApplicationTheme {
                 SelectedItem(
                     model = SelectedItemModel(
-                        title = R.string.preview_fuel_type,
+                        title = "Gasoline 95",
                         isSelected = false,
-                        image = R.drawable.ic_gasoline_95,
+                        image = Res.drawable.ic_gasoline_95,
                         onItemSelected = { model ->
                             clickedModel = model
                         },
@@ -102,9 +103,9 @@ class SelectedItemTest : BaseTest() {
             }
         }
 
-        onNodeWithTag("radio_button_${R.string.preview_fuel_type}").performClick()
+        onNodeWithTag("radio_button_Gasoline 95").performClick()
 
         assert(clickedModel != null)
-        assert(clickedModel?.title == R.string.preview_fuel_type)
+        assert(clickedModel?.title == "Gasoline 95")
     }
 }

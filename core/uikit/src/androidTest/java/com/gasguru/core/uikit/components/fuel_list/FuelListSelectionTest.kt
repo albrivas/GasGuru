@@ -8,7 +8,10 @@ import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import com.gasguru.core.testing.BaseTest
-import com.gasguru.core.uikit.R
+import com.gasguru.core.uikit.generated.resources.Res
+import com.gasguru.core.uikit.generated.resources.ic_diesel
+import com.gasguru.core.uikit.generated.resources.ic_gasoline_95
+import com.gasguru.core.uikit.generated.resources.ic_gasoline_98
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.utils.BackgroundColorKey
@@ -19,16 +22,16 @@ class FuelListSelectionTest : BaseTest() {
 
     private val testFuelItems = listOf(
         FuelItemModel(
-            iconRes = R.drawable.ic_gasoline_95,
-            nameRes = R.string.preview_fuel_type,
+            iconRes = Res.drawable.ic_gasoline_95,
+            nameRes = "Gasoline 95",
         ),
         FuelItemModel(
-            iconRes = R.drawable.ic_gasoline_98,
-            nameRes = R.string.preview_fuel_type_2,
+            iconRes = Res.drawable.ic_gasoline_98,
+            nameRes = "Gasoline 98",
         ),
         FuelItemModel(
-            iconRes = R.drawable.ic_diesel,
-            nameRes = R.string.preview_fuel_type_3,
+            iconRes = Res.drawable.ic_diesel,
+            nameRes = "Diesel",
         ),
     )
 
@@ -67,7 +70,6 @@ class FuelListSelectionTest : BaseTest() {
             }
         }
 
-        // Verify that the first item doesn't exist (empty list)
         assert(
             runCatching {
                 onNodeWithTag("list_item_0").assertIsDisplayed()
@@ -109,7 +111,7 @@ class FuelListSelectionTest : BaseTest() {
     @Test
     @DisplayName("GIVEN a list WHEN item is clicked THEN callback is invoked with correct fuel")
     fun itemClickInvokesCallbackWithCorrectFuel() = extension.use {
-        var selectedFuelId: Int? = null
+        var selectedFuelName: String? = null
 
         setContent {
             MyApplicationTheme {
@@ -117,8 +119,8 @@ class FuelListSelectionTest : BaseTest() {
                     model = FuelListSelectionModel(
                         list = testFuelItems,
                         selected = null,
-                        onItemSelected = { fuelId ->
-                            selectedFuelId = fuelId
+                        onItemSelected = { fuelName ->
+                            selectedFuelName = fuelName
                         },
                     ),
                 )
@@ -127,22 +129,22 @@ class FuelListSelectionTest : BaseTest() {
 
         onNodeWithTag("list_item_1").performClick()
 
-        assert(selectedFuelId == testFuelItems[1].nameRes)
+        assert(selectedFuelName == testFuelItems[1].nameRes)
     }
 
     @Test
     @DisplayName("GIVEN a list WHEN different items clicked THEN selection updates correctly")
     fun selectionUpdatesCorrectly() = extension.use {
-        var selectedFuelId: Int? = null
+        var selectedFuelName: String? = null
 
         setContent {
             MyApplicationTheme {
                 FuelListSelection(
                     model = FuelListSelectionModel(
                         list = testFuelItems,
-                        selected = selectedFuelId,
-                        onItemSelected = { fuelId ->
-                            selectedFuelId = fuelId
+                        selected = selectedFuelName,
+                        onItemSelected = { fuelName ->
+                            selectedFuelName = fuelName
                         },
                     ),
                 )
@@ -150,10 +152,10 @@ class FuelListSelectionTest : BaseTest() {
         }
 
         onNodeWithTag("list_item_0").performClick()
-        assert(selectedFuelId == testFuelItems[0].nameRes)
+        assert(selectedFuelName == testFuelItems[0].nameRes)
 
         onNodeWithTag("list_item_2").performClick()
-        assert(selectedFuelId == testFuelItems[2].nameRes)
+        assert(selectedFuelName == testFuelItems[2].nameRes)
     }
 
     @Test

@@ -5,7 +5,6 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.gasguru.core.testing.BaseTest
-import com.gasguru.core.uikit.R
 import com.gasguru.core.uikit.components.fuel_type_chip.FuelTypeChipModel
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -16,7 +15,7 @@ class TankCostCardTest : BaseTest() {
 
     private fun defaultModel(onEditClick: () -> Unit = {}) = TankCostCardModel(
         fuelTypeChip = FuelTypeChipModel(
-            nameRes = R.string.preview_fuel_type,
+            nameRes = "Gasoline 95",
         ),
         totalCost = "86.72 €",
         litres = "55.6 L",
@@ -110,6 +109,6 @@ class TankCostCardTest : BaseTest() {
             }
         }
 
-        onNodeWithText(getStringResource(R.string.full_tank_cost)).assertIsDisplayed()
+        onNodeWithText("Full tank cost").assertIsDisplayed()
     }
 }
