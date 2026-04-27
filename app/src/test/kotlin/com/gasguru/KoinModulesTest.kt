@@ -29,6 +29,7 @@ import com.gasguru.feature.vehicle.di.vehicleModule
 import com.gasguru.feature.vehicle.viewmodel.AddVehicleViewModel
 import com.gasguru.navigation.di.navigationModule
 import com.mixpanel.android.mpmetrics.MixpanelAPI
+import io.ktor.client.engine.HttpClientEngine
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -79,6 +80,7 @@ class KoinModulesTest {
             extraTypes = listOf(
                 Context::class,
                 MixpanelAPI::class,
+                HttpClientEngine::class,
             ),
             injections = injectedParameters(
                 definition<DetailStationViewModel>(SavedStateHandle::class),
