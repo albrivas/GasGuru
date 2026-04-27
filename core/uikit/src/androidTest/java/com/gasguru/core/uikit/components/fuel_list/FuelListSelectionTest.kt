@@ -12,6 +12,9 @@ import com.gasguru.core.uikit.generated.resources.Res
 import com.gasguru.core.uikit.generated.resources.ic_diesel
 import com.gasguru.core.uikit.generated.resources.ic_gasoline_95
 import com.gasguru.core.uikit.generated.resources.ic_gasoline_98
+import com.gasguru.core.uikit.generated.resources.preview_fuel_type
+import com.gasguru.core.uikit.generated.resources.preview_fuel_type_2
+import com.gasguru.core.uikit.generated.resources.preview_fuel_type_3
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.utils.BackgroundColorKey
@@ -20,20 +23,22 @@ import org.junit.jupiter.api.Test
 
 class FuelListSelectionTest : BaseTest() {
 
-    private val testFuelItems = listOf(
-        FuelItemModel(
-            iconRes = Res.drawable.ic_gasoline_95,
-            nameRes = "Gasoline 95",
-        ),
-        FuelItemModel(
-            iconRes = Res.drawable.ic_gasoline_98,
-            nameRes = "Gasoline 98",
-        ),
-        FuelItemModel(
-            iconRes = Res.drawable.ic_diesel,
-            nameRes = "Diesel",
-        ),
-    )
+    private val testFuelItems by lazy {
+        listOf(
+            FuelItemModel(
+                iconRes = Res.drawable.ic_gasoline_95,
+                nameRes = getCmpString(Res.string.preview_fuel_type),
+            ),
+            FuelItemModel(
+                iconRes = Res.drawable.ic_gasoline_98,
+                nameRes = getCmpString(Res.string.preview_fuel_type_2),
+            ),
+            FuelItemModel(
+                iconRes = Res.drawable.ic_diesel,
+                nameRes = getCmpString(Res.string.preview_fuel_type_3),
+            ),
+        )
+    }
 
     @Test
     @DisplayName("GIVEN a list of fuels WHEN rendered THEN displays all items")

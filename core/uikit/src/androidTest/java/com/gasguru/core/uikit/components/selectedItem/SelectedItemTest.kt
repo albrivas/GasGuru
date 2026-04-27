@@ -9,11 +9,14 @@ import androidx.compose.ui.test.performClick
 import com.gasguru.core.testing.BaseTest
 import com.gasguru.core.uikit.generated.resources.Res
 import com.gasguru.core.uikit.generated.resources.ic_gasoline_95
+import com.gasguru.core.uikit.generated.resources.preview_fuel_type
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
 class SelectedItemTest : BaseTest() {
+
+    private val previewFuelType by lazy { getCmpString(Res.string.preview_fuel_type) }
 
     @Test
     @DisplayName("GIVEN an unselected item WHEN rendered THEN displays all elements correctly")
@@ -22,7 +25,7 @@ class SelectedItemTest : BaseTest() {
             MyApplicationTheme {
                 SelectedItem(
                     model = SelectedItemModel(
-                        title = "Gasoline 95",
+                        title = previewFuelType,
                         isSelected = false,
                         image = Res.drawable.ic_gasoline_95,
                     ),
@@ -30,8 +33,8 @@ class SelectedItemTest : BaseTest() {
             }
         }
 
-        onNodeWithText("Gasoline 95").assertIsDisplayed()
-        onNodeWithTag("radio_button_Gasoline 95")
+        onNodeWithText(previewFuelType).assertIsDisplayed()
+        onNodeWithTag("radio_button_$previewFuelType")
             .assertIsDisplayed()
             .assertIsNotSelected()
     }
@@ -43,7 +46,7 @@ class SelectedItemTest : BaseTest() {
             MyApplicationTheme {
                 SelectedItem(
                     model = SelectedItemModel(
-                        title = "Gasoline 95",
+                        title = previewFuelType,
                         isSelected = true,
                         image = Res.drawable.ic_gasoline_95,
                     ),
@@ -51,8 +54,8 @@ class SelectedItemTest : BaseTest() {
             }
         }
 
-        onNodeWithText("Gasoline 95").assertIsDisplayed()
-        onNodeWithTag("radio_button_Gasoline 95")
+        onNodeWithText(previewFuelType).assertIsDisplayed()
+        onNodeWithTag("radio_button_$previewFuelType")
             .assertIsDisplayed()
             .assertIsSelected()
     }
@@ -66,7 +69,7 @@ class SelectedItemTest : BaseTest() {
             MyApplicationTheme {
                 SelectedItem(
                     model = SelectedItemModel(
-                        title = "Gasoline 95",
+                        title = previewFuelType,
                         isSelected = false,
                         image = Res.drawable.ic_gasoline_95,
                         onItemSelected = { model ->
@@ -77,10 +80,10 @@ class SelectedItemTest : BaseTest() {
             }
         }
 
-        onNodeWithText("Gasoline 95").performClick()
+        onNodeWithText(previewFuelType).performClick()
 
         assert(clickedModel != null)
-        assert(clickedModel?.title == "Gasoline 95")
+        assert(clickedModel?.title == previewFuelType)
     }
 
     @Test
@@ -92,7 +95,7 @@ class SelectedItemTest : BaseTest() {
             MyApplicationTheme {
                 SelectedItem(
                     model = SelectedItemModel(
-                        title = "Gasoline 95",
+                        title = previewFuelType,
                         isSelected = false,
                         image = Res.drawable.ic_gasoline_95,
                         onItemSelected = { model ->
@@ -103,9 +106,9 @@ class SelectedItemTest : BaseTest() {
             }
         }
 
-        onNodeWithTag("radio_button_Gasoline 95").performClick()
+        onNodeWithTag("radio_button_$previewFuelType").performClick()
 
         assert(clickedModel != null)
-        assert(clickedModel?.title == "Gasoline 95")
+        assert(clickedModel?.title == previewFuelType)
     }
 }
