@@ -51,11 +51,9 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.core.content.ContextCompat
@@ -585,7 +583,9 @@ fun FloatingButtons(
                 contentColor = GasGuruTheme.colors.neutralBlack,
             ) {
                 Icon(
-                    painter = org.jetbrains.compose.resources.painterResource(com.gasguru.core.uikit.components.icon.UiKitIcons.MyLocation),
+                    painter = org.jetbrains.compose.resources.painterResource(
+                        com.gasguru.core.uikit.components.icon.UiKitIcons.MyLocation
+                    ),
                     tint = GasGuruTheme.colors.textSubtle,
                     contentDescription = "User location",
                 )
