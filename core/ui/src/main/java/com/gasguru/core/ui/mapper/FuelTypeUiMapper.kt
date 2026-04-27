@@ -1,5 +1,6 @@
 package com.gasguru.core.ui.mapper
 
+import android.content.Context
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.ui.models.FuelTypeUiModel
 import com.gasguru.core.uikit.components.fuel_list.FuelItemModel
@@ -17,9 +18,10 @@ fun FuelType.toUiModel(): FuelTypeUiModel =
  * Maps [FuelTypeUiModel] to [FuelItemModel] for UI representation.
  *
  * @receiver FuelTypeUiModel UI model
+ * @param context Android context to resolve the string resource
  * @return FuelItemModel for composable UI components
  */
-fun FuelTypeUiModel.toFuelItem(): FuelItemModel = FuelItemModel(
+fun FuelTypeUiModel.toFuelItem(context: Context): FuelItemModel = FuelItemModel(
     iconRes = iconRes,
-    nameRes = translationRes,
+    nameRes = context.getString(translationRes),
 )

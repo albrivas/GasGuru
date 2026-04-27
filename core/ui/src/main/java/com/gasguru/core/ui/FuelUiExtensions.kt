@@ -13,6 +13,10 @@ fun Int.toFuelType(): FuelType =
     FuelTypeUiModel.ALL_FUELS.firstOrNull { it.translationRes == this }?.type
         ?: FuelType.GASOLINE_95
 
+fun String.toFuelType(context: Context): FuelType =
+    FuelTypeUiModel.ALL_FUELS.firstOrNull { context.getString(it.translationRes) == this }?.type
+        ?: FuelType.GASOLINE_95
+
 fun FuelType?.getPrice(context: Context, fuelStation: FuelStation): String {
     return when (this) {
         null -> "0.000"
