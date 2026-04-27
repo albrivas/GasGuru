@@ -34,6 +34,7 @@ kotlin {
             api(libs.junit5.api)
             api(libs.junit5.extensions)
             api(libs.junit5.runner)
+            api(libs.compose.multiplatform.components.resources)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
