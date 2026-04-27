@@ -7,4 +7,5 @@
     <string name="theme_mode">Theme</string>
     <string name="my_vehicles">My vehicles</string>
     <string name="settings">Settings</string>
+    <string name="vehicle_add">Add vehicle</string>
 </resources>
