@@ -11,6 +11,7 @@ dependencies {
 }
 
 compose.resources {
+    publicResClass = true
     packageOfResClass = "com.gasguru.core.uikit.generated.resources"
 }
 
