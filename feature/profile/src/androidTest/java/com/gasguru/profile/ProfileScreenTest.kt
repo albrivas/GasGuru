@@ -72,7 +72,7 @@ class ProfileScreenTest : BaseTest() {
                     id = 42L,
                     name = "Golf VII",
                     vehicleTypeIconRes = Res.drawable.ic_vehicle_car,
-                    fuelTypeTranslationRes = "SP 95",
+                    fuelTypeTranslationRes = getStringResource(com.gasguru.core.ui.R.string.gasoline_95),
                     tankCapacityLitres = 55,
                     isSelected = true,
                 ),
