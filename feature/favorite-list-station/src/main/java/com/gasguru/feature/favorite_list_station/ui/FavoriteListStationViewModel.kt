@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -44,32 +44,33 @@ class FavoriteListStationViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     val favoriteStations: StateFlow<FavoriteStationListUiState> =
         getLastKnownLocationUseCase()
-            .map { location ->
-                location ?: throw IllegalStateException("Location is null")
-            }
             .flatMapLatest { location ->
-                combine(
-                    getFavoriteStationsUseCase(userLocation = location),
-                    getUserDataUseCase(),
-                    _tabState,
-                ) { stations, userData, tabState ->
-                    if (stations.favoriteStations.isEmpty()) {
-                        FavoriteStationListUiState.EmptyFavorites
-                    } else {
-                        val listUiModel = stations.favoriteStations.map { it.toUiModel() }
-                        val sortedStations = when (tabState.selectedTab) {
-                            0 -> listUiModel.sortedBy {
-                                userData.principalVehicle().fuelType.extractPrice(
-                                    it.fuelStation
-                                )
+                if (location == null) {
+                    flowOf(FavoriteStationListUiState.DisableLocation)
+                } else {
+                    combine(
+                        getFavoriteStationsUseCase(userLocation = location),
+                        getUserDataUseCase(),
+                        _tabState,
+                    ) { stations, userData, tabState ->
+                        if (stations.favoriteStations.isEmpty()) {
+                            FavoriteStationListUiState.EmptyFavorites
+                        } else {
+                            val listUiModel = stations.favoriteStations.map { it.toUiModel() }
+                            val sortedStations = when (tabState.selectedTab) {
+                                0 -> listUiModel.sortedBy {
+                                    userData.principalVehicle().fuelType.extractPrice(
+                                        it.fuelStation
+                                    )
+                                }
+                                1 -> listUiModel.sortedBy { it.fuelStation.distance }
+                                else -> listUiModel
                             }
-                            1 -> listUiModel.sortedBy { it.fuelStation.distance }
-                            else -> listUiModel
+                            FavoriteStationListUiState.Favorites(
+                                favoriteStations = sortedStations,
+                                userSelectedFuelType = userData.principalVehicle().fuelType,
+                            )
                         }
-                        FavoriteStationListUiState.Favorites(
-                            favoriteStations = sortedStations,
-                            userSelectedFuelType = userData.principalVehicle().fuelType
-                        )
                     }
                 }
             }
@@ -79,7 +80,7 @@ class FavoriteListStationViewModel(
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5000),
-                initialValue = FavoriteStationListUiState.Loading
+                initialValue = FavoriteStationListUiState.Loading,
             )
 
     private fun removeFavoriteStation(idStation: Int) = viewModelScope.launch {

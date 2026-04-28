@@ -82,6 +82,7 @@ fun StationList(
                         icon = swipeConfig.icon,
                         backgroundColor = swipeConfig.backgroundColor,
                         onClick = { swipeConfig.onSwipe(item.idServiceStation) },
+                        iconAnimationFile = swipeConfig.iconAnimationFile,
                     ),
                 ) {
                     stationItem()

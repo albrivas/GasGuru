@@ -9,4 +9,5 @@ data class SwipeItemModel(
     val onClick: () -> Unit,
     val enableDismissFromEndToStart: Boolean = true,
     val enableDismissFromStartToEnd: Boolean = true,
+    val iconAnimationFile: String? = null,
 )

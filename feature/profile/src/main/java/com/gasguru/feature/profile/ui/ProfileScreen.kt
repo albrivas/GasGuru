@@ -185,6 +185,7 @@ fun SuccessContent(
                             icon = Icons.Default.Delete,
                             backgroundColor = GasGuruTheme.colors.red500,
                             onClick = { onDeleteVehicle(vehicle.id) },
+                            iconAnimationFile = "files/trash_animated.json",
                         ),
                     ) {
                         VehicleItemCard(model = vehicle, onClick = { onEditVehicle(vehicle.id) })
