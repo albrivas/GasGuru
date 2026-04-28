@@ -20,6 +20,8 @@ kotlin {
         commonMain.dependencies {
             implementation(compose.materialIconsExtended)
             implementation(compose.components.uiToolingPreview)
+            implementation(libs.compottie)
+            implementation(libs.compottie.resources)
         }
         androidMain.dependencies {
             implementation(libs.androidx.core.ktx)
