@@ -49,14 +49,15 @@ class FavoriteListStationViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN location disabled WHEN collecting favorites THEN emits DisableLocation")
-    fun emitsDisableLocationWhenLocationIsDisabled() = runTest {
-        fakeLocationTracker.setLocationEnabled(false)
+    @DisplayName("GIVEN location is null WHEN collecting favorites THEN emits DisableLocation")
+    fun emitsDisableLocationWhenLocationIsNull() = runTest {
+        fakeLocationTracker.setLastKnownLocation(null)
         val viewModel = createViewModel()
 
         viewModel.favoriteStations.test {
             advanceUntilIdle()
             assertEquals(FavoriteStationListUiState.Loading, awaitItem())
+            assertEquals(FavoriteStationListUiState.DisableLocation, awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }
