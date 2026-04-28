@@ -7,4 +7,5 @@ data class StationListSwipeModel(
     val icon: ImageVector,
     val backgroundColor: Color,
     val onSwipe: (Int) -> Unit,
+    val iconAnimationFile: String? = null,
 )

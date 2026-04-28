@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Icon
@@ -17,9 +18,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.gasguru.core.uikit.components.icon.FuelStationIcons
+import com.gasguru.core.uikit.components.animation.GasGuruLottie
 import com.gasguru.core.uikit.components.fuelItem.FuelStationItem
 import com.gasguru.core.uikit.components.fuelItem.FuelStationItemModel
+import com.gasguru.core.uikit.components.icon.FuelStationIcons
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
@@ -49,6 +51,8 @@ fun SwipeItem(
         else -> backgroundColor.copy(alpha = 0f)
     }
 
+    val isSwiping = swipeState.progress != 0f
+
     SwipeToDismissBox(
         modifier = modifier,
         enableDismissFromEndToStart = enableDismissFromEndToStart,
@@ -62,22 +66,41 @@ fun SwipeItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(24.dp)
-                        .alpha(backgroundColorAlpha.alpha),
-                    tint = Color.White,
-                )
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(24.dp)
-                        .alpha(backgroundColorAlpha.alpha),
-                    tint = Color.White,
-                )
+                if (iconAnimationFile != null) {
+                    GasGuruLottie(
+                        filePath = iconAnimationFile,
+                        modifier = Modifier
+                            .padding(24.dp)
+                            .size(24.dp)
+                            .alpha(backgroundColorAlpha.alpha),
+                        isPlaying = isSwiping,
+                    )
+                    GasGuruLottie(
+                        filePath = iconAnimationFile,
+                        modifier = Modifier
+                            .padding(24.dp)
+                            .size(24.dp)
+                            .alpha(backgroundColorAlpha.alpha),
+                        isPlaying = isSwiping,
+                    )
+                } else {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(24.dp)
+                            .alpha(backgroundColorAlpha.alpha),
+                        tint = Color.White,
+                    )
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(24.dp)
+                            .alpha(backgroundColorAlpha.alpha),
+                        tint = Color.White,
+                    )
+                }
             }
         },
     ) {

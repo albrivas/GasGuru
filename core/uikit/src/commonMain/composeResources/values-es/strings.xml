@@ -23,4 +23,6 @@
     <string name="vehicle_fuel_capacity">%1$s · %2$d L</string>
     <string name="vehicle_capacity_litres">%1$d L</string>
     <string name="vehicle_default_name">Mi Vehículo</string>
+    <string name="location_disabled_description">Para poder ver las estaciones cercanas necesitamos que actives la localización en tu dispositivo</string>
+    <string name="location_disabled_button">Activar localización</string>
 </resources>

@@ -23,4 +23,6 @@
     <string name="vehicle_default_name">My Vehicle</string>
     <string name="vehicle_fuel_capacity">%1$s · %2$d L</string>
     <string name="vehicle_capacity_litres">%1$d L</string>
+    <string name="location_disabled_description">To see nearby stations you need to enable location on your device</string>
+    <string name="location_disabled_button">Enable location</string>
 </resources>
