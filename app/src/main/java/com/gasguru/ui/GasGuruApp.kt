@@ -34,7 +34,6 @@ import com.gasguru.core.ui.generated.resources.Res
 import com.gasguru.core.ui.generated.resources.alert_location_disabled_description
 import com.gasguru.core.ui.generated.resources.alert_location_disabled_primary_button
 import com.gasguru.core.ui.generated.resources.alert_location_disabled_title
-import org.jetbrains.compose.resources.stringResource as cmpStringResource
 import com.gasguru.core.uikit.components.alert.GasGuruAlertDialog
 import com.gasguru.core.uikit.components.alert.GasGuruAlertDialogModel
 import com.gasguru.core.uikit.components.alert_bar.AlertBar
@@ -42,6 +41,7 @@ import com.gasguru.core.uikit.components.alert_bar.AlertBarModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.feature.onboarding_welcome.navigation.OnboardingRoutes
 import com.gasguru.navigation.root.GasGuruNavHost
+import org.jetbrains.compose.resources.stringResource as cmpStringResource
 
 @Composable
 fun GasGuruApp(

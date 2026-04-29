@@ -29,7 +29,6 @@ import com.gasguru.core.uikit.components.GasGuruButton
 import com.gasguru.core.uikit.components.fuel_list.FuelItemModel
 import com.gasguru.core.uikit.components.fuel_list.FuelListSelection
 import com.gasguru.core.uikit.components.fuel_list.FuelListSelectionModel
-import org.jetbrains.compose.resources.stringResource as cmpStringResource
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
@@ -38,6 +37,7 @@ import com.gasguru.feature.onboarding_welcome.viewmodel.OnboardingViewModel
 import com.gasguru.navigation.LocalNavigationManager
 import com.gasguru.navigation.manager.NavigationDestination
 import org.koin.androidx.compose.koinViewModel
+import org.jetbrains.compose.resources.stringResource as cmpStringResource
 
 @Composable
 internal fun OnboardingFuelPreferencesRoute(

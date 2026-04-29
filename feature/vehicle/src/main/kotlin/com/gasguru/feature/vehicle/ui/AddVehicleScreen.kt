@@ -35,7 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import org.jetbrains.compose.resources.stringResource as cmpStringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
@@ -58,6 +57,7 @@ import com.gasguru.feature.vehicle.viewmodel.AddVehicleUiState
 import com.gasguru.feature.vehicle.viewmodel.AddVehicleViewModel
 import org.jetbrains.compose.resources.painterResource
 import org.koin.androidx.compose.koinViewModel
+import org.jetbrains.compose.resources.stringResource as cmpStringResource
 
 @Composable
 internal fun AddVehicleRoute(
