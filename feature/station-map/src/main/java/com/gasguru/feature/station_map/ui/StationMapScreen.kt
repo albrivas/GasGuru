@@ -68,6 +68,14 @@ import com.gasguru.core.components.searchbar.GasGuruSearchBar
 import com.gasguru.core.components.searchbar.GasGuruSearchBarModel
 import com.gasguru.core.model.data.FuelStationBrandsType
 import com.gasguru.core.model.data.FuelType
+import com.gasguru.core.ui.generated.resources.Res
+import com.gasguru.core.ui.generated.resources.alert_location_rationale_description
+import com.gasguru.core.ui.generated.resources.alert_location_rationale_primary_button
+import com.gasguru.core.ui.generated.resources.alert_location_rationale_title
+import com.gasguru.core.ui.generated.resources.alert_permission_denied_description
+import com.gasguru.core.ui.generated.resources.alert_permission_denied_primary_button
+import com.gasguru.core.ui.generated.resources.alert_permission_denied_title
+import com.gasguru.core.ui.generated.resources.nearby_stations
 import com.gasguru.core.ui.getPrice
 import com.gasguru.core.ui.mapper.toStationListItems
 import com.gasguru.core.ui.mapper.toUiModel
@@ -97,15 +105,6 @@ import com.gasguru.core.uikit.utils.maestroTestTag
 import com.gasguru.feature.station_map.BuildConfig
 import com.gasguru.feature.station_map.R
 import com.gasguru.feature.station_map.ui.models.RouteUiModel
-import org.jetbrains.compose.resources.stringResource as cmpStringResource
-import com.gasguru.core.ui.generated.resources.Res
-import com.gasguru.core.ui.generated.resources.alert_permission_denied_title
-import com.gasguru.core.ui.generated.resources.alert_permission_denied_description
-import com.gasguru.core.ui.generated.resources.alert_permission_denied_primary_button
-import com.gasguru.core.ui.generated.resources.alert_location_rationale_title
-import com.gasguru.core.ui.generated.resources.alert_location_rationale_description
-import com.gasguru.core.ui.generated.resources.alert_location_rationale_primary_button
-import com.gasguru.core.ui.generated.resources.nearby_stations
 import com.gasguru.navigation.LocalDeepLinkStateHolder
 import com.gasguru.navigation.LocalNavigationManager
 import com.gasguru.navigation.manager.NavigationDestination
@@ -127,6 +126,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import org.jetbrains.compose.resources.stringResource as cmpStringResource
 
 @Composable
 fun StationMapScreenRoute(

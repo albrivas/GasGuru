@@ -5,7 +5,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import org.jetbrains.compose.resources.stringResource as cmpStringResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toLowerCase
 import com.gasguru.core.model.data.LatLng
@@ -16,6 +15,7 @@ import com.gasguru.core.uikit.components.price.PriceItemModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.feature.detail_station.R
 import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.stringResource as cmpStringResource
 
 @Composable
 fun rememberDetailStationState(station: FuelStationUiModel, isOpen: Boolean) = remember(station, isOpen) {
