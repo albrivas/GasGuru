@@ -171,8 +171,8 @@ androidMain        iosMain
 
 ### Phase 6: UI Compartida (CMP)
 - [ ] Crear rama `feature/kmp-phase6-compose-mp` desde `develop`
-- [ ] 6A: `:core:ui` → CMP (mappers commonMain, InAppReview platform-specific)
-- [ ] 6B: `:core:uikit` → CMP (theme, componentes; reemplazar Lottie y ConstraintLayout)
+- [x] 6A: `:core:ui` → CMP (mappers commonMain, InAppReview platform-specific)
+- [x] 6B: `:core:uikit` → CMP (theme, componentes; reemplazar Lottie y ConstraintLayout)
 - [ ] 6C: `:core:components` → CMP (SearchBar + ViewModel commonMain)
 - [ ] Componentes renderizan en Android e iOS
 - [ ] PR → develop y merge
