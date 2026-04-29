@@ -1,6 +1,5 @@
 package com.gasguru.feature.profile.ui
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gasguru.core.analytics.AnalyticsHelper
@@ -24,7 +23,6 @@ import kotlinx.coroutines.launch
 
 class ProfileViewModel(
     getUserData: GetUserDataUseCase,
-    private val context: Context,
     private val saveThemeModeUseCase: SaveThemeModeUseCase,
     private val deleteVehicleUseCase: DeleteVehicleUseCase,
     private val getVehicleByIdUseCase: GetVehicleByIdUseCase,
@@ -41,7 +39,7 @@ class ProfileViewModel(
         val vehicles = userData.vehicles
             .sortedByDescending { it.isPrincipal }
             .map { vehicle ->
-                vehicle.toVehicleItemCardModel(context = context, isSelected = vehicle.isPrincipal)
+                vehicle.toVehicleItemCardModel(isSelected = vehicle.isPrincipal)
             }
         ProfileUiState.Success(
             content = ProfileContentUi(

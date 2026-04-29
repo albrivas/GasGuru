@@ -46,6 +46,9 @@ import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.favorite_list_station.R
 import com.gasguru.navigation.LocalNavigationManager
 import com.gasguru.navigation.manager.NavigationDestination
+import org.jetbrains.compose.resources.stringResource as cmpStringResource
+import com.gasguru.core.ui.generated.resources.Res
+import com.gasguru.core.ui.generated.resources.favorites
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -169,7 +172,7 @@ fun ListFuelStations(
     ) {
         Text(
             modifier = Modifier,
-            text = stringResource(id = com.gasguru.core.ui.R.string.favorites),
+            text = cmpStringResource(Res.string.favorites),
             style = GasGuruTheme.typography.h5,
             color = GasGuruTheme.colors.textMain
         )

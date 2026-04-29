@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource as cmpStringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
@@ -143,7 +144,7 @@ internal fun AddVehicleScreen(
                                     },
                                 ),
                             model = SelectedItemModel(
-                                title = stringResource(id = fuelTypeUiModel.translationRes),
+                                title = cmpStringResource(fuelTypeUiModel.translationRes),
                                 isSelected = fuelTypeUiModel.type == uiState.selectedFuelType,
                                 image = fuelTypeUiModel.iconRes,
                                 onItemSelected = {
@@ -246,7 +247,7 @@ private fun VehicleTypeSection(
                     modifier = Modifier.weight(weight = 1f),
                     model = VehicleTypeCardModel(
                         iconRes = vehicleTypeUiModel.iconRes,
-                        nameRes = stringResource(id = vehicleTypeUiModel.nameRes),
+                        nameRes = cmpStringResource(vehicleTypeUiModel.nameRes),
                         isSelected = vehicleTypeUiModel == selectedVehicleType,
                         onClick = { onSelect(vehicleTypeUiModel) },
                     ),

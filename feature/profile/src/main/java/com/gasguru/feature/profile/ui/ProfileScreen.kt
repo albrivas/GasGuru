@@ -33,6 +33,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource as cmpStringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -211,7 +212,7 @@ fun SuccessContent(
         SettingItem(
             model = SettingItemModel(
                 title = stringResource(id = R.string.theme_mode),
-                selection = stringResource(id = content.themeUi.titleRes),
+                selection = cmpStringResource(content.themeUi.titleRes),
                 icon = content.themeUi.iconRes,
                 onClick = { onSheetRequest(ProfileSheet.Theme) },
             ),
@@ -228,8 +229,8 @@ fun ThemeModeSheet(
     onDismiss: () -> Unit,
     onThemeSelected: (ThemeModeUi) -> Unit,
 ) {
-    val themeOptions = allThemesUi.map { stringResource(it.titleRes) }
-    val selectedOption = stringResource(selectedTheme.titleRes)
+    val themeOptions = allThemesUi.map { cmpStringResource(it.titleRes) }
+    val selectedOption = cmpStringResource(selectedTheme.titleRes)
 
     FilterSheet(
         model = FilterSheetModel(

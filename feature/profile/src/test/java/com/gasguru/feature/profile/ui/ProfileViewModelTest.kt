@@ -1,6 +1,5 @@
 package com.gasguru.feature.profile.ui
 
-import android.content.Context
 import app.cash.turbine.test
 import com.gasguru.core.analytics.NoOpAnalyticsHelper
 import com.gasguru.core.domain.user.GetUserDataUseCase
@@ -19,8 +18,6 @@ import com.gasguru.core.testing.fakes.data.vehicle.FakeVehicleRepository
 import com.gasguru.core.testing.fakes.navigation.FakeNavigationManager
 import com.gasguru.core.ui.mapper.toUi
 import com.gasguru.navigation.manager.NavigationDestination
-import io.mockk.every
-import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -38,7 +35,6 @@ class ProfileViewModelTest {
     private lateinit var fakeUserDataRepository: FakeUserDataRepository
     private lateinit var fakeVehicleRepository: FakeVehicleRepository
     private lateinit var fakeNavigationManager: FakeNavigationManager
-    private lateinit var mockContext: Context
 
     private lateinit var sut: ProfileViewModel
 
@@ -70,11 +66,8 @@ class ProfileViewModelTest {
         )
         fakeVehicleRepository = FakeVehicleRepository(initialVehicles = defaultVehicles)
         fakeNavigationManager = FakeNavigationManager()
-        mockContext = mockk<Context>(relaxed = true)
-        every { mockContext.getString(any()) } returns "Gasoline 95"
         sut = ProfileViewModel(
             getUserData = GetUserDataUseCase(fakeUserDataRepository),
-            context = mockContext,
             saveThemeModeUseCase = SaveThemeModeUseCase(fakeUserDataRepository),
             deleteVehicleUseCase = DeleteVehicleUseCase(fakeVehicleRepository),
             getVehicleByIdUseCase = GetVehicleByIdUseCase(fakeVehicleRepository),
@@ -165,7 +158,7 @@ class ProfileViewModelTest {
         )
         val viewModel = ProfileViewModel(
             getUserData = GetUserDataUseCase(repositoryWithReversedOrder),
-            context = mockContext,
+
             saveThemeModeUseCase = SaveThemeModeUseCase(repositoryWithReversedOrder),
             deleteVehicleUseCase = DeleteVehicleUseCase(fakeVehicleRepository),
             getVehicleByIdUseCase = GetVehicleByIdUseCase(fakeVehicleRepository),
@@ -308,7 +301,7 @@ class ProfileViewModelTest {
                     )
                 )
             ),
-            context = mockContext,
+
             saveThemeModeUseCase = SaveThemeModeUseCase(fakeUserDataRepository),
             deleteVehicleUseCase = DeleteVehicleUseCase(singleVehicleRepository),
             getVehicleByIdUseCase = GetVehicleByIdUseCase(singleVehicleRepository),
@@ -373,7 +366,7 @@ class ProfileViewModelTest {
             getUserData = GetUserDataUseCase(
                 FakeUserDataRepository(initialUserData = UserData(vehicles = threeVehicles))
             ),
-            context = mockContext,
+
             saveThemeModeUseCase = SaveThemeModeUseCase(fakeUserDataRepository),
             deleteVehicleUseCase = DeleteVehicleUseCase(threeVehicleRepository),
             getVehicleByIdUseCase = GetVehicleByIdUseCase(threeVehicleRepository),
