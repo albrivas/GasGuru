@@ -13,7 +13,8 @@ import com.gasguru.feature.profile.R
 import com.gasguru.feature.profile.ui.ProfileContentUi
 import com.gasguru.feature.profile.ui.ProfileScreen
 import com.gasguru.feature.profile.ui.ProfileUiState
-import com.gasguru.core.uikit.R as RUikit
+import com.gasguru.core.uikit.generated.resources.Res
+import com.gasguru.core.uikit.generated.resources.ic_vehicle_car
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
@@ -70,8 +71,8 @@ class ProfileScreenTest : BaseTest() {
                 VehicleItemCardModel(
                     id = 42L,
                     name = "Golf VII",
-                    vehicleTypeIconRes = RUikit.drawable.ic_vehicle_car,
-                    fuelTypeTranslationRes = com.gasguru.core.ui.R.string.gasoline_95,
+                    vehicleTypeIconRes = Res.drawable.ic_vehicle_car,
+                    fuelTypeTranslationRes = getStringResource(com.gasguru.core.ui.R.string.gasoline_95),
                     tankCapacityLitres = 55,
                     isSelected = true,
                 ),

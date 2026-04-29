@@ -1,6 +1,5 @@
 plugins {
-    alias(libs.plugins.gasguru.android.library)
-    alias(libs.plugins.gasguru.compose.library)
+    alias(libs.plugins.gasguru.kmp.compose.library)
 }
 
 android {
@@ -8,12 +7,30 @@ android {
 }
 
 dependencies {
-    androidTestImplementation(projects.core.testing)
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.constraint.layout)
-    implementation(libs.lottie.compose)
+    debugImplementation(compose.uiTooling)
+}
 
-    androidTestImplementation(libs.junit5.compose)
-    androidTestImplementation(libs.junit5.api)
-    androidTestImplementation(libs.junit5.extensions)
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "com.gasguru.core.uikit.generated.resources"
+}
+
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            implementation(compose.materialIconsExtended)
+            implementation(compose.components.uiToolingPreview)
+            implementation(libs.compottie)
+            implementation(libs.compottie.resources)
+        }
+        androidMain.dependencies {
+            implementation(libs.androidx.core.ktx)
+        }
+        androidInstrumentedTest.dependencies {
+            implementation(projects.core.testing)
+            implementation(libs.junit5.compose)
+            implementation(libs.junit5.api)
+            implementation(libs.junit5.extensions)
+        }
+    }
 }

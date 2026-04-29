@@ -236,6 +236,17 @@ en `app/src/test/kotlin/com/gasguru/KoinModulesTest.kt:9` y `:61`.
 
 ---
 
+## L016 — Tras migración KMP: buscar TODOS los usos de `R.drawable`/`R.string` del módulo migrado antes de commitear
+
+**Fecha**: 2026-04-27
+**Contexto**: Migración de `core:uikit` a Compose Multiplatform. Los modelos cambian de `Int` (R.drawable/R.string) a `DrawableResource` y `String`.
+
+**Error**: Se corrigieron los tests de `core:uikit` pero no se buscaron los tests de otros módulos (`feature:profile`) que también instancian esos modelos con los tipos antiguos. Resultado: varios ciclos de CI fallidos corrigiendo un archivo a la vez.
+
+**Regla**: Tras cualquier migración KMP que cambie tipos de modelos, ejecutar `grep -rn "R\.drawable\|R\.string" --include="*.kt"` en todo el repo para encontrar TODOS los usos afectados y corregirlos en un único commit.
+
+---
+
 ## L015 — `MissingKoinStopInTest` genera falso positivo en clases `Application`
 
 **Fecha**: 2026-04-22

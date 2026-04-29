@@ -1,13 +1,13 @@
 package com.gasguru.core.ui.models
 
-import androidx.annotation.DrawableRes
 import com.gasguru.core.model.data.FuelStationBrandsType
 import com.gasguru.core.uikit.components.icon.FuelStationIcons
+import org.jetbrains.compose.resources.DrawableResource
 
 data class FuelStationBrandsUiModel(
     val type: FuelStationBrandsType,
     val name: String,
-    @DrawableRes val iconRes: Int
+    val iconRes: DrawableResource
 ) {
     companion object {
         val ALL_BRANDS = listOf(
