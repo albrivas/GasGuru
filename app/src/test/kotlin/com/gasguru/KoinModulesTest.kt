@@ -12,7 +12,7 @@ import com.gasguru.core.data.di.dataProviderModule
 import com.gasguru.core.database.di.daoModule
 import com.gasguru.core.database.di.databaseModule
 import com.gasguru.core.domain.di.domainModule
-import com.gasguru.core.network.di.ktorModule
+import com.gasguru.core.network.di.networkModule
 import com.gasguru.core.network.di.placesModule
 import com.gasguru.core.notifications.di.notificationModule
 import com.gasguru.core.supabase.di.supabaseModule
@@ -56,7 +56,7 @@ class KoinModulesTest {
                 coroutineModule,
                 databaseModule,
                 daoModule,
-                ktorModule,
+                networkModule(),
                 placesModule(),
                 supabaseModule,
                 notificationModule,

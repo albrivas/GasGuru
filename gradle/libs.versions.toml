@@ -33,7 +33,7 @@ loggingInterceptor = "4.12.0"
 appcompat = "1.7.1"
 material = "1.13.0"
 playServicesLocation = "21.3.0"
-lottie = "6.6.2"
+compottie = "2.0.0-rc04"
 googleGmsGoogleServices = "4.4.2"
 detekt = "1.23.8"
 detekt-koin-rules = "1.1.0"
@@ -58,7 +58,7 @@ supabase = "3.2.6"
 ktorClientAndroid = "3.3.1"
 ktor = "3.4.0"
 kotlinxDatetime = "0.7.1"
-composeMultiplatform = "1.10.0"
+composeMultiplatform = "1.10.3"
 jetbrainsNavigationCompose = "2.9.2"
 playReview = "2.0.1"
 sonar="7.2.2.6593"
@@ -126,7 +126,8 @@ appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "a
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 kotlin-coroutines-play = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "coroutines" }
-lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
+compottie = { group = "io.github.alexzhirkevich", name = "compottie", version.ref = "compottie" }
+compottie-resources = { group = "io.github.alexzhirkevich", name = "compottie-resources", version.ref = "compottie" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 detekt-koin-rules = { module = "dev.androidbroadcast.rules.koin:detekt-koin4-rules", version.ref = "detekt-koin-rules" }
 maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }

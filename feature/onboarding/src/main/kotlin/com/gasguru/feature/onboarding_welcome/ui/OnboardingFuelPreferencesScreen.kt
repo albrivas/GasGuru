@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -63,6 +64,7 @@ internal fun OnboardingFuelPreferences(
     onSelectedFuel: (FuelType) -> Unit,
     saveSelection: (FuelType) -> Unit = {},
 ) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -98,10 +100,10 @@ internal fun OnboardingFuelPreferences(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(bottom = 8.dp),
                 model = FuelListSelectionModel(
-                    list = fuelList.map { it.toUiModel().toFuelItem() },
+                    list = fuelList.map { it.toUiModel().toFuelItem(context) },
                     selected = null,
-                    onItemSelected = { fuel ->
-                        onSelectedFuel(fuel.toFuelType())
+                    onItemSelected = { fuelName ->
+                        onSelectedFuel(fuelName.toFuelType(context))
                     },
                 ),
             )

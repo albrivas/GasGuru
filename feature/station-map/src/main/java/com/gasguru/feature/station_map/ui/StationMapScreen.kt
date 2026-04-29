@@ -51,11 +51,9 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.core.content.ContextCompat
@@ -120,7 +118,6 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
-import com.gasguru.core.uikit.R as RUikit
 
 @Composable
 fun StationMapScreenRoute(
@@ -365,8 +362,8 @@ internal fun StationMapScreen(
                         swipeConfig = null,
                         testTag = "map_station_list",
                         tabNames = listOf(
-                            stringResource(com.gasguru.core.uikit.R.string.tab_price),
-                            stringResource(com.gasguru.core.uikit.R.string.tab_distance)
+                            stringResource(R.string.tab_price),
+                            stringResource(R.string.tab_distance)
                         )
                     )
                 )
@@ -586,7 +583,9 @@ fun FloatingButtons(
                 contentColor = GasGuruTheme.colors.neutralBlack,
             ) {
                 Icon(
-                    imageVector = ImageVector.vectorResource(id = RUikit.drawable.ic_my_location),
+                    painter = org.jetbrains.compose.resources.painterResource(
+                        com.gasguru.core.uikit.components.icon.UiKitIcons.MyLocation
+                    ),
                     tint = GasGuruTheme.colors.textSubtle,
                     contentDescription = "User location",
                 )

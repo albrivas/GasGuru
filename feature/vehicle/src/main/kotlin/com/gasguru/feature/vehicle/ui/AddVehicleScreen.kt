@@ -34,7 +34,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -45,6 +44,7 @@ import com.gasguru.core.ui.models.FuelTypeUiModel
 import com.gasguru.core.ui.models.VehicleTypeUiModel
 import com.gasguru.core.uikit.components.GasGuruButton
 import com.gasguru.core.uikit.components.capacity_picker.CapacityPickerBottomSheet
+import com.gasguru.core.uikit.components.icon.UiKitIcons
 import com.gasguru.core.uikit.components.selectedItem.SelectedItem
 import com.gasguru.core.uikit.components.selectedItem.SelectedItemModel
 import com.gasguru.core.uikit.components.vehicle_type.VehicleTypeCard
@@ -55,6 +55,7 @@ import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.vehicle.R
 import com.gasguru.feature.vehicle.viewmodel.AddVehicleUiState
 import com.gasguru.feature.vehicle.viewmodel.AddVehicleViewModel
+import org.jetbrains.compose.resources.painterResource
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -142,7 +143,7 @@ internal fun AddVehicleScreen(
                                     },
                                 ),
                             model = SelectedItemModel(
-                                title = fuelTypeUiModel.translationRes,
+                                title = stringResource(id = fuelTypeUiModel.translationRes),
                                 isSelected = fuelTypeUiModel.type == uiState.selectedFuelType,
                                 image = fuelTypeUiModel.iconRes,
                                 onItemSelected = {
@@ -245,7 +246,7 @@ private fun VehicleTypeSection(
                     modifier = Modifier.weight(weight = 1f),
                     model = VehicleTypeCardModel(
                         iconRes = vehicleTypeUiModel.iconRes,
-                        nameRes = vehicleTypeUiModel.nameRes,
+                        nameRes = stringResource(id = vehicleTypeUiModel.nameRes),
                         isSelected = vehicleTypeUiModel == selectedVehicleType,
                         onClick = { onSelect(vehicleTypeUiModel) },
                     ),
@@ -384,7 +385,7 @@ private fun CapacitySection(
                 modifier = Modifier.padding(end = 8.dp),
             )
             Icon(
-                painter = painterResource(id = com.gasguru.core.uikit.R.drawable.ic_chevron_right),
+                painter = painterResource(UiKitIcons.ChevronRight),
                 contentDescription = null,
                 tint = GasGuruTheme.colors.neutral600,
                 modifier = Modifier.size(size = 20.dp),

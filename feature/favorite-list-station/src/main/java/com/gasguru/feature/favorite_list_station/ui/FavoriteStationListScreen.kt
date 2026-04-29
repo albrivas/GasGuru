@@ -1,5 +1,7 @@
 package com.gasguru.feature.favorite_list_station.ui
 
+import android.content.Intent
+import android.provider.Settings
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -11,6 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -19,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
@@ -29,6 +34,7 @@ import com.gasguru.core.model.data.previewFuelStationDomain
 import com.gasguru.core.ui.mapper.toStationListItems
 import com.gasguru.core.ui.mapper.toUiModel
 import com.gasguru.core.ui.models.FuelStationUiModel
+import com.gasguru.core.uikit.components.empty_states.LocationDisabledState
 import com.gasguru.core.uikit.components.filterable_station_list.FilterableStationList
 import com.gasguru.core.uikit.components.filterable_station_list.FilterableStationListModel
 import com.gasguru.core.uikit.components.loading.GasGuruLoading
@@ -46,6 +52,7 @@ import org.koin.androidx.compose.koinViewModel
 fun FavoriteListStationScreenRoute(
     viewModel: FavoriteListStationViewModel = koinViewModel(),
 ) {
+    val context = LocalContext.current
     val navigationManager = LocalNavigationManager.current
     val state by viewModel.favoriteStations.collectAsStateWithLifecycle()
     val tabState by viewModel.tabState.collectAsStateWithLifecycle()
@@ -60,7 +67,10 @@ fun FavoriteListStationScreenRoute(
                 ),
             )
         },
-        event = viewModel::handleEvents
+        event = viewModel::handleEvents,
+        onOpenLocationSettings = {
+            context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+        },
     )
 }
 
@@ -70,6 +80,7 @@ internal fun FavoriteListStationScreen(
     tabState: SelectedTabUiState,
     navigateToDetail: (Int) -> Unit,
     event: (FavoriteStationEvent) -> Unit,
+    onOpenLocationSettings: () -> Unit = {},
 ) {
     Column(
         modifier = Modifier
@@ -82,6 +93,10 @@ internal fun FavoriteListStationScreen(
     ) {
         when (uiState) {
             FavoriteStationListUiState.Error -> Unit
+            FavoriteStationListUiState.DisableLocation -> LocationDisabledState(
+                modifier = Modifier.statusBarsPadding(),
+                onEnableClick = onOpenLocationSettings,
+            )
             FavoriteStationListUiState.Loading -> {
                 GasGuruLoading(
                     modifier = Modifier
@@ -166,14 +181,15 @@ fun ListFuelStations(
                 onTabChange = { event(FavoriteStationEvent.ChangeTab(selected = it)) },
                 onStationClick = navigateToDetail,
                 swipeConfig = StationListSwipeModel(
-                    iconAnimated = com.gasguru.core.ui.R.raw.trash_animated,
+                    icon = Icons.Default.Delete,
                     backgroundColor = GasGuruTheme.colors.red500,
-                    onSwipe = { event(FavoriteStationEvent.RemoveFavoriteStation(it)) }
+                    onSwipe = { event(FavoriteStationEvent.RemoveFavoriteStation(it)) },
+                    iconAnimationFile = "files/trash_animated.json",
                 ),
                 testTag = "favorite_list",
                 tabNames = listOf(
-                    stringResource(com.gasguru.core.uikit.R.string.tab_price),
-                    stringResource(com.gasguru.core.uikit.R.string.tab_distance)
+                    stringResource(R.string.tab_price),
+                    stringResource(R.string.tab_distance)
                 )
             ),
             modifier = modifier

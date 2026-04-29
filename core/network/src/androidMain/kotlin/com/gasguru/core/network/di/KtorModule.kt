@@ -22,7 +22,7 @@ private const val ROUTE_BASE_URL = "https://routes.googleapis.com/"
 
 const val ROUTE_HTTP_CLIENT = "routeHttpClient"
 
-val ktorModule = module {
+fun networkModule() = module {
     single<Json> {
         Json {
             ignoreUnknownKeys = true

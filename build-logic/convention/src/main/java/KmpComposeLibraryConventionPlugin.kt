@@ -4,6 +4,7 @@ import com.gasguru.build_logic.convention.getLibrary
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
+import org.jetbrains.compose.ComposePlugin
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 class KmpComposeLibraryConventionPlugin : Plugin<Project> {
@@ -14,17 +15,15 @@ class KmpComposeLibraryConventionPlugin : Plugin<Project> {
             pluginManager.apply("org.jetbrains.kotlin.plugin.compose")
             pluginManager.apply("org.jetbrains.kotlin.plugin.serialization")
 
-            extensions.configure<LibraryExtension> {
-                buildFeatures.compose = true
-            }
-
             extensions.configure<KotlinMultiplatformExtension> {
+                val compose = ComposePlugin.Dependencies(this@with)
+
                 sourceSets.commonMain.dependencies {
-                    implementation(getLibrary("compose.multiplatform.runtime"))
-                    implementation(getLibrary("compose.multiplatform.foundation"))
-                    implementation(getLibrary("compose.multiplatform.material3"))
-                    implementation(getLibrary("compose.multiplatform.ui"))
-                    implementation(getLibrary("compose.multiplatform.components.resources"))
+                    implementation(compose.runtime)
+                    implementation(compose.foundation)
+                    implementation(compose.material3)
+                    implementation(compose.ui)
+                    api(compose.components.resources)
                     implementation(getLibrary("kotlinx.serialization.json"))
                 }
                 sourceSets.androidMain.dependencies {

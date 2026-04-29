@@ -14,6 +14,7 @@ import com.gasguru.core.ui.models.FuelTypeUiModel
 import com.gasguru.core.uikit.components.price.PriceItemModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.feature.detail_station.R
+import org.jetbrains.compose.resources.DrawableResource
 
 @Composable
 fun rememberDetailStationState(station: FuelStationUiModel, isOpen: Boolean) = remember(station, isOpen) {
@@ -61,7 +62,7 @@ class DetailStationState(internal val station: FuelStationUiModel, internal val 
             false -> GasGuruTheme.colors.accentRed
         }
 
-    internal val brandIcon: Int
+    internal val brandIcon: DrawableResource
         get() = station.brandIcon
 
     internal val idServiceStation: Int
