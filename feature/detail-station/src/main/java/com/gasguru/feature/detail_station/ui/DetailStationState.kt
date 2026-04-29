@@ -5,6 +5,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource as cmpStringResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toLowerCase
 import com.gasguru.core.model.data.LatLng
@@ -31,7 +32,7 @@ class DetailStationState(internal val station: FuelStationUiModel, internal val 
 
             PriceItemModel(
                 icon = fuelUiModel.iconRes,
-                fuelName = stringResource(id = fuelUiModel.translationRes),
+                fuelName = cmpStringResource(fuelUiModel.translationRes),
                 price = priceModel.formattedPrice
             )
         }

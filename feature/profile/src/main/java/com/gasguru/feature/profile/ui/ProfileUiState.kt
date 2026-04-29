@@ -3,6 +3,8 @@ package com.gasguru.feature.profile.ui
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.gasguru.core.model.data.ThemeMode
+import com.gasguru.core.ui.generated.resources.Res
+import com.gasguru.core.ui.generated.resources.gasoline_95
 import com.gasguru.core.ui.mapper.toUi
 import com.gasguru.core.ui.models.ThemeModeUi
 import com.gasguru.core.uikit.components.icon.VehicleTypeIcons
@@ -36,7 +38,7 @@ class ProfileContentUiPreviewParameterProvider : PreviewParameterProvider<Profil
                     id = 1L,
                     name = "Golf VIII",
                     vehicleTypeIconRes = VehicleTypeIcons.Car,
-                    fuelTypeTranslationRes = "Gasoline 95",
+                    fuelTypeTranslationRes = Res.string.gasoline_95,
                     tankCapacityLitres = 55,
                     isSelected = true,
                 ),
@@ -44,7 +46,7 @@ class ProfileContentUiPreviewParameterProvider : PreviewParameterProvider<Profil
                     id = 2L,
                     name = "Honda CB500",
                     vehicleTypeIconRes = VehicleTypeIcons.Motorcycle,
-                    fuelTypeTranslationRes = "Gasoline 95",
+                    fuelTypeTranslationRes = Res.string.gasoline_95,
                     tankCapacityLitres = 18,
                     isSelected = false,
                 ),
@@ -58,7 +60,7 @@ class ProfileContentUiPreviewParameterProvider : PreviewParameterProvider<Profil
                     id = 1L,
                     name = "Golf VIII",
                     vehicleTypeIconRes = VehicleTypeIcons.Car,
-                    fuelTypeTranslationRes = "Gasoline 95",
+                    fuelTypeTranslationRes = Res.string.gasoline_95,
                     tankCapacityLitres = 55,
                     isSelected = false,
                 ),
@@ -66,7 +68,7 @@ class ProfileContentUiPreviewParameterProvider : PreviewParameterProvider<Profil
                     id = 2L,
                     name = "Honda CB500",
                     vehicleTypeIconRes = VehicleTypeIcons.Motorcycle,
-                    fuelTypeTranslationRes = "Gasoline 95",
+                    fuelTypeTranslationRes = Res.string.gasoline_95,
                     tankCapacityLitres = 18,
                     isSelected = false,
                 ),

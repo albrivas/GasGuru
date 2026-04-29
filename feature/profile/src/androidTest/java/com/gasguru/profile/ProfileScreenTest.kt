@@ -13,6 +13,8 @@ import com.gasguru.feature.profile.R
 import com.gasguru.feature.profile.ui.ProfileContentUi
 import com.gasguru.feature.profile.ui.ProfileScreen
 import com.gasguru.feature.profile.ui.ProfileUiState
+import com.gasguru.core.ui.generated.resources.Res as CoreUiRes
+import com.gasguru.core.ui.generated.resources.gasoline_95
 import com.gasguru.core.uikit.generated.resources.Res
 import com.gasguru.core.uikit.generated.resources.ic_vehicle_car
 import org.junit.jupiter.api.DisplayName
@@ -72,7 +74,7 @@ class ProfileScreenTest : BaseTest() {
                     id = 42L,
                     name = "Golf VII",
                     vehicleTypeIconRes = Res.drawable.ic_vehicle_car,
-                    fuelTypeTranslationRes = getStringResource(com.gasguru.core.ui.R.string.gasoline_95),
+                    fuelTypeTranslationRes = CoreUiRes.string.gasoline_95,
                     tankCapacityLitres = 55,
                     isSelected = true,
                 ),
