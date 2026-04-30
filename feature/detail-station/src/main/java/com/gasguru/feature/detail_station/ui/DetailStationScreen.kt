@@ -74,6 +74,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.gasguru.core.analytics.LocalAnalyticsHelper
 import com.gasguru.core.model.data.FuelStationBrandsType
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.LatLng
@@ -84,7 +85,6 @@ import com.gasguru.core.ui.iconTint
 import com.gasguru.core.ui.mapper.toPriceUiModel
 import com.gasguru.core.ui.mapper.toUiModel
 import com.gasguru.core.ui.models.FuelTypeUiModel
-import com.gasguru.core.ui.review.findActivity
 import com.gasguru.core.ui.review.rememberInAppReviewManager
 import com.gasguru.core.uikit.components.GasGuruButton
 import com.gasguru.core.uikit.components.fuel_type_chip.FuelTypeChipModel
@@ -104,6 +104,8 @@ import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.detail_station.R
+import com.gasguru.feature.detail_station.analytics.trackInAppReviewCompleted
+import com.gasguru.feature.detail_station.analytics.trackInAppReviewFailed
 import com.gasguru.feature.detail_station.formatSchedule
 import com.gasguru.feature.detail_station.getTimeElapsedString
 import com.gasguru.navigation.LocalNavigationManager
@@ -111,6 +113,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.koin.androidx.compose.koinViewModel
 import java.text.DecimalFormat
+import org.jetbrains.compose.resources.stringResource as cmpStringResource
 
 @Composable
 internal fun DetailStationScreenRoute(
@@ -315,7 +318,7 @@ fun DetailStationContent(
                 TankCostCard(
                     model = TankCostCardModel(
                         fuelTypeChip = FuelTypeChipModel(
-                            nameRes = stringResource(id = fuelUiModel.translationRes),
+                            nameRes = cmpStringResource(fuelUiModel.translationRes),
                         ),
                         totalCost = "${DecimalFormat(
                             "0.00"
@@ -436,9 +439,9 @@ fun HeaderStation(
     onPriceAlertClick: () -> Unit,
     onEvent: (DetailStationEvent) -> Unit,
 ) {
-    val context = LocalContext.current
     val reviewManager = rememberInAppReviewManager()
     val coroutineScope = rememberCoroutineScope()
+    val analyticsHelper = LocalAnalyticsHelper.current
 
     Box(modifier = Modifier.fillMaxWidth()) {
         AsyncImage(
@@ -521,15 +524,16 @@ fun HeaderStation(
 
                     if (wasNotFavorite) {
                         coroutineScope.launch {
-                            context.findActivity()?.let { activity ->
-                                reviewManager.launchReviewFlow(
-                                    activity = activity,
-                                    onReviewCompleted = {
-                                    },
-                                    onReviewFailed = { _ ->
-                                    }
-                                )
-                            }
+                            reviewManager?.launchReviewFlow(
+                                onReviewCompleted = {
+                                    analyticsHelper.trackInAppReviewCompleted()
+                                },
+                                onReviewFailed = { exception ->
+                                    analyticsHelper.trackInAppReviewFailed(
+                                        errorMessage = exception.message.orEmpty(),
+                                    )
+                                },
+                            )
                         }
                     }
                 },

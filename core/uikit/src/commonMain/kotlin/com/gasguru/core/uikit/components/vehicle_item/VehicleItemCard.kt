@@ -107,7 +107,7 @@ private fun ActiveVehicleRow(
                 Text(
                     text = stringResource(
                         Res.string.vehicle_fuel_capacity,
-                        model.fuelTypeTranslationRes,
+                        stringResource(model.fuelTypeTranslationRes),
                         model.tankCapacityLitres,
                     ),
                     style = GasGuruTheme.typography.captionRegular,
@@ -164,7 +164,7 @@ private fun InactiveVehicleRow(
                 Text(
                     text = stringResource(
                         Res.string.vehicle_fuel_capacity,
-                        model.fuelTypeTranslationRes,
+                        stringResource(model.fuelTypeTranslationRes),
                         model.tankCapacityLitres,
                     ),
                     style = GasGuruTheme.typography.captionRegular,
@@ -195,7 +195,7 @@ private fun VehicleItemCardSelectedPreview() {
                     id = 1L,
                     name = "Golf VIII",
                     vehicleTypeIconRes = Res.drawable.ic_vehicle_car,
-                    fuelTypeTranslationRes = stringResource(Res.string.preview_fuel_type),
+                    fuelTypeTranslationRes = Res.string.preview_fuel_type,
                     tankCapacityLitres = 55,
                     isSelected = true,
                 ),
@@ -219,7 +219,7 @@ private fun VehicleItemCardUnselectedPreview() {
                     id = 2L,
                     name = "Honda CB500",
                     vehicleTypeIconRes = Res.drawable.ic_vehicle_motorcycle,
-                    fuelTypeTranslationRes = stringResource(Res.string.preview_fuel_type),
+                    fuelTypeTranslationRes = Res.string.preview_fuel_type,
                     tankCapacityLitres = 18,
                     isSelected = false,
                 ),

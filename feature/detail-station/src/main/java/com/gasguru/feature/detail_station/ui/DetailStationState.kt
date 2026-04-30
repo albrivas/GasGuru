@@ -15,6 +15,7 @@ import com.gasguru.core.uikit.components.price.PriceItemModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.feature.detail_station.R
 import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.stringResource as cmpStringResource
 
 @Composable
 fun rememberDetailStationState(station: FuelStationUiModel, isOpen: Boolean) = remember(station, isOpen) {
@@ -31,7 +32,7 @@ class DetailStationState(internal val station: FuelStationUiModel, internal val 
 
             PriceItemModel(
                 icon = fuelUiModel.iconRes,
-                fuelName = stringResource(id = fuelUiModel.translationRes),
+                fuelName = cmpStringResource(fuelUiModel.translationRes),
                 price = priceModel.formattedPrice
             )
         }

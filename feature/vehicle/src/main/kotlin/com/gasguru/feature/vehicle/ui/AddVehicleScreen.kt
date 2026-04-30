@@ -57,6 +57,7 @@ import com.gasguru.feature.vehicle.viewmodel.AddVehicleUiState
 import com.gasguru.feature.vehicle.viewmodel.AddVehicleViewModel
 import org.jetbrains.compose.resources.painterResource
 import org.koin.androidx.compose.koinViewModel
+import org.jetbrains.compose.resources.stringResource as cmpStringResource
 
 @Composable
 internal fun AddVehicleRoute(
@@ -143,7 +144,7 @@ internal fun AddVehicleScreen(
                                     },
                                 ),
                             model = SelectedItemModel(
-                                title = stringResource(id = fuelTypeUiModel.translationRes),
+                                title = cmpStringResource(fuelTypeUiModel.translationRes),
                                 isSelected = fuelTypeUiModel.type == uiState.selectedFuelType,
                                 image = fuelTypeUiModel.iconRes,
                                 onItemSelected = {
@@ -246,7 +247,7 @@ private fun VehicleTypeSection(
                     modifier = Modifier.weight(weight = 1f),
                     model = VehicleTypeCardModel(
                         iconRes = vehicleTypeUiModel.iconRes,
-                        nameRes = stringResource(id = vehicleTypeUiModel.nameRes),
+                        nameRes = cmpStringResource(vehicleTypeUiModel.nameRes),
                         isSelected = vehicleTypeUiModel == selectedVehicleType,
                         onClick = { onSelect(vehicleTypeUiModel) },
                     ),

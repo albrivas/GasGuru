@@ -23,10 +23,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.model.data.FuelType
-import com.gasguru.core.ui.mapper.toFuelItem
 import com.gasguru.core.ui.mapper.toUiModel
 import com.gasguru.core.ui.toFuelType
 import com.gasguru.core.uikit.components.GasGuruButton
+import com.gasguru.core.uikit.components.fuel_list.FuelItemModel
 import com.gasguru.core.uikit.components.fuel_list.FuelListSelection
 import com.gasguru.core.uikit.components.fuel_list.FuelListSelectionModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
@@ -37,6 +37,7 @@ import com.gasguru.feature.onboarding_welcome.viewmodel.OnboardingViewModel
 import com.gasguru.navigation.LocalNavigationManager
 import com.gasguru.navigation.manager.NavigationDestination
 import org.koin.androidx.compose.koinViewModel
+import org.jetbrains.compose.resources.stringResource as cmpStringResource
 
 @Composable
 internal fun OnboardingFuelPreferencesRoute(
@@ -100,7 +101,13 @@ internal fun OnboardingFuelPreferences(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(bottom = 8.dp),
                 model = FuelListSelectionModel(
-                    list = fuelList.map { it.toUiModel().toFuelItem(context) },
+                    list = fuelList.map { fuelType ->
+                        val uiModel = fuelType.toUiModel()
+                        FuelItemModel(
+                            iconRes = uiModel.iconRes,
+                            nameRes = cmpStringResource(uiModel.translationRes),
+                        )
+                    },
                     selected = null,
                     onItemSelected = { fuelName ->
                         onSelectedFuel(fuelName.toFuelType(context))
