@@ -68,6 +68,14 @@ import com.gasguru.core.components.searchbar.GasGuruSearchBar
 import com.gasguru.core.components.searchbar.GasGuruSearchBarModel
 import com.gasguru.core.model.data.FuelStationBrandsType
 import com.gasguru.core.model.data.FuelType
+import com.gasguru.core.ui.generated.resources.Res
+import com.gasguru.core.ui.generated.resources.alert_location_rationale_description
+import com.gasguru.core.ui.generated.resources.alert_location_rationale_primary_button
+import com.gasguru.core.ui.generated.resources.alert_location_rationale_title
+import com.gasguru.core.ui.generated.resources.alert_permission_denied_description
+import com.gasguru.core.ui.generated.resources.alert_permission_denied_primary_button
+import com.gasguru.core.ui.generated.resources.alert_permission_denied_title
+import com.gasguru.core.ui.generated.resources.nearby_stations
 import com.gasguru.core.ui.getPrice
 import com.gasguru.core.ui.mapper.toStationListItems
 import com.gasguru.core.ui.mapper.toUiModel
@@ -118,6 +126,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import org.jetbrains.compose.resources.stringResource as cmpStringResource
 
 @Composable
 fun StationMapScreenRoute(
@@ -196,11 +205,9 @@ fun StationMapScreenRoute(
                     icon = Icons.Outlined.GppBad,
                     iconTint = GasGuruTheme.colors.red500,
                     iconBackgroundColor = GasGuruTheme.colors.red500.copy(alpha = 0.2f),
-                    title = stringResource(id = com.gasguru.core.ui.R.string.alert_permission_denied_title),
-                    description = stringResource(id = com.gasguru.core.ui.R.string.alert_permission_denied_description),
-                    primaryButtonText = stringResource(
-                        id = com.gasguru.core.ui.R.string.alert_permission_denied_primary_button
-                    ),
+                    title = cmpStringResource(Res.string.alert_permission_denied_title),
+                    description = cmpStringResource(Res.string.alert_permission_denied_description),
+                    primaryButtonText = cmpStringResource(Res.string.alert_permission_denied_primary_button),
                 ),
                 onPrimaryButtonClick = {
                     val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
@@ -215,13 +222,9 @@ fun StationMapScreenRoute(
                     icon = Icons.Outlined.MyLocation,
                     iconTint = Color(0xFF3B82F6),
                     iconBackgroundColor = Color(0xFFEFF6FF),
-                    title = stringResource(id = com.gasguru.core.ui.R.string.alert_location_rationale_title),
-                    description = stringResource(
-                        id = com.gasguru.core.ui.R.string.alert_location_rationale_description
-                    ),
-                    primaryButtonText = stringResource(
-                        id = com.gasguru.core.ui.R.string.alert_location_rationale_primary_button
-                    ),
+                    title = cmpStringResource(Res.string.alert_location_rationale_title),
+                    description = cmpStringResource(Res.string.alert_location_rationale_description),
+                    primaryButtonText = cmpStringResource(Res.string.alert_location_rationale_primary_button),
                 ),
                 onPrimaryButtonClick = {
                     permissionLauncher.launch(
@@ -328,7 +331,7 @@ internal fun StationMapScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = stringResource(id = com.gasguru.core.ui.R.string.nearby_stations),
+                        text = cmpStringResource(Res.string.nearby_stations),
                         style = GasGuruTheme.typography.baseBold,
                         color = GasGuruTheme.colors.textSubtle
                     )

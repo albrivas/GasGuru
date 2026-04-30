@@ -31,6 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.previewFuelStationDomain
+import com.gasguru.core.ui.generated.resources.Res
+import com.gasguru.core.ui.generated.resources.favorites
 import com.gasguru.core.ui.mapper.toStationListItems
 import com.gasguru.core.ui.mapper.toUiModel
 import com.gasguru.core.ui.models.FuelStationUiModel
@@ -47,6 +49,7 @@ import com.gasguru.feature.favorite_list_station.R
 import com.gasguru.navigation.LocalNavigationManager
 import com.gasguru.navigation.manager.NavigationDestination
 import org.koin.androidx.compose.koinViewModel
+import org.jetbrains.compose.resources.stringResource as cmpStringResource
 
 @Composable
 fun FavoriteListStationScreenRoute(
@@ -169,7 +172,7 @@ fun ListFuelStations(
     ) {
         Text(
             modifier = Modifier,
-            text = stringResource(id = com.gasguru.core.ui.R.string.favorites),
+            text = cmpStringResource(Res.string.favorites),
             style = GasGuruTheme.typography.h5,
             color = GasGuruTheme.colors.textMain
         )

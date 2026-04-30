@@ -247,6 +247,21 @@ en `app/src/test/kotlin/com/gasguru/KoinModulesTest.kt:9` y `:61`.
 
 ---
 
+## L017 — `runBlocking { getString(StringResource) }` en ViewModel causa deadlock en tests de coroutines
+
+**Fecha**: 2026-04-29
+**Contexto**: Migración Phase 6A — `VehicleUiMapper` usaba `runBlocking { getString(res) }` para resolver `StringResource` en el ViewModel.
+
+**Error**: `ProfileViewModelTest` fallaba con `TurbineTimeoutCancellationException` — el flujo `userData` nunca emitía `Success`. El dispatcher de tests se bloqueaba porque `runBlocking` lanzaba una coroutine que intentaba usar el mismo dispatcher.
+
+**Causa raíz**: `org.jetbrains.compose.resources.getString` necesita inicialización de recursos que no existe en unit tests JVM. `runBlocking` en un test coroutines bloquea el dispatcher, produciendo un deadlock silencioso.
+
+**Fix**: No resolver `StringResource` en el ViewModel. Pasar `StringResource` directamente al modelo (`VehicleItemCardModel.fuelTypeTranslationRes: StringResource`) y resolverlo en el componente Composable con `stringResource()`. Esto elimina `context: Context` del ViewModel completamente.
+
+**Regla**: Los ViewModels no deben resolver `StringResource`. La resolución de strings es responsabilidad del composable. Si un modelo de UI necesita texto localizado, guardar `StringResource` y dejar que el composable lo resuelva.
+
+---
+
 ## L015 — `MissingKoinStopInTest` genera falso positivo en clases `Application`
 
 **Fecha**: 2026-04-22

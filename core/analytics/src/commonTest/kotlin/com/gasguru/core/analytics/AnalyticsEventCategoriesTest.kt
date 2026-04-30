@@ -155,6 +155,18 @@ class AnalyticsEventCategoriesTest {
         AnalyticsEvent.Categories.fromType(AnalyticsEvent.Types.PRICE_ALERT_TRIGGERED),
     )
 
+    @Test
+    fun inAppReviewCompletedMapsToStationDetail() = assertEquals(
+        AnalyticsEvent.Categories.STATION_DETAIL,
+        AnalyticsEvent.Categories.fromType(AnalyticsEvent.Types.IN_APP_REVIEW_COMPLETED),
+    )
+
+    @Test
+    fun inAppReviewFailedMapsToStationDetail() = assertEquals(
+        AnalyticsEvent.Categories.STATION_DETAIL,
+        AnalyticsEvent.Categories.fromType(AnalyticsEvent.Types.IN_APP_REVIEW_FAILED),
+    )
+
     // endregion
 
     // region Route Planner

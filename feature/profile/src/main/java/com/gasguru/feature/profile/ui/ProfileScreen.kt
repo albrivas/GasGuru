@@ -57,6 +57,7 @@ import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.feature.profile.R
 import org.koin.androidx.compose.koinViewModel
+import org.jetbrains.compose.resources.stringResource as cmpStringResource
 
 @Composable
 internal fun ProfileScreenRoute(viewModel: ProfileViewModel = koinViewModel()) {
@@ -211,7 +212,7 @@ fun SuccessContent(
         SettingItem(
             model = SettingItemModel(
                 title = stringResource(id = R.string.theme_mode),
-                selection = stringResource(id = content.themeUi.titleRes),
+                selection = cmpStringResource(content.themeUi.titleRes),
                 icon = content.themeUi.iconRes,
                 onClick = { onSheetRequest(ProfileSheet.Theme) },
             ),
@@ -228,8 +229,8 @@ fun ThemeModeSheet(
     onDismiss: () -> Unit,
     onThemeSelected: (ThemeModeUi) -> Unit,
 ) {
-    val themeOptions = allThemesUi.map { stringResource(it.titleRes) }
-    val selectedOption = stringResource(selectedTheme.titleRes)
+    val themeOptions = allThemesUi.map { cmpStringResource(it.titleRes) }
+    val selectedOption = cmpStringResource(selectedTheme.titleRes)
 
     FilterSheet(
         model = FilterSheetModel(

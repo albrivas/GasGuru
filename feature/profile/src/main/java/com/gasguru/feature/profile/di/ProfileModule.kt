@@ -9,7 +9,6 @@ fun profileModule() = module {
     viewModel {
         ProfileViewModel(
             getUserData = get(),
-            context = get(),
             saveThemeModeUseCase = get(),
             deleteVehicleUseCase = get(),
             getVehicleByIdUseCase = get(),

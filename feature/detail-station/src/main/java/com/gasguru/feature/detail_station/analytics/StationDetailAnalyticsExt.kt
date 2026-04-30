@@ -57,3 +57,18 @@ fun AnalyticsHelper.trackPriceAlertEnabled() {
 fun AnalyticsHelper.trackPriceAlertDisabled() {
     logEvent(AnalyticsEvent(type = AnalyticsEvent.Types.PRICE_ALERT_DISABLED))
 }
+
+fun AnalyticsHelper.trackInAppReviewCompleted() {
+    logEvent(AnalyticsEvent(type = AnalyticsEvent.Types.IN_APP_REVIEW_COMPLETED))
+}
+
+fun AnalyticsHelper.trackInAppReviewFailed(errorMessage: String) {
+    logEvent(
+        AnalyticsEvent(
+            type = AnalyticsEvent.Types.IN_APP_REVIEW_FAILED,
+            extras = listOf(
+                AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.ERROR_MESSAGE, value = errorMessage),
+            ),
+        )
+    )
+}
