@@ -62,6 +62,7 @@
 | [Widget](docs/WIDGET.md) | Widget de pantalla de inicio con gasolineras favoritas: arquitectura Glance + WorkManager, ciclo de vida y limitaciones |
 | [Analytics](docs/ANALYTICS.md) | Sistema de analíticas con Mixpanel: arquitectura, catálogo de eventos, uso en ViewModels y Composables |
 | [Git Worktree](docs/GIT_WORKTREE.md) | Cómo crear y eliminar worktrees, el problema de local.properties y cómo resolverlo con symlinks |
+| [MVI Effects](docs/MVI_EFFECTS.md) | Patrón Channel&lt;Effect&gt; para one-shot events: snackbars, intents, dialogs — cuándo usarlo vs State y cuándo NO (navegación normal) |
 
 ## Orquestación del Flujo de Trabajo
 
