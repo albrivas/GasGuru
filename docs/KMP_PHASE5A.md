@@ -37,32 +37,25 @@ navigation/src/commonMain/kotlin/com/gasguru/navigation/
 
 El módulo es **100% commonMain** — sin `androidMain`.
 
-### Cambio de contrato: `BackWithData.value: Any → String`
+### Cambio de contrato: `BackWithData.value: Any → Any?` (genérico)
 
-Los args de navegación (`PlaceArgs`, `RoutePlanArgs`) dejaron de ser `@Parcelize`/`Parcelable` y pasaron a ser `@Serializable`. Esto implica que `BackWithData.value` cambió de `Any` a `String` (JSON serializado):
+Los args de navegación (`PlaceArgs`, `RoutePlanArgs`) dejaron de ser `@Parcelize`/`Parcelable` y pasaron a ser `@Serializable`. El contrato de `BackWithData` evolucionó en dos pasos:
+
+**Fase 5A (inicial):** `value` se tipó como `String` y los callers codificaban a JSON manualmente.  
+**Estado actual:** `value` es `Any?` y `navigateBackWithData` es genérico — `SavedStateHandle` (lifecycle 2.9+) serializa/deserializa las clases `@Serializable` automáticamente mediante kotlinx.serialization, sin JSON manual.
 
 ```kotlin
-// Antes
-navigationManager.navigateBackWithData(key = KEY, value = PlaceArgs(...))
-
-// Después
+// Pasar resultado de vuelta (call site)
 navigationManager.navigateBackWithData(
     key = KEY,
-    value = Json.encodeToString(PlaceArgs(...)),
+    value = PlaceArgs(name = "Madrid", id = "place123"),
 )
-```
 
-En el receptor:
-```kotlin
-// Antes
+// Leer en el receptor
 val result = navBackResult.getPreviousResult<PlaceArgs?>(KEY)
-
-// Después
-val resultJson = navBackResult.getPreviousResult<String?>(KEY)
-val result = resultJson?.let { Json.decodeFromString<PlaceArgs>(it) }
 ```
 
-Los datos siguen persistiendo correctamente en `savedStateHandle` y sobreviven a process death (los `String` son soportados nativamente por `Bundle`).
+Los datos persisten en `savedStateHandle` y sobreviven a process death: `lifecycle 2.9+` usa `encodeToSavedState`/`decodeFromSavedState` para serializar clases `@Serializable` al Bundle.
 
 ### Limpieza
 
@@ -101,9 +94,9 @@ kotlin {
 | Módulo | Cambio |
 |--------|--------|
 | `app` | `androidx.navigation.compose` → `jetbrains.navigation.compose` |
-| `feature:search` | `Json.encodeToString(PlaceArgs(...))` en call site + `kotlinx-serialization-json` dep |
-| `feature:route-planner` | `Json.encodeToString(RoutePlanArgs(...))` + `Json.decodeFromString<PlaceArgs>()` + `kotlinx-serialization-json` dep |
-| `core:testing` | `FakeNavigationManager.navigateBackWithData` signature `Any → String` |
+| `feature:search` | Pasa `PlaceArgs(...)` directamente (sin JSON) |
+| `feature:route-planner` | Pasa `RoutePlanArgs(...)` directamente; lee `PlaceArgs` directamente vía `getPreviousResult<PlaceArgs?>` |
+| `core:testing` | `FakeNavigationManager.navigateBackWithData` es genérico: `fun <T> navigateBackWithData(key, value: T)` |
 
 ---
 
@@ -111,4 +104,4 @@ kotlin {
 
 - **Navigation Compose CMP** (`org.jetbrains.androidx.navigation:navigation-compose`) es el camino estándar para KMP, no requiere cambiar la API ni los imports en los consumidores.
 - Con CMP navigation, **todos** los archivos del módulo pueden ir a `commonMain` — incluyendo los que usan `NavController` y `staticCompositionLocalOf`.
-- Cambiar `BackWithData.value: Any → String` hace el contrato explícito y elimina la dependencia de `Parcelable`.
+- El contrato `BackWithData.value: Any?` con `navigateBackWithData<T>` genérico es la solución KMP-nativa: elimina `Parcelable` y el JSON manual, delegando la persistencia a `SavedStateHandle` + kotlinx.serialization (lifecycle 2.9+).

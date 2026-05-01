@@ -11,7 +11,6 @@ import com.gasguru.navigation.constants.NavigationKeys
 import com.gasguru.navigation.extensions.getPreviousResult
 import com.gasguru.navigation.extensions.removePreviousResult
 import com.gasguru.navigation.models.PlaceArgs
-import kotlinx.serialization.json.Json
 
 fun NavController.navigateToRoutePlannerScreen(navOptions: NavOptions? = null) {
     navigate(RoutePlannerRoute, navOptions)
@@ -24,8 +23,7 @@ fun NavGraphBuilder.routePlannerScreen() {
             decorFitsSystemWindows = false
         )
     ) { navBackResult ->
-        val resultJson = navBackResult.getPreviousResult<String?>(NavigationKeys.SELECTED_PLACE)
-        val result = resultJson?.let { Json.decodeFromString<PlaceArgs>(it) }
+        val result = navBackResult.getPreviousResult<PlaceArgs>(NavigationKeys.SELECTED_PLACE)
         if (result != null) {
             navBackResult.removePreviousResult(NavigationKeys.SELECTED_PLACE)
         }
