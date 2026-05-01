@@ -36,6 +36,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SheetValue
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
@@ -278,6 +280,15 @@ internal fun StationMapScreen(
     val peekHeight = 60.dp
     var isSearchActive by remember { mutableStateOf(false) }
     val isRouteActive = route != null || (loading && routeDestinationName != null)
+    val snackbarHostState = remember { SnackbarHostState() }
+    val routeErrorMessage = stringResource(id = R.string.route_error_message)
+
+    LaunchedEffect(routeError) {
+        if (routeError) {
+            snackbarHostState.showSnackbar(message = routeErrorMessage)
+            event(StationMapEvent.DismissRouteError)
+        }
+    }
 
     LaunchedEffect(mapBounds, shouldCenterMap) {
         if (mapBounds != null && shouldCenterMap) {
@@ -312,6 +323,7 @@ internal fun StationMapScreen(
         sheetContainerColor = GasGuruTheme.colors.neutral100,
         sheetContentColor = GasGuruTheme.colors.neutral100,
         scaffoldState = scaffoldState,
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         sheetShadowElevation = 32.dp,
         sheetPeekHeight = if (isSearchActive) 0.dp else peekHeight,
         sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),

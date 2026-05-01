@@ -449,7 +449,7 @@ class StationMapViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN error getting route WHEN starting route THEN updates error state")
+    @DisplayName("GIVEN error getting route WHEN starting route THEN updates error state and sets routeError")
     fun handlesRouteError() = runTest {
         fakeLocationTracker.setLastKnownLocation(LatLng(latitude = 40.0, longitude = -3.0))
         fakePlacesRepository.setLocationForId(
@@ -470,8 +470,61 @@ class StationMapViewModelTest {
 
         val state = sut.state.value
         assertNotNull(state.error)
+        assertEquals(true, state.routeError)
         assertFalse(state.loading)
         assertNull(state.routeDestinationName)
+    }
+
+    @Test
+    @DisplayName("GIVEN route emits null WHEN starting route THEN sets routeError and clears loading")
+    fun handlesNullRouteResult() = runTest {
+        fakeLocationTracker.setLastKnownLocation(LatLng(latitude = 40.0, longitude = -3.0))
+        fakePlacesRepository.setLocationForId(
+            placeId = "dest",
+            location = LatLng(latitude = 40.2, longitude = -3.2)
+        )
+        fakeRoutesRepository.setRoute(null)
+
+        sut.handleEvent(
+            StationMapEvent.StartRoute(
+                originId = null,
+                destinationId = "dest",
+                destinationName = "Madrid"
+            )
+        )
+
+        advanceUntilIdle()
+
+        val state = sut.state.value
+        assertEquals(true, state.routeError)
+        assertFalse(state.loading)
+        assertNull(state.routeDestinationName)
+    }
+
+    @Test
+    @DisplayName("GIVEN routeError is true WHEN DismissRouteError event THEN routeError resets to false")
+    fun dismissesRouteError() = runTest {
+        fakeLocationTracker.setLastKnownLocation(LatLng(latitude = 40.0, longitude = -3.0))
+        fakePlacesRepository.setLocationForId(
+            placeId = "dest",
+            location = LatLng(latitude = 40.2, longitude = -3.2)
+        )
+        fakeRoutesRepository.setRoute(null)
+
+        sut.handleEvent(
+            StationMapEvent.StartRoute(
+                originId = null,
+                destinationId = "dest",
+                destinationName = "Madrid"
+            )
+        )
+        advanceUntilIdle()
+
+        assertEquals(true, sut.state.value.routeError)
+
+        sut.handleEvent(StationMapEvent.DismissRouteError)
+
+        assertFalse(sut.state.value.routeError)
     }
 
     @Test
