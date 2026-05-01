@@ -62,8 +62,7 @@ import com.gasguru.navigation.constants.NavigationKeys
 import com.gasguru.navigation.manager.NavigationDestination
 import com.gasguru.navigation.models.PlaceArgs
 import com.gasguru.navigation.models.RoutePlanArgs
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
+import com.gasguru.navigation.extensions.navigateBackWith
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -87,14 +86,12 @@ fun RoutePlannerScreenRoute(
         },
         onEvent = viewModel::handleEvent,
         onStartRoute = {
-            navigationManager.navigateBackWithData(
+            navigationManager.navigateBackWith(
                 key = NavigationKeys.ROUTE_PLANNER,
-                value = Json.encodeToString(
-                    RoutePlanArgs(
-                        originId = state.startQuery.id.takeIf { it.isNotEmpty() },
-                        destinationId = state.endQuery.id.takeIf { it.isNotEmpty() },
-                        destinationName = state.endQuery.name.takeIf { it.isNotEmpty() },
-                    ),
+                value = RoutePlanArgs(
+                    originId = state.startQuery.id.takeIf { it.isNotEmpty() },
+                    destinationId = state.endQuery.id.takeIf { it.isNotEmpty() },
+                    destinationName = state.endQuery.name.takeIf { it.isNotEmpty() },
                 ),
             )
         },

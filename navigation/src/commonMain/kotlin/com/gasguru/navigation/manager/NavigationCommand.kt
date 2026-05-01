@@ -1,5 +1,7 @@
 package com.gasguru.navigation.manager
 
+import androidx.savedstate.SavedState
+
 /**
  * Navigation actions emitted by [NavigationManager].
  */
@@ -12,6 +14,6 @@ sealed interface NavigationCommand {
     ) : NavigationCommand
     data class BackWithData(
         val key: String,
-        val value: String,
+        val value: SavedState,
     ) : NavigationCommand
 }
