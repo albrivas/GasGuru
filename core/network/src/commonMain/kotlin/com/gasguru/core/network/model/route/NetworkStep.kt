@@ -13,7 +13,7 @@ data class NetworkStep(
     @SerialName("localizedValues")
     val localizedValues: NetworkLocalizedValues,
     @SerialName("navigationInstruction")
-    val navigationInstruction: NetworkNavigationInstruction?,
+    val navigationInstruction: NetworkNavigationInstruction? = null,
     @SerialName("polyline")
     val polyline: NetworkPolyline,
     @SerialName("startLocation")
