@@ -34,7 +34,9 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -43,6 +45,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -66,6 +69,9 @@ class StationMapViewModel(
     private val _tabState = MutableStateFlow(SelectedTabUiState())
     val tabState: StateFlow<SelectedTabUiState> = _tabState
 
+    private val _effects = Channel<StationMapEffect>(Channel.BUFFERED)
+    val effects: Flow<StationMapEffect> = _effects.receiveAsFlow()
+
     private var routeCalculationJob: Job? = null
 
     fun handleEvent(event: StationMapEvent) {
@@ -87,7 +93,6 @@ class StationMapViewModel(
             is StationMapEvent.CancelRoute -> cancelRoute()
             is StationMapEvent.ChangeTab -> changeTab(selectedTab = event.selected)
             is StationMapEvent.SelectStation -> selectStation(stationId = event.stationId)
-            is StationMapEvent.DismissRouteError -> dismissRouteError()
         }
     }
 
@@ -115,13 +120,9 @@ class StationMapViewModel(
                 error = error,
                 loading = false,
                 routeDestinationName = null,
-                routeError = true,
             )
         }
-    }
-
-    private fun dismissRouteError() {
-        _state.update { it.copy(routeError = false, error = null) }
+        viewModelScope.launch { _effects.send(StationMapEffect.ShowRouteError) }
     }
 
     private suspend fun processRouteStations(

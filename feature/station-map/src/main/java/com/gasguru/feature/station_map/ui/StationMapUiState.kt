@@ -9,7 +9,6 @@ data class StationMapUiState(
     val mapStations: List<FuelStationUiModel> = emptyList(), // Only for map
     val listStations: List<FuelStationUiModel> = emptyList(), // Only for sheet
     val error: Throwable? = null,
-    val routeError: Boolean = false,
     val selectedType: FuelType? = null,
     val showListStations: Boolean = false,
     val loading: Boolean = true,
