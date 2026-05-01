@@ -8,7 +8,7 @@ GasGuru utiliza una arquitectura de navegación centralizada basada en Jetpack C
 
 ### 1. NavigationManager
 
-**Ubicación:** `navigation/src/main/java/com/gasguru/navigation/manager/NavigationManager.kt`
+**Ubicación:** `navigation/src/commonMain/kotlin/com/gasguru/navigation/manager/NavigationManager.kt`
 
 Clase central que coordina toda la navegación de la app. Usa un `SharedFlow` para emitir comandos de navegación.
 
@@ -18,18 +18,18 @@ interface NavigationManager {
     fun navigateTo(destination: NavigationDestination)
     fun navigateBack()
     fun navigateBackTo(route: Any, inclusive: Boolean = false)
-    fun navigateBackWithData(key: String, value: Any)
+    fun <T> navigateBackWithData(key: String, value: T)
 }
 ```
 
 **Características:**
-- Singleton inyectado con Hilt
+- Singleton inyectado con Koin
 - Thread-safe
 - Buffer que descarta el evento más antiguo si hay overflow
 
 ### 2. NavigationDestination
 
-**Ubicación:** `navigation/src/main/java/com/gasguru/navigation/manager/NavigationDestination.kt`
+**Ubicación:** `navigation/src/commonMain/kotlin/com/gasguru/navigation/manager/NavigationDestination.kt`
 
 Sealed interface que define todos los destinos posibles de navegación.
 
@@ -40,18 +40,22 @@ sealed interface NavigationDestination {
         val presentAsDialog: Boolean = false,
     ) : NavigationDestination
 
-    data object OnboardingWelcome : NavigationDestination
+    data object OnboardingFuelPreferences : NavigationDestination
+    data object OnboardingTankCapacity : NavigationDestination
+    data object NewOnboarding : NavigationDestination
     data object Home : NavigationDestination
     data object Search : NavigationDestination
     data object RoutePlanner : NavigationDestination
+    data object AddVehicle : NavigationDestination
+    data class EditVehicle(val vehicleId: Long) : NavigationDestination
 }
 ```
 
-**Nota:** Los destinos representan pantallas/rutas reales. Las acciones de back se modelan como comandos.
+**Nota:** Los destinos representan pantallas/rutas reales. Las acciones de back se modelan como comandos separados (`navigateBack`, `navigateBackWithData`).
 
 ### 3. NavigationCommand
 
-**Ubicación:** `navigation/src/main/java/com/gasguru/navigation/manager/NavigationCommand.kt`
+**Ubicación:** `navigation/src/commonMain/kotlin/com/gasguru/navigation/manager/NavigationCommand.kt`
 
 Sealed interface que representa acciones de navegación.
 
@@ -60,13 +64,14 @@ sealed interface NavigationCommand {
     data class To(val destination: NavigationDestination) : NavigationCommand
     data object Back : NavigationCommand
     data class BackTo(val route: Any, val inclusive: Boolean = false) : NavigationCommand
-    data class BackWithData(val key: String, val value: Any) : NavigationCommand
+    data class BackWithData(val key: String, val value: Any?) : NavigationCommand
 }
 ```
 
 ### 4. NavigationHandler
 
-**Ubicación:** `app/src/main/java/com/gasguru/navigation/handler/NavigationHandler.kt`
+**Ubicación:** `app/src/main/java/com/gasguru/navigation/handler/NavigationHandler.kt`  
+*(módulo Android: vive en `main/java` ya que usa `NavController`)*
 
 Traduce `NavigationCommand` a llamadas reales de `NavController`.
 
@@ -107,7 +112,7 @@ class NavigationHandler(private val navController: NavController) {
 
 ### 5. LocalNavigationManager
 
-**Ubicación:** `navigation/src/main/java/com/gasguru/navigation/manager/LocalNavigationManager.kt`
+**Ubicación:** `navigation/src/commonMain/kotlin/com/gasguru/navigation/LocalNavigationManager.kt`
 
 CompositionLocal que permite acceder al NavigationManager desde cualquier Composable.
 
@@ -199,8 +204,7 @@ fun MyScreen() {
 **Opción 1: Inyectar NavigationManager (recomendado)**
 
 ```kotlin
-@HiltViewModel
-class MyViewModel @Inject constructor(
+class MyViewModel(
     private val navigationManager: NavigationManager,
 ) : ViewModel() {
 
@@ -218,8 +222,7 @@ class MyViewModel @Inject constructor(
 **Opción 2: Exponer evento de UI**
 
 ```kotlin
-@HiltViewModel
-class MyViewModel @Inject constructor() : ViewModel() {
+class MyViewModel : ViewModel() {
 
     private val _uiEvents = Channel<UiEvent>()
     val uiEvents = _uiEvents.receiveAsFlow()
@@ -269,42 +272,36 @@ fun NavGraphBuilder.detailStationScreen() {
 
 ### Back Navigation con Datos (B → A con resultado)
 
-Usa `BackWithData` para pasar datos al volver:
+Usa `navigateBackWithData` para pasar un objeto `@Serializable` al volver. `SavedStateHandle` (lifecycle 2.9+) serializa/deserializa automáticamente las clases `@Serializable` mediante kotlinx.serialization — no hace falta codificar a JSON manualmente.
 
 ```kotlin
 // Pantalla B: Volver con datos
-navigationManager.navigateTo(
-    destination = NavigationDestination.BackWithData(
-        key = NavigationKeys.ROUTE_PLANNER,
-        value = RoutePlanArgs(
-            originId = "origin123",
-            destinationId = "dest456",
-            destinationName = "Barcelona",
-        ),
-    )
+navigationManager.navigateBackWithData(
+    key = NavigationKeys.ROUTE_PLANNER,
+    value = RoutePlanArgs(
+        originId = "origin123",
+        destinationId = "dest456",
+        destinationName = "Barcelona",
+    ),
 )
 
-// Pantalla A: Recibir datos
+// Pantalla A: Recibir datos (lectura reactiva con getStateFlow)
 fun NavGraphBuilder.navigationBarHost() {
     composable<NavigationBarRoute> { navBackStackEntry ->
-        // Observar el SavedStateHandle como Flow reactivo
         val routePlanArgs by navBackStackEntry.savedStateHandle
             .getStateFlow<RoutePlanArgs?>(
                 key = NavigationKeys.ROUTE_PLANNER,
-                initialValue = null
+                initialValue = null,
             )
             .collectAsStateWithLifecycle()
 
-        LaunchedEffect(routePlanArgs) {
-            if (routePlanArgs != null) {
-                // Limpiar después de consumir
-                navBackStackEntry.removePreviousResult(
-                    key = NavigationKeys.ROUTE_PLANNER
-                )
-            }
-        }
-
-        NavigationBarScreenRoute(routePlanner = routePlanArgs)
+        NavigationBarScreenRoute(
+            routePlanner = routePlanArgs,
+            onRoutePlanConsumed = {
+                // Limpiar después de consumir para no reprocesar
+                navBackStackEntry.savedStateHandle[NavigationKeys.ROUTE_PLANNER] = null
+            },
+        )
     }
 }
 ```
@@ -320,14 +317,14 @@ Ejemplo: RoutePlanner → Search → RoutePlanner
 navigationManager.navigateTo(NavigationDestination.Search)
 
 // SearchScreen: Volver con lugar seleccionado
-navigationManager.navigateTo(
-    destination = NavigationDestination.BackWithData(
-        key = NavigationKeys.SELECTED_PLACE,
-        value = PlaceArgs(name = "Madrid", id = "place123"),
-    )
+navigationManager.navigateBackWithData(
+    key = NavigationKeys.SELECTED_PLACE,
+    value = PlaceArgs(name = "Madrid", id = "place123"),
 )
 
 // RoutePlannerScreen: Recibir lugar
+// Usa getPreviousResult (lectura única): válido porque RoutePlanner
+// recibe el resultado solo una vez al volver del diálogo de Search.
 fun NavGraphBuilder.routePlannerScreen() {
     dialog<RoutePlannerRoute> { navBackResult ->
         val result = navBackResult.getPreviousResult<PlaceArgs?>(
@@ -371,7 +368,7 @@ fun NavGraphBuilder.myFeatureScreen() {
 
 ### 2. Agregar NavigationDestination
 
-**Ubicación:** `navigation/src/main/java/com/gasguru/navigation/manager/NavigationDestination.kt`
+**Ubicación:** `navigation/src/commonMain/kotlin/com/gasguru/navigation/manager/NavigationDestination.kt`
 
 ```kotlin
 sealed interface NavigationDestination {

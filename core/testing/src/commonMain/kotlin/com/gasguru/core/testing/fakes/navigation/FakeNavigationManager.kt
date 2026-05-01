@@ -1,5 +1,6 @@
 package com.gasguru.core.testing.fakes.navigation
 
+import androidx.savedstate.SavedState
 import com.gasguru.navigation.manager.NavigationCommand
 import com.gasguru.navigation.manager.NavigationDestination
 import com.gasguru.navigation.manager.NavigationManager
@@ -28,7 +29,7 @@ class FakeNavigationManager : NavigationManager {
         // No-op
     }
 
-    override fun navigateBackWithData(key: String, value: String) {
+    override fun navigateBackWithData(key: String, value: SavedState) {
         // No-op
     }
 }

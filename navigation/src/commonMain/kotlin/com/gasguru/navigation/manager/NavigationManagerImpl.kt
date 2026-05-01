@@ -1,5 +1,6 @@
 package com.gasguru.navigation.manager
 
+import androidx.savedstate.SavedState
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -32,9 +33,9 @@ class NavigationManagerImpl : NavigationManager {
         )
     }
 
-    override fun navigateBackWithData(key: String, value: String) {
+    override fun navigateBackWithData(key: String, value: SavedState) {
         _navigationFlow.tryEmit(
-            value = NavigationCommand.BackWithData(key = key, value = value)
+            value = NavigationCommand.BackWithData(key = key, value = value),
         )
     }
 }

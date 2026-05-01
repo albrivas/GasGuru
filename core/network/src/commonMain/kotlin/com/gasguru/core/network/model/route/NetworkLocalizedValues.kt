@@ -9,7 +9,7 @@ data class NetworkLocalizedValues(
     @SerialName("distance")
     val distance: NetworkDistance,
     @SerialName("duration")
-    val duration: NetworkDuration?,
+    val duration: NetworkDuration? = null,
     @SerialName("staticDuration")
     val staticDuration: NetworkStaticDuration
 )
