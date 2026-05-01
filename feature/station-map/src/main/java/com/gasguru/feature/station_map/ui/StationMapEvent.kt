@@ -17,4 +17,5 @@ sealed class StationMapEvent {
     data object CancelRoute : StationMapEvent()
     data class ChangeTab(val selected: StationSortTab) : StationMapEvent()
     data class SelectStation(val stationId: Int) : StationMapEvent()
+    data object DismissRouteError : StationMapEvent()
 }

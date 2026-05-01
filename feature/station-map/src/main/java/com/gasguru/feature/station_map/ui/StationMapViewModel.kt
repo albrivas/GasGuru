@@ -87,6 +87,7 @@ class StationMapViewModel(
             is StationMapEvent.CancelRoute -> cancelRoute()
             is StationMapEvent.ChangeTab -> changeTab(selectedTab = event.selected)
             is StationMapEvent.SelectStation -> selectStation(stationId = event.stationId)
+            is StationMapEvent.DismissRouteError -> dismissRouteError()
         }
     }
 
@@ -113,9 +114,14 @@ class StationMapViewModel(
             it.copy(
                 error = error,
                 loading = false,
-                routeDestinationName = null
+                routeDestinationName = null,
+                routeError = true,
             )
         }
+    }
+
+    private fun dismissRouteError() {
+        _state.update { it.copy(routeError = false, error = null) }
     }
 
     private suspend fun processRouteStations(
@@ -183,23 +189,25 @@ class StationMapViewModel(
 
                 getRouteUseCase(
                     origin = originLocation,
-                    destination = destinationLocation
+                    destination = destinationLocation,
                 ).collect { route ->
-                    route?.let { routeData ->
-                        val selectedStation = _state.value.mapStations
-                            .firstOrNull {
-                                it.fuelStation.idServiceStation == _state.value.selectedStationId
-                            }
-                            ?.fuelStation
-                        analyticsHelper.trackRouteStarted(brand = selectedStation?.brandStationBrandsType?.name)
-                        launch(defaultDispatcher) {
-                            processRouteStations(
-                                origin = originLocation,
-                                route = routeData,
-                                destinationLocation = destinationLocation,
-                                destinationName = destinationName
-                            )
+                    if (route == null) {
+                        handleRouteError(error = Exception("Route calculation returned no result"))
+                        return@collect
+                    }
+                    val selectedStation = _state.value.mapStations
+                        .firstOrNull {
+                            it.fuelStation.idServiceStation == _state.value.selectedStationId
                         }
+                        ?.fuelStation
+                    analyticsHelper.trackRouteStarted(brand = selectedStation?.brandStationBrandsType?.name)
+                    launch(defaultDispatcher) {
+                        processRouteStations(
+                            origin = originLocation,
+                            route = route,
+                            destinationLocation = destinationLocation,
+                            destinationName = destinationName,
+                        )
                     }
                 }
             } catch (error: CancellationException) {
