@@ -200,6 +200,18 @@ fun StationMapScreenRoute(
         }
     }
 
+    val snackbarHostState = remember { SnackbarHostState() }
+    val routeErrorMessage = stringResource(id = R.string.route_error_message)
+
+    LaunchedEffect(Unit) {
+        viewModel.effects.collect { effect ->
+            when (effect) {
+                StationMapEffect.ShowRouteError ->
+                    snackbarHostState.showSnackbar(message = routeErrorMessage)
+            }
+        }
+    }
+
     if (!locationPermissionGranted) {
         if (permissionDenied) {
             GasGuruAlertDialog(
@@ -245,6 +257,7 @@ fun StationMapScreenRoute(
         routePlanner = routePlanner,
         onRoutePlanConsumed = onRoutePlanConsumed,
         isLocationPermissionGranted = locationPermissionGranted,
+        snackbarHostState = snackbarHostState,
         event = viewModel::handleEvent,
         navigateToDetail = { stationId ->
             navigationManager.navigateTo(
@@ -269,6 +282,7 @@ internal fun StationMapScreen(
     routePlanner: RoutePlanArgs?,
     onRoutePlanConsumed: () -> Unit = {},
     isLocationPermissionGranted: Boolean = false,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     event: (StationMapEvent) -> Unit = {},
     navigateToDetail: (Int) -> Unit = {},
     navigateToRoutePlanner: () -> Unit = {},
@@ -280,15 +294,6 @@ internal fun StationMapScreen(
     val peekHeight = 60.dp
     var isSearchActive by remember { mutableStateOf(false) }
     val isRouteActive = route != null || (loading && routeDestinationName != null)
-    val snackbarHostState = remember { SnackbarHostState() }
-    val routeErrorMessage = stringResource(id = R.string.route_error_message)
-
-    LaunchedEffect(routeError) {
-        if (routeError) {
-            snackbarHostState.showSnackbar(message = routeErrorMessage)
-            event(StationMapEvent.DismissRouteError)
-        }
-    }
 
     LaunchedEffect(mapBounds, shouldCenterMap) {
         if (mapBounds != null && shouldCenterMap) {
