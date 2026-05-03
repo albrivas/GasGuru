@@ -25,14 +25,14 @@ class GasGuruSearchBarState {
         @Composable get() = animateDpAsState(
             targetValue = if (active) 0.dp else 16.dp,
             animationSpec = tween(durationMillis = 300),
-            label = "search_bar_padding"
+            label = "search_bar_padding",
         ).value
 
     val statusBarPaddingAnimation: Dp
         @Composable get() = animateDpAsState(
             targetValue = 0.dp,
             animationSpec = tween(durationMillis = 300),
-            label = "search_bar_status_padding"
+            label = "search_bar_status_padding",
         ).value
 
     fun deactivate() {

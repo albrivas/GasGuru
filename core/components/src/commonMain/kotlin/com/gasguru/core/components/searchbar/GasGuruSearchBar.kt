@@ -30,10 +30,10 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.gasguru.core.components.R
+import com.gasguru.core.components.generated.resources.Res
+import com.gasguru.core.components.generated.resources.hint_search_bar
 import com.gasguru.core.components.searchbar.state.GasGuruSearchBarEvent
 import com.gasguru.core.components.searchbar.state.GasGuruSearchBarState
 import com.gasguru.core.components.searchbar.state.SearchResultUiState
@@ -51,7 +51,8 @@ import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.core.uikit.utils.maestroTestTag
-import org.koin.androidx.compose.koinViewModel
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun GasGuruSearchBar(
@@ -69,7 +70,7 @@ fun GasGuruSearchBar(
         recentSearchQueriesUiState = recentSearchQueriesUiState,
         state = rememberGasGuruSearchBarState(),
         isActive = model.alwaysActive,
-        onEvent = viewModel::handleEvent
+        onEvent = viewModel::handleEvent,
     )
 }
 
@@ -87,7 +88,6 @@ internal fun GasGuruSearchBarContent(
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
 
-    // Auto-focus when search bar becomes active
     LaunchedEffect(isActive) {
         if (isActive) {
             focusRequester.requestFocus()
@@ -111,9 +111,9 @@ internal fun GasGuruSearchBarContent(
                     },
                 placeholder = {
                     Text(
-                        text = stringResource(id = R.string.hint_search_bar),
+                        text = stringResource(Res.string.hint_search_bar),
                         style = GasGuruTheme.typography.baseRegular,
-                        color = GasGuruTheme.colors.textSubtle
+                        color = GasGuruTheme.colors.textSubtle,
                     )
                 },
                 leadingIcon = {
@@ -129,14 +129,14 @@ internal fun GasGuruSearchBarContent(
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 tint = GasGuruTheme.colors.neutralBlack,
-                                contentDescription = "Icon back"
+                                contentDescription = "Icon back",
                             )
                         }
                     } else {
                         Icon(
                             imageVector = Icons.Default.Search,
                             tint = GasGuruTheme.colors.neutralBlack,
-                            contentDescription = "Icon search"
+                            contentDescription = "Icon search",
                         )
                     }
                 },
@@ -160,9 +160,9 @@ internal fun GasGuruSearchBarContent(
                     unfocusedIndicatorColor = Color.Transparent,
                     focusedTextColor = GasGuruTheme.colors.textMain,
                     unfocusedTextColor = GasGuruTheme.colors.textMain,
-                    cursorColor = GasGuruTheme.colors.primary600
+                    cursorColor = GasGuruTheme.colors.primary600,
                 ),
-                singleLine = true
+                singleLine = true,
             )
         },
         expanded = state.active,
@@ -185,15 +185,15 @@ internal fun GasGuruSearchBarContent(
             .padding(
                 top = state.statusBarPaddingAnimation,
                 start = state.paddingAnimation,
-                end = state.paddingAnimation
+                end = state.paddingAnimation,
             )
             .onGloballyPositioned { model.onHeight(it.size.height) }
             .maestroTestTag("search_bar"),
         shadowElevation = 2.dp,
         colors = SearchBarDefaults.colors(
             containerColor = GasGuruTheme.colors.neutral100,
-            dividerColor = GasGuruTheme.colors.neutral100
-        )
+            dividerColor = GasGuruTheme.colors.neutral100,
+        ),
     ) {
         when (searchResultUiState) {
             SearchResultUiState.Loading -> {
@@ -201,7 +201,7 @@ internal fun GasGuruSearchBarContent(
                     LinearProgressIndicator(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .align(Alignment.TopCenter)
+                            .align(Alignment.TopCenter),
                     )
                 }
             }
@@ -224,25 +224,25 @@ internal fun GasGuruSearchBarContent(
                                         onClickItem = {
                                             val searchPlace = SearchPlace(
                                                 name = recentQuery.name,
-                                                id = recentQuery.id
+                                                id = recentQuery.id,
                                             )
                                             onEvent(
                                                 GasGuruSearchBarEvent.UpdateSearchQuery(
-                                                    recentQuery.name
-                                                )
+                                                    recentQuery.name,
+                                                ),
                                             )
                                             state.deactivate()
                                             model.onActiveChange(false)
                                             focusManager.clearFocus()
                                             model.onRecentSearchClicked(searchPlace)
-                                        }
+                                        },
                                     )
                                 },
                                 onClear = {
                                     onEvent(GasGuruSearchBarEvent.ClearRecentSearches)
-                                }
+                                },
                             ),
-                            modifier = Modifier.padding(16.dp)
+                            modifier = Modifier.padding(16.dp),
                         )
                     }
 
@@ -256,9 +256,9 @@ internal fun GasGuruSearchBarContent(
                 SearchList(
                     model = SearchListModel(
                         type = SearchListType.SUGGESTIONS,
-                        items = emptyList()
+                        items = emptyList(),
                     ),
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(16.dp),
                 )
             }
 
@@ -278,11 +278,11 @@ internal fun GasGuruSearchBarContent(
                                     onEvent(GasGuruSearchBarEvent.InsertRecentSearch(place))
                                     onEvent(GasGuruSearchBarEvent.UpdateSearchQuery(place.name))
                                     model.onPlaceSelected(place)
-                                }
+                                },
                             )
-                        }
+                        },
                     ),
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(16.dp),
                 )
             }
         }
@@ -298,7 +298,7 @@ private fun GasGuruSearchBarPreview() {
             searchQuery = "",
             searchResultUiState = SearchResultUiState.EmptyQuery,
             recentSearchQueriesUiState = RecentSearchQueriesUiState.Loading,
-            state = rememberGasGuruSearchBarState()
+            state = rememberGasGuruSearchBarState(),
         )
     }
 }
@@ -316,9 +316,9 @@ private fun GasGuruSearchBarExpandedPreview() {
                     RecentSearchQuery("Barcelona", "1"),
                     RecentSearchQuery("Madrid", "2"),
                     RecentSearchQuery("Valencia", "3"),
-                )
+                ),
             ),
-            state = rememberGasGuruSearchBarState()
+            state = rememberGasGuruSearchBarState(),
         )
     }
 }
