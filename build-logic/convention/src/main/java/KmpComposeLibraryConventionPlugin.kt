@@ -23,8 +23,11 @@ class KmpComposeLibraryConventionPlugin : Plugin<Project> {
                     implementation(compose.foundation)
                     implementation(compose.material3)
                     implementation(compose.ui)
+                    implementation(compose.materialIconsExtended)
                     api(compose.components.resources)
                     implementation(getLibrary("kotlinx.serialization.json"))
+                    implementation(getLibrary("jetbrains.lifecycle.viewmodel.compose"))
+                    implementation(getLibrary("koin.compose.viewmodel"))
                 }
                 sourceSets.androidMain.dependencies {
                     implementation(getLibrary("koin.androidx.compose"))
