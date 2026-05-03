@@ -33,12 +33,14 @@ import com.gasguru.core.testing.fakes.data.network.FakeRemoteDataSource
 import com.gasguru.core.testing.fakes.data.places.FakePlacesRepository
 import com.gasguru.core.testing.fakes.data.route.FakeRoutesRepository
 import com.gasguru.core.testing.fakes.data.user.FakeUserDataRepository
+import app.cash.turbine.test
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertInstanceOf
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
@@ -449,7 +451,7 @@ class StationMapViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN error getting route WHEN starting route THEN updates error state")
+    @DisplayName("GIVEN error getting route WHEN starting route THEN updates error state and emits ShowRouteError")
     fun handlesRouteError() = runTest {
         fakeLocationTracker.setLastKnownLocation(LatLng(latitude = 40.0, longitude = -3.0))
         fakePlacesRepository.setLocationForId(
@@ -458,20 +460,49 @@ class StationMapViewModelTest {
         )
         fakeRoutesRepository.setShouldThrowError(true)
 
-        sut.handleEvent(
-            StationMapEvent.StartRoute(
-                originId = null,
-                destinationId = "dest",
-                destinationName = "Madrid"
+        sut.effects.test {
+            sut.handleEvent(
+                StationMapEvent.StartRoute(
+                    originId = null,
+                    destinationId = "dest",
+                    destinationName = "Madrid"
+                )
             )
+            advanceUntilIdle()
+
+            val state = sut.state.value
+            assertNotNull(state.error)
+            assertFalse(state.loading)
+            assertNull(state.routeDestinationName)
+            assertInstanceOf(StationMapEffect.ShowRouteError::class.java, awaitItem())
+        }
+    }
+
+    @Test
+    @DisplayName("GIVEN route emits null WHEN starting route THEN clears loading and emits ShowRouteError")
+    fun handlesNullRouteResult() = runTest {
+        fakeLocationTracker.setLastKnownLocation(LatLng(latitude = 40.0, longitude = -3.0))
+        fakePlacesRepository.setLocationForId(
+            placeId = "dest",
+            location = LatLng(latitude = 40.2, longitude = -3.2)
         )
+        fakeRoutesRepository.setRoute(null)
 
-        advanceUntilIdle()
+        sut.effects.test {
+            sut.handleEvent(
+                StationMapEvent.StartRoute(
+                    originId = null,
+                    destinationId = "dest",
+                    destinationName = "Madrid"
+                )
+            )
+            advanceUntilIdle()
 
-        val state = sut.state.value
-        assertNotNull(state.error)
-        assertFalse(state.loading)
-        assertNull(state.routeDestinationName)
+            val state = sut.state.value
+            assertFalse(state.loading)
+            assertNull(state.routeDestinationName)
+            assertInstanceOf(StationMapEffect.ShowRouteError::class.java, awaitItem())
+        }
     }
 
     @Test
