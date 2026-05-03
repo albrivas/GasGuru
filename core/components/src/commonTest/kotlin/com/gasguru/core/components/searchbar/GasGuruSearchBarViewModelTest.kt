@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(CoroutinesTestExtension::class)
+@DisplayName("GasGuruSearchBarViewModel")
 class GasGuruSearchBarViewModelTest {
 
     private lateinit var sut: GasGuruSearchBarViewModel
@@ -39,8 +40,8 @@ class GasGuruSearchBarViewModelTest {
                 query = "ba",
                 places = listOf(
                     SearchPlace(name = "Barcelona", id = "1"),
-                    SearchPlace(name = "Barakaldo", id = "2")
-                )
+                    SearchPlace(name = "Barakaldo", id = "2"),
+                ),
             )
             setPlacesForQuery(query = "zz", places = emptyList())
         }
@@ -48,8 +49,8 @@ class GasGuruSearchBarViewModelTest {
         recentSearchRepository = FakeOfflineRecentSearchRepository(
             initialQueries = listOf(
                 RecentSearchQuery("Madrid", "10"),
-                RecentSearchQuery("Valencia", "11")
-            )
+                RecentSearchQuery("Valencia", "11"),
+            ),
         )
 
         sut = GasGuruSearchBarViewModel(
@@ -63,7 +64,13 @@ class GasGuruSearchBarViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN view model WHEN observing search query THEN starts empty")
+    @DisplayName(
+        """
+        GIVEN view model
+        WHEN observing search query
+        THEN starts empty
+        """,
+    )
     fun searchQueryStartsEmpty() = runTest {
         sut.searchQuery.test {
             assertEquals("", awaitItem())
@@ -71,7 +78,13 @@ class GasGuruSearchBarViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN empty query WHEN observing results THEN emits EmptyQuery")
+    @DisplayName(
+        """
+        GIVEN empty query
+        WHEN observing results
+        THEN emits EmptyQuery
+        """,
+    )
     fun emitsEmptyQueryState() = runTest {
         sut.searchResultUiState.test {
             assertEquals(SearchResultUiState.Loading, awaitItem())
@@ -80,7 +93,13 @@ class GasGuruSearchBarViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN short query WHEN updating search query THEN emits EmptyQuery")
+    @DisplayName(
+        """
+        GIVEN short query
+        WHEN updating search query
+        THEN emits EmptyQuery
+        """,
+    )
     fun shortQueryEmitsEmptyQuery() = runTest {
         sut.searchResultUiState.test {
             assertEquals(SearchResultUiState.Loading, awaitItem())
@@ -95,7 +114,13 @@ class GasGuruSearchBarViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN results WHEN updating query THEN emits Success with places")
+    @DisplayName(
+        """
+        GIVEN results
+        WHEN updating query
+        THEN emits Success with places
+        """,
+    )
     fun emitsSuccessWithPlaces() = runTest {
         sut.searchResultUiState.test {
             assertEquals(SearchResultUiState.Loading, awaitItem())
@@ -110,7 +135,13 @@ class GasGuruSearchBarViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN no results WHEN updating query THEN emits EmptySearchResult")
+    @DisplayName(
+        """
+        GIVEN no results
+        WHEN updating query
+        THEN emits EmptySearchResult
+        """,
+    )
     fun emitsEmptySearchResult() = runTest {
         sut.searchResultUiState.test {
             assertEquals(SearchResultUiState.Loading, awaitItem())
@@ -123,7 +154,13 @@ class GasGuruSearchBarViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN recent queries WHEN observing state THEN emits Success with queries")
+    @DisplayName(
+        """
+        GIVEN recent queries
+        WHEN observing state
+        THEN emits Success with queries
+        """,
+    )
     fun emitsRecentSearchQueries() = runTest {
         sut.recentSearchQueriesUiState.test {
             assertEquals(RecentSearchQueriesUiState.Loading, awaitItem())
@@ -135,7 +172,13 @@ class GasGuruSearchBarViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    @DisplayName("GIVEN clear event WHEN handling THEN clears recent searches")
+    @DisplayName(
+        """
+        GIVEN clear event
+        WHEN handling
+        THEN clears recent searches
+        """,
+    )
     fun clearsRecentSearches() = runTest {
         sut.handleEvent(GasGuruSearchBarEvent.ClearRecentSearches)
 
@@ -146,7 +189,13 @@ class GasGuruSearchBarViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    @DisplayName("GIVEN insert event WHEN handling THEN inserts recent search")
+    @DisplayName(
+        """
+        GIVEN insert event
+        WHEN handling
+        THEN inserts recent search
+        """,
+    )
     fun insertsRecentSearch() = runTest {
         val place = SearchPlace(name = "Sevilla", id = "99")
         val expectedQuery = RecentSearchQuery(name = "Sevilla", id = "99")
