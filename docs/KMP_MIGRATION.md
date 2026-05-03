@@ -173,7 +173,7 @@ androidMain        iosMain
 - [ ] Crear rama `feature/kmp-phase6-compose-mp` desde `develop`
 - [x] 6A: `:core:ui` → CMP (mappers commonMain, InAppReview platform-specific)
 - [x] 6B: `:core:uikit` → CMP (theme, componentes; reemplazar Lottie y ConstraintLayout)
-- [ ] 6C: `:core:components` → CMP (SearchBar + ViewModel commonMain)
+- [x] 6C: `:core:components` → CMP (SearchBar + ViewModel commonMain)
 - [ ] Componentes renderizan en Android e iOS
 - [ ] PR → develop y merge
 
