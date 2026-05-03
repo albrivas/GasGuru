@@ -34,7 +34,9 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -43,6 +45,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -65,6 +68,9 @@ class StationMapViewModel(
 
     private val _tabState = MutableStateFlow(SelectedTabUiState())
     val tabState: StateFlow<SelectedTabUiState> = _tabState
+
+    private val _effects = Channel<StationMapEffect>(Channel.BUFFERED)
+    val effects: Flow<StationMapEffect> = _effects.receiveAsFlow()
 
     private var routeCalculationJob: Job? = null
 
@@ -113,9 +119,10 @@ class StationMapViewModel(
             it.copy(
                 error = error,
                 loading = false,
-                routeDestinationName = null
+                routeDestinationName = null,
             )
         }
+        viewModelScope.launch { _effects.send(StationMapEffect.ShowRouteError) }
     }
 
     private suspend fun processRouteStations(
@@ -183,23 +190,25 @@ class StationMapViewModel(
 
                 getRouteUseCase(
                     origin = originLocation,
-                    destination = destinationLocation
+                    destination = destinationLocation,
                 ).collect { route ->
-                    route?.let { routeData ->
-                        val selectedStation = _state.value.mapStations
-                            .firstOrNull {
-                                it.fuelStation.idServiceStation == _state.value.selectedStationId
-                            }
-                            ?.fuelStation
-                        analyticsHelper.trackRouteStarted(brand = selectedStation?.brandStationBrandsType?.name)
-                        launch(defaultDispatcher) {
-                            processRouteStations(
-                                origin = originLocation,
-                                route = routeData,
-                                destinationLocation = destinationLocation,
-                                destinationName = destinationName
-                            )
+                    if (route == null) {
+                        handleRouteError(error = Exception("Route calculation returned no result"))
+                        return@collect
+                    }
+                    val selectedStation = _state.value.mapStations
+                        .firstOrNull {
+                            it.fuelStation.idServiceStation == _state.value.selectedStationId
                         }
+                        ?.fuelStation
+                    analyticsHelper.trackRouteStarted(brand = selectedStation?.brandStationBrandsType?.name)
+                    launch(defaultDispatcher) {
+                        processRouteStations(
+                            origin = originLocation,
+                            route = route,
+                            destinationLocation = destinationLocation,
+                            destinationName = destinationName,
+                        )
                     }
                 }
             } catch (error: CancellationException) {

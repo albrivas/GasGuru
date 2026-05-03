@@ -36,6 +36,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SheetValue
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
@@ -198,6 +200,18 @@ fun StationMapScreenRoute(
         }
     }
 
+    val snackbarHostState = remember { SnackbarHostState() }
+    val routeErrorMessage = stringResource(id = R.string.route_error_message)
+
+    LaunchedEffect(Unit) {
+        viewModel.effects.collect { effect ->
+            when (effect) {
+                StationMapEffect.ShowRouteError ->
+                    snackbarHostState.showSnackbar(message = routeErrorMessage)
+            }
+        }
+    }
+
     if (!locationPermissionGranted) {
         if (permissionDenied) {
             GasGuruAlertDialog(
@@ -243,6 +257,7 @@ fun StationMapScreenRoute(
         routePlanner = routePlanner,
         onRoutePlanConsumed = onRoutePlanConsumed,
         isLocationPermissionGranted = locationPermissionGranted,
+        snackbarHostState = snackbarHostState,
         event = viewModel::handleEvent,
         navigateToDetail = { stationId ->
             navigationManager.navigateTo(
@@ -267,6 +282,7 @@ internal fun StationMapScreen(
     routePlanner: RoutePlanArgs?,
     onRoutePlanConsumed: () -> Unit = {},
     isLocationPermissionGranted: Boolean = false,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     event: (StationMapEvent) -> Unit = {},
     navigateToDetail: (Int) -> Unit = {},
     navigateToRoutePlanner: () -> Unit = {},
@@ -312,6 +328,7 @@ internal fun StationMapScreen(
         sheetContainerColor = GasGuruTheme.colors.neutral100,
         sheetContentColor = GasGuruTheme.colors.neutral100,
         scaffoldState = scaffoldState,
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         sheetShadowElevation = 32.dp,
         sheetPeekHeight = if (isSearchActive) 0.dp else peekHeight,
         sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
