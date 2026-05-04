@@ -50,7 +50,8 @@ object CoverageExclusions {
         "**/*RoutesRepositoryImpl*",
         // Compose UI composables: coverage only measurable via device tests (connectedAndroidTest),
         // not via JVM unit tests. Excluded to avoid artificially deflating the metric.
-        "**/GasGuruSearchBarKt.*",
+        "**/GasGuruSearchBarKt.*",  // JaCoCo: compiled class exclusion
+        "**/GasGuruSearchBar.kt",   // SonarCloud: source file exclusion
     )
 
     /**
