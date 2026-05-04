@@ -1,3 +1,8 @@
+@file:OptIn(
+    org.jetbrains.compose.ExperimentalComposeLibrary::class,
+    org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class,
+)
+
 plugins {
     alias(libs.plugins.gasguru.kmp.compose.library)
     alias(libs.plugins.gasguru.koin)
@@ -10,6 +15,12 @@ compose.resources {
 }
 
 kotlin {
+    androidTarget {
+        // Connect commonTest to the Android instrumented test variant
+        // so that `connectedAndroidTest` picks up CMP UI tests from commonTest
+        instrumentedTestVariant.sourceSetTree.set(org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree.test)
+    }
+
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.analytics)
@@ -24,6 +35,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.turbine)
             implementation(projects.core.testing)
+            implementation(compose.uiTest)
         }
         androidUnitTest.dependencies {
             implementation(libs.junit5.api)
@@ -35,4 +47,20 @@ kotlin {
 
 android {
     namespace = "com.gasguru.core.components"
+    defaultConfig {
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+}
+
+dependencies {
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+}
+
+// CMP UI tests use runComposeUiTest which requires Android rendering —
+// they run via connectedAndroidTest, not JVM unit tests
+tasks.withType<Test>().configureEach {
+    if (name.contains("UnitTest", ignoreCase = true)) {
+        exclude("**/GasGuruSearchBarContentTest*")
+    }
 }
