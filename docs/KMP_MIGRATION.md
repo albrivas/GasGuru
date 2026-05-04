@@ -191,6 +191,14 @@ androidMain        iosMain
 - [ ] ViewModel tests migrados a commonTest
 - [ ] PR → develop y merge
 
+### Phase 8: `jvm()` Target — Tests sin Emulador
+- [ ] Añadir `jvm()` a `KmpLibraryConventionPlugin` y `KmpComposeLibraryConventionPlugin`
+- [ ] Mover dependencias Android-only de `commonMain` a `androidMain` en todos los módulos
+- [ ] Añadir `compose.desktop.currentOs` en `jvmTest` de módulos CMP
+- [ ] Eliminar exclusión `GasGuruSearchBarContentTest` en `core:components`
+- [ ] Verificar que `./gradlew allTests` pasa sin emulador
+- [ ] PR → develop y merge
+
 ---
 
 ## Grafo de Dependencias y Orden de Migración
@@ -1005,6 +1013,38 @@ Para cada fase, ejecutar en este orden:
 3. Instalar en dispositivo Android — verificar que funciona igual que antes
 4. (Desde Phase 4) Compilar iOS framework — verificar que compila
 5. (Desde Phase 7) Instalar en simulador iOS — verificar funcionalidad
+
+---
+
+## Phase 8: `jvm()` Target — Tests de Compose sin Emulador
+
+**Objetivo**: Añadir el target `jvm()` a todos los módulos KMP/CMP para poder ejecutar tests de Compose UI directamente en la máquina de desarrollo (Mac/Linux/Windows) sin necesidad de emulador Android ni simulador iOS, igual que Flutter widget tests.
+
+### Por qué
+
+`runComposeUiTest` en un módulo con `jvm()` target usa el renderer **Skia en JVM** (desktop), sin Android framework. Esto permite:
+
+```bash
+./gradlew :core:components:jvmTest   # corre en tu Mac, sin emulador, en segundos
+./gradlew :feature:search:jvmTest    # mismo
+```
+
+Actualmente, los tests de Compose en `commonTest` requieren `connectedAndroidTest` (emulador) porque ningún módulo excepto `:core:model` tiene `jvm()`.
+
+### Qué cambia
+
+1. **`KmpLibraryConventionPlugin`** y **`KmpComposeLibraryConventionPlugin`**: añadir `jvm()` a los targets.
+2. **`jvmTest.dependencies`** en los módulos CMP: añadir `compose.desktop.currentOs` para el renderer Skia.
+3. **`core/components/build.gradle.kts`**: eliminar el bloque `exclude("**/GasGuruSearchBarContentTest*")` — los tests pasarán a correr vía `jvmTest`.
+4. Todos los módulos con `commonMain` que tengan dependencias Android-only necesitan moverlas a `androidMain` en lugar de `commonMain`.
+
+### Restricción de Maestro
+
+Maestro sigue necesitando emulador/device real para los tests end-to-end (flujos completos de usuario). `jvm()` solo elimina la necesidad de emulador para **tests de componentes y features** (lógica de UI, árboles semánticos). Los smoke tests de Maestro permanecen en Android/iOS.
+
+### Prerrequisito
+
+Esta fase se hace **después de Phase 7** (todas las features en CMP), porque añadir `jvm()` a módulos que aún tienen dependencias Android-only (Google Maps, etc.) rompe la compilación.
 
 ---
 
