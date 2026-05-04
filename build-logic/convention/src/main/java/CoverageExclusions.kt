@@ -48,6 +48,9 @@ object CoverageExclusions {
         "**/*GeocoderAddressImpl*",
         "**/*PlacesRepositoryImp*",
         "**/*RoutesRepositoryImpl*",
+        // Compose UI composables: coverage only measurable via device tests (connectedAndroidTest),
+        // not via JVM unit tests. Excluded to avoid artificially deflating the metric.
+        "**/GasGuruSearchBarKt.*",
     )
 
     /**
