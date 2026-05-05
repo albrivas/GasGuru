@@ -5,7 +5,6 @@ import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.ui.mapper.toPriceUiModel
 import com.gasguru.core.ui.mapper.toUiModel
-import com.gasguru.core.ui.models.FuelTypeUiModel
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.getString
 
@@ -20,8 +19,3 @@ fun FuelType?.getPrice(context: Context, fuelStation: FuelStation): String = whe
         }
     }
 }
-
-fun String.toFuelType(context: Context): FuelType =
-    FuelTypeUiModel.ALL_FUELS.firstOrNull {
-        runBlocking { getString(it.translationRes) } == this
-    }?.type ?: FuelType.GASOLINE_95
