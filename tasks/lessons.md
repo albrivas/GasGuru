@@ -270,3 +270,14 @@ en `app/src/test/kotlin/com/gasguru/KoinModulesTest.kt:9` y `:61`.
 **Error**: La regla detecta `startKoin {}` en `Application` y la trata como clase de test.
 
 **Fix**: Suprimir `MissingKoinStopInTest` en la clase `Application` con `@Suppress`.
+
+## L018 — `compose.materialIconsExtended` no está disponible transitivamente en módulos CMP consumers
+
+**Fecha**: 2026-05-03
+**Contexto**: Phase 6C — migración de `:core:components` a CMP.
+
+**Error**: `:core:uikit` declara `implementation(compose.materialIconsExtended)` en commonMain. Al migrar `:core:components` y declararlo como `implementation(projects.core.uikit)`, los `Icons.*` no resuelven porque `implementation` no expone dependencias transitivas en KMP.
+
+**Fix**: Añadir `compose.materialIconsExtended` al `KmpComposeLibraryConventionPlugin` en `commonMain.dependencies`. Así todos los módulos CMP que usen el plugin heredan los iconos automáticamente.
+
+**Regla**: Si un módulo KMP A hace `implementation(compose.X)` y el módulo KMP B necesita los mismos tipos, B debe declarar la dependencia explícitamente (o el convention plugin debe incluirla si es de uso general).
