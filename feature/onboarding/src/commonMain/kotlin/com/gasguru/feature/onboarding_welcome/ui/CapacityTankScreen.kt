@@ -26,7 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -37,10 +36,21 @@ import com.gasguru.core.uikit.components.capacity_picker.CapacityPickerBottomShe
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
-import com.gasguru.feature.onboarding.R
+import com.gasguru.feature.onboarding.generated.resources.Res
+import com.gasguru.feature.onboarding.generated.resources.capacity_picker_confirm
+import com.gasguru.feature.onboarding.generated.resources.capacity_picker_range
+import com.gasguru.feature.onboarding.generated.resources.capacity_picker_title
+import com.gasguru.feature.onboarding.generated.resources.capacity_tank_common_values
+import com.gasguru.feature.onboarding.generated.resources.capacity_tank_display_hint
+import com.gasguru.feature.onboarding.generated.resources.capacity_tank_hint
+import com.gasguru.feature.onboarding.generated.resources.capacity_tank_saved
+import com.gasguru.feature.onboarding.generated.resources.capacity_tank_subtitle
+import com.gasguru.feature.onboarding.generated.resources.capacity_tank_title
+import com.gasguru.feature.onboarding.generated.resources.onboarding_continue
 import com.gasguru.feature.onboarding_welcome.viewmodel.CapacityTankUiState
 import com.gasguru.feature.onboarding_welcome.viewmodel.CapacityTankViewModel
-import org.koin.androidx.compose.koinViewModel
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 internal fun CapacityTankRoute(
@@ -60,9 +70,9 @@ internal fun CapacityTankScreen(
 ) {
     if (uiState.showPicker) {
         CapacityPickerBottomSheet(
-            title = stringResource(id = R.string.capacity_picker_title),
-            subtitle = stringResource(id = R.string.capacity_picker_range),
-            confirmButtonText = stringResource(id = R.string.capacity_picker_confirm),
+            title = stringResource(Res.string.capacity_picker_title),
+            subtitle = stringResource(Res.string.capacity_picker_range),
+            confirmButtonText = stringResource(Res.string.capacity_picker_confirm),
             min = CapacityTankUiState.PICKER_MIN,
             max = CapacityTankUiState.PICKER_MAX,
             initialValue = uiState.pickerValue,
@@ -83,14 +93,14 @@ internal fun CapacityTankScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
-                text = stringResource(id = R.string.capacity_tank_title),
+                text = stringResource(Res.string.capacity_tank_title),
                 style = GasGuruTheme.typography.h4,
                 color = GasGuruTheme.colors.neutralBlack,
                 textAlign = TextAlign.Center,
             )
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                text = stringResource(id = R.string.capacity_tank_subtitle),
+                text = stringResource(Res.string.capacity_tank_subtitle),
                 style = GasGuruTheme.typography.smallRegular,
                 color = GasGuruTheme.colors.textSubtle,
                 textAlign = TextAlign.Center,
@@ -128,12 +138,12 @@ internal fun CapacityTankScreen(
             GasGuruButton(
                 onClick = { onEvent(CapacityTankEvent.Continue) },
                 enabled = uiState.isContinueEnabled,
-                text = stringResource(id = R.string.onboarding_continue),
+                text = stringResource(Res.string.onboarding_continue),
                 modifier = Modifier.testTag("button_capacity_continue"),
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = stringResource(id = R.string.capacity_tank_hint),
+                text = stringResource(Res.string.capacity_tank_hint),
                 style = GasGuruTheme.typography.captionRegular,
                 color = GasGuruTheme.colors.neutral600,
                 textAlign = TextAlign.Center,
@@ -211,14 +221,14 @@ private fun CapacityDisplayBox(
                         modifier = Modifier.size(14.dp),
                     )
                     Text(
-                        text = stringResource(id = R.string.capacity_tank_saved),
+                        text = stringResource(Res.string.capacity_tank_saved),
                         style = GasGuruTheme.typography.captionBold,
                         color = GasGuruTheme.colors.primary500,
                     )
                 }
             } else {
                 Text(
-                    text = stringResource(id = R.string.capacity_tank_display_hint),
+                    text = stringResource(Res.string.capacity_tank_display_hint),
                     style = GasGuruTheme.typography.captionRegular,
                     color = GasGuruTheme.colors.neutral600,
                 )
@@ -236,7 +246,7 @@ private fun CommonCapacityValues(
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         Text(
-            text = stringResource(id = R.string.capacity_tank_common_values),
+            text = stringResource(Res.string.capacity_tank_common_values),
             style = GasGuruTheme.typography.smallBold,
             color = GasGuruTheme.colors.textSubtle,
         )
