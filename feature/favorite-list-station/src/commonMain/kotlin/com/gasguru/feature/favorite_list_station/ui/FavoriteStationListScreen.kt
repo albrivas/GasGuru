@@ -1,7 +1,5 @@
 package com.gasguru.feature.favorite_list_station.ui
 
-import android.content.Intent
-import android.provider.Settings
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -20,18 +18,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.previewFuelStationDomain
-import com.gasguru.core.ui.generated.resources.Res
+import com.gasguru.core.ui.generated.resources.Res as CoreUiRes
 import com.gasguru.core.ui.generated.resources.favorites
 import com.gasguru.core.ui.mapper.toStationListItems
 import com.gasguru.core.ui.mapper.toUiModel
@@ -45,17 +39,23 @@ import com.gasguru.core.uikit.components.station_list.StationListSwipeModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
-import com.gasguru.feature.favorite_list_station.R
+import com.gasguru.feature.favorite_list_station.generated.resources.Res
+import com.gasguru.feature.favorite_list_station.generated.resources.empty_favorites_subtitle
+import com.gasguru.feature.favorite_list_station.generated.resources.empty_favorites_title
+import com.gasguru.feature.favorite_list_station.generated.resources.ic_file_search
+import com.gasguru.feature.favorite_list_station.generated.resources.tab_distance
+import com.gasguru.feature.favorite_list_station.generated.resources.tab_price
 import com.gasguru.navigation.LocalNavigationManager
 import com.gasguru.navigation.manager.NavigationDestination
-import org.koin.androidx.compose.koinViewModel
-import org.jetbrains.compose.resources.stringResource as cmpStringResource
+import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.vectorResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun FavoriteListStationScreenRoute(
     viewModel: FavoriteListStationViewModel = koinViewModel(),
+    onOpenLocationSettings: () -> Unit = {},
 ) {
-    val context = LocalContext.current
     val navigationManager = LocalNavigationManager.current
     val state by viewModel.favoriteStations.collectAsStateWithLifecycle()
     val tabState by viewModel.tabState.collectAsStateWithLifecycle()
@@ -71,9 +71,7 @@ fun FavoriteListStationScreenRoute(
             )
         },
         event = viewModel::handleEvents,
-        onOpenLocationSettings = {
-            context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-        },
+        onOpenLocationSettings = onOpenLocationSettings,
     )
 }
 
@@ -105,7 +103,7 @@ internal fun FavoriteListStationScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .statusBarsPadding(),
-                    model = GasGuruLoadingModel(color = GasGuruTheme.colors.primary800)
+                    model = GasGuruLoadingModel(color = GasGuruTheme.colors.primary800),
                 )
             }
 
@@ -114,7 +112,7 @@ internal fun FavoriteListStationScreen(
                 selectedFuel = uiState.userSelectedFuelType,
                 navigateToDetail = navigateToDetail,
                 selectedTab = tabState.selectedTab,
-                event = event
+                event = event,
             )
 
             is FavoriteStationListUiState.EmptyFavorites -> {
@@ -124,30 +122,30 @@ internal fun FavoriteListStationScreen(
                         .statusBarsPadding()
                         .padding(top = 64.dp),
                     verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.Top),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Image(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_file_search),
+                        imageVector = vectorResource(resource = Res.drawable.ic_file_search),
                         contentDescription = null,
                         contentScale = ContentScale.Inside,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(224.dp)
+                            .height(224.dp),
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         modifier = Modifier,
-                        text = stringResource(id = R.string.empty_favorites_title),
+                        text = stringResource(resource = Res.string.empty_favorites_title),
                         style = GasGuruTheme.typography.h4,
                         textAlign = TextAlign.Center,
-                        color = GasGuruTheme.colors.textMain
+                        color = GasGuruTheme.colors.textMain,
                     )
                     Text(
                         modifier = Modifier,
-                        text = stringResource(id = R.string.empty_favorites_subtitle),
+                        text = stringResource(resource = Res.string.empty_favorites_subtitle),
                         style = GasGuruTheme.typography.baseRegular,
                         textAlign = TextAlign.Center,
-                        color = GasGuruTheme.colors.textSubtle
+                        color = GasGuruTheme.colors.textSubtle,
                     )
                 }
             }
@@ -168,13 +166,13 @@ fun ListFuelStations(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 32.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
             modifier = Modifier,
-            text = cmpStringResource(Res.string.favorites),
+            text = stringResource(resource = CoreUiRes.string.favorites),
             style = GasGuruTheme.typography.h5,
-            color = GasGuruTheme.colors.textMain
+            color = GasGuruTheme.colors.textMain,
         )
 
         FilterableStationList(
@@ -191,11 +189,11 @@ fun ListFuelStations(
                 ),
                 testTag = "favorite_list",
                 tabNames = listOf(
-                    stringResource(R.string.tab_price),
-                    stringResource(R.string.tab_distance)
-                )
+                    stringResource(resource = Res.string.tab_price),
+                    stringResource(resource = Res.string.tab_distance),
+                ),
             ),
-            modifier = modifier
+            modifier = modifier,
         )
     }
 }
@@ -208,7 +206,7 @@ fun EmptyFavoritesPreview() {
             uiState = FavoriteStationListUiState.EmptyFavorites,
             tabState = SelectedTabUiState(),
             navigateToDetail = {},
-            event = {}
+            event = {},
         )
     }
 }
@@ -220,11 +218,11 @@ fun FavoriteFuelStationsPreview() {
         FavoriteListStationScreen(
             uiState = FavoriteStationListUiState.Favorites(
                 favoriteStations = listOf(previewFuelStationDomain().toUiModel()),
-                userSelectedFuelType = FuelType.GASOLINE_95_E10
+                userSelectedFuelType = FuelType.GASOLINE_95_E10,
             ),
             tabState = SelectedTabUiState(),
             navigateToDetail = {},
-            event = {}
+            event = {},
         )
     }
 }
