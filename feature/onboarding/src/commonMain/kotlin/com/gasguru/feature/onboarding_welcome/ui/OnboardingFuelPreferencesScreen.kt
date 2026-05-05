@@ -16,15 +16,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.ui.mapper.toUiModel
-import com.gasguru.core.ui.toFuelType
 import com.gasguru.core.uikit.components.GasGuruButton
 import com.gasguru.core.uikit.components.fuel_list.FuelItemModel
 import com.gasguru.core.uikit.components.fuel_list.FuelListSelection
@@ -32,12 +29,16 @@ import com.gasguru.core.uikit.components.fuel_list.FuelListSelectionModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
-import com.gasguru.feature.onboarding.R
+import com.gasguru.feature.onboarding.generated.resources.Res
+import com.gasguru.feature.onboarding.generated.resources.onboarding_continue
+import com.gasguru.feature.onboarding.generated.resources.welcome_hint_fuel_preferences
+import com.gasguru.feature.onboarding.generated.resources.welcome_subtitle_fuel_preferences
+import com.gasguru.feature.onboarding.generated.resources.welcome_title_fuel_preferences
 import com.gasguru.feature.onboarding_welcome.viewmodel.OnboardingViewModel
 import com.gasguru.navigation.LocalNavigationManager
 import com.gasguru.navigation.manager.NavigationDestination
-import org.koin.androidx.compose.koinViewModel
-import org.jetbrains.compose.resources.stringResource as cmpStringResource
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 internal fun OnboardingFuelPreferencesRoute(
@@ -65,7 +66,8 @@ internal fun OnboardingFuelPreferences(
     onSelectedFuel: (FuelType) -> Unit,
     saveSelection: (FuelType) -> Unit = {},
 ) {
-    val context = LocalContext.current
+    val nameToFuelType = mutableMapOf<String, FuelType>()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -78,14 +80,14 @@ internal fun OnboardingFuelPreferences(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
-                text = stringResource(id = R.string.welcome_title_fuel_preferences),
+                text = stringResource(Res.string.welcome_title_fuel_preferences),
                 style = GasGuruTheme.typography.h4,
                 color = GasGuruTheme.colors.neutralBlack,
                 textAlign = TextAlign.Center,
             )
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                text = stringResource(id = R.string.welcome_subtitle_fuel_preferences),
+                text = stringResource(Res.string.welcome_subtitle_fuel_preferences),
                 style = GasGuruTheme.typography.smallRegular,
                 color = GasGuruTheme.colors.textSubtle,
                 textAlign = TextAlign.Center,
@@ -103,14 +105,18 @@ internal fun OnboardingFuelPreferences(
                 model = FuelListSelectionModel(
                     list = fuelList.map { fuelType ->
                         val uiModel = fuelType.toUiModel()
+                        val name = stringResource(uiModel.translationRes)
+                        nameToFuelType[name] = fuelType
                         FuelItemModel(
                             iconRes = uiModel.iconRes,
-                            nameRes = cmpStringResource(uiModel.translationRes),
+                            nameRes = name,
                         )
                     },
-                    selected = null,
-                    onItemSelected = { fuelName ->
-                        onSelectedFuel(fuelName.toFuelType(context))
+                    selected = selectedFuel?.let { fuel ->
+                        nameToFuelType.entries.firstOrNull { it.value == fuel }?.key
+                    },
+                    onItemSelected = { name ->
+                        nameToFuelType[name]?.let(onSelectedFuel)
                     },
                 ),
             )
@@ -143,12 +149,12 @@ internal fun OnboardingFuelPreferences(
                     navigateNext()
                 },
                 enabled = selectedFuel != null,
-                text = stringResource(id = R.string.onboarding_continue),
+                text = stringResource(Res.string.onboarding_continue),
                 modifier = Modifier.testTag("button_next_onboarding"),
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = stringResource(id = R.string.welcome_hint_fuel_preferences),
+                text = stringResource(Res.string.welcome_hint_fuel_preferences),
                 style = GasGuruTheme.typography.captionRegular,
                 color = GasGuruTheme.colors.neutral600,
                 textAlign = TextAlign.Center,
