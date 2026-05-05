@@ -1,5 +1,7 @@
 package com.gasguru.ui
 
+import android.content.Intent
+import android.provider.Settings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +13,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
@@ -51,6 +54,7 @@ internal fun NavigationBarScreen(
     onRoutePlanConsumed: () -> Unit = {},
     state: NavigationBarState = rememberNavigationBarState(navController),
 ) {
+    val context = LocalContext.current
     val backStack by navController.currentBackStackEntryAsState()
     val onMap = backStack?.destination?.hasRoute<StationMapGraph.StationMapRoute>() == true
 
@@ -97,7 +101,11 @@ internal fun NavigationBarScreen(
                     startDestination = StationMapGraph.StationMapRoute
                 ) {
                     composable<StationMapGraph.StationMapRoute> { /* no-op */ }
-                    favoriteGraph()
+                    favoriteGraph(
+                        onOpenLocationSettings = {
+                            context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                        },
+                    )
                     profileScreen()
                 }
             }
