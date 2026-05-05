@@ -178,8 +178,17 @@ androidMain        iosMain
 - [ ] PR → develop y merge
 
 ### Phase 7: Features + App iOS
-- [ ] Crear rama `feature/kmp-phase7-features-ios` desde `develop`
-- [ ] `:feature:onboarding` → CMP
+- [x] `:feature:onboarding` → CMP ✅
+  - [x] Plugin → `gasguru.kmp.compose.library` + `gasguru.koin`
+  - [x] ViewModels + UiStates + Events → commonMain (sin cambios funcionales)
+  - [x] Composables → commonMain (CMP: `painterResource`/`stringResource` de composeResources)
+  - [x] `OnboardingPageUiModel` → `StringResource`/`DrawableResource` CMP
+  - [x] `OnboardingNavigation` → commonMain (Navigation Compose CMP)
+  - [x] `String.toFuelType(context)` eliminado de `core.ui` → `FuelTypeMapper.kt` KMP en la feature
+  - [x] Recursos → `composeResources/drawable/` + `values/` + `values-es/`
+  - [x] Tests ViewModel → `commonTest` (JUnit5 + Turbine)
+  - [x] Test UI `OnboardingFuelPreferencesTest` → `androidInstrumentedTest` (mantiene `BaseTest`)
+  - [x] `assembleDebug` ✅ | `testDebugUnitTest` ✅ | `app:assembleDebug` ✅ | `app:testProdDebugUnitTest` ✅
 - [ ] `:feature:profile` → CMP
 - [ ] `:feature:favorite-list-station` → CMP
 - [ ] `:feature:search` → CMP
