@@ -1,32 +1,15 @@
 package com.gasguru.feature.profile.ui
 
-import androidx.compose.runtime.Immutable
-import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import androidx.compose.runtime.Composable
 import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.ui.generated.resources.Res
 import com.gasguru.core.ui.generated.resources.gasoline_95
 import com.gasguru.core.ui.mapper.toUi
-import com.gasguru.core.ui.models.ThemeModeUi
 import com.gasguru.core.uikit.components.icon.VehicleTypeIcons
 import com.gasguru.core.uikit.components.vehicle_item.VehicleItemCardModel
-
-@Immutable
-data class ProfileContentUi(
-    val themeUi: ThemeModeUi,
-    val allThemesUi: List<ThemeModeUi>,
-    val vehicles: List<VehicleItemCardModel> = emptyList(),
-)
-
-sealed class ProfileSheet {
-    object None : ProfileSheet()
-    object Theme : ProfileSheet()
-}
-
-sealed interface ProfileUiState {
-    data object Loading : ProfileUiState
-    data class Success(val content: ProfileContentUi) : ProfileUiState
-    data object LoadFailed : ProfileUiState
-}
+import com.gasguru.core.uikit.theme.MyApplicationTheme
+import com.gasguru.core.uikit.theme.ThemePreviews
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 
 class ProfileContentUiPreviewParameterProvider : PreviewParameterProvider<ProfileContentUi> {
     override val values = sequenceOf(
@@ -75,4 +58,12 @@ class ProfileContentUiPreviewParameterProvider : PreviewParameterProvider<Profil
             ),
         ),
     )
+}
+
+@Composable
+@ThemePreviews
+private fun ProfileScreenLoadingPreview() {
+    MyApplicationTheme {
+        ProfileScreen(uiState = ProfileUiState.Loading, event = {})
+    }
 }

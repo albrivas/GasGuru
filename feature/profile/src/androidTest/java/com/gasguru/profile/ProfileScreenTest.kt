@@ -9,7 +9,6 @@ import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.testing.BaseTest
 import com.gasguru.core.ui.mapper.toUi
 import com.gasguru.core.uikit.components.vehicle_item.VehicleItemCardModel
-import com.gasguru.feature.profile.R
 import com.gasguru.feature.profile.ui.ProfileContentUi
 import com.gasguru.feature.profile.ui.ProfileScreen
 import com.gasguru.feature.profile.ui.ProfileUiState
@@ -17,6 +16,8 @@ import com.gasguru.core.ui.generated.resources.Res as CoreUiRes
 import com.gasguru.core.ui.generated.resources.gasoline_95
 import com.gasguru.core.uikit.generated.resources.Res
 import com.gasguru.core.uikit.generated.resources.ic_vehicle_car
+import com.gasguru.feature.profile.generated.resources.Res as ProfileRes
+import com.gasguru.feature.profile.generated.resources.version
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
@@ -61,7 +62,7 @@ class ProfileScreenTest : BaseTest() {
             )
         }
 
-        onNodeWithText(getStringResource(id = R.string.version, "1.0.0 (12)")).isDisplayed()
+        onNodeWithText(getCmpString(ProfileRes.string.version, "1.0.0 (12)")).isDisplayed()
     }
 
     @Test
