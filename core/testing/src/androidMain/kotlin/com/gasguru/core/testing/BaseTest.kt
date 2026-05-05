@@ -24,4 +24,7 @@ open class BaseTest {
         testContext.getString(id, *formatArgs)
 
     fun getCmpString(resource: StringResource): String = runBlocking { cmpGetString(resource) }
+
+    fun getCmpString(resource: StringResource, vararg formatArgs: Any): String =
+        runBlocking { cmpGetString(resource, *formatArgs) }
 }
