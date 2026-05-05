@@ -60,6 +60,7 @@ ktor = "3.4.0"
 kotlinxDatetime = "0.7.1"
 composeMultiplatform = "1.10.3"
 jetbrainsNavigationCompose = "2.9.2"
+jetbrainsLifecycle = "2.9.0"
 playReview = "2.0.1"
 sonar="7.2.2.6593"
 stabilityAnalizer="0.6.6"
@@ -166,6 +167,8 @@ androidx-glance-preview = { module = "androidx.glance:glance-preview", version.r
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
 compose-multiplatform-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "composeMultiplatform" }
 jetbrains-navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "jetbrainsNavigationCompose" }
+jetbrains-lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "jetbrainsLifecycle" }
+koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
 compose-multiplatform-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "composeMultiplatform" }
 compose-multiplatform-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "composeMultiplatform" }
 compose-multiplatform-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeMultiplatform" }
