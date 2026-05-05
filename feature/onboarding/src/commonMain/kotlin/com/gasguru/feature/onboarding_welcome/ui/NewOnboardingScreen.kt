@@ -30,8 +30,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -39,10 +37,16 @@ import com.gasguru.core.uikit.components.GasGuruButton
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
-import com.gasguru.feature.onboarding.R
+import com.gasguru.feature.onboarding.generated.resources.Res
+import com.gasguru.feature.onboarding.generated.resources.onboarding_back
+import com.gasguru.feature.onboarding.generated.resources.onboarding_continue
+import com.gasguru.feature.onboarding.generated.resources.onboarding_skip
+import com.gasguru.feature.onboarding.generated.resources.onboarding_start
 import com.gasguru.feature.onboarding_welcome.viewmodel.NewOnboardingUiState
 import com.gasguru.feature.onboarding_welcome.viewmodel.NewOnboardingViewModel
-import org.koin.androidx.compose.koinViewModel
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun NewOnboardingScreenRoute(
@@ -145,7 +149,7 @@ private fun OnboardingTopBar(
             )
         }
         Text(
-            text = stringResource(R.string.onboarding_skip),
+            text = stringResource(Res.string.onboarding_skip),
             color = GasGuruTheme.colors.neutral700,
             style = GasGuruTheme.typography.smallRegular,
             modifier = Modifier
@@ -166,7 +170,7 @@ private fun OnboardingPageContent(page: OnboardingPageUiModel) {
         Spacer(modifier = Modifier.weight(2f))
 
         Image(
-            painter = painterResource(id = page.iconRes),
+            painter = painterResource(page.iconRes),
             contentDescription = null,
             modifier = Modifier
                 .heightIn(max = 180.dp)
@@ -226,7 +230,7 @@ private fun OnboardingBottomSection(
         ) {
             if (!isFirstPage) {
                 Text(
-                    text = stringResource(R.string.onboarding_back),
+                    text = stringResource(Res.string.onboarding_back),
                     color = GasGuruTheme.colors.neutral700,
                     style = GasGuruTheme.typography.smallRegular,
                     modifier = Modifier
@@ -237,7 +241,7 @@ private fun OnboardingBottomSection(
             GasGuruButton(
                 onClick = onNext,
                 text = stringResource(
-                    if (isLastPage) R.string.onboarding_start else R.string.onboarding_continue,
+                    if (isLastPage) Res.string.onboarding_start else Res.string.onboarding_continue,
                 ),
                 modifier = Modifier.weight(1f),
             )

@@ -12,7 +12,7 @@
     <string name="onboarding_title_routes">Your route, with the best prices</string>
     <string name="onboarding_desc_routes">Set your origin and destination and discover all the stations along your route (and nearby) to choose the best stop</string>
     <string name="onboarding_title_alerts">Catch the best price</string>
-    <string name="onboarding_desc_alerts">We’ll notify you if a station drops its price so you can fill up before it goes back up</string>
+    <string name="onboarding_desc_alerts">We\'ll notify you if a station drops its price so you can fill up before it goes back up</string>
     <string name="onboarding_title_offline">No signal, no problem</string>
     <string name="onboarding_desc_offline">The app works offline so you can keep checking info on the road, even if you lose connection</string>
     <string name="capacity_tank_title">How much does your tank hold?</string>
