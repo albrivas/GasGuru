@@ -61,6 +61,7 @@
 | [KMP Phase 6A](docs/KMP_PHASE6A.md) | Migración de :core:ui a CMP: mappers commonMain, InAppReview expect/actual, strings composeResources, eliminación de runBlocking getString |
 | [KMP Phase 6C](docs/KMP_PHASE6C.md) | Migración de :core:components a CMP: primer ViewModel en commonMain, koin-compose-viewmodel, lifecycle KMP, strings composeResources |
 | [KMP Phase 7A](docs/KMP_PHASE7A.md) | Migración de :feature:onboarding a CMP: decisiones sobre FuelTypeMapper KMP, locale values-es, patrón de eliminación de helpers Android-only de un solo consumidor |
+| [KMP Phase 7B](docs/KMP_PHASE7B.md) | Migración de :feature:profile a CMP: fix test androidTest con R.string → getCmpString CMP, extensión BaseTest con vararg formatArgs |
 | [Widget](docs/WIDGET.md) | Widget de pantalla de inicio con gasolineras favoritas: arquitectura Glance + WorkManager, ciclo de vida y limitaciones |
 | [Analytics](docs/ANALYTICS.md) | Sistema de analíticas con Mixpanel: arquitectura, catálogo de eventos, uso en ViewModels y Composables |
 | [Git Worktree](docs/GIT_WORKTREE.md) | Cómo crear y eliminar worktrees, el problema de local.properties y cómo resolverlo con symlinks |
