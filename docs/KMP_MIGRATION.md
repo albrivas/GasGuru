@@ -199,7 +199,16 @@ androidMain        iosMain
   - [x] Test UI `ProfileScreenTest` → `androidInstrumentedTest` (usa `getCmpString` en vez de `R.string`)
   - [x] `BaseTest.getCmpString` extendido con soporte de `vararg formatArgs`
   - [x] `compileDebugKotlinAndroid` ✅ | `testDebugUnitTest` ✅
-- [ ] `:feature:favorite-list-station` → CMP
+- [x] `:feature:favorite-list-station` → CMP
+  - [x] Plugin → `gasguru.kmp.compose.library`
+  - [x] Fuentes → `commonMain/kotlin`
+  - [x] Recursos → `composeResources/drawable/` + `values/` + `values-es/`
+  - [x] `R.drawable` / `R.string` → CMP `Res.drawable` / `Res.string`
+  - [x] `LocalContext` para location settings → lambda `onOpenLocationSettings` pasada desde `NavigationBarScreen` (app)
+  - [x] `koinViewModel` → `org.koin.compose.viewmodel.koinViewModel`
+  - [x] Tests ViewModel → `commonTest`
+  - [x] Test UI `FavoriteListScreenTest` → usa `getCmpString` en vez de `R.string`
+  - [x] `compileDebugKotlinAndroid` ✅ | `testDebugUnitTest` ✅
 - [ ] `:feature:search` → CMP
 - [ ] `:feature:detail-station` → CMP
 - [ ] `:feature:route-planner` → CMP (con mapa expect/actual)
