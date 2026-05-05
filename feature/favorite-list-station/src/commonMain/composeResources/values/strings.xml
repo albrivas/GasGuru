@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="empty_favorites_title">Your favorites list is empty</string>
+    <string name="empty_favorites_subtitle">Search and save the ones you use most to keep them always available</string>
+    <string name="tab_price">Price</string>
+    <string name="tab_distance">Distance</string>
+</resources>
