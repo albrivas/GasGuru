@@ -281,3 +281,18 @@ en `app/src/test/kotlin/com/gasguru/KoinModulesTest.kt:9` y `:61`.
 **Fix**: Añadir `compose.materialIconsExtended` al `KmpComposeLibraryConventionPlugin` en `commonMain.dependencies`. Así todos los módulos CMP que usen el plugin heredan los iconos automáticamente.
 
 **Regla**: Si un módulo KMP A hace `implementation(compose.X)` y el módulo KMP B necesita los mismos tipos, B debe declarar la dependencia explícitamente (o el convention plugin debe incluirla si es de uso general).
+
+---
+
+## L019 — androidTest de módulo CMP: R.string ya no existe tras mover strings a composeResources
+
+**Fecha**: 2026-05-05
+**Contexto**: Migración de `:feature:profile` a CMP.
+
+**Error**: `ProfileScreenTest.kt` importaba `com.gasguru.feature.profile.R` y usaba `R.string.version`. Al mover todos los strings a `composeResources/values/strings.xml`, la clase `R` del módulo ya no contiene esas entradas — el build de los instrumented tests fallaba con `Unresolved reference: version` en `R.string`.
+
+**Causa raíz**: Las strings en `composeResources/values/strings.xml` generan accessors bajo `com.gasguru.<módulo>.generated.resources.Res.string.*`, no bajo `R.string`. El `R` de Android solo contiene recursos de `src/main/res/`.
+
+**Fix**: En los `androidTest`, reemplazar `getStringResource(id = R.string.xxx, ...)` por `getCmpString(Res.string.xxx)` (o con args: `getCmpString(Res.string.xxx, arg1, arg2)`). Añadir overload `getCmpString(resource: StringResource, vararg formatArgs: Any)` a `BaseTest` si no existe.
+
+**Regla**: Al migrar un módulo a CMP y mover strings a `composeResources`, actualizar inmediatamente todos los `androidTest` que referencien `R.string.<nombre>` del módulo migrado. Buscar con `grep -rn "R\.string\." <módulo>/src/androidTest/`.
