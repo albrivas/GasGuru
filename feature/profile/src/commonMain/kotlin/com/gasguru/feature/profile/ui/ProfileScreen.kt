@@ -32,8 +32,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.common.getAppVersion
@@ -53,11 +51,15 @@ import com.gasguru.core.uikit.components.swipe.SwipeItem
 import com.gasguru.core.uikit.components.swipe.SwipeItemModel
 import com.gasguru.core.uikit.components.vehicle_item.VehicleItemCard
 import com.gasguru.core.uikit.theme.GasGuruTheme
-import com.gasguru.core.uikit.theme.MyApplicationTheme
-import com.gasguru.core.uikit.theme.ThemePreviews
-import com.gasguru.feature.profile.R
-import org.koin.androidx.compose.koinViewModel
-import org.jetbrains.compose.resources.stringResource as cmpStringResource
+import com.gasguru.feature.profile.generated.resources.Res
+import com.gasguru.feature.profile.generated.resources.my_vehicles
+import com.gasguru.feature.profile.generated.resources.profile
+import com.gasguru.feature.profile.generated.resources.settings
+import com.gasguru.feature.profile.generated.resources.theme_mode
+import com.gasguru.feature.profile.generated.resources.vehicle_add
+import com.gasguru.feature.profile.generated.resources.version
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 internal fun ProfileScreenRoute(viewModel: ProfileViewModel = koinViewModel()) {
@@ -149,12 +151,12 @@ fun SuccessContent(
     ) {
         Text(
             modifier = Modifier,
-            text = stringResource(id = R.string.profile),
+            text = stringResource(Res.string.profile),
             style = GasGuruTheme.typography.h5,
             color = GasGuruTheme.colors.textMain,
         )
         Text(
-            text = stringResource(id = R.string.my_vehicles),
+            text = stringResource(Res.string.my_vehicles),
             style = GasGuruTheme.typography.captionBold,
             color = GasGuruTheme.colors.textSubtle,
         )
@@ -205,14 +207,14 @@ fun SuccessContent(
             AddVehicleButton(onClick = onAddVehicle)
         }
         Text(
-            text = stringResource(id = R.string.settings),
+            text = stringResource(Res.string.settings),
             style = GasGuruTheme.typography.captionBold,
             color = GasGuruTheme.colors.textSubtle,
         )
         SettingItem(
             model = SettingItemModel(
-                title = stringResource(id = R.string.theme_mode),
-                selection = cmpStringResource(content.themeUi.titleRes),
+                title = stringResource(Res.string.theme_mode),
+                selection = stringResource(content.themeUi.titleRes),
                 icon = content.themeUi.iconRes,
                 onClick = { onSheetRequest(ProfileSheet.Theme) },
             ),
@@ -229,12 +231,12 @@ fun ThemeModeSheet(
     onDismiss: () -> Unit,
     onThemeSelected: (ThemeModeUi) -> Unit,
 ) {
-    val themeOptions = allThemesUi.map { cmpStringResource(it.titleRes) }
-    val selectedOption = cmpStringResource(selectedTheme.titleRes)
+    val themeOptions = allThemesUi.map { stringResource(it.titleRes) }
+    val selectedOption = stringResource(selectedTheme.titleRes)
 
     FilterSheet(
         model = FilterSheetModel(
-            title = stringResource(R.string.theme_mode),
+            title = stringResource(Res.string.theme_mode),
             buttonText = "Save",
             isMultiOption = false,
             isMustSelection = true,
@@ -256,7 +258,7 @@ fun VersionAppInfo(modifier: Modifier = Modifier) {
         Text(
             modifier = Modifier,
             text = stringResource(
-                id = R.string.version,
+                Res.string.version,
                 getAppVersion(),
             ),
             style = GasGuruTheme.typography.captionRegular,
@@ -283,30 +285,10 @@ private fun AddVehicleButton(onClick: () -> Unit) {
         )
         Spacer(modifier = Modifier.padding(4.dp))
         Text(
-            text = stringResource(id = R.string.vehicle_add),
+            text = stringResource(Res.string.vehicle_add),
             style = GasGuruTheme.typography.smallRegular,
             color = GasGuruTheme.colors.textSubtle,
         )
     }
 }
 
-@Composable
-@ThemePreviews
-private fun ProfileScreenPreview(
-    @PreviewParameter(ProfileContentUiPreviewParameterProvider::class) content: ProfileContentUi,
-) {
-    MyApplicationTheme {
-        ProfileScreen(
-            uiState = ProfileUiState.Success(content = content),
-            event = { },
-        )
-    }
-}
-
-@Composable
-@ThemePreviews
-private fun ProfileScreenLoadingPreview() {
-    MyApplicationTheme {
-        ProfileScreen(uiState = ProfileUiState.Loading, event = {})
-    }
-}

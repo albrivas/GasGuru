@@ -189,7 +189,16 @@ androidMain        iosMain
   - [x] Tests ViewModel → `commonTest` (JUnit5 + Turbine)
   - [x] Test UI `OnboardingFuelPreferencesTest` → `androidInstrumentedTest` (mantiene `BaseTest`)
   - [x] `assembleDebug` ✅ | `testDebugUnitTest` ✅ | `app:assembleDebug` ✅ | `app:testProdDebugUnitTest` ✅
-- [ ] `:feature:profile` → CMP
+- [x] `:feature:profile` → CMP ✅
+  - [x] Plugin → `gasguru.kmp.compose.library` + `gasguru.koin`
+  - [x] ViewModels + UiStates + Events → commonMain
+  - [x] Composables → commonMain (CMP: `stringResource` de composeResources)
+  - [x] `ProfileNavigation` → commonMain (Navigation Compose CMP)
+  - [x] Recursos → `composeResources/values/` + `values-es/`
+  - [x] Tests ViewModel → `commonTest` (JUnit5 + Turbine)
+  - [x] Test UI `ProfileScreenTest` → `androidInstrumentedTest` (usa `getCmpString` en vez de `R.string`)
+  - [x] `BaseTest.getCmpString` extendido con soporte de `vararg formatArgs`
+  - [x] `compileDebugKotlinAndroid` ✅ | `testDebugUnitTest` ✅
 - [ ] `:feature:favorite-list-station` → CMP
 - [ ] `:feature:search` → CMP
 - [ ] `:feature:detail-station` → CMP
