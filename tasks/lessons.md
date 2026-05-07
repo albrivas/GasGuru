@@ -296,3 +296,20 @@ en `app/src/test/kotlin/com/gasguru/KoinModulesTest.kt:9` y `:61`.
 **Fix**: En los `androidTest`, reemplazar `getStringResource(id = R.string.xxx, ...)` por `getCmpString(Res.string.xxx)` (o con args: `getCmpString(Res.string.xxx, arg1, arg2)`). Añadir overload `getCmpString(resource: StringResource, vararg formatArgs: Any)` a `BaseTest` si no existe.
 
 **Regla**: Al migrar un módulo a CMP y mover strings a `composeResources`, actualizar inmediatamente todos los `androidTest` que referencien `R.string.<nombre>` del módulo migrado. Buscar con `grep -rn "R\.string\." <módulo>/src/androidTest/`.
+
+---
+
+## L020 — KMP 2.1+: `Clock.System` viene de `kotlin.time`, no de `kotlinx.datetime`
+
+**Fecha**: 2026-05-07
+**Contexto**: Migración de `DateUtils.kt` en `:feature:detail-station` a commonMain.
+
+**Error**: `import kotlinx.datetime.Clock` + `Clock.System.now()` causaba `Unresolved reference 'System'` en `compileDebugKotlinAndroid` con Kotlin 2.3.0. El error no era de dependencia faltante — `libs.kotlinx.datetime` estaba declarado correctamente en `commonMain.dependencies`.
+
+**Causa raíz**: En Kotlin 2.1+, `kotlin.time.Clock` fue añadido a la stdlib estándar. En `kotlinx-datetime 0.7.1`, `kotlinx.datetime.Clock` fue remodelado y `Clock.System` pasó a vivir en `kotlin.time.Clock`. El resto del proyecto (L003) ya usa `kotlin.time.Clock` — el import de `kotlinx.datetime.Clock` es obsoleto con este stack.
+
+**Verificación**: `grep -rn "import kotlin.time.Clock" <proyecto>` muestra que `PriceAlertEntity.kt`, `CommonUtils.kt` y `FakeUserDataRepository.kt` ya usaban el import correcto.
+
+**Fix**: Cambiar `import kotlinx.datetime.Clock` → `import kotlin.time.Clock`.
+
+**Regla**: En proyectos con Kotlin 2.1+ y kotlinx-datetime 0.7.1+, usar siempre `import kotlin.time.Clock` para acceder a `Clock.System.now()`. `kotlinx.datetime.Clock` ya no expone `System` como sub-objeto.

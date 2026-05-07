@@ -216,7 +216,19 @@ androidMain        iosMain
   - [x] Limpieza de dependencias muertas (`maps.compose`, `play.services.maps`, `kotlin.coroutines.play`, `secrets.google`)
   - [x] Sin tests nuevos (no tiene ViewModel propio; lógica delegada a `:core:components`)
   - [x] `compileDebugKotlinAndroid` ✅ | `app:assembleDebug` ✅ | `app:testProdDebugUnitTest` ✅
-- [ ] `:feature:detail-station` → CMP
+- [x] `:feature:detail-station` → CMP ✅
+  - [x] Plugin → `gasguru.kmp.compose.library` + `gasguru.koin`
+  - [x] Fuentes → `commonMain/kotlin`
+  - [x] Recursos → `composeResources/drawable/` + `values/` + `values-es/`
+  - [x] `R.drawable` / `R.string` → CMP `Res.drawable` / `Res.string`
+  - [x] `ConstraintLayout` → `Row(weight(1f)) + Spacer + Box`
+  - [x] `Coil 2` → `Coil 3` KMP (`coil3.compose.AsyncImage` + `LocalPlatformContext`)
+  - [x] Share, Maps, Notification permission → `expect/actual` en `platform/` de la feature
+  - [x] `System.currentTimeMillis()` → `Clock.System.now()` (`kotlin.time`)
+  - [x] `koinViewModel` → `org.koin.compose.viewmodel.koinViewModel`
+  - [x] Tests ViewModel → `commonTest`
+  - [x] Test UI `DetailStationScreenTest` → `androidInstrumentedTest`
+  - [x] `compileDebugKotlinAndroid` ✅ | `testDebugUnitTest` ✅ | `app:assembleDebug` ✅
 - [ ] `:feature:route-planner` → CMP (con mapa expect/actual)
 - [ ] `:feature:station-map` → CMP (con mapa expect/actual)
 - [ ] Crear módulo `:iosApp` con target iOS
