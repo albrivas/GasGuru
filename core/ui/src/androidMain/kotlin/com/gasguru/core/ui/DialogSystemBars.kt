@@ -8,7 +8,7 @@ import androidx.core.view.WindowCompat
 import com.gasguru.core.uikit.theme.GasGuruTheme
 
 @Composable
-fun ConfigureDialogSystemBars(invertColors: Boolean = false) {
+actual fun ConfigureDialogSystemBars(invertColors: Boolean) {
     val view = LocalView.current
     val isDarkTheme = GasGuruTheme.colors.isDark
 
