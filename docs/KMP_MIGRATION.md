@@ -209,7 +209,13 @@ androidMain        iosMain
   - [x] Tests ViewModel → `commonTest`
   - [x] Test UI `FavoriteListScreenTest` → usa `getCmpString` en vez de `R.string`
   - [x] `compileDebugKotlinAndroid` ✅ | `testDebugUnitTest` ✅
-- [ ] `:feature:search` → CMP
+- [x] `:feature:search` → CMP ✅
+  - [x] Plugin → `gasguru.kmp.compose.library` + `gasguru.koin`
+  - [x] Fuentes → `commonMain/kotlin`
+  - [x] `ConfigureDialogSystemBars` → `expect/actual` en `:core:ui` (androidMain actual, iosMain no-op)
+  - [x] Limpieza de dependencias muertas (`maps.compose`, `play.services.maps`, `kotlin.coroutines.play`, `secrets.google`)
+  - [x] Sin tests nuevos (no tiene ViewModel propio; lógica delegada a `:core:components`)
+  - [x] `compileDebugKotlinAndroid` ✅ | `app:assembleDebug` ✅ | `app:testProdDebugUnitTest` ✅
 - [ ] `:feature:detail-station` → CMP
 - [ ] `:feature:route-planner` → CMP (con mapa expect/actual)
 - [ ] `:feature:station-map` → CMP (con mapa expect/actual)
