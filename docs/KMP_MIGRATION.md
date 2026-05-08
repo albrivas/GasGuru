@@ -229,7 +229,15 @@ androidMain        iosMain
   - [x] Tests ViewModel → `commonTest`
   - [x] Test UI `DetailStationScreenTest` → `androidInstrumentedTest`
   - [x] `compileDebugKotlinAndroid` ✅ | `testDebugUnitTest` ✅ | `app:assembleDebug` ✅
-- [ ] `:feature:route-planner` → CMP (con mapa expect/actual)
+- [x] `:feature:route-planner` → CMP ✅
+  - [x] Plugin → `gasguru.kmp.compose.library` + `gasguru.koin`
+  - [x] Fuentes → `commonMain/kotlin`
+  - [x] Recursos → `composeResources/drawable/` + `values/` + `values-es/`
+  - [x] `R.drawable` / `R.string` → CMP `Res.drawable` / `Res.string`
+  - [x] Deps muertas eliminadas: `libs.places`, `libs.kotlin.coroutines.play`, `libs.koin.androidx.compose`
+  - [x] `koinViewModel` → `org.koin.compose.viewmodel.koinViewModel`
+  - [x] Tests ViewModel → `commonTest`
+  - [x] `compileDebugKotlinAndroid` ✅ | `testDebugUnitTest` ✅ | `app:assembleDebug` ✅
 - [ ] `:feature:station-map` → CMP (con mapa expect/actual)
 - [ ] Crear módulo `:iosApp` con target iOS
 - [ ] App iOS compila e instala en simulador
