@@ -18,94 +18,129 @@ import com.gasguru.feature.detail_station.generated.resources.update_minute_ago
 import com.gasguru.feature.detail_station.generated.resources.update_minutes_ago
 import com.gasguru.feature.detail_station.generated.resources.update_now
 import com.gasguru.feature.detail_station.generated.resources.wednesday_short
+import kotlin.math.abs
 import kotlin.time.Clock
 import org.jetbrains.compose.resources.stringResource
-import kotlin.math.abs
 
-private const val ONE_MINUTE_MS = 60_000L
-private const val ONE_HOUR_MS = 3_600_000L
-private const val ONE_DAY_MS = 86_400_000L
-private const val ONE_WEEK_MS = 604_800_000L
+internal const val ONE_MINUTE_MS = 60_000L
+internal const val ONE_HOUR_MS = 3_600_000L
+internal const val ONE_DAY_MS = 86_400_000L
+internal const val ONE_WEEK_MS = 604_800_000L
+
+/**
+ * Sealed class representing the category of elapsed time.
+ * Extracted from the @Composable to allow pure-logic unit testing.
+ */
+internal sealed class TimeElapsedCategory {
+    data object Now : TimeElapsedCategory()
+    data class OneMinute(val minutes: Long) : TimeElapsedCategory()
+    data class Minutes(val minutes: Long) : TimeElapsedCategory()
+    data class OneHour(val hours: Long) : TimeElapsedCategory()
+    data class Hours(val hours: Long) : TimeElapsedCategory()
+    data class OneDay(val days: Long) : TimeElapsedCategory()
+    data class Days(val days: Long) : TimeElapsedCategory()
+    data object LongAgo : TimeElapsedCategory()
+}
+
+/**
+ * Pure function that classifies a time diff in milliseconds into a [TimeElapsedCategory].
+ * Testable without a Compose host.
+ */
+internal fun classifyTimeDiff(timeDiff: Long): TimeElapsedCategory = when {
+    timeDiff < ONE_MINUTE_MS -> TimeElapsedCategory.Now
+    timeDiff < ONE_HOUR_MS -> {
+        val minutes = timeDiff / ONE_MINUTE_MS
+        if (minutes == 1L) TimeElapsedCategory.OneMinute(minutes) else TimeElapsedCategory.Minutes(minutes)
+    }
+    timeDiff < ONE_DAY_MS -> {
+        val hours = timeDiff / ONE_HOUR_MS
+        if (hours == 1L) TimeElapsedCategory.OneHour(hours) else TimeElapsedCategory.Hours(hours)
+    }
+    timeDiff < ONE_WEEK_MS -> {
+        val days = timeDiff / ONE_DAY_MS
+        if (days == 1L) TimeElapsedCategory.OneDay(days) else TimeElapsedCategory.Days(days)
+    }
+    else -> TimeElapsedCategory.LongAgo
+}
+
+/**
+ * Pure function that resolves a single day-range token (e.g. "L-V") using an already-resolved
+ * days map. Testable without a Compose host.
+ */
+internal fun resolveScheduleDayRange(dayRange: String, daysMap: Map<String, String>): String =
+    when (dayRange.uppercase()) {
+        "L-V" -> "${daysMap["L"]}-${daysMap["V"]}"
+        "L-S" -> "${daysMap["L"]}-${daysMap["S"]}"
+        "L-D" -> "${daysMap["L"]}-${daysMap["D"]}"
+        "M-V" -> "${daysMap["M"]}-${daysMap["V"]}"
+        "M-S" -> "${daysMap["M"]}-${daysMap["S"]}"
+        "M-D" -> "${daysMap["M"]}-${daysMap["D"]}"
+        "X-V" -> "${daysMap["X"]}-${daysMap["V"]}"
+        "X-S" -> "${daysMap["X"]}-${daysMap["S"]}"
+        "X-D" -> "${daysMap["X"]}-${daysMap["D"]}"
+        "J-V" -> "${daysMap["J"]}-${daysMap["V"]}"
+        "J-S" -> "${daysMap["J"]}-${daysMap["S"]}"
+        "J-D" -> "${daysMap["J"]}-${daysMap["D"]}"
+        "V-S" -> "${daysMap["V"]}-${daysMap["S"]}"
+        "V-D" -> "${daysMap["V"]}-${daysMap["D"]}"
+        "S-D" -> "${daysMap["S"]}-${daysMap["D"]}"
+        "L", "M", "X", "J", "V", "S", "D" -> daysMap[dayRange.uppercase()].toString()
+        else -> dayRange
+    }
+
+/**
+ * Pure function that formats a schedule string using already-resolved day names and a 24h label.
+ * Testable without a Compose host.
+ */
+internal fun formatSchedulePure(
+    schedule: String,
+    label24h: String,
+    daysMap: Map<String, String>,
+): String {
+    if (schedule.contains("24H", ignoreCase = true)) return label24h
+
+    val parts = schedule.split(";").map { it.trim() }
+    val formattedParts = parts.map { part ->
+        val dayRange = part.substringBefore(":")
+        val timeRange = part.substringAfter(":")
+        val formattedDays = resolveScheduleDayRange(dayRange = dayRange, daysMap = daysMap)
+        "$formattedDays $timeRange"
+    }.filter { it.isNotBlank() }
+
+    return formattedParts.joinToString(separator = "\n")
+}
 
 @Composable
 fun getTimeElapsedString(timestamp: Long): String {
     val currentTime = Clock.System.now().toEpochMilliseconds()
     val timeDiff = abs(currentTime - timestamp)
 
-    return when {
-        timeDiff < ONE_MINUTE_MS -> stringResource(Res.string.update_now)
-        timeDiff < ONE_HOUR_MS -> {
-            val minutes = timeDiff / ONE_MINUTE_MS
-            if (minutes == 1L) {
-                stringResource(Res.string.update_minute_ago)
-            } else {
-                stringResource(Res.string.update_minutes_ago, minutes)
-            }
-        }
-        timeDiff < ONE_DAY_MS -> {
-            val hours = timeDiff / ONE_HOUR_MS
-            if (hours == 1L) {
-                stringResource(Res.string.update_hour_ago)
-            } else {
-                stringResource(Res.string.update_hours_ago, hours)
-            }
-        }
-        timeDiff < ONE_WEEK_MS -> {
-            val days = timeDiff / ONE_DAY_MS
-            if (days == 1L) {
-                stringResource(Res.string.update_day_ago)
-            } else {
-                stringResource(Res.string.update_days_ago, days)
-            }
-        }
-        else -> stringResource(Res.string.update_long_ago)
+    return when (val category = classifyTimeDiff(timeDiff)) {
+        is TimeElapsedCategory.Now -> stringResource(Res.string.update_now)
+        is TimeElapsedCategory.OneMinute -> stringResource(Res.string.update_minute_ago)
+        is TimeElapsedCategory.Minutes -> stringResource(Res.string.update_minutes_ago, category.minutes)
+        is TimeElapsedCategory.OneHour -> stringResource(Res.string.update_hour_ago)
+        is TimeElapsedCategory.Hours -> stringResource(Res.string.update_hours_ago, category.hours)
+        is TimeElapsedCategory.OneDay -> stringResource(Res.string.update_day_ago)
+        is TimeElapsedCategory.Days -> stringResource(Res.string.update_days_ago, category.days)
+        is TimeElapsedCategory.LongAgo -> stringResource(Res.string.update_long_ago)
     }
 }
 
 @Composable
 fun formatSchedule(schedule: String): String {
-    return when {
-        schedule.contains("24H", ignoreCase = true) -> stringResource(Res.string.open_24h)
-        else -> {
-            val daysOfWeek = mapOf(
-                "L" to stringResource(Res.string.monday_short),
-                "M" to stringResource(Res.string.tuesday_short),
-                "X" to stringResource(Res.string.wednesday_short),
-                "J" to stringResource(Res.string.thursday_short),
-                "V" to stringResource(Res.string.friday_short),
-                "S" to stringResource(Res.string.saturday_short),
-                "D" to stringResource(Res.string.sunday_short),
-            )
-
-            val parts = schedule.split(";").map { it.trim() }
-            val formattedParts = parts.map { part ->
-                val dayRange = part.substringBefore(":")
-                val timeRange = part.substringAfter(":")
-
-                val formattedDays = when (dayRange.uppercase()) {
-                    "L-V" -> "${daysOfWeek["L"]}-${daysOfWeek["V"]}"
-                    "L-S" -> "${daysOfWeek["L"]}-${daysOfWeek["S"]}"
-                    "L-D" -> "${daysOfWeek["L"]}-${daysOfWeek["D"]}"
-                    "M-V" -> "${daysOfWeek["M"]}-${daysOfWeek["V"]}"
-                    "M-S" -> "${daysOfWeek["M"]}-${daysOfWeek["S"]}"
-                    "M-D" -> "${daysOfWeek["M"]}-${daysOfWeek["D"]}"
-                    "X-V" -> "${daysOfWeek["X"]}-${daysOfWeek["V"]}"
-                    "X-S" -> "${daysOfWeek["X"]}-${daysOfWeek["S"]}"
-                    "X-D" -> "${daysOfWeek["X"]}-${daysOfWeek["D"]}"
-                    "J-V" -> "${daysOfWeek["J"]}-${daysOfWeek["V"]}"
-                    "J-S" -> "${daysOfWeek["J"]}-${daysOfWeek["S"]}"
-                    "J-D" -> "${daysOfWeek["J"]}-${daysOfWeek["D"]}"
-                    "V-S" -> "${daysOfWeek["V"]}-${daysOfWeek["S"]}"
-                    "V-D" -> "${daysOfWeek["V"]}-${daysOfWeek["D"]}"
-                    "S-D" -> "${daysOfWeek["S"]}-${daysOfWeek["D"]}"
-                    "L", "M", "X", "J", "V", "S", "D" -> daysOfWeek[dayRange.uppercase()].toString()
-                    else -> dayRange
-                }
-
-                "$formattedDays $timeRange"
-            }.filter { it.isNotBlank() }
-
-            formattedParts.joinToString(separator = "\n")
-        }
-    }
+    val daysMap = mapOf(
+        "L" to stringResource(Res.string.monday_short),
+        "M" to stringResource(Res.string.tuesday_short),
+        "X" to stringResource(Res.string.wednesday_short),
+        "J" to stringResource(Res.string.thursday_short),
+        "V" to stringResource(Res.string.friday_short),
+        "S" to stringResource(Res.string.saturday_short),
+        "D" to stringResource(Res.string.sunday_short),
+    )
+    return formatSchedulePure(
+        schedule = schedule,
+        label24h = stringResource(Res.string.open_24h),
+        daysMap = daysMap,
+    )
 }
