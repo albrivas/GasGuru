@@ -3,7 +3,6 @@ package com.gasguru.feature.station_map.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gasguru.core.analytics.AnalyticsHelper
-import com.gasguru.core.common.toGoogleLatLng
 import com.gasguru.core.domain.filters.GetFiltersUseCase
 import com.gasguru.core.domain.filters.SaveFilterUseCase
 import com.gasguru.core.domain.fuelstation.FuelStationByLocationUseCase
@@ -27,8 +26,8 @@ import com.gasguru.feature.station_map.analytics.trackRouteCancelled
 import com.gasguru.feature.station_map.analytics.trackRouteStarted
 import com.gasguru.feature.station_map.analytics.trackStationSelected
 import com.gasguru.feature.station_map.analytics.trackStationSelectedWithoutBrand
+import com.gasguru.feature.station_map.ui.model.GeoBounds
 import com.gasguru.feature.station_map.ui.models.toUiModel
-import com.google.android.gms.maps.model.LatLngBounds
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
@@ -89,7 +88,6 @@ class StationMapViewModel(
                 destinationId = event.destinationId,
                 destinationName = event.destinationName,
             )
-
             is StationMapEvent.CancelRoute -> cancelRoute()
             is StationMapEvent.ChangeTab -> changeTab(selectedTab = event.selected)
             is StationMapEvent.SelectStation -> selectStation(stationId = event.stationId)
@@ -134,11 +132,11 @@ class StationMapViewModel(
         try {
             val routeFuelStations = getFuelStationsInRouteUseCase(
                 origin = origin,
-                routePoints = route.route
+                routePoints = route.route,
             )
             val bounds = calculateRouteBounds(
                 origin = origin,
-                destination = destinationLocation
+                destination = destinationLocation,
             )
             val userData = getUserDataUseCase().first()
             val tabState = _tabState.value
@@ -146,7 +144,7 @@ class StationMapViewModel(
             val sortedStations = sortStationsByTab(
                 stations = uiStations,
                 selectedTab = tabState.selectedTab,
-                userData = userData
+                userData = userData,
             )
 
             _state.update {
@@ -178,14 +176,14 @@ class StationMapViewModel(
                 it.copy(
                     loading = true,
                     listStations = emptyList(),
-                    routeDestinationName = destinationName
+                    routeDestinationName = destinationName,
                 )
             }
 
             try {
                 val (originLocation, destinationLocation) = getRouteLocations(
                     originId = originId,
-                    destinationId = destinationId
+                    destinationId = destinationId,
                 )
 
                 getRouteUseCase(
@@ -254,9 +252,7 @@ class StationMapViewModel(
     }
 
     private fun centerMapOnLocation(location: LatLng) {
-        _state.update {
-            it.copy(userLocationToCenter = location.toGoogleLatLng())
-        }
+        _state.update { it.copy(userLocationToCenter = location) }
     }
 
     private fun getStationByPlace(placeId: String) =
@@ -273,7 +269,7 @@ class StationMapViewModel(
         viewModelScope.launch {
             combine(
                 filters,
-                getUserDataUseCase()
+                getUserDataUseCase(),
             ) { filterState, userData ->
                 Pair(filterState, userData)
             }.collectLatest { (filterState, userData) ->
@@ -282,13 +278,13 @@ class StationMapViewModel(
                     userLocation = location,
                     maxStations = filterState.filterStationsNearby,
                     brands = filterState.filterBrand,
-                    schedule = filterState.filterSchedule.toDomainModel()
+                    schedule = filterState.filterSchedule.toDomainModel(),
                 ).catch { error ->
                     _state.update { it.copy(error = error, loading = false) }
                 }.collect { fuelStations ->
                     val bounds = calculateBounds(
                         fuelStations = fuelStations.map { it.location },
-                        location = location
+                        location = location,
                     )
                     val uiStations = fuelStations.map { station -> station.toUiModel() }
                     _state.update {
@@ -297,7 +293,7 @@ class StationMapViewModel(
                             listStations = sortStationsByTab(
                                 uiStations,
                                 _tabState.value.selectedTab,
-                                userData
+                                userData,
                             ),
                             loading = false,
                             selectedType = userData.principalVehicle().fuelType,
@@ -310,23 +306,11 @@ class StationMapViewModel(
         }
     }
 
-    private fun calculateBounds(fuelStations: List<LatLng>, location: LatLng): LatLngBounds {
-        val allLocations =
-            fuelStations.map { it.toGoogleLatLng() } + location.toGoogleLatLng()
-        val boundsBuilder = LatLngBounds.Builder()
-        allLocations.forEach { boundsBuilder.include(it) }
-        return boundsBuilder.build()
-    }
+    private fun calculateBounds(fuelStations: List<LatLng>, location: LatLng): GeoBounds? =
+        GeoBounds.fromPoints(fuelStations + location)
 
-    private fun calculateRouteBounds(
-        origin: LatLng,
-        destination: LatLng,
-    ): LatLngBounds {
-        val allLocations = listOf(origin.toGoogleLatLng(), destination.toGoogleLatLng())
-        val boundsBuilder = LatLngBounds.Builder()
-        allLocations.forEach { boundsBuilder.include(it) }
-        return boundsBuilder.build()
-    }
+    private fun calculateRouteBounds(origin: LatLng, destination: LatLng): GeoBounds? =
+        GeoBounds.fromPoints(listOf(origin, destination))
 
     val filters: StateFlow<FilterUiState> = getFiltersUseCase()
         .map { filters ->
@@ -335,7 +319,7 @@ class StationMapViewModel(
             FilterUiState(
                 filterBrand = filtersByType.getBrandFilter(),
                 filterStationsNearby = filtersByType.getNearbyFilter(),
-                filterSchedule = filtersByType.getScheduleFilter()
+                filterSchedule = filtersByType.getScheduleFilter(),
             )
         }.stateIn(
             scope = viewModelScope,
@@ -361,7 +345,7 @@ class StationMapViewModel(
             analyticsHelper.trackFilterScheduleChanged(schedule = scheduleSelected.name)
             saveFilterUseCase(
                 filterType = FilterType.SCHEDULE,
-                selection = listOf(scheduleSelected.name)
+                selection = listOf(scheduleSelected.name),
             )
         }
 
@@ -384,8 +368,7 @@ class StationMapViewModel(
         if (currentState.mapStations.isNotEmpty()) {
             viewModelScope.launch(defaultDispatcher) {
                 val userData = getUserDataUseCase().first()
-                val sortedStations =
-                    sortStationsByTab(currentState.mapStations, selectedTab, userData)
+                val sortedStations = sortStationsByTab(currentState.mapStations, selectedTab, userData)
                 _state.update { it.copy(listStations = sortedStations) }
             }
         }
@@ -397,11 +380,8 @@ class StationMapViewModel(
         userData: UserData,
     ) = when (selectedTab) {
         StationSortTab.PRICE -> stations.sortedBy {
-            userData.principalVehicle().fuelType.extractPrice(
-                it.fuelStation
-            )
+            userData.principalVehicle().fuelType.extractPrice(it.fuelStation)
         }
-
         StationSortTab.DISTANCE -> stations.sortedBy { it.fuelStation.distance }
     }
 
