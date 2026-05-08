@@ -229,8 +229,8 @@ androidMain        iosMain
   - [x] Tests ViewModel → `commonTest`
   - [x] Test UI `DetailStationScreenTest` → `androidInstrumentedTest`
   - [x] `compileDebugKotlinAndroid` ✅ | `testDebugUnitTest` ✅ | `app:assembleDebug` ✅
-- [ ] `:feature:route-planner` → CMP (con mapa expect/actual)
-- [ ] `:feature:station-map` → CMP (con mapa expect/actual)
+- [x] `:feature:route-planner` → CMP ✅
+- [x] `:feature:station-map` → CMP (con mapa expect/actual) ✅
 - [ ] Crear módulo `:iosApp` con target iOS
 - [ ] App iOS compila e instala en simulador
 - [ ] ViewModel tests migrados a commonTest
