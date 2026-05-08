@@ -107,4 +107,4 @@ feature/detail-station/src/
 
 ## Próxima fase
 
-**Phase 7F**: `:feature:route-planner` → CMP (alta complejidad: usa mapas y Places SDK).
+**Phase 7G**: `:feature:station-map` → CMP — la más compleja del proyecto (Google Maps Compose en Android, MapKit en iOS vía `expect/actual` Composable).
