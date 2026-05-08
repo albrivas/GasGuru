@@ -42,6 +42,7 @@ playServicesMaps = "19.2.0"
 secrets = "2.0.1"
 places = "4.4.1"
 coil = "2.7.0"
+coil3 = "3.2.0"
 splashScreen = "1.2.0"
 junit5Api = "5.12.0"
 junit5Extensions = "1.7.0"
@@ -136,6 +137,8 @@ maps-utils = { module = "com.google.maps.android:android-maps-utils", version.re
 play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
 places = { module = "com.google.android.libraries.places:places", version.ref = "places" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+coil3-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil3" }
+coil3-network-ktor3 = { group = "io.coil-kt.coil3", name = "coil-network-ktor3", version.ref = "coil3" }
 splash-screen = { module = "androidx.core:core-splashscreen", version.ref = "splashScreen" }
 junit5-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit5Api" }
 junit5-extensions = { module = "de.mannodermaus.junit5:android-test-extensions", version.ref = "junit5Extensions" }
