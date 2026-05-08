@@ -1,23 +1,24 @@
 package com.gasguru.feature.station_map.ui
 
 import com.gasguru.core.model.data.FuelType
+import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.ui.models.FuelStationUiModel
+import com.gasguru.feature.station_map.ui.model.GeoBounds
 import com.gasguru.feature.station_map.ui.models.RouteUiModel
-import com.google.android.gms.maps.model.LatLngBounds
 
 data class StationMapUiState(
-    val mapStations: List<FuelStationUiModel> = emptyList(), // Only for map
-    val listStations: List<FuelStationUiModel> = emptyList(), // Only for sheet
+    val mapStations: List<FuelStationUiModel> = emptyList(),
+    val listStations: List<FuelStationUiModel> = emptyList(),
     val error: Throwable? = null,
     val selectedType: FuelType? = null,
     val showListStations: Boolean = false,
     val loading: Boolean = true,
-    val mapBounds: LatLngBounds? = null,
+    val mapBounds: GeoBounds? = null,
     val shouldCenterMap: Boolean = false,
     val startRoute: Boolean = false,
     val route: RouteUiModel? = null,
     val routeDestinationName: String? = null,
-    val userLocationToCenter: com.google.android.gms.maps.model.LatLng? = null,
+    val userLocationToCenter: LatLng? = null,
     val selectedStationId: Int = -1,
 )
 
