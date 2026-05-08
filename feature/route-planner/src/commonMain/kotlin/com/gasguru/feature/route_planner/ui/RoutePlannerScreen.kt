@@ -37,8 +37,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -56,14 +54,24 @@ import com.gasguru.core.uikit.components.searchlist.SearchListType
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
-import com.gasguru.feature.route_planner.R
+import com.gasguru.feature.route_planner.generated.resources.Res
+import com.gasguru.feature.route_planner.generated.resources.ic_current_location
+import com.gasguru.feature.route_planner.generated.resources.ic_swap
+import com.gasguru.feature.route_planner.generated.resources.route_destination_placeholder
+import com.gasguru.feature.route_planner.generated.resources.route_origin_placeholder
+import com.gasguru.feature.route_planner.generated.resources.route_planner_title
+import com.gasguru.feature.route_planner.generated.resources.route_swap_locations
+import com.gasguru.feature.route_planner.generated.resources.start_route
+import com.gasguru.feature.route_planner.generated.resources.your_location
 import com.gasguru.navigation.LocalNavigationManager
 import com.gasguru.navigation.constants.NavigationKeys
 import com.gasguru.navigation.manager.NavigationDestination
 import com.gasguru.navigation.models.PlaceArgs
 import com.gasguru.navigation.models.RoutePlanArgs
 import com.gasguru.navigation.extensions.navigateBackWith
-import org.koin.androidx.compose.koinViewModel
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun RoutePlannerScreenRoute(
@@ -131,7 +139,7 @@ internal fun RoutePlannerScreen(
                 ),
                 title = {
                     Text(
-                        text = stringResource(R.string.route_planner_title),
+                        text = stringResource(Res.string.route_planner_title),
                         style = GasGuruTheme.typography.baseBold,
                         color = GasGuruTheme.colors.textMain
                     )
@@ -156,7 +164,7 @@ internal fun RoutePlannerScreen(
                 GasGuruButton(
                     onClick = onStartRoute,
                     enabled = isRouteEnabled,
-                    text = stringResource(id = R.string.start_route),
+                    text = stringResource(Res.string.start_route),
                     modifier = Modifier
                         .fillMaxWidth()
                         .systemBarsPadding()
@@ -173,12 +181,12 @@ internal fun RoutePlannerScreen(
         ) {
             RoutePickerCard(
                 origin = if (uiState.startQuery.isCurrentLocation) {
-                    stringResource(id = R.string.your_location)
+                    stringResource(Res.string.your_location)
                 } else {
                     uiState.startQuery.name
                 },
                 destination = if (uiState.endQuery.isCurrentLocation) {
-                    stringResource(id = R.string.your_location)
+                    stringResource(Res.string.your_location)
                 } else {
                     uiState.endQuery.name
                 },
@@ -254,7 +262,7 @@ fun LocationContent(onClick: () -> Unit = {}) {
             tint = GasGuruTheme.colors.neutralBlack
         )
         Text(
-            text = stringResource(id = R.string.your_location),
+            text = stringResource(Res.string.your_location),
             style = GasGuruTheme.typography.baseRegular,
             color = GasGuruTheme.colors.textMain,
             maxLines = 1,
@@ -293,7 +301,7 @@ fun RoutePickerCard(
                 verticalArrangement = Arrangement.Center
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_current_location),
+                    painter = painterResource(Res.drawable.ic_current_location),
                     contentDescription = null,
                     tint = GasGuruTheme.colors.primary700,
                     modifier = Modifier.size(24.dp)
@@ -321,7 +329,7 @@ fun RoutePickerCard(
             ) {
                 ClickableFieldRow(
                     text = origin,
-                    placeholder = stringResource(R.string.route_origin_placeholder),
+                    placeholder = stringResource(Res.string.route_origin_placeholder),
                     onClick = onPickOrigin,
                     onClear = onClearOrigin,
                 )
@@ -334,7 +342,7 @@ fun RoutePickerCard(
                 )
                 ClickableFieldRow(
                     text = destination,
-                    placeholder = stringResource(R.string.route_destination_placeholder),
+                    placeholder = stringResource(Res.string.route_destination_placeholder),
                     onClick = onPickDestination,
                     onClear = onClearDestination,
                 )
@@ -343,8 +351,8 @@ fun RoutePickerCard(
             IconButton(onClick = onSwap, modifier = Modifier.padding(start = 8.dp)) {
                 Icon(
                     tint = GasGuruTheme.colors.neutralBlack,
-                    painter = painterResource(id = R.drawable.ic_swap),
-                    contentDescription = stringResource(R.string.route_swap_locations)
+                    painter = painterResource(Res.drawable.ic_swap),
+                    contentDescription = stringResource(Res.string.route_swap_locations)
                 )
             }
         }
