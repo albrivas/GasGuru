@@ -5,8 +5,10 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.gasguru.core.testing.BaseTest
-import com.gasguru.core.uikit.R
 import com.gasguru.core.uikit.components.fuel_type_chip.FuelTypeChipModel
+import com.gasguru.core.uikit.generated.resources.Res
+import com.gasguru.core.uikit.generated.resources.full_tank_cost
+import com.gasguru.core.uikit.generated.resources.preview_fuel_type
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.DisplayName
@@ -14,9 +16,12 @@ import org.junit.jupiter.api.Test
 
 class TankCostCardTest : BaseTest() {
 
+    private val previewFuelType by lazy { getCmpString(Res.string.preview_fuel_type) }
+    private val fullTankCostLabel by lazy { getCmpString(Res.string.full_tank_cost) }
+
     private fun defaultModel(onEditClick: () -> Unit = {}) = TankCostCardModel(
         fuelTypeChip = FuelTypeChipModel(
-            nameRes = R.string.preview_fuel_type,
+            nameRes = previewFuelType,
         ),
         totalCost = "86.72 €",
         litres = "55.6 L",
@@ -110,6 +115,6 @@ class TankCostCardTest : BaseTest() {
             }
         }
 
-        onNodeWithText(getStringResource(R.string.full_tank_cost)).assertIsDisplayed()
+        onNodeWithText(fullTankCostLabel).assertIsDisplayed()
     }
 }

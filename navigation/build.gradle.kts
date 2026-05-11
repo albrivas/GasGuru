@@ -1,20 +1,23 @@
 plugins {
-    alias(libs.plugins.gasguru.android.library)
+    alias(libs.plugins.gasguru.kmp.library)
     alias(libs.plugins.gasguru.koin)
-    alias(libs.plugins.gasguru.compose.library)
-    alias(libs.plugins.gasguru.proguard)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.jetbrainsCompose)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
     namespace = "com.gasguru.navigation"
+    buildFeatures { compose = true }
 }
 
-dependencies {
-    implementation(libs.androidx.navigation.compose)
-    implementation(libs.kotlinx.serialization.json)
-    
-    // Core - Solo para tipos básicos si es necesario
-    implementation(projects.core.model)
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.compose.multiplatform.runtime)
+            implementation(libs.jetbrains.navigation.compose)
+            implementation(projects.core.model)
+        }
+    }
 }

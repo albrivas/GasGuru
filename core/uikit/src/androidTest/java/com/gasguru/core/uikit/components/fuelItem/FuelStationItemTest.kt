@@ -3,7 +3,8 @@ package com.gasguru.core.uikit.components.fuelItem
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithTag
 import com.gasguru.core.testing.BaseTest
-import com.gasguru.core.uikit.R
+import com.gasguru.core.uikit.generated.resources.Res
+import com.gasguru.core.uikit.generated.resources.ic_logo_repsol
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import org.junit.jupiter.api.DisplayName
@@ -19,7 +20,7 @@ class FuelStationItemTest : BaseTest() {
                 FuelStationItem(
                     model = FuelStationItemModel(
                         idServiceStation = 0,
-                        icon = R.drawable.ic_logo_repsol,
+                        icon = Res.drawable.ic_logo_repsol,
                         name = "Repsol",
                         distance = "1.2 km",
                         price = "Without fuel diesel premium plus ultra clean",
@@ -33,7 +34,7 @@ class FuelStationItemTest : BaseTest() {
         }
 
         val nameTag = onNodeWithTag("station-name", useUnmergedTree = true)
-        val distanceTag= onNodeWithTag("station-distance", useUnmergedTree = true)
+        val distanceTag = onNodeWithTag("station-distance", useUnmergedTree = true)
         val priceTag = onNodeWithTag("station-price", useUnmergedTree = true)
 
         nameTag.assertIsDisplayed()

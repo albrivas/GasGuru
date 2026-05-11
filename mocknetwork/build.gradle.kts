@@ -1,9 +1,8 @@
 plugins {
     alias(libs.plugins.gasguru.android.library)
     alias(libs.plugins.gasguru.koin)
-    alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.gasguru.proguard)
-    alias(libs.plugins.gasguru.secrets.google)
 }
 
 android {
@@ -11,12 +10,8 @@ android {
 }
 
 dependencies {
-    implementation(projects.core.network)
     implementation(projects.core.supabase)
     implementation(projects.core.common)
-    implementation(libs.bundles.moshi)
-    ksp(libs.moshi.codegen)
-    implementation(libs.bundles.com.squareup.retrofit2)
-    implementation(libs.mock.webserver)
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.io.arrow.kt.arrow.core)
 }

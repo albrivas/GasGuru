@@ -33,7 +33,7 @@ loggingInterceptor = "4.12.0"
 appcompat = "1.7.1"
 material = "1.13.0"
 playServicesLocation = "21.3.0"
-lottie = "6.6.2"
+compottie = "2.0.0-rc04"
 googleGmsGoogleServices = "4.4.2"
 detekt = "1.23.8"
 detekt-koin-rules = "1.1.0"
@@ -42,6 +42,7 @@ playServicesMaps = "19.2.0"
 secrets = "2.0.1"
 places = "4.4.1"
 coil = "2.7.0"
+coil3 = "3.2.0"
 splashScreen = "1.2.0"
 junit5Api = "5.12.0"
 junit5Extensions = "1.7.0"
@@ -58,7 +59,9 @@ supabase = "3.2.6"
 ktorClientAndroid = "3.3.1"
 ktor = "3.4.0"
 kotlinxDatetime = "0.7.1"
-composeMultiplatform = "1.10.0"
+composeMultiplatform = "1.10.3"
+jetbrainsNavigationCompose = "2.9.2"
+jetbrainsLifecycle = "2.9.0"
 playReview = "2.0.1"
 sonar="7.2.2.6593"
 stabilityAnalizer="0.6.6"
@@ -125,7 +128,8 @@ appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "a
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 kotlin-coroutines-play = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "coroutines" }
-lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
+compottie = { group = "io.github.alexzhirkevich", name = "compottie", version.ref = "compottie" }
+compottie-resources = { group = "io.github.alexzhirkevich", name = "compottie-resources", version.ref = "compottie" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 detekt-koin-rules = { module = "dev.androidbroadcast.rules.koin:detekt-koin4-rules", version.ref = "detekt-koin-rules" }
 maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
@@ -133,6 +137,8 @@ maps-utils = { module = "com.google.maps.android:android-maps-utils", version.re
 play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
 places = { module = "com.google.android.libraries.places:places", version.ref = "places" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+coil3-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil3" }
+coil3-network-ktor3 = { group = "io.coil-kt.coil3", name = "coil-network-ktor3", version.ref = "coil3" }
 splash-screen = { module = "androidx.core:core-splashscreen", version.ref = "splashScreen" }
 junit5-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit5Api" }
 junit5-extensions = { module = "de.mannodermaus.junit5:android-test-extensions", version.ref = "junit5Extensions" }
@@ -163,6 +169,9 @@ androidx-glance-appwidget-preview = { module = "androidx.glance:glance-appwidget
 androidx-glance-preview = { module = "androidx.glance:glance-preview", version.ref = "glance" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
 compose-multiplatform-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "composeMultiplatform" }
+jetbrains-navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "jetbrainsNavigationCompose" }
+jetbrains-lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "jetbrainsLifecycle" }
+koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
 compose-multiplatform-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "composeMultiplatform" }
 compose-multiplatform-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "composeMultiplatform" }
 compose-multiplatform-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeMultiplatform" }
@@ -209,6 +218,7 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 gms = { id = "com.google.gms.google-services", version.ref = "googleGmsGoogleServices" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets" }
 junit5 = { id = "de.mannodermaus.android-junit5", version.ref = "junit5Plugin" }
