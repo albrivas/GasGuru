@@ -57,9 +57,20 @@
 | [KMP Phase 0](docs/KMP_PHASE0.md) | Explicación detallada de la infraestructura de build creada en Phase 0: convention plugins, source sets, dependencias |
 | [KMP Phase 1](docs/KMP_PHASE1.md) | Migración de :core:model a commonMain: cambios de plugin, sustituciones de APIs JVM, tests en commonTest |
 | [KMP Phase 3](docs/KMP_PHASE3.md) | Migración de :core:database a Room KMP: @ConstructedBy, SQLiteConnection API, Moshi→kotlinx-serialization, DI split |
+| [KMP Phase 5C](docs/KMP_PHASE5C.md) | Migración de :core:network a KMP con Ktor y simplificación de :mocknetwork: limpieza API gobierno, KtorModule, routesPlugin expect/actual, mock JSON Supabase |
+| [KMP Phase 6A](docs/KMP_PHASE6A.md) | Migración de :core:ui a CMP: mappers commonMain, InAppReview expect/actual, strings composeResources, eliminación de runBlocking getString |
+| [KMP Phase 6C](docs/KMP_PHASE6C.md) | Migración de :core:components a CMP: primer ViewModel en commonMain, koin-compose-viewmodel, lifecycle KMP, strings composeResources |
+| [KMP Phase 7A](docs/KMP_PHASE7A.md) | Migración de :feature:onboarding a CMP: decisiones sobre FuelTypeMapper KMP, locale values-es, patrón de eliminación de helpers Android-only de un solo consumidor |
+| [KMP Phase 7B](docs/KMP_PHASE7B.md) | Migración de :feature:profile a CMP: fix test androidTest con R.string → getCmpString CMP, extensión BaseTest con vararg formatArgs |
+| [KMP Phase 7C](docs/KMP_PHASE7C.md) | Migración de :feature:favorite-list-station a CMP: onOpenLocationSettings como lambda desde NavigationBarScreen, koin-compose-viewmodel |
+| [KMP Phase 7D](docs/KMP_PHASE7D.md) | Migración de :feature:search a CMP: ConfigureDialogSystemBars como expect/actual en :core:ui, limpieza de deps muertas |
+| [KMP Phase 7E](docs/KMP_PHASE7E.md) | Migración de :feature:detail-station a CMP: Coil 3 KMP, expect/actual para share/maps/notificaciones dentro del módulo, kotlin.time.Clock, ConstraintLayout→Row |
+| [KMP Phase 7F](docs/KMP_PHASE7F.md) | Migración de :feature:route-planner a CMP: eliminación de deps muertas (places, coroutines-play), sin expect/actual — sin APIs Android-only |
+| [KMP Phase 7G](docs/KMP_PHASE7G.md) | Migración de :feature:station-map a CMP: Google Maps → PlatformMapView expect/actual, GeoBounds reemplaza LatLngBounds, FilterUiState.fromTranslatedString eliminado |
 | [Widget](docs/WIDGET.md) | Widget de pantalla de inicio con gasolineras favoritas: arquitectura Glance + WorkManager, ciclo de vida y limitaciones |
 | [Analytics](docs/ANALYTICS.md) | Sistema de analíticas con Mixpanel: arquitectura, catálogo de eventos, uso en ViewModels y Composables |
 | [Git Worktree](docs/GIT_WORKTREE.md) | Cómo crear y eliminar worktrees, el problema de local.properties y cómo resolverlo con symlinks |
+| [MVI Effects](docs/MVI_EFFECTS.md) | Patrón Channel&lt;Effect&gt; para one-shot events: snackbars, intents, dialogs — cuándo usarlo vs State y cuándo NO (navegación normal) |
 
 ## Orquestación del Flujo de Trabajo
 

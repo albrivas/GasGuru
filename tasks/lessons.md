@@ -236,6 +236,32 @@ en `app/src/test/kotlin/com/gasguru/KoinModulesTest.kt:9` y `:61`.
 
 ---
 
+## L016 — Tras migración KMP: buscar TODOS los usos de `R.drawable`/`R.string` del módulo migrado antes de commitear
+
+**Fecha**: 2026-04-27
+**Contexto**: Migración de `core:uikit` a Compose Multiplatform. Los modelos cambian de `Int` (R.drawable/R.string) a `DrawableResource` y `String`.
+
+**Error**: Se corrigieron los tests de `core:uikit` pero no se buscaron los tests de otros módulos (`feature:profile`) que también instancian esos modelos con los tipos antiguos. Resultado: varios ciclos de CI fallidos corrigiendo un archivo a la vez.
+
+**Regla**: Tras cualquier migración KMP que cambie tipos de modelos, ejecutar `grep -rn "R\.drawable\|R\.string" --include="*.kt"` en todo el repo para encontrar TODOS los usos afectados y corregirlos en un único commit.
+
+---
+
+## L017 — `runBlocking { getString(StringResource) }` en ViewModel causa deadlock en tests de coroutines
+
+**Fecha**: 2026-04-29
+**Contexto**: Migración Phase 6A — `VehicleUiMapper` usaba `runBlocking { getString(res) }` para resolver `StringResource` en el ViewModel.
+
+**Error**: `ProfileViewModelTest` fallaba con `TurbineTimeoutCancellationException` — el flujo `userData` nunca emitía `Success`. El dispatcher de tests se bloqueaba porque `runBlocking` lanzaba una coroutine que intentaba usar el mismo dispatcher.
+
+**Causa raíz**: `org.jetbrains.compose.resources.getString` necesita inicialización de recursos que no existe en unit tests JVM. `runBlocking` en un test coroutines bloquea el dispatcher, produciendo un deadlock silencioso.
+
+**Fix**: No resolver `StringResource` en el ViewModel. Pasar `StringResource` directamente al modelo (`VehicleItemCardModel.fuelTypeTranslationRes: StringResource`) y resolverlo en el componente Composable con `stringResource()`. Esto elimina `context: Context` del ViewModel completamente.
+
+**Regla**: Los ViewModels no deben resolver `StringResource`. La resolución de strings es responsabilidad del composable. Si un modelo de UI necesita texto localizado, guardar `StringResource` y dejar que el composable lo resuelva.
+
+---
+
 ## L015 — `MissingKoinStopInTest` genera falso positivo en clases `Application`
 
 **Fecha**: 2026-04-22
@@ -244,3 +270,46 @@ en `app/src/test/kotlin/com/gasguru/KoinModulesTest.kt:9` y `:61`.
 **Error**: La regla detecta `startKoin {}` en `Application` y la trata como clase de test.
 
 **Fix**: Suprimir `MissingKoinStopInTest` en la clase `Application` con `@Suppress`.
+
+## L018 — `compose.materialIconsExtended` no está disponible transitivamente en módulos CMP consumers
+
+**Fecha**: 2026-05-03
+**Contexto**: Phase 6C — migración de `:core:components` a CMP.
+
+**Error**: `:core:uikit` declara `implementation(compose.materialIconsExtended)` en commonMain. Al migrar `:core:components` y declararlo como `implementation(projects.core.uikit)`, los `Icons.*` no resuelven porque `implementation` no expone dependencias transitivas en KMP.
+
+**Fix**: Añadir `compose.materialIconsExtended` al `KmpComposeLibraryConventionPlugin` en `commonMain.dependencies`. Así todos los módulos CMP que usen el plugin heredan los iconos automáticamente.
+
+**Regla**: Si un módulo KMP A hace `implementation(compose.X)` y el módulo KMP B necesita los mismos tipos, B debe declarar la dependencia explícitamente (o el convention plugin debe incluirla si es de uso general).
+
+---
+
+## L019 — androidTest de módulo CMP: R.string ya no existe tras mover strings a composeResources
+
+**Fecha**: 2026-05-05
+**Contexto**: Migración de `:feature:profile` a CMP.
+
+**Error**: `ProfileScreenTest.kt` importaba `com.gasguru.feature.profile.R` y usaba `R.string.version`. Al mover todos los strings a `composeResources/values/strings.xml`, la clase `R` del módulo ya no contiene esas entradas — el build de los instrumented tests fallaba con `Unresolved reference: version` en `R.string`.
+
+**Causa raíz**: Las strings en `composeResources/values/strings.xml` generan accessors bajo `com.gasguru.<módulo>.generated.resources.Res.string.*`, no bajo `R.string`. El `R` de Android solo contiene recursos de `src/main/res/`.
+
+**Fix**: En los `androidTest`, reemplazar `getStringResource(id = R.string.xxx, ...)` por `getCmpString(Res.string.xxx)` (o con args: `getCmpString(Res.string.xxx, arg1, arg2)`). Añadir overload `getCmpString(resource: StringResource, vararg formatArgs: Any)` a `BaseTest` si no existe.
+
+**Regla**: Al migrar un módulo a CMP y mover strings a `composeResources`, actualizar inmediatamente todos los `androidTest` que referencien `R.string.<nombre>` del módulo migrado. Buscar con `grep -rn "R\.string\." <módulo>/src/androidTest/`.
+
+---
+
+## L020 — KMP 2.1+: `Clock.System` viene de `kotlin.time`, no de `kotlinx.datetime`
+
+**Fecha**: 2026-05-07
+**Contexto**: Migración de `DateUtils.kt` en `:feature:detail-station` a commonMain.
+
+**Error**: `import kotlinx.datetime.Clock` + `Clock.System.now()` causaba `Unresolved reference 'System'` en `compileDebugKotlinAndroid` con Kotlin 2.3.0. El error no era de dependencia faltante — `libs.kotlinx.datetime` estaba declarado correctamente en `commonMain.dependencies`.
+
+**Causa raíz**: En Kotlin 2.1+, `kotlin.time.Clock` fue añadido a la stdlib estándar. En `kotlinx-datetime 0.7.1`, `kotlinx.datetime.Clock` fue remodelado y `Clock.System` pasó a vivir en `kotlin.time.Clock`. El resto del proyecto (L003) ya usa `kotlin.time.Clock` — el import de `kotlinx.datetime.Clock` es obsoleto con este stack.
+
+**Verificación**: `grep -rn "import kotlin.time.Clock" <proyecto>` muestra que `PriceAlertEntity.kt`, `CommonUtils.kt` y `FakeUserDataRepository.kt` ya usaban el import correcto.
+
+**Fix**: Cambiar `import kotlinx.datetime.Clock` → `import kotlin.time.Clock`.
+
+**Regla**: En proyectos con Kotlin 2.1+ y kotlinx-datetime 0.7.1+, usar siempre `import kotlin.time.Clock` para acceder a `Clock.System.now()`. `kotlinx.datetime.Clock` ya no expone `System` como sub-objeto.

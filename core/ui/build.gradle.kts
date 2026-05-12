@@ -1,15 +1,33 @@
 plugins {
-    alias(libs.plugins.gasguru.android.library)
-    alias(libs.plugins.gasguru.compose.library)
+    alias(libs.plugins.gasguru.kmp.compose.library)
 }
 
 android {
     namespace = "com.gasguru.core.ui"
 }
 
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "com.gasguru.core.ui.generated.resources"
+}
+
 dependencies {
-    implementation(projects.core.model)
-    implementation(projects.core.uikit)
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.play.review.ktx)
+    debugImplementation(compose.uiTooling)
+}
+
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            api(projects.core.model)
+            api(projects.core.uikit)
+        }
+        androidMain.dependencies {
+            implementation(libs.androidx.core.ktx)
+            implementation(libs.play.review.ktx)
+        }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
+        }
+    }
 }

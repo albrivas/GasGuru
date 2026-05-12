@@ -163,32 +163,85 @@ androidMain        iosMain
 
 ### Phase 5: Infraestructura
 - [ ] Crear rama `feature/kmp-phase5-infrastructure` desde `develop`
-- [ ] 5A: `:navigation` → KMP (interfaces commonMain, NavHost androidMain)
-- [ ] 5B: `:core:testing` → KMP (fakes commonMain, BaseTest androidMain)
-- [ ] 5C: `:mocknetwork` → KMP (Ktor MockEngine commonMain)
+- [x] 5A: `:navigation` → KMP (100% commonMain con Navigation Compose CMP)
+- [x] 5B: `:core:testing` → KMP (fakes commonMain, BaseTest + CoroutinesTestRuleExtension androidMain)
+- [x] 5C: `:core:network` → KMP (Ktor commonMain, modelos @Serializable, `routesPlugin` expect/actual, `KtorModule` Koin); `:mocknetwork` simplificado (lectura directa JSON Supabase, sin Retrofit/MockWebServer)
 - [ ] Todas las fakes compilan para todas las plataformas
 - [ ] PR → develop y merge
 
 ### Phase 6: UI Compartida (CMP)
 - [ ] Crear rama `feature/kmp-phase6-compose-mp` desde `develop`
-- [ ] 6A: `:core:ui` → CMP (mappers commonMain, InAppReview platform-specific)
-- [ ] 6B: `:core:uikit` → CMP (theme, componentes; reemplazar Lottie y ConstraintLayout)
-- [ ] 6C: `:core:components` → CMP (SearchBar + ViewModel commonMain)
+- [x] 6A: `:core:ui` → CMP (mappers commonMain, InAppReview platform-specific)
+- [x] 6B: `:core:uikit` → CMP (theme, componentes; reemplazar Lottie y ConstraintLayout)
+- [x] 6C: `:core:components` → CMP (SearchBar + ViewModel commonMain)
 - [ ] Componentes renderizan en Android e iOS
 - [ ] PR → develop y merge
 
 ### Phase 7: Features + App iOS
-- [ ] Crear rama `feature/kmp-phase7-features-ios` desde `develop`
-- [ ] `:feature:onboarding` → CMP
-- [ ] `:feature:profile` → CMP
-- [ ] `:feature:favorite-list-station` → CMP
-- [ ] `:feature:search` → CMP
-- [ ] `:feature:detail-station` → CMP
-- [ ] `:feature:route-planner` → CMP (con mapa expect/actual)
-- [ ] `:feature:station-map` → CMP (con mapa expect/actual)
+- [x] `:feature:onboarding` → CMP ✅
+  - [x] Plugin → `gasguru.kmp.compose.library` + `gasguru.koin`
+  - [x] ViewModels + UiStates + Events → commonMain (sin cambios funcionales)
+  - [x] Composables → commonMain (CMP: `painterResource`/`stringResource` de composeResources)
+  - [x] `OnboardingPageUiModel` → `StringResource`/`DrawableResource` CMP
+  - [x] `OnboardingNavigation` → commonMain (Navigation Compose CMP)
+  - [x] `String.toFuelType(context)` eliminado de `core.ui` → `FuelTypeMapper.kt` KMP en la feature
+  - [x] Recursos → `composeResources/drawable/` + `values/` + `values-es/`
+  - [x] Tests ViewModel → `commonTest` (JUnit5 + Turbine)
+  - [x] Test UI `OnboardingFuelPreferencesTest` → `androidInstrumentedTest` (mantiene `BaseTest`)
+  - [x] `assembleDebug` ✅ | `testDebugUnitTest` ✅ | `app:assembleDebug` ✅ | `app:testProdDebugUnitTest` ✅
+- [x] `:feature:profile` → CMP ✅
+  - [x] Plugin → `gasguru.kmp.compose.library` + `gasguru.koin`
+  - [x] ViewModels + UiStates + Events → commonMain
+  - [x] Composables → commonMain (CMP: `stringResource` de composeResources)
+  - [x] `ProfileNavigation` → commonMain (Navigation Compose CMP)
+  - [x] Recursos → `composeResources/values/` + `values-es/`
+  - [x] Tests ViewModel → `commonTest` (JUnit5 + Turbine)
+  - [x] Test UI `ProfileScreenTest` → `androidInstrumentedTest` (usa `getCmpString` en vez de `R.string`)
+  - [x] `BaseTest.getCmpString` extendido con soporte de `vararg formatArgs`
+  - [x] `compileDebugKotlinAndroid` ✅ | `testDebugUnitTest` ✅
+- [x] `:feature:favorite-list-station` → CMP
+  - [x] Plugin → `gasguru.kmp.compose.library`
+  - [x] Fuentes → `commonMain/kotlin`
+  - [x] Recursos → `composeResources/drawable/` + `values/` + `values-es/`
+  - [x] `R.drawable` / `R.string` → CMP `Res.drawable` / `Res.string`
+  - [x] `LocalContext` para location settings → lambda `onOpenLocationSettings` pasada desde `NavigationBarScreen` (app)
+  - [x] `koinViewModel` → `org.koin.compose.viewmodel.koinViewModel`
+  - [x] Tests ViewModel → `commonTest`
+  - [x] Test UI `FavoriteListScreenTest` → usa `getCmpString` en vez de `R.string`
+  - [x] `compileDebugKotlinAndroid` ✅ | `testDebugUnitTest` ✅
+- [x] `:feature:search` → CMP ✅
+  - [x] Plugin → `gasguru.kmp.compose.library` + `gasguru.koin`
+  - [x] Fuentes → `commonMain/kotlin`
+  - [x] `ConfigureDialogSystemBars` → `expect/actual` en `:core:ui` (androidMain actual, iosMain no-op)
+  - [x] Limpieza de dependencias muertas (`maps.compose`, `play.services.maps`, `kotlin.coroutines.play`, `secrets.google`)
+  - [x] Sin tests nuevos (no tiene ViewModel propio; lógica delegada a `:core:components`)
+  - [x] `compileDebugKotlinAndroid` ✅ | `app:assembleDebug` ✅ | `app:testProdDebugUnitTest` ✅
+- [x] `:feature:detail-station` → CMP ✅
+  - [x] Plugin → `gasguru.kmp.compose.library` + `gasguru.koin`
+  - [x] Fuentes → `commonMain/kotlin`
+  - [x] Recursos → `composeResources/drawable/` + `values/` + `values-es/`
+  - [x] `R.drawable` / `R.string` → CMP `Res.drawable` / `Res.string`
+  - [x] `ConstraintLayout` → `Row(weight(1f)) + Spacer + Box`
+  - [x] `Coil 2` → `Coil 3` KMP (`coil3.compose.AsyncImage` + `LocalPlatformContext`)
+  - [x] Share, Maps, Notification permission → `expect/actual` en `platform/` de la feature
+  - [x] `System.currentTimeMillis()` → `Clock.System.now()` (`kotlin.time`)
+  - [x] `koinViewModel` → `org.koin.compose.viewmodel.koinViewModel`
+  - [x] Tests ViewModel → `commonTest`
+  - [x] Test UI `DetailStationScreenTest` → `androidInstrumentedTest`
+  - [x] `compileDebugKotlinAndroid` ✅ | `testDebugUnitTest` ✅ | `app:assembleDebug` ✅
+- [x] `:feature:route-planner` → CMP ✅
+- [x] `:feature:station-map` → CMP (con mapa expect/actual) ✅
 - [ ] Crear módulo `:iosApp` con target iOS
 - [ ] App iOS compila e instala en simulador
 - [ ] ViewModel tests migrados a commonTest
+- [ ] PR → develop y merge
+
+### Phase 8: `jvm()` Target — Tests sin Emulador
+- [ ] Añadir `jvm()` a `KmpLibraryConventionPlugin` y `KmpComposeLibraryConventionPlugin`
+- [ ] Mover dependencias Android-only de `commonMain` a `androidMain` en todos los módulos
+- [ ] Añadir `compose.desktop.currentOs` en `jvmTest` de módulos CMP
+- [ ] Eliminar exclusión `GasGuruSearchBarContentTest` en `core:components`
+- [ ] Verificar que `./gradlew allTests` pasa sin emulador
 - [ ] PR → develop y merge
 
 ---
@@ -1005,6 +1058,38 @@ Para cada fase, ejecutar en este orden:
 3. Instalar en dispositivo Android — verificar que funciona igual que antes
 4. (Desde Phase 4) Compilar iOS framework — verificar que compila
 5. (Desde Phase 7) Instalar en simulador iOS — verificar funcionalidad
+
+---
+
+## Phase 8: `jvm()` Target — Tests de Compose sin Emulador
+
+**Objetivo**: Añadir el target `jvm()` a todos los módulos KMP/CMP para poder ejecutar tests de Compose UI directamente en la máquina de desarrollo (Mac/Linux/Windows) sin necesidad de emulador Android ni simulador iOS, igual que Flutter widget tests.
+
+### Por qué
+
+`runComposeUiTest` en un módulo con `jvm()` target usa el renderer **Skia en JVM** (desktop), sin Android framework. Esto permite:
+
+```bash
+./gradlew :core:components:jvmTest   # corre en tu Mac, sin emulador, en segundos
+./gradlew :feature:search:jvmTest    # mismo
+```
+
+Actualmente, los tests de Compose en `commonTest` requieren `connectedAndroidTest` (emulador) porque ningún módulo excepto `:core:model` tiene `jvm()`.
+
+### Qué cambia
+
+1. **`KmpLibraryConventionPlugin`** y **`KmpComposeLibraryConventionPlugin`**: añadir `jvm()` a los targets.
+2. **`jvmTest.dependencies`** en los módulos CMP: añadir `compose.desktop.currentOs` para el renderer Skia.
+3. **`core/components/build.gradle.kts`**: eliminar el bloque `exclude("**/GasGuruSearchBarContentTest*")` — los tests pasarán a correr vía `jvmTest`.
+4. Todos los módulos con `commonMain` que tengan dependencias Android-only necesitan moverlas a `androidMain` en lugar de `commonMain`.
+
+### Restricción de Maestro
+
+Maestro sigue necesitando emulador/device real para los tests end-to-end (flujos completos de usuario). `jvm()` solo elimina la necesidad de emulador para **tests de componentes y features** (lógica de UI, árboles semánticos). Los smoke tests de Maestro permanecen en Android/iOS.
+
+### Prerrequisito
+
+Esta fase se hace **después de Phase 7** (todas las features en CMP), porque añadir `jvm()` a módulos que aún tienen dependencias Android-only (Google Maps, etc.) rompe la compilación.
 
 ---
 

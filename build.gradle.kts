@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.gms) apply false
     alias(libs.plugins.firebase.crashlitycs) apply false
     alias(libs.plugins.compose.compiler) apply false
+    alias(libs.plugins.jetbrainsCompose) apply false
     alias(libs.plugins.detekt) apply false
     alias(libs.plugins.secrets) apply false
     alias(libs.plugins.junit5) apply false
