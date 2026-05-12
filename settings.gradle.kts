@@ -27,6 +27,7 @@ rootProject.name = "GasGuru"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include(":app")
+include(":composeApp")
 
 include(":core:database")
 include(":core:testing")
