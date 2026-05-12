@@ -8,6 +8,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.gasguru.navigation.constants.NavigationKeys
+import com.gasguru.navigation.extensions.getResultStateFlow
 import com.gasguru.navigation.models.RoutePlanArgs
 import com.gasguru.navigation.navigationbar.route.NavigationBarRoute
 import com.gasguru.ui.NavigationBarScreenRoute
@@ -20,9 +21,9 @@ internal fun NavGraphBuilder.navigationBarHost() {
     composable<NavigationBarRoute>(
         enterTransition = { slideInVertically { it } },
     ) { navBackStackEntry ->
-        val routePlanArgs by navBackStackEntry.savedStateHandle
-            .getStateFlow<RoutePlanArgs?>(key = NavigationKeys.ROUTE_PLANNER, initialValue = null)
-            .collectAsStateWithLifecycle()
+        val routePlanArgs by navBackStackEntry
+            .getResultStateFlow<RoutePlanArgs>(key = NavigationKeys.ROUTE_PLANNER)
+            .collectAsStateWithLifecycle(initialValue = null)
 
         NavigationBarScreenRoute(
             routePlanner = routePlanArgs,

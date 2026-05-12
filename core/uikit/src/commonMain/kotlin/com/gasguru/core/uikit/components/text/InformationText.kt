@@ -1,0 +1,79 @@
+package com.gasguru.core.uikit.components.text
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme.typography
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import com.gasguru.core.uikit.generated.resources.Res
+import com.gasguru.core.uikit.generated.resources.ic_map
+import com.gasguru.core.uikit.theme.GasGuruTheme
+import com.gasguru.core.uikit.theme.MyApplicationTheme
+import com.gasguru.core.uikit.theme.ThemePreviews
+import org.jetbrains.compose.resources.painterResource
+
+@Composable
+fun InformationText(modifier: Modifier = Modifier, model: InformationTextModel) = with(model) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(color = GasGuruTheme.colors.neutralWhite),
+    ) {
+        Card(
+            shape = RoundedCornerShape(8.dp),
+            colors = CardDefaults.cardColors(containerColor = GasGuruTheme.colors.neutral500),
+        ) {
+            Image(
+                modifier = Modifier.padding(8.dp),
+                painter = painterResource(icon),
+                contentDescription = "fuel setting",
+            )
+        }
+
+        Column(
+            modifier = Modifier
+                .weight(80f)
+                .padding(start = 8.dp, end = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.Bottom),
+        ) {
+            Text(
+                style = typography.bodySmall,
+                text = title,
+                fontWeight = FontWeight.Bold,
+                color = GasGuruTheme.colors.textMain,
+            )
+            Text(
+                text = description,
+                color = GasGuruTheme.colors.textSubtle,
+                style = typography.displaySmall,
+            )
+        }
+    }
+}
+
+@Composable
+@ThemePreviews
+private fun InformationTextPreview() {
+    MyApplicationTheme {
+        InformationText(
+            model = InformationTextModel(
+                icon = Res.drawable.ic_map,
+                title = "Map",
+                description = "L-V: 06:00-22:00; S: 07:00-22:00; D: 08:00-22:00".split(";")
+                    .joinToString(separator = "\n") { it.trim() },
+            ),
+        )
+    }
+}

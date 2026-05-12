@@ -30,6 +30,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.R
+import com.gasguru.core.ui.generated.resources.Res
+import com.gasguru.core.ui.generated.resources.alert_location_disabled_description
+import com.gasguru.core.ui.generated.resources.alert_location_disabled_primary_button
+import com.gasguru.core.ui.generated.resources.alert_location_disabled_title
 import com.gasguru.core.uikit.components.alert.GasGuruAlertDialog
 import com.gasguru.core.uikit.components.alert.GasGuruAlertDialogModel
 import com.gasguru.core.uikit.components.alert_bar.AlertBar
@@ -37,6 +41,7 @@ import com.gasguru.core.uikit.components.alert_bar.AlertBarModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.feature.onboarding_welcome.navigation.OnboardingRoutes
 import com.gasguru.navigation.root.GasGuruNavHost
+import org.jetbrains.compose.resources.stringResource as cmpStringResource
 
 @Composable
 fun GasGuruApp(
@@ -62,11 +67,9 @@ fun GasGuruApp(
                     icon = Icons.Outlined.LocationOff,
                     iconTint = GasGuruTheme.colors.accentOrange,
                     iconBackgroundColor = GasGuruTheme.colors.accentOrange.copy(alpha = 0.2f),
-                    title = stringResource(id = com.gasguru.core.ui.R.string.alert_location_disabled_title),
-                    description = stringResource(id = com.gasguru.core.ui.R.string.alert_location_disabled_description),
-                    primaryButtonText = stringResource(
-                        id = com.gasguru.core.ui.R.string.alert_location_disabled_primary_button
-                    ),
+                    title = cmpStringResource(Res.string.alert_location_disabled_title),
+                    description = cmpStringResource(Res.string.alert_location_disabled_description),
+                    primaryButtonText = cmpStringResource(Res.string.alert_location_disabled_primary_button),
                 ),
                 onPrimaryButtonClick = {
                     context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))

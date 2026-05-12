@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="fuel_selection">Combustible seleccionado</string>
+    <string name="profile">Perfil</string>
+    <string name="fuel">Combustible</string>
+    <string name="version">Versión %1$s</string>
+    <string name="theme_mode">Tema</string>
+    <string name="my_vehicles">Mis vehículos</string>
+    <string name="settings">Ajustes</string>
+    <string name="vehicle_add">Añadir vehículo</string>
+</resources>

@@ -115,7 +115,7 @@ dependencies {
 
     // Arch Components
     implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation(libs.androidx.navigation.compose)
+    implementation(libs.jetbrains.navigation.compose)
     implementation(libs.koin.androidx.compose)
 
     // Compose
@@ -142,5 +142,6 @@ dependencies {
     testImplementation(projects.core.testing)
     testImplementation(libs.koin.test.junit5)
     testImplementation(libs.mockk)
+    testImplementation(libs.ktor.client.core)
     testRuntimeOnly(libs.junit5.engine)
 }

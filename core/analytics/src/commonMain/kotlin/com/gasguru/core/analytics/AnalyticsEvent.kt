@@ -40,6 +40,8 @@ data class AnalyticsEvent(
         const val STATION_SHARED = "station_shared"
         const val PRICE_ALERT_ENABLED = "price_alert_enabled"
         const val PRICE_ALERT_DISABLED = "price_alert_disabled"
+        const val IN_APP_REVIEW_COMPLETED = "in_app_review_completed"
+        const val IN_APP_REVIEW_FAILED = "in_app_review_failed"
 
         // Search
         const val SEARCH_PERFORMED = "search_performed"
@@ -120,6 +122,8 @@ data class AnalyticsEvent(
             Types.STATION_SHARED,
             Types.PRICE_ALERT_ENABLED,
             Types.PRICE_ALERT_DISABLED,
+            Types.IN_APP_REVIEW_COMPLETED,
+            Types.IN_APP_REVIEW_FAILED,
             -> STATION_DETAIL
 
             Types.ROUTE_PLANNER_DESTINATION_SET,
