@@ -34,7 +34,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
@@ -52,12 +51,28 @@ import com.gasguru.core.uikit.components.vehicle_type.VehicleTypeCardModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
-import com.gasguru.feature.vehicle.R
+import com.gasguru.feature.vehicle.generated.resources.Res
+import com.gasguru.feature.vehicle.generated.resources.add_vehicle_back_content_description
+import com.gasguru.feature.vehicle.generated.resources.add_vehicle_capacity_picker_confirm
+import com.gasguru.feature.vehicle.generated.resources.add_vehicle_capacity_picker_range
+import com.gasguru.feature.vehicle.generated.resources.add_vehicle_capacity_picker_title
+import com.gasguru.feature.vehicle.generated.resources.add_vehicle_capacity_placeholder
+import com.gasguru.feature.vehicle.generated.resources.add_vehicle_capacity_section
+import com.gasguru.feature.vehicle.generated.resources.add_vehicle_capacity_unit
+import com.gasguru.feature.vehicle.generated.resources.add_vehicle_fuel_section
+import com.gasguru.feature.vehicle.generated.resources.add_vehicle_main_vehicle_subtitle
+import com.gasguru.feature.vehicle.generated.resources.add_vehicle_main_vehicle_title
+import com.gasguru.feature.vehicle.generated.resources.add_vehicle_name_placeholder
+import com.gasguru.feature.vehicle.generated.resources.add_vehicle_name_section
+import com.gasguru.feature.vehicle.generated.resources.add_vehicle_save_button
+import com.gasguru.feature.vehicle.generated.resources.add_vehicle_title
+import com.gasguru.feature.vehicle.generated.resources.add_vehicle_type_section
+import com.gasguru.feature.vehicle.generated.resources.edit_vehicle_title
 import com.gasguru.feature.vehicle.viewmodel.AddVehicleUiState
 import com.gasguru.feature.vehicle.viewmodel.AddVehicleViewModel
 import org.jetbrains.compose.resources.painterResource
-import org.koin.androidx.compose.koinViewModel
-import org.jetbrains.compose.resources.stringResource as cmpStringResource
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 internal fun AddVehicleRoute(
@@ -77,9 +92,9 @@ internal fun AddVehicleScreen(
 ) {
     if (uiState.showCapacityPicker) {
         CapacityPickerBottomSheet(
-            title = stringResource(id = R.string.add_vehicle_capacity_picker_title),
-            subtitle = stringResource(id = R.string.add_vehicle_capacity_picker_range),
-            confirmButtonText = stringResource(id = R.string.add_vehicle_capacity_picker_confirm),
+            title = stringResource(Res.string.add_vehicle_capacity_picker_title),
+            subtitle = stringResource(Res.string.add_vehicle_capacity_picker_range),
+            confirmButtonText = stringResource(Res.string.add_vehicle_capacity_picker_confirm),
             min = AddVehicleUiState.PICKER_MIN,
             max = AddVehicleUiState.PICKER_MAX,
             initialValue = uiState.pickerValue,
@@ -144,7 +159,7 @@ internal fun AddVehicleScreen(
                                     },
                                 ),
                             model = SelectedItemModel(
-                                title = cmpStringResource(fuelTypeUiModel.translationRes),
+                                title = stringResource(fuelTypeUiModel.translationRes),
                                 isSelected = fuelTypeUiModel.type == uiState.selectedFuelType,
                                 image = fuelTypeUiModel.iconRes,
                                 onItemSelected = {
@@ -185,7 +200,7 @@ internal fun AddVehicleScreen(
             GasGuruButton(
                 onClick = { onEvent(AddVehicleEvent.SaveVehicle) },
                 enabled = uiState.isSaveEnabled,
-                text = stringResource(id = R.string.add_vehicle_save_button),
+                text = stringResource(Res.string.add_vehicle_save_button),
             )
         }
     }
@@ -207,12 +222,12 @@ private fun AddVehicleTopBar(
         IconButton(onClick = onBack) {
             Icon(
                 imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                contentDescription = stringResource(id = R.string.add_vehicle_back_content_description),
+                contentDescription = stringResource(Res.string.add_vehicle_back_content_description),
                 tint = GasGuruTheme.colors.neutralBlack,
             )
         }
         Text(
-            text = stringResource(id = if (isEditMode) R.string.edit_vehicle_title else R.string.add_vehicle_title),
+            text = stringResource(if (isEditMode) Res.string.edit_vehicle_title else Res.string.add_vehicle_title),
             style = GasGuruTheme.typography.h5,
             color = GasGuruTheme.colors.neutralBlack,
         )
@@ -233,7 +248,7 @@ private fun VehicleTypeSection(
             .padding(top = 16.dp, bottom = 20.dp),
     ) {
         Text(
-            text = stringResource(id = R.string.add_vehicle_type_section),
+            text = stringResource(Res.string.add_vehicle_type_section),
             style = GasGuruTheme.typography.smallBold,
             color = GasGuruTheme.colors.textMain,
         )
@@ -247,7 +262,7 @@ private fun VehicleTypeSection(
                     modifier = Modifier.weight(weight = 1f),
                     model = VehicleTypeCardModel(
                         iconRes = vehicleTypeUiModel.iconRes,
-                        nameRes = cmpStringResource(vehicleTypeUiModel.nameRes),
+                        nameRes = stringResource(vehicleTypeUiModel.nameRes),
                         isSelected = vehicleTypeUiModel == selectedVehicleType,
                         onClick = { onSelect(vehicleTypeUiModel) },
                     ),
@@ -270,7 +285,7 @@ private fun VehicleNameSection(
             .padding(bottom = 20.dp),
     ) {
         Text(
-            text = stringResource(id = R.string.add_vehicle_name_section),
+            text = stringResource(Res.string.add_vehicle_name_section),
             style = GasGuruTheme.typography.smallBold,
             color = GasGuruTheme.colors.textMain,
         )
@@ -283,7 +298,7 @@ private fun VehicleNameSection(
             onValueChange = onNameChanged,
             placeholder = {
                 Text(
-                    text = stringResource(id = R.string.add_vehicle_name_placeholder),
+                    text = stringResource(Res.string.add_vehicle_name_placeholder),
                     style = GasGuruTheme.typography.baseRegular,
                     color = GasGuruTheme.colors.neutral600,
                 )
@@ -316,7 +331,7 @@ private fun FuelSectionHeader(
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
             .padding(bottom = 12.dp),
-        text = stringResource(id = R.string.add_vehicle_fuel_section),
+        text = stringResource(Res.string.add_vehicle_fuel_section),
         style = GasGuruTheme.typography.smallBold,
         color = GasGuruTheme.colors.textMain,
     )
@@ -347,7 +362,7 @@ private fun CapacitySection(
             .padding(top = 20.dp, bottom = 4.dp),
     ) {
         Text(
-            text = stringResource(id = R.string.add_vehicle_capacity_section),
+            text = stringResource(Res.string.add_vehicle_capacity_section),
             style = GasGuruTheme.typography.smallBold,
             color = GasGuruTheme.colors.textMain,
         )
@@ -371,7 +386,7 @@ private fun CapacitySection(
             Text(
                 modifier = Modifier.weight(weight = 1f),
                 text = selectedCapacity?.toString()
-                    ?: stringResource(id = R.string.add_vehicle_capacity_placeholder),
+                    ?: stringResource(Res.string.add_vehicle_capacity_placeholder),
                 style = GasGuruTheme.typography.baseRegular,
                 color = if (isSelected) {
                     GasGuruTheme.colors.neutralBlack
@@ -380,7 +395,7 @@ private fun CapacitySection(
                 },
             )
             Text(
-                text = stringResource(id = R.string.add_vehicle_capacity_unit),
+                text = stringResource(Res.string.add_vehicle_capacity_unit),
                 style = GasGuruTheme.typography.baseRegular,
                 color = GasGuruTheme.colors.neutral600,
                 modifier = Modifier.padding(end = 8.dp),
@@ -411,20 +426,20 @@ private fun MainVehicleSection(
             .border(
                 width = 1.dp,
                 color = GasGuruTheme.colors.neutral300,
-                shape = RoundedCornerShape(size = 12.dp)
+                shape = RoundedCornerShape(size = 12.dp),
             )
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(modifier = Modifier.weight(weight = 1f)) {
             Text(
-                text = stringResource(id = R.string.add_vehicle_main_vehicle_title),
+                text = stringResource(Res.string.add_vehicle_main_vehicle_title),
                 style = GasGuruTheme.typography.smallBold,
                 color = GasGuruTheme.colors.neutralBlack,
             )
             Spacer(modifier = Modifier.height(height = 4.dp))
             Text(
-                text = stringResource(id = R.string.add_vehicle_main_vehicle_subtitle),
+                text = stringResource(Res.string.add_vehicle_main_vehicle_subtitle),
                 style = GasGuruTheme.typography.captionRegular,
                 color = GasGuruTheme.colors.textSubtle,
             )
