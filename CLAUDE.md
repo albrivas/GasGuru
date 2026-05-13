@@ -67,6 +67,7 @@
 | [KMP Phase 7E](docs/KMP_PHASE7E.md) | Migración de :feature:detail-station a CMP: Coil 3 KMP, expect/actual para share/maps/notificaciones dentro del módulo, kotlin.time.Clock, ConstraintLayout→Row |
 | [KMP Phase 7F](docs/KMP_PHASE7F.md) | Migración de :feature:route-planner a CMP: eliminación de deps muertas (places, coroutines-play), sin expect/actual — sin APIs Android-only |
 | [KMP Phase 7G](docs/KMP_PHASE7G.md) | Migración de :feature:station-map a CMP: Google Maps → PlatformMapView expect/actual, GeoBounds reemplaza LatLngBounds, FilterUiState.fromTranslatedString eliminado |
+| [KMP Phase 7H](docs/KMP_PHASE7H.md) | Migración de :feature:vehicle a CMP: sin expect/actual, unificación del alias cmpStringResource, eliminación de mockk sin usar |
 | [Widget](docs/WIDGET.md) | Widget de pantalla de inicio con gasolineras favoritas: arquitectura Glance + WorkManager, ciclo de vida y limitaciones |
 | [Analytics](docs/ANALYTICS.md) | Sistema de analíticas con Mixpanel: arquitectura, catálogo de eventos, uso en ViewModels y Composables |
 | [Git Worktree](docs/GIT_WORKTREE.md) | Cómo crear y eliminar worktrees, el problema de local.properties y cómo resolverlo con symlinks |
