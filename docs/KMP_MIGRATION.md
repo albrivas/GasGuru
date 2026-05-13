@@ -231,7 +231,7 @@ androidMain        iosMain
   - [x] `compileDebugKotlinAndroid` ✅ | `testDebugUnitTest` ✅ | `app:assembleDebug` ✅
 - [x] `:feature:route-planner` → CMP ✅
 - [x] `:feature:station-map` → CMP (con mapa expect/actual) ✅
-- [ ] Crear módulo `:iosApp` con target iOS
+- [x] Crear módulo `:iosApp` con target iOS (`:composeApp` + `:iosApp` creados en Phase 8B; NavHost completo se migra en sub-fases 8C+)
 - [ ] App iOS compila e instala en simulador
 - [ ] ViewModel tests migrados a commonTest
 - [ ] PR → develop y merge
