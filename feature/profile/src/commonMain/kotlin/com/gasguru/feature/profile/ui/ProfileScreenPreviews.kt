@@ -1,6 +1,7 @@
 package com.gasguru.feature.profile.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.ui.generated.resources.Res
 import com.gasguru.core.ui.generated.resources.gasoline_95
@@ -9,7 +10,6 @@ import com.gasguru.core.uikit.components.icon.VehicleTypeIcons
 import com.gasguru.core.uikit.components.vehicle_item.VehicleItemCardModel
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
-import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 
 class ProfileContentUiPreviewParameterProvider : PreviewParameterProvider<ProfileContentUi> {
     override val values = sequenceOf(

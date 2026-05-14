@@ -77,7 +77,9 @@ internal val MIGRATION_8_9 = object : Migration(DB_VERSION_8, DB_VERSION_9) {
 
 internal val MIGRATION_9_10 = object : Migration(DB_VERSION_9, DB_VERSION_10) {
     override fun migrate(connection: SQLiteConnection) {
-        connection.execSQL("CREATE INDEX IF NOT EXISTS `index_location` ON `fuel-station` (`latitude`, `longitudeWGS84`)")
+        connection.execSQL(
+            "CREATE INDEX IF NOT EXISTS `index_location` ON `fuel-station` (`latitude`, `longitudeWGS84`)"
+        )
     }
 }
 

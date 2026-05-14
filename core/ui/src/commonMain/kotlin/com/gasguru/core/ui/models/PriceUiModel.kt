@@ -3,8 +3,8 @@ package com.gasguru.core.ui.models
 import androidx.compose.runtime.Composable
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.ui.mapper.toUiModel
-import kotlin.math.roundToLong
 import org.jetbrains.compose.resources.stringResource
+import kotlin.math.roundToLong
 
 data class PriceUiModel(
     val rawPrice: Double,
