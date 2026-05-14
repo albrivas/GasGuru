@@ -1,3 +1,7 @@
+@file:Suppress(
+    "LongParameterList"
+) // Composable expect: contrato de la pantalla mapa con state + callbacks por plataforma.
+
 package com.gasguru.feature.station_map.platform
 
 import androidx.compose.runtime.Composable

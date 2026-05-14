@@ -1,5 +1,6 @@
 package com.gasguru.feature.station_map.ui
 
+import app.cash.turbine.test
 import com.gasguru.core.analytics.NoOpAnalyticsHelper
 import com.gasguru.core.data.repository.stations.OfflineFuelStationRepository
 import com.gasguru.core.data.repository.user.OfflineUserDataRepository
@@ -33,7 +34,6 @@ import com.gasguru.core.testing.fakes.data.network.FakeRemoteDataSource
 import com.gasguru.core.testing.fakes.data.places.FakePlacesRepository
 import com.gasguru.core.testing.fakes.data.route.FakeRoutesRepository
 import com.gasguru.core.testing.fakes.data.user.FakeUserDataRepository
-import app.cash.turbine.test
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
