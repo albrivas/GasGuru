@@ -39,6 +39,11 @@ allprojects {
                 "src/test/kotlin",
                 "src/extended/java",
                 "src/external/java",
+                "src/commonMain/kotlin",
+                "src/commonTest/kotlin",
+                "src/androidMain/kotlin",
+                "src/androidUnitTest/kotlin",
+                "src/iosMain/kotlin",
             )
         )
 
