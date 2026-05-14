@@ -16,7 +16,7 @@ class FakeFuelStationDao(
 
     override fun getFuelStationsWithoutBrandFilter(fuelType: String): Flow<List<FuelStationEntity>> =
         if (shouldThrowError) {
-            flow { throw Exception("Error getting fuel stations") }
+            flow { error("Error getting fuel stations") }
         } else {
             stationsFlow
         }
@@ -26,7 +26,7 @@ class FakeFuelStationDao(
         brands: List<String>,
     ): Flow<List<FuelStationEntity>> =
         if (shouldThrowError) {
-            flow { throw Exception("Error getting fuel stations") }
+            flow { error("Error getting fuel stations") }
         } else {
             stationsFlow.map { stations ->
                 stations.filter { station ->

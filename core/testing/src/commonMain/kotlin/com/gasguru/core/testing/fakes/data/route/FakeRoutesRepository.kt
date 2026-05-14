@@ -24,7 +24,7 @@ class FakeRoutesRepository(
         lastDestination = destination
 
         return if (shouldThrowError) {
-            flow { throw Exception("Error getting route") }
+            flow { error("Error getting route") }
         } else {
             routeFlow
         }
