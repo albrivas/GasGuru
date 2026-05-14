@@ -13,12 +13,12 @@ import com.gasguru.data.fakes.FakeOneSignalManager
 import com.gasguru.data.fakes.FakePriceAlertDao
 import com.gasguru.data.fakes.FakeSupabaseManager
 import com.gasguru.data.fakes.FakeVehicleDao
+import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
-import kotlinx.coroutines.test.runTest
 
 class PriceAlertRepositoryImplTest {
 

@@ -7,8 +7,8 @@ import androidx.test.core.app.ApplicationProvider
 import de.mannodermaus.junit5.compose.createComposeExtension
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.StringResource
-import org.jetbrains.compose.resources.getString as cmpGetString
 import org.junit.jupiter.api.extension.RegisterExtension
+import org.jetbrains.compose.resources.getString as cmpGetString
 
 open class BaseTest {
 
