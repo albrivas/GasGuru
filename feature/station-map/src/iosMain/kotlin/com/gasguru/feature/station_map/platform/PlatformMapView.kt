@@ -1,3 +1,5 @@
+@file:Suppress("LongParameterList") // Actual del expect en commonMain; firma fija.
+
 package com.gasguru.feature.station_map.platform
 
 import androidx.compose.foundation.background
