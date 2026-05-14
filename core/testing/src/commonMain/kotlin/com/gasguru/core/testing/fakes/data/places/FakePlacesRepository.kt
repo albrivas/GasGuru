@@ -22,7 +22,7 @@ class FakePlacesRepository(
     override fun getPlaces(query: String): Flow<List<SearchPlace>> {
         requestedQueries.add(query)
         return if (shouldThrowError) {
-            flow { throw Exception("Error getting places") }
+            flow { error("Error getting places") }
         } else {
             flowOf(placesByQuery[query].orEmpty())
         }
@@ -31,7 +31,7 @@ class FakePlacesRepository(
     override fun getLocationPlace(placeId: String): Flow<LatLng> {
         requestedLocationIds.add(placeId)
         return if (shouldThrowError) {
-            flow { throw Exception("Error getting location") }
+            flow { error("Error getting location") }
         } else {
             flowOf(locationsById[placeId] ?: LatLng(0.0, 0.0))
         }
