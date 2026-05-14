@@ -14,7 +14,7 @@ import org.koin.dsl.module
 
 // Módulo iOS: wiring de stubs V1. Para iOS V2, reemplazar con implementaciones nativas.
 // No incluye RoutesRepository (feature de rutas pendiente para V2).
-val iosDataModule = module {
+fun iosDataModule() = module {
     single<LocationTracker> { LocationTrackerIos() }
     single<GeocoderAddress> { GeocoderAddressIos() }
     single<NetworkMonitor> { NetworkMonitorIos() }
