@@ -5,10 +5,10 @@ import com.gasguru.core.data.repository.filter.FilterRepositoryImpl
 import com.gasguru.core.database.model.FilterEntity
 import com.gasguru.core.model.data.FilterType
 import com.gasguru.data.fakes.FakeFilterDao
+import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlinx.coroutines.test.runTest
 
 class FilterRepositoryImplTest {
 

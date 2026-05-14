@@ -1,3 +1,10 @@
+@file:Suppress(
+    "LongParameterList", // VM orquesta múltiples UseCases (filtros, ubicación, rutas, analítica).
+    "TooManyFunctions", // VM con varios handlers de eventos UI; refactor pendiente (split por dominio).
+    "TooGenericExceptionCaught", // Catches genéricos en boundaries con APIs externas (Maps, location); pendiente tipar errores.
+    "TooGenericExceptionThrown", // Mismo motivo; pendiente excepción de dominio propia.
+)
+
 package com.gasguru.feature.station_map.ui
 
 import androidx.lifecycle.ViewModel

@@ -3,12 +3,12 @@ package com.gasguru.data
 import com.gasguru.core.data.sync.SyncManager
 import com.gasguru.data.fakes.FakeNetworkMonitor
 import com.gasguru.data.fakes.FakePriceAlertRepository
-import kotlin.test.Test
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kotlin.test.Test
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SyncManagerTest {

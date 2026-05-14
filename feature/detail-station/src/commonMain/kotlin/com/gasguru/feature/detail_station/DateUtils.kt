@@ -18,9 +18,9 @@ import com.gasguru.feature.detail_station.generated.resources.update_minute_ago
 import com.gasguru.feature.detail_station.generated.resources.update_minutes_ago
 import com.gasguru.feature.detail_station.generated.resources.update_now
 import com.gasguru.feature.detail_station.generated.resources.wednesday_short
+import org.jetbrains.compose.resources.stringResource
 import kotlin.math.abs
 import kotlin.time.Clock
-import org.jetbrains.compose.resources.stringResource
 
 internal const val ONE_MINUTE_MS = 60_000L
 internal const val ONE_HOUR_MS = 3_600_000L

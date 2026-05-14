@@ -5,6 +5,7 @@ import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.PriceCategory
 import com.gasguru.core.supabase.model.SupabaseFuelStation
+import kotlin.time.Clock
 
 fun SupabaseFuelStation.asEntity() = FuelStationEntity(
     bioEthanolPercentage = bioEthanolPercentage,
@@ -40,7 +41,7 @@ fun SupabaseFuelStation.asEntity() = FuelStationEntity(
     referral = referral,
     brandStation = brandStation,
     typeSale = typeSale,
-    lastUpdate = System.currentTimeMillis(),
+    lastUpdate = Clock.System.now().toEpochMilliseconds(),
     isFavorite = false,
 )
 

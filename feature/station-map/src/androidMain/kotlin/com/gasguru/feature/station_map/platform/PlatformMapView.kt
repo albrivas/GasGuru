@@ -1,3 +1,9 @@
+@file:Suppress(
+    "LongParameterList", // Actual del expect en commonMain; firma fija.
+    "MaximumLineLength", // Línea con expresión Compose larga; partirla rompe legibilidad.
+    "MaxLineLength",
+)
+
 package com.gasguru.feature.station_map.platform
 
 import androidx.compose.foundation.background
@@ -33,7 +39,6 @@ import com.gasguru.feature.station_map.ui.models.RouteUiModel
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.JointType
-import com.google.android.gms.maps.model.LatLng as GoogleLatLng
 import com.google.maps.android.compose.ComposeMapColorScheme
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
@@ -42,6 +47,7 @@ import com.google.maps.android.compose.MarkerComposable
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.android.gms.maps.model.LatLng as GoogleLatLng
 
 @Composable
 actual fun PlatformMapView(

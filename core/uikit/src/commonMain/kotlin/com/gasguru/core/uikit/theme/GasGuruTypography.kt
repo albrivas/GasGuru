@@ -104,14 +104,54 @@ fun rememberGasGuruTypography(): GasGuruTypography {
         h4 = TextStyle(fontFamily = interFamily, fontWeight = FontWeight.Bold, fontSize = 24.sp, lineHeight = 32.sp),
         h5 = TextStyle(fontFamily = interFamily, fontWeight = FontWeight.Bold, fontSize = 20.sp, lineHeight = 28.sp),
         h6 = TextStyle(fontFamily = interFamily, fontWeight = FontWeight.Bold, fontSize = 18.sp, lineHeight = 24.sp),
-        displayRegular = TextStyle(fontFamily = interFamily, fontWeight = FontWeight.Normal, fontSize = 48.sp, lineHeight = 58.sp),
-        displayBold = TextStyle(fontFamily = interFamily, fontWeight = FontWeight.Bold, fontSize = 48.sp, lineHeight = 58.sp),
-        baseRegular = TextStyle(fontFamily = interFamily, fontWeight = FontWeight.Normal, fontSize = 16.sp, lineHeight = 22.sp),
-        baseBold = TextStyle(fontFamily = interFamily, fontWeight = FontWeight.Bold, fontSize = 16.sp, lineHeight = 22.sp),
-        smallRegular = TextStyle(fontFamily = interFamily, fontWeight = FontWeight.Normal, fontSize = 14.sp, lineHeight = 20.sp),
-        smallBold = TextStyle(fontFamily = interFamily, fontWeight = FontWeight.Bold, fontSize = 14.sp, lineHeight = 20.sp),
-        captionRegular = TextStyle(fontFamily = interFamily, fontWeight = FontWeight.Medium, fontSize = 12.sp, lineHeight = 18.sp),
-        captionBold = TextStyle(fontFamily = interFamily, fontWeight = FontWeight.Bold, fontSize = 12.sp, lineHeight = 18.sp),
+        displayRegular = TextStyle(
+            fontFamily = interFamily,
+            fontWeight = FontWeight.Normal,
+            fontSize = 48.sp,
+            lineHeight = 58.sp
+        ),
+        displayBold = TextStyle(
+            fontFamily = interFamily,
+            fontWeight = FontWeight.Bold,
+            fontSize = 48.sp,
+            lineHeight = 58.sp
+        ),
+        baseRegular = TextStyle(
+            fontFamily = interFamily,
+            fontWeight = FontWeight.Normal,
+            fontSize = 16.sp,
+            lineHeight = 22.sp
+        ),
+        baseBold = TextStyle(
+            fontFamily = interFamily,
+            fontWeight = FontWeight.Bold,
+            fontSize = 16.sp,
+            lineHeight = 22.sp
+        ),
+        smallRegular = TextStyle(
+            fontFamily = interFamily,
+            fontWeight = FontWeight.Normal,
+            fontSize = 14.sp,
+            lineHeight = 20.sp
+        ),
+        smallBold = TextStyle(
+            fontFamily = interFamily,
+            fontWeight = FontWeight.Bold,
+            fontSize = 14.sp,
+            lineHeight = 20.sp
+        ),
+        captionRegular = TextStyle(
+            fontFamily = interFamily,
+            fontWeight = FontWeight.Medium,
+            fontSize = 12.sp,
+            lineHeight = 18.sp
+        ),
+        captionBold = TextStyle(
+            fontFamily = interFamily,
+            fontWeight = FontWeight.Bold,
+            fontSize = 12.sp,
+            lineHeight = 18.sp
+        ),
     )
 }
 

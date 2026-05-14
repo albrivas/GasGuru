@@ -1,3 +1,7 @@
+@file:Suppress(
+    "SingleForNonSharedDependency"
+) // Repositorios mantienen state interno (Flow caches, CoroutineScope con SupervisorJob): deben ser singleton.
+
 package com.gasguru.core.data.di
 
 import com.gasguru.core.common.KoinQualifiers
@@ -19,7 +23,7 @@ import com.gasguru.core.data.sync.SyncManager
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-val commonDataModule = module {
+fun commonDataModule() = module {
     single<UserDataRepository> {
         OfflineUserDataRepository(
             userDataDao = get(),

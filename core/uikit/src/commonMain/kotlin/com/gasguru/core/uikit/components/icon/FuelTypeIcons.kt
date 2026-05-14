@@ -4,12 +4,12 @@ import com.gasguru.core.uikit.generated.resources.Res
 import com.gasguru.core.uikit.generated.resources.ic_adblue
 import com.gasguru.core.uikit.generated.resources.ic_diesel
 import com.gasguru.core.uikit.generated.resources.ic_diesel_plus
+import com.gasguru.core.uikit.generated.resources.ic_gasoleo_b
 import com.gasguru.core.uikit.generated.resources.ic_gasoline_95
 import com.gasguru.core.uikit.generated.resources.ic_gasoline_95_e10
 import com.gasguru.core.uikit.generated.resources.ic_gasoline_95_premium
 import com.gasguru.core.uikit.generated.resources.ic_gasoline_98
 import com.gasguru.core.uikit.generated.resources.ic_gasoline_98_premium
-import com.gasguru.core.uikit.generated.resources.ic_gasoleo_b
 import org.jetbrains.compose.resources.DrawableResource
 
 object FuelTypeIcons {
