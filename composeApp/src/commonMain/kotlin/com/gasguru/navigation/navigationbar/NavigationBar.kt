@@ -10,11 +10,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.rememberNavController
 import com.gasguru.core.uikit.theme.GasGuruTheme
-import com.gasguru.core.uikit.theme.ThemePreviews
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun NavigationBottomBar(state: NavigationBarState) {
@@ -25,7 +23,7 @@ internal fun NavigationBottomBar(state: NavigationBarState) {
             val isSelected = state.isSelected(destination)
             BarItem(
                 icon = destination.icon,
-                label = stringResource(id = destination.labelRes),
+                label = stringResource(destination.label),
                 isSelected = isSelected,
                 onNavigateToDestination = {
                     if (!isSelected) {
@@ -68,17 +66,8 @@ private fun RowScope.BarItem(
             selectedTextColor = GasGuruTheme.colors.primary600,
             indicatorColor = GasGuruTheme.colors.primary600.copy(alpha = 0.16f),
             unselectedIconColor = GasGuruTheme.colors.neutral600,
-            unselectedTextColor = GasGuruTheme.colors.textSubtle
+            unselectedTextColor = GasGuruTheme.colors.textSubtle,
         ),
-        onClick = onNavigateToDestination
-    )
-}
-
-@Composable
-@ThemePreviews
-private fun NavigationBarPreview() {
-    val navController = rememberNavController()
-    NavigationBottomBar(
-        state = NavigationBarState(navController)
+        onClick = onNavigateToDestination,
     )
 }

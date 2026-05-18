@@ -1,4 +1,4 @@
-package com.gasguru
+package com.gasguru.splash
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,8 +13,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
-import java.util.concurrent.TimeUnit
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 class SplashViewModel(
     private val fuelStation: GetFuelStationUseCase,
     private val userData: GetUserDataUseCase,
@@ -58,7 +61,7 @@ class SplashViewModel(
         )
 
     private fun isTimestampWithin30Minutes(timestamp: Long): Boolean {
-        val thirtyMinutesAgo = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(30)
+        val thirtyMinutesAgo = Clock.System.now().toEpochMilliseconds() - 30.minutes.inWholeMilliseconds
         return timestamp > thirtyMinutesAgo
     }
 }

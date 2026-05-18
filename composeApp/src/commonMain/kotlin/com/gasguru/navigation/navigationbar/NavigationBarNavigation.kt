@@ -17,7 +17,9 @@ fun NavController.navigateToNavigationBar(navOptions: NavOptions? = null) {
     navigate(NavigationBarRoute, navOptions)
 }
 
-internal fun NavGraphBuilder.navigationBarHost() {
+internal fun NavGraphBuilder.navigationBarHost(
+    onOpenLocationSettings: () -> Unit,
+) {
     composable<NavigationBarRoute>(
         enterTransition = { slideInVertically { it } },
     ) { navBackStackEntry ->
@@ -26,6 +28,7 @@ internal fun NavGraphBuilder.navigationBarHost() {
             .collectAsStateWithLifecycle(initialValue = null)
 
         NavigationBarScreenRoute(
+            onOpenLocationSettings = onOpenLocationSettings,
             routePlanner = routePlanArgs,
             onRoutePlanConsumed = {
                 navBackStackEntry.savedStateHandle[NavigationKeys.ROUTE_PLANNER] = null
