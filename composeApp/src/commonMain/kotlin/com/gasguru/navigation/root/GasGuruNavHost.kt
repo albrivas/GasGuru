@@ -19,6 +19,7 @@ import com.gasguru.navigation.navigationbar.navigationBarHost
 
 @Composable
 fun GasGuruNavHost(
+    onOpenLocationSettings: () -> Unit,
     startDestination: Any = OnboardingRoutes.NewOnboardingRoute,
 ) {
     val navController = rememberNavController()
@@ -38,7 +39,7 @@ fun GasGuruNavHost(
         newOnboardingScreen()
         onboardingFuelPreferencesScreen()
         capacityTankScreen()
-        navigationBarHost()
+        navigationBarHost(onOpenLocationSettings = onOpenLocationSettings)
         detailStationScreen()
         detailStationScreenDialog()
         routeSearchGraph()

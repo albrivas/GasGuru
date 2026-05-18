@@ -1,4 +1,4 @@
-package com.gasguru
+package com.gasguru.splash
 
 import app.cash.turbine.test
 import com.gasguru.core.data.repository.stations.OfflineFuelStationRepository
@@ -30,9 +30,11 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import java.util.concurrent.TimeUnit
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, ExperimentalTime::class)
 @ExtendWith(CoroutinesTestExtension::class)
 class SplashViewModelTest {
 
@@ -58,16 +60,16 @@ class SplashViewModelTest {
                         name = null,
                         tankCapacity = 40,
                         vehicleType = VehicleType.CAR,
-                        isPrincipal = true
-                    )
+                        isPrincipal = true,
+                    ),
                 ),
-            )
+            ),
         )
         fakeUserDataDao = FakeUserDataDao(
             initialUserData = UserDataEntity(
                 lastUpdate = 0,
                 isOnboardingSuccess = true,
-            )
+            ),
         )
         fakeFuelStationDao = FakeFuelStationDao()
         fakeFavoriteStationDao = FakeFavoriteStationDao()
@@ -81,8 +83,8 @@ class SplashViewModelTest {
                     fuelType = FuelType.GASOLINE_95,
                     tankCapacity = 40,
                     vehicleType = VehicleType.CAR,
-                    isPrincipal = true
-                )
+                    isPrincipal = true,
+                ),
             ),
         )
         fakeRemoteDataSource = FakeRemoteDataSource()
@@ -124,7 +126,7 @@ class SplashViewModelTest {
     @Test
     @DisplayName("GIVEN old last update WHEN updating fuel stations THEN refreshes stations")
     fun updatesFuelStationsWhenOutdated() = runTest {
-        val oldTimestamp = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(31)
+        val oldTimestamp = Clock.System.now().toEpochMilliseconds() - 31.minutes.inWholeMilliseconds
         fakeUserDataRepository.setUserData(
             UserData(
                 isOnboardingSuccess = true,
@@ -136,11 +138,11 @@ class SplashViewModelTest {
                         name = null,
                         tankCapacity = 40,
                         vehicleType = VehicleType.CAR,
-                        isPrincipal = true
-                    )
+                        isPrincipal = true,
+                    ),
                 ),
                 lastUpdate = oldTimestamp,
-            )
+            ),
         )
 
         advanceUntilIdle()
@@ -164,13 +166,13 @@ class SplashViewModelTest {
             ioDispatcher = Dispatchers.Main,
             offlineUserDataRepository = offlineUserDataRepository,
             favoriteStationDao = fakeFavoriteStationDao,
-            priceAlertDao = fakePriceAlertDao
+            priceAlertDao = fakePriceAlertDao,
         )
 
         return SplashViewModel(
             fuelStation = GetFuelStationUseCase(offlineFuelStationRepository),
             userData = GetUserDataUseCase(fakeUserDataRepository),
-            ioDispatcher = Dispatchers.Main
+            ioDispatcher = Dispatchers.Main,
         )
     }
 }

@@ -20,16 +20,11 @@ import com.gasguru.navigation.navigationbar.navigateToNavigationBar
  * NavigationHandler is responsible for translating [NavigationCommand] objects
  * into actual navigation actions using NavController extension functions.
  *
- * This class acts as a bridge between the centralized [NavigationManager] and
+ * This class acts as a bridge between the centralized NavigationManager and
  * the feature-specific navigation extension functions.
  */
 class NavigationHandler(private val navController: NavController) {
 
-    /**
-     * Handles a navigation command and executes the appropriate navigation action.
-     *
-     * @param command The command to execute
-     */
     fun handle(command: NavigationCommand) {
         when (command) {
             is NavigationCommand.To -> when (val destination = command.destination) {

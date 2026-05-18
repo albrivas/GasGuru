@@ -28,7 +28,7 @@ class NavigationBarState(
     val topLevelRoutes = listOf(
         TopLevelRoutes.Map,
         TopLevelRoutes.Favorite,
-        TopLevelRoutes.Profile
+        TopLevelRoutes.Profile,
     )
     val currentDestination: NavDestination?
         @Composable get() = navController.currentBackStackEntryAsState().value?.destination
