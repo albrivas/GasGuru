@@ -1,7 +1,5 @@
 package com.gasguru.ui
 
-import android.content.Intent
-import android.provider.Settings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,7 +11,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
@@ -37,11 +34,13 @@ import com.gasguru.navigation.navigationbar.rememberNavigationBarState
 
 @Composable
 fun NavigationBarScreenRoute(
+    onOpenLocationSettings: () -> Unit,
     routePlanner: RoutePlanArgs? = null,
     onRoutePlanConsumed: () -> Unit = {},
 ) {
     NavigationBarScreen(
         navController = rememberNavController(),
+        onOpenLocationSettings = onOpenLocationSettings,
         routePlanner = routePlanner,
         onRoutePlanConsumed = onRoutePlanConsumed,
     )
@@ -50,11 +49,11 @@ fun NavigationBarScreenRoute(
 @Composable
 internal fun NavigationBarScreen(
     navController: NavHostController,
+    onOpenLocationSettings: () -> Unit,
     routePlanner: RoutePlanArgs? = null,
     onRoutePlanConsumed: () -> Unit = {},
     state: NavigationBarState = rememberNavigationBarState(navController),
 ) {
-    val context = LocalContext.current
     val backStack by navController.currentBackStackEntryAsState()
     val onMap = backStack?.destination?.hasRoute<StationMapGraph.StationMapRoute>() == true
 
@@ -65,19 +64,19 @@ internal fun NavigationBarScreen(
                     model = GasGuruDividerModel(
                         color = GasGuruTheme.colors.neutral400,
                         thickness = DividerThickness.THICK,
-                        length = DividerLength.FULL
-                    )
+                        length = DividerLength.FULL,
+                    ),
                 )
                 NavigationBottomBar(state = state)
             }
         },
-        contentWindowInsets = WindowInsets.captionBar
+        contentWindowInsets = WindowInsets.captionBar,
     ) { innerPadding ->
         Box(
             Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(GasGuruTheme.colors.neutral100)
+                .background(GasGuruTheme.colors.neutral100),
         ) {
             StationMapScreenRoute(
                 routePlanner = routePlanner,
@@ -85,12 +84,11 @@ internal fun NavigationBarScreen(
             )
 
             if (!onMap) {
-                // Overlay to hide map
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(GasGuruTheme.colors.neutral100)
-                        .zIndex(0.5f)
+                        .zIndex(0.5f),
                 )
 
                 NavHost(
@@ -98,13 +96,11 @@ internal fun NavigationBarScreen(
                         .fillMaxSize()
                         .zIndex(1f),
                     navController = navController,
-                    startDestination = StationMapGraph.StationMapRoute
+                    startDestination = StationMapGraph.StationMapRoute,
                 ) {
                     composable<StationMapGraph.StationMapRoute> { /* no-op */ }
                     favoriteGraph(
-                        onOpenLocationSettings = {
-                            context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-                        },
+                        onOpenLocationSettings = onOpenLocationSettings,
                     )
                     profileScreen()
                 }

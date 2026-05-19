@@ -232,6 +232,18 @@ androidMain        iosMain
 - [x] `:feature:route-planner` → CMP ✅
 - [x] `:feature:station-map` → CMP (con mapa expect/actual) ✅
 - [x] Crear módulo `:iosApp` con target iOS (`:composeApp` + `:iosApp` creados en Phase 8B; NavHost completo se migra en sub-fases 8C+)
+- [x] Phase 8C: App shell (splash + navegación) a `:composeApp/commonMain` ✅
+  - [x] `SplashViewModel`, `SplashUiState` → `composeApp/commonMain` (kotlin.time.Clock)
+  - [x] `GasGuruApp`, `GasGuruAppState`, `NavigationBarScreen` → `composeApp/commonMain`
+  - [x] `NavigationBar`, `NavigationBarState`, `TopLevelRoutes` → `composeApp/commonMain` (`StringResource` en vez de R.string)
+  - [x] `GasGuruNavHost`, `NavigationHandler`, `RoutePlannerNavigationGraph`, `NavigationBarRoute` → `composeApp/commonMain`
+  - [x] `App.kt` entry point real: `koinInject` para deps, theme, `CompositionLocalProvider`
+  - [x] `appShellModule()` en composeApp con `SplashViewModel`
+  - [x] Strings `map_nav`/`list_nav`/`profile_nav`/`not_connected` → `composeApp/composeResources`
+  - [x] `MainActivity` reducido a splash screen + intent handling + analytics + `App(...)` con lambda `onOpenLocationSettings`
+  - [x] `SplashViewModelTest` → `composeApp/androidUnitTest` (JUnit5 + Turbine; `kotlin("native.cocoapods")` propaga `commonTest` a iOS y JUnit5 es JVM-only)
+  - [x] `:composeApp:compileDebugKotlinAndroid` ✅ | `:composeApp:testDebugUnitTest` ✅ | `:app:testProdDebugUnitTest` ✅ | `:app:assembleProdRelease` ✅
+- [ ] Inicialización Koin desde iOS (`KoinInit.kt` en `composeApp/iosMain`) + cablear `MainViewController` con `App()` → sub-fase 8D
 - [ ] App iOS compila e instala en simulador
 - [ ] ViewModel tests migrados a commonTest
 - [ ] PR → develop y merge

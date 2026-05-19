@@ -12,7 +12,7 @@ data object RoutePlannerNavigationGraph
 
 fun NavGraphBuilder.routeSearchGraph() {
     navigation<RoutePlannerNavigationGraph>(
-        startDestination = RoutePlannerRoute
+        startDestination = RoutePlannerRoute,
     ) {
         routePlannerScreen()
         searchScreen()

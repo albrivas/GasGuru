@@ -2,11 +2,10 @@ package com.gasguru
 
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -16,22 +15,15 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.gasguru.analytics.trackAppOpened
+import com.gasguru.composeApp.App
 import com.gasguru.core.analytics.AnalyticsHelper
-import com.gasguru.core.analytics.LocalAnalyticsHelper
-import com.gasguru.core.data.util.NetworkMonitor
-import com.gasguru.core.domain.location.IsLocationEnabledUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
-import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.model.data.principalVehicle
-import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.feature.onboarding_welcome.navigation.OnboardingRoutes
-import com.gasguru.navigation.LocalDeepLinkStateHolder
-import com.gasguru.navigation.LocalNavigationManager
 import com.gasguru.navigation.deeplink.DeepLinkStateHolder
-import com.gasguru.navigation.manager.NavigationManager
 import com.gasguru.navigation.navigationbar.route.NavigationBarRoute
-import com.gasguru.ui.GasGuruApp
-import com.gasguru.ui.rememberGasGuruAppState
+import com.gasguru.splash.SplashUiState
+import com.gasguru.splash.SplashViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
@@ -45,10 +37,7 @@ class MainActivity : ComponentActivity() {
     private val viewModel: SplashViewModel by viewModel()
     private var returnedFromBackground = false
 
-    private val networkMonitor: NetworkMonitor by inject()
-    private val isLocationEnabledUseCase: IsLocationEnabledUseCase by inject()
     private val getUserDataUseCase: GetUserDataUseCase by inject()
-    private val navigationManager: NavigationManager by inject()
     private val deepLinkStateHolder: DeepLinkStateHolder by inject()
     private val analyticsHelper: AnalyticsHelper by inject()
 
@@ -119,45 +108,32 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            val appState = rememberGasGuruAppState(
-                networkMonitor = networkMonitor,
-                isLocationEnabledUseCase = isLocationEnabledUseCase,
-                getUserDataUseCase = getUserDataUseCase,
-            )
             val themeMode by viewModel.themeMode.collectAsState()
 
-            val darkTheme = when (themeMode) {
-                ThemeMode.LIGHT -> false
-                ThemeMode.DARK -> true
-                ThemeMode.SYSTEM -> isSystemInDarkTheme()
-            }
+            when (val state = uiState) {
+                is SplashUiState.Success -> App(
+                    themeMode = themeMode,
+                    onOpenLocationSettings = ::openLocationSettings,
+                    startDestination = if (state.isOnboardingSuccess) {
+                        NavigationBarRoute
+                    } else {
+                        OnboardingRoutes.NewOnboardingRoute
+                    },
+                )
 
-            CompositionLocalProvider(
-                LocalNavigationManager provides navigationManager,
-                LocalDeepLinkStateHolder provides deepLinkStateHolder,
-                LocalAnalyticsHelper provides analyticsHelper,
-            ) {
-                MyApplicationTheme(darkTheme = darkTheme) {
-                    when (val state = uiState) {
-                        is SplashUiState.Success -> GasGuruApp(
-                            appState = appState,
-                            startDestination = if (state.isOnboardingSuccess) {
-                                NavigationBarRoute
-                            } else {
-                                OnboardingRoutes.NewOnboardingRoute
-                            },
-                        )
+                SplashUiState.Error -> App(
+                    themeMode = themeMode,
+                    onOpenLocationSettings = ::openLocationSettings,
+                    startDestination = OnboardingRoutes.NewOnboardingRoute,
+                )
 
-                        SplashUiState.Error -> GasGuruApp(
-                            appState = appState,
-                            startDestination = OnboardingRoutes.NewOnboardingRoute,
-                        )
-
-                        else -> Unit
-                    }
-                }
+                else -> Unit
             }
         }
+    }
+
+    private fun openLocationSettings() {
+        startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
     }
 
     private fun handleIntent(intent: Intent) {
