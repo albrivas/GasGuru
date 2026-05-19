@@ -36,8 +36,10 @@ composeApp/src/commonMain/composeResources/
 ├── values/strings.xml                      # map_nav, list_nav, profile_nav, not_connected
 └── values-es/strings.xml
 
-composeApp/src/commonTest/kotlin/com/gasguru/splash/
+composeApp/src/androidUnitTest/kotlin/com/gasguru/splash/
 └── SplashViewModelTest.kt                  # JUnit5 + Turbine + fakes (sin MockK)
+                                            # androidUnitTest porque kotlin("native.cocoapods")
+                                            # propaga commonTest a iOS y JUnit5 es JVM-only
 ```
 
 ---

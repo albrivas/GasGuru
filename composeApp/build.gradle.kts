@@ -45,16 +45,13 @@ kotlin {
             implementation(projects.feature.stationMap)
             implementation(projects.feature.vehicle)
         }
-        commonTest.dependencies {
-            implementation(kotlin("test"))
+        androidUnitTest.dependencies {
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.turbine)
             implementation(projects.core.testing)
             implementation(projects.core.database)
             implementation(libs.junit5.api)
             implementation(libs.junit5.extensions)
-        }
-        androidUnitTest.dependencies {
             implementation(libs.junit5.engine)
         }
     }
