@@ -241,7 +241,7 @@ androidMain        iosMain
   - [x] `appShellModule()` en composeApp con `SplashViewModel`
   - [x] Strings `map_nav`/`list_nav`/`profile_nav`/`not_connected` → `composeApp/composeResources`
   - [x] `MainActivity` reducido a splash screen + intent handling + analytics + `App(...)` con lambda `onOpenLocationSettings`
-  - [x] `SplashViewModelTest` → `composeApp/commonTest` (JUnit5 + Turbine)
+  - [x] `SplashViewModelTest` → `composeApp/androidUnitTest` (JUnit5 + Turbine; `kotlin("native.cocoapods")` propaga `commonTest` a iOS y JUnit5 es JVM-only)
   - [x] `:composeApp:compileDebugKotlinAndroid` ✅ | `:composeApp:testDebugUnitTest` ✅ | `:app:testProdDebugUnitTest` ✅ | `:app:assembleProdRelease` ✅
 - [ ] Inicialización Koin desde iOS (`KoinInit.kt` en `composeApp/iosMain`) + cablear `MainViewController` con `App()` → sub-fase 8D
 - [ ] App iOS compila e instala en simulador
