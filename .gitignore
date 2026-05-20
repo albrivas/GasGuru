@@ -228,4 +228,4 @@ google-services.json
 .gitconfig
 sonar-project.properties
 
-.claude/settings.local.json
+.claude/
