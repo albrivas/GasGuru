@@ -1,9 +1,9 @@
 package com.gasguru.core.supabase.di
 
 import com.gasguru.core.analytics.AnalyticsHelper
-import com.gasguru.core.supabase.BuildConfig
 import com.gasguru.core.supabase.SupabaseManager
 import com.gasguru.core.supabase.SupabaseManagerImpl
+import com.gasguru.core.supabase.SupabaseSecrets
 import com.gasguru.core.supabase.datasource.SupabaseRemoteDataSource
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.createSupabaseClient
@@ -13,8 +13,8 @@ import org.koin.dsl.module
 val supabaseModule = module {
     single<SupabaseClient> {
         createSupabaseClient(
-            supabaseUrl = BuildConfig.supabaseUrl,
-            supabaseKey = BuildConfig.supabaseKey,
+            supabaseUrl = SupabaseSecrets.SUPABASE_URL,
+            supabaseKey = SupabaseSecrets.SUPABASE_KEY,
         ) {
             install(Postgrest)
         }
