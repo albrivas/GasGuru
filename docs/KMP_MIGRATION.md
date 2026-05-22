@@ -243,6 +243,13 @@ androidMain        iosMain
   - [x] `MainActivity` reducido a splash screen + intent handling + analytics + `App(...)` con lambda `onOpenLocationSettings`
   - [x] `SplashViewModelTest` → `composeApp/androidUnitTest` (JUnit5 + Turbine; `kotlin("native.cocoapods")` propaga `commonTest` a iOS y JUnit5 es JVM-only)
   - [x] `:composeApp:compileDebugKotlinAndroid` ✅ | `:composeApp:testDebugUnitTest` ✅ | `:app:testProdDebugUnitTest` ✅ | `:app:assembleProdRelease` ✅
+- [x] Phase 8A: BuildKonfig en `:core:supabase` — `SupabaseModule` unificado en commonMain ✅
+  - [x] BuildKonfig 0.21.2 registrado en `libs.versions.toml` y root `build.gradle.kts`
+  - [x] `core/supabase/build.gradle.kts`: plugin `buildkonfig` + bloque `buildkonfig { objectName = "SupabaseSecrets" }`; `local.properties` con fallback `System.getenv()`
+  - [x] `SupabaseModule.kt` movido de `androidMain` → `commonMain`; importa `SupabaseSecrets` generado
+  - [x] `kotlin.srcDir(tasks.named("generateBuildKonfig"))` en `commonMain` para wiring de tarea
+  - [x] `:core:analytics` iOS: eliminado cinterop `Mixpanel-swift`; `analyticsModuleIos` usa `NoOpAnalyticsHelper`
+  - [x] `:core:supabase:assembleDebug` ✅ | `:core:supabase:compileKotlinIosSimulatorArm64` ✅ | `:core:supabase:testDebugUnitTest` ✅
 - [ ] Inicialización Koin desde iOS (`KoinInit.kt` en `composeApp/iosMain`) + cablear `MainViewController` con `App()` → sub-fase 8D
 - [ ] App iOS compila e instala en simulador
 - [ ] ViewModel tests migrados a commonTest
