@@ -2,7 +2,7 @@
 androidGradlePlugin = "8.13.2"
 kotlin = "2.3.0"
 androidx-room = "2.7.1"
-androidxActivity = "1.12.1"
+androidxActivity = "1.13.0"
 androidxComposeCompiler = "1.5.14"
 androidxComposeMaterial3 = "1.4.0"
 androidxComposeUi = "1.8.1"
