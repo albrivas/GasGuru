@@ -313,3 +313,74 @@ en `app/src/test/kotlin/com/gasguru/KoinModulesTest.kt:9` y `:61`.
 **Fix**: Cambiar `import kotlinx.datetime.Clock` → `import kotlin.time.Clock`.
 
 **Regla**: En proyectos con Kotlin 2.1+ y kotlinx-datetime 0.7.1+, usar siempre `import kotlin.time.Clock` para acceder a `Clock.System.now()`. `kotlinx.datetime.Clock` ya no expone `System` como sub-objeto.
+
+---
+
+## L021 — Room KMP en iOS: requiere BundledSQLiteDriver y fila inicial en user-data
+
+**Fecha**: 2026-05-26
+**Contexto**: Phase 8D — inicialización Koin en iOS.
+
+**Error 1**: `InstanceCreationException: Could not create instance for SplashViewModel` — causa raíz: `Cannot create a RoomDatabase without providing a SQLiteDriver via setDriver()`.
+
+**Error 2**: Splash bloqueado para siempre en la primera instalación iOS — causa raíz: la tabla `user-data` estaba vacía, el flow `userData()` nunca emitía.
+
+**Fix**: En `DatabaseModule.kt` (iosMain), añadir `.setDriver(BundledSQLiteDriver())` y un `addCallback` con `onCreate` que inserta la fila inicial. Añadir `implementation(libs.androidx.sqlite.bundled)` a `iosMain.dependencies` del módulo `:core:database`.
+
+**Regla**: En iOS, Room no tiene driver de sistema como en Android — hay que proveer `BundledSQLiteDriver` explícitamente. Si la base de datos necesita una fila inicial para funcionar, crearla en `onCreate` del callback; en iOS no hay mecanismo de pre-población automático.
+
+---
+
+## L022 — JUnit5 en commonTest rompe la compilación para targets iOS
+
+**Fecha**: 2026-05-26
+**Contexto**: Phase 8D — migración de tests de features a KMP commonTest.
+
+**Error**: `Could not resolve org.junit.jupiter:junit-jupiter-api for :<feature>:iosSimulatorArm64Test` al tener `implementation(libs.junit5.api)` en `commonTest.dependencies`.
+
+**Causa raíz**: JUnit5 es JVM-only. `commonTest` compila para todos los targets activos, incluido iOS. Gradle intenta resolver artefactos JVM puros para Kotlin/Native y falla.
+
+**Fix**: Mover `junit5.api`, `junit5.extensions` de `commonTest.dependencies` → `androidUnitTest.dependencies` en cada feature module. Los tests comunes deben usar solo `kotlin("test")` en `commonTest`.
+
+**Regla**: En módulos KMP con target iOS, ningún artefacto JVM-only puede estar en `commonTest`. JUnit5, Espresso, y similares van exclusivamente en `androidUnitTest` o `androidInstrumentedTest`.
+
+---
+
+## L023 — @BeforeTest/@AfterTest en commonMain requieren kotlin-test-annotations-common + bridge JVM
+
+**Fecha**: 2026-05-26
+**Contexto**: Phase 8D — clase base `CoroutineTest` en `commonMain` de `:core:testing`.
+
+**Error**: `Unresolved reference 'BeforeTest'` / `Unresolved reference 'AfterTest'` al compilar `commonMain` para Android, aunque `api(kotlin("test"))` estaba declarado.
+
+**Causa raíz**: `kotlin("test")` en `commonMain` no inyecta automáticamente `kotlin-test-annotations-common` cuando el módulo es una librería. Sin `kotlin-test-junit5` en `androidMain`, el compilador Android no encuentra los `actual` de esas anotaciones.
+
+**Fix**:
+```kotlin
+commonMain.dependencies {
+    api(kotlin("test-annotations-common"))  // expect declarations
+}
+androidMain.dependencies {
+    api(kotlin("test-junit5"))              // actual JVM via JUnit5
+}
+```
+iOS no necesita nada — el stdlib de Kotlin/Native incluye los actuals de `kotlin.test` automáticamente.
+
+**Regla**: Para exportar una clase base de test con `@BeforeTest`/`@AfterTest` desde `commonMain` de un módulo librería KMP: `kotlin-test-annotations-common` en `commonMain` + `kotlin-test-junit5` en `androidMain`. No añadir nada en `iosMain`.
+
+---
+
+## L024 — Tests KMP: usar backtick names con GIVEN/WHEN/THEN en lugar de @DisplayName
+
+**Fecha**: 2026-05-26
+**Contexto**: Migración de tests de JUnit5 a kotlin.test en commonTest.
+
+**Problema**: Al migrar de JUnit5 a `kotlin.test`, se eliminaron los `@DisplayName` pero los nombres de función quedaron cortos. En `kotlin.test` el nombre de función es el nombre del test en los reports.
+
+**Fix**: Kotlin permite backtick names con espacios:
+```kotlin
+@Test
+fun `GIVEN two vehicles WHEN userData emits THEN principal is first`() = runTest { ... }
+```
+
+**Regla**: Al migrar tests de JUnit5 a `kotlin.test`, renombrar todas las funciones `@Test` al formato `` `GIVEN ... WHEN ... THEN ...` `` con backticks. `@BeforeTest fun setUp()` no se renombra. No añadir `@DisplayName` (es JUnit5).
