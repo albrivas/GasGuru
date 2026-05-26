@@ -1,6 +1,10 @@
 package com.gasguru.core.database.di
 
 import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.sqlite.SQLiteConnection
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import androidx.sqlite.execSQL
 import com.gasguru.core.database.GasGuruDatabase
 import com.gasguru.core.database.migrations.MIGRATION_10_11
 import com.gasguru.core.database.migrations.MIGRATION_11_12
@@ -34,6 +38,7 @@ val databaseModule = module {
             error = null,
         )!!.path + "/fuel-pump-database"
         Room.databaseBuilder<GasGuruDatabase>(name = dbPath)
+            .setDriver(BundledSQLiteDriver())
             .addMigrations(
                 MIGRATION_2_3,
                 MIGRATION_3_4,
@@ -50,6 +55,17 @@ val databaseModule = module {
                 MIGRATION_14_15,
                 MIGRATION_15_16,
                 MIGRATION_16_17,
+            )
+            .addCallback(
+                object : RoomDatabase.Callback() {
+                    override fun onCreate(connection: SQLiteConnection) {
+                        connection.execSQL(
+                            "INSERT OR IGNORE INTO `user-data` " +
+                                "(id, lastUpdate, isOnboardingSuccess, themeModeId) " +
+                                "VALUES (0, 0, 0, 3)",
+                        )
+                    }
+                },
             )
             .build()
     }
