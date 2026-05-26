@@ -13,26 +13,22 @@ import com.gasguru.core.model.data.UserData
 import com.gasguru.core.model.data.Vehicle
 import com.gasguru.core.model.data.VehicleType
 import com.gasguru.core.model.data.previewFuelStationDomain
-import com.gasguru.core.testing.CoroutinesTestExtension
+import com.gasguru.core.testing.CoroutineTest
 import com.gasguru.core.testing.fakes.data.location.FakeLocationTracker
 import com.gasguru.core.testing.fakes.data.user.FakeUserDataRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-@ExtendWith(CoroutinesTestExtension::class)
-class FavoriteListStationViewModelTest {
+class FavoriteListStationViewModelTest : CoroutineTest() {
 
     private lateinit var fakeUserDataRepository: FakeUserDataRepository
     private lateinit var fakeLocationTracker: FakeLocationTracker
 
-    @BeforeEach
+    @BeforeTest
     fun setUp() {
         fakeUserDataRepository = FakeUserDataRepository()
         fakeLocationTracker = FakeLocationTracker()
@@ -49,8 +45,7 @@ class FavoriteListStationViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN location is null WHEN collecting favorites THEN emits DisableLocation")
-    fun emitsDisableLocationWhenLocationIsNull() = runTest {
+    fun `GIVEN location tracker returns null WHEN favoriteStations flow is collected THEN emits Loading then DisableLocation`() = runTest {
         fakeLocationTracker.setLastKnownLocation(null)
         val viewModel = createViewModel()
 
@@ -63,8 +58,7 @@ class FavoriteListStationViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN no favorites WHEN collecting favorites THEN emits EmptyFavorites")
-    fun emitsEmptyFavoritesWhenNoStations() = runTest {
+    fun `GIVEN location available and no favorite stations in repository WHEN favoriteStations flow is collected THEN emits Loading then EmptyFavorites`() = runTest {
         fakeLocationTracker.setLocationEnabled(true)
         fakeLocationTracker.setLastKnownLocation(testLocation())
         fakeUserDataRepository.setFavoriteStations(emptyList<FuelStation>())
@@ -80,8 +74,7 @@ class FavoriteListStationViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN favorites and default tab WHEN collecting favorites THEN sorts by price")
-    fun sortsByPriceByDefault() = runTest {
+    fun `GIVEN two favorite stations with different prices WHEN favoriteStations flow emits THEN stations are ordered by price ascending by default`() = runTest {
         fakeLocationTracker.setLocationEnabled(true)
         fakeLocationTracker.setLastKnownLocation(testLocation())
         fakeUserDataRepository.setUserData(
@@ -122,8 +115,7 @@ class FavoriteListStationViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN favorites WHEN changing tab THEN sorts by distance")
-    fun changesSortingWhenTabChanges() = runTest {
+    fun `GIVEN stations sorted by price WHEN ChangeTab event selects distance tab THEN stations are re-ordered by distance ascending`() = runTest {
         fakeLocationTracker.setLocationEnabled(true)
         fakeLocationTracker.setLastKnownLocation(testLocation())
         fakeUserDataRepository.setUserData(
@@ -169,8 +161,7 @@ class FavoriteListStationViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN remove favorite event WHEN handling THEN delegates to repository")
-    fun removeFavoriteStationDelegatesToRepository() = runTest {
+    fun `GIVEN a favorite station exists WHEN RemoveFavoriteStation event is sent THEN repository records that station id as removed`() = runTest {
         val viewModel = createViewModel()
 
         viewModel.handleEvents(FavoriteStationEvent.RemoveFavoriteStation(idStation = 10))

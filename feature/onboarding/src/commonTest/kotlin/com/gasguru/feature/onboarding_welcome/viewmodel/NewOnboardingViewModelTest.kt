@@ -2,34 +2,29 @@ package com.gasguru.feature.onboarding_welcome.viewmodel
 
 import app.cash.turbine.test
 import com.gasguru.core.analytics.NoOpAnalyticsHelper
-import com.gasguru.core.testing.CoroutinesTestExtension
+import com.gasguru.core.testing.CoroutineTest
 import com.gasguru.core.testing.fakes.navigation.FakeNavigationManager
 import com.gasguru.feature.onboarding_welcome.ui.NewOnboardingEvent
 import com.gasguru.feature.onboarding_welcome.ui.OnboardingPageUiModel
 import com.gasguru.navigation.manager.NavigationDestination
-import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
-@ExtendWith(CoroutinesTestExtension::class)
-class NewOnboardingViewModelTest {
+class NewOnboardingViewModelTest : CoroutineTest() {
 
     private lateinit var sut: NewOnboardingViewModel
     private lateinit var fakeNavigationManager: FakeNavigationManager
 
-    @BeforeEach
+    @BeforeTest
     fun setUp() {
         fakeNavigationManager = FakeNavigationManager()
         sut = NewOnboardingViewModel(navigationManager = fakeNavigationManager, analyticsHelper = NoOpAnalyticsHelper())
     }
 
     @Test
-    @DisplayName("GIVEN initial state WHEN collecting uiState THEN currentPage is 0")
-    fun initialStateIsFirstPage() = runTest {
+    fun `GIVEN a fresh ViewModel WHEN uiState is observed THEN current page is 0 isFirstPage is true and skip button is shown`() = runTest {
         sut.uiState.test {
             val state = awaitItem()
             assertEquals(0, state.currentPage)
@@ -39,8 +34,7 @@ class NewOnboardingViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN first page WHEN NextPage event THEN currentPage is 1")
-    fun nextPageIncrementsCurrentPage() = runTest {
+    fun `GIVEN current page is 0 WHEN NextPage event is sent THEN current page increments to 1`() = runTest {
         sut.uiState.test {
             awaitItem()
 
@@ -51,8 +45,7 @@ class NewOnboardingViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN second page WHEN PreviousPage event THEN currentPage is 0")
-    fun previousPageDecrementsCurrentPage() = runTest {
+    fun `GIVEN current page is 1 WHEN PreviousPage event is sent THEN current page decrements to 0`() = runTest {
         sut.uiState.test {
             awaitItem()
 
@@ -66,8 +59,7 @@ class NewOnboardingViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN first page WHEN PreviousPage event THEN currentPage stays 0")
-    fun previousPageOnFirstPageDoesNothing() = runTest {
+    fun `GIVEN current page is 0 WHEN PreviousPage event is sent THEN page does not change and no new state is emitted`() = runTest {
         sut.uiState.test {
             val initial = awaitItem()
             assertEquals(0, initial.currentPage)
@@ -78,8 +70,7 @@ class NewOnboardingViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN last page WHEN NextPage event THEN navigates to fuel preferences")
-    fun nextPageOnLastPageNavigatesToFuelPreferences() = runTest {
+    fun `GIVEN current page is the last onboarding page WHEN NextPage event is sent THEN navigation goes to OnboardingFuelPreferences`() = runTest {
         val lastPageIndex = OnboardingPageUiModel.entries.size - 1
         repeat(lastPageIndex) {
             sut.handleEvent(event = NewOnboardingEvent.NextPage)
@@ -95,8 +86,7 @@ class NewOnboardingViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN any page WHEN Skip event THEN navigates to fuel preferences")
-    fun skipNavigatesToFuelPreferences() = runTest {
+    fun `GIVEN onboarding is in progress WHEN Skip event is sent THEN navigation goes to OnboardingFuelPreferences`() = runTest {
         sut.handleEvent(event = NewOnboardingEvent.Skip)
 
         assertEquals(1, fakeNavigationManager.navigatedDestinations.size)
@@ -107,8 +97,7 @@ class NewOnboardingViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN valid page WHEN PageChanged event THEN currentPage updates")
-    fun pageChangedUpdatesCurrentPage() = runTest {
+    fun `GIVEN onboarding is on page 0 WHEN PageChanged event is sent with page 2 THEN current page updates to 2`() = runTest {
         sut.uiState.test {
             awaitItem()
 
@@ -119,8 +108,7 @@ class NewOnboardingViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN invalid page WHEN PageChanged event THEN currentPage stays the same")
-    fun pageChangedWithInvalidPageDoesNothing() = runTest {
+    fun `GIVEN onboarding is on page 0 WHEN PageChanged event is sent with negative or out-of-bounds page THEN page does not change`() = runTest {
         sut.uiState.test {
             val initial = awaitItem()
             assertEquals(0, initial.currentPage)
@@ -132,8 +120,7 @@ class NewOnboardingViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN last page WHEN collecting uiState THEN showSkipButton is false")
-    fun lastPageHidesSkipButton() = runTest {
+    fun `GIVEN onboarding navigates to the last page WHEN PageChanged event is sent with that page THEN isLastPage is true and skip button is hidden`() = runTest {
         sut.uiState.test {
             awaitItem()
 
