@@ -25,7 +25,7 @@ class NavigationBarState(
     val navController: NavHostController,
 ) {
 
-    val topLevelRoutes = listOf(
+    val topLevelRoutes: List<TopLevelRoutes> = listOf(
         TopLevelRoutes.Map,
         TopLevelRoutes.Favorite,
         TopLevelRoutes.Profile,

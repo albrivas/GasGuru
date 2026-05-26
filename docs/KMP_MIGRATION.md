@@ -250,8 +250,18 @@ androidMain        iosMain
   - [x] `kotlin.srcDir(tasks.named("generateBuildKonfig"))` en `commonMain` para wiring de tarea
   - [x] `:core:analytics` iOS: eliminado cinterop `Mixpanel-swift`; `analyticsModuleIos` usa `NoOpAnalyticsHelper`
   - [x] `:core:supabase:assembleDebug` ✅ | `:core:supabase:compileKotlinIosSimulatorArm64` ✅ | `:core:supabase:testDebugUnitTest` ✅
-- [ ] Inicialización Koin desde iOS (`KoinInit.kt` en `composeApp/iosMain`) + cablear `MainViewController` con `App()` → sub-fase 8D
-- [ ] App iOS compila e instala en simulador
+- [x] Phase 8D: Inicialización Koin desde iOS + `MainViewController` con `App()` real ✅
+  - [x] `KoinInit.kt` en `composeApp/iosMain` con todos los módulos iOS equivalentes a `GasGuruApplication`
+  - [x] `iOSApp.swift` llama `KoinInitKt.doInitKoin()` en `init()` (una sola vez al lanzar el proceso)
+  - [x] `MainViewController` renderiza `GasGuruIosApp()`: inyecta `SplashViewModel` vía Koin, colecta `themeMode`, abre Settings con `UIApplication.openURL`
+  - [x] `fullScreenDialogProperties()` expect/actual en `core.ui`: Android con `decorFitsSystemWindows = false`, iOS sin ella → 4 navegaciones de diálogo migradas
+  - [x] `LocalAnalyticsHelper` movido de `core.analytics/androidMain` → `core.ui/commonMain`
+  - [x] `rememberInAppReviewManager()` como expect/actual: `androidMain` existente + `iosMain` no-op
+  - [x] `ProfileScreenPreviews.kt`: import corregido a `org.jetbrains.compose.ui.tooling.preview.PreviewParameterProvider`
+  - [x] `PlatformMapView.kt` iOS: color corregido de `surface` (inexistente) a `neutral100`
+  - [x] `NavigationBarState.topLevelRoutes`: anotación explícita `List<TopLevelRoutes>` para evitar inferencia `Any` en KMP
+  - [x] `:composeApp:compileKotlinIosSimulatorArm64` ✅ | `:composeApp:compileDebugKotlinAndroid` ✅ | `:app:assembleProdDebug` ✅ | `:composeApp:testDebugUnitTest` ✅
+- [ ] App iOS compila e instala en simulador (pendiente verificación manual en Xcode)
 - [ ] ViewModel tests migrados a commonTest
 - [ ] PR → develop y merge
 

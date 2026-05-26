@@ -4,7 +4,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import com.gasguru.core.analytics.AnalyticsHelper
-import com.gasguru.core.analytics.LocalAnalyticsHelper
+import com.gasguru.core.ui.LocalAnalyticsHelper
 import com.gasguru.core.data.util.NetworkMonitor
 import com.gasguru.core.domain.location.IsLocationEnabledUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase

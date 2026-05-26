@@ -1,7 +1,7 @@
 package com.gasguru.feature.profile.ui
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import org.jetbrains.compose.ui.tooling.preview.PreviewParameterProvider
 import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.ui.generated.resources.Res
 import com.gasguru.core.ui.generated.resources.gasoline_95

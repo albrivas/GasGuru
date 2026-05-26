@@ -20,6 +20,7 @@ kotlin {
         commonMain.dependencies {
             api(projects.core.model)
             api(projects.core.uikit)
+            implementation(projects.core.analytics)
         }
         androidMain.dependencies {
             implementation(libs.androidx.core.ktx)
