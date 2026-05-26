@@ -658,6 +658,10 @@ style:
     excludeImportStatements: true
     excludeCommentStatements: false
     excludeRawStrings: true
+    excludes:
+      - '**/commonTest/**'
+      - '**/androidUnitTest/**'
+      - '**/test/**'
   MayBeConst:
     active: true
   ModifierOrder:
