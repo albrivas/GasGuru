@@ -39,10 +39,10 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.turbine)
             implementation(projects.core.testing)
-            implementation(libs.junit5.api)
-            implementation(libs.junit5.extensions)
         }
         androidUnitTest.dependencies {
+            implementation(libs.junit5.api)
+            implementation(libs.junit5.extensions)
             implementation(libs.junit5.engine)
         }
     }
