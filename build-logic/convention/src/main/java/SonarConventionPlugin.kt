@@ -27,6 +27,11 @@ class SonarConventionPlugin : Plugin<Project> {
                         "sonar.coverage.exclusions",
                         CoverageExclusions.sonarCoverageExclusions,
                     )
+                    // SonarScanner 6.x tries to auto-download a JRE from SonarCloud
+                    // (/analysis/jres endpoint). That call requires extra token permissions
+                    // and fails with 403. The GitHub Actions runner already has Java 21,
+                    // so we skip JRE provisioning entirely.
+                    property("sonar.scanner.skipJreProvisioning", "true")
                 }
             }
         }
