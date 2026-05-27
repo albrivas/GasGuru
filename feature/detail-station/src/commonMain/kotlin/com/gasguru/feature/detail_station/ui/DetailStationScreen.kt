@@ -478,7 +478,11 @@ fun HeaderStation(
                         .semantics {
                             iconTint = if (stationState.hasPriceAlert) accentBlue else black
                         },
-                    imageVector = if (stationState.hasPriceAlert) Icons.Outlined.NotificationsActive else Icons.Outlined.Notifications,
+                    imageVector = if (stationState.hasPriceAlert) {
+                        Icons.Outlined.NotificationsActive
+                    } else {
+                        Icons.Outlined.Notifications
+                    },
                     contentDescription = "Price alert icon",
                     tint = if (stationState.hasPriceAlert) accentBlue else black,
                 )
