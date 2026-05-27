@@ -164,7 +164,10 @@ class ProfileViewModelTest : CoroutineTest() {
     fun `GIVEN profile screen WHEN AddVehicle event is sent THEN navigation manager receives AddVehicle destination`() = runTest {
         sut.handleEvents(ProfileEvents.AddVehicle)
 
-        assertEquals<List<NavigationDestination>>(listOf(NavigationDestination.AddVehicle), fakeNavigationManager.navigatedDestinations)
+        assertEquals<List<NavigationDestination>>(
+            listOf(NavigationDestination.AddVehicle),
+            fakeNavigationManager.navigatedDestinations
+        )
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
