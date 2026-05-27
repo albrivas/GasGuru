@@ -33,7 +33,7 @@ kotlin {
             implementation(projects.core.common)
             implementation(projects.core.components)
             implementation(projects.navigation)
-            implementation(compose.components.uiToolingPreview)
+            implementation(libs.jetbrains.compose.ui.tooling.preview)
         }
         androidMain.dependencies {
             implementation(libs.maps.compose)

@@ -32,7 +32,7 @@ kotlin {
             implementation(libs.coil3.compose)
             implementation(libs.coil3.network.ktor3)
             implementation(libs.kotlinx.datetime)
-            implementation(compose.components.uiToolingPreview)
+            implementation(libs.jetbrains.compose.ui.tooling.preview)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))

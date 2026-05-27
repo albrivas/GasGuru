@@ -27,7 +27,7 @@ kotlin {
             implementation(projects.core.model)
             implementation(projects.core.components)
             implementation(projects.navigation)
-            implementation(compose.components.uiToolingPreview)
+            implementation(libs.jetbrains.compose.ui.tooling.preview)
         }
     }
 }

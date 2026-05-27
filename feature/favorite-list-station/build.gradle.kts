@@ -29,7 +29,7 @@ kotlin {
             implementation(projects.core.uikit)
             implementation(projects.core.common)
             implementation(projects.navigation)
-            implementation(compose.components.uiToolingPreview)
+            implementation(libs.jetbrains.compose.ui.tooling.preview)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
