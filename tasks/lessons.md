@@ -384,3 +384,32 @@ fun `GIVEN two vehicles WHEN userData emits THEN principal is first`() = runTest
 ```
 
 **Regla**: Al migrar tests de JUnit5 a `kotlin.test`, renombrar todas las funciones `@Test` al formato `` `GIVEN ... WHEN ... THEN ...` `` con backticks. `@BeforeTest fun setUp()` no se renombra. No añadir `@DisplayName` (es JUnit5).
+
+---
+
+## L025 — KMP + instrumentedTestVariant: conflicto kotlin-test-junit vs kotlin-test-junit5
+
+**Fecha**: 2026-05-27
+**Contexto**: CI (Sonar) fallaba al resolver `debugAndroidTestCompileClasspath` en módulos KMP que usan `instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)`.
+
+**Error**:
+```
+Cannot select module with conflict on capability 'org.jetbrains.kotlin:kotlin-test-framework-impl:2.x'
+  also provided by [org.jetbrains.kotlin:kotlin-test-junit5:2.x]
+```
+
+**Causa raíz**: Al conectar `commonTest` a instrumented tests Android, `kotlin("test")` en `commonTest` se resuelve a `kotlin-test-junit` (JUnit4) porque `androidx.compose.ui.test.junit4` ya está en el classpath. Al mismo tiempo, `core:testing` expone `kotlin-test-junit5` en `androidMain` via `api()`. Ambos proveen la capability `kotlin-test-framework-impl` → conflicto.
+
+**Fix**: Añadir resolución de capability en `KmpLibraryConventionPlugin` para que prefiera siempre `kotlin-test-junit5`:
+```kotlin
+configurations.all {
+    resolutionStrategy.capabilitiesResolution.withCapability(
+        "org.jetbrains.kotlin:kotlin-test-framework-impl",
+    ) {
+        val junit5Candidate = candidates.firstOrNull { c -> c.id.toString().contains("junit5") }
+        if (junit5Candidate != null) select(junit5Candidate) else selectHighestVersion()
+    }
+}
+```
+
+**Regla**: En proyectos KMP que usan `instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)` y mezclan JUnit4 (via Compose UI test) con JUnit5 (via core:testing), añadir resolución de capability `kotlin-test-framework-impl` en el convention plugin base para evitar el conflicto en todos los módulos afectados.
