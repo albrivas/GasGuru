@@ -229,3 +229,6 @@ google-services.json
 sonar-project.properties
 
 .claude/
+
+# Local development notes
+tasks/
