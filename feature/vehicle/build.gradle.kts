@@ -16,12 +16,6 @@ compose.resources {
 }
 
 kotlin {
-    androidTarget {
-        instrumentedTestVariant.sourceSetTree.set(
-            org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree.test,
-        )
-    }
-
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.analytics)
