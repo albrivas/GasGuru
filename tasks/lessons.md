@@ -387,6 +387,27 @@ fun `GIVEN two vehicles WHEN userData emits THEN principal is first`() = runTest
 
 ---
 
+## L026 — `instrumentedTestVariant.sourceSetTree` solo en módulos con compose.uiTest
+
+**Fecha**: 2026-05-28
+**Contexto**: CI de Android tests fallaba con D8 en `:feature:detail-station:dexBuilderDebugAndroidTest`.
+
+**Error**:
+```
+Space characters in SimpleName '...DetailStationViewModelTest$GIVEN a station WHEN...$1'
+are not allowed prior to DEX version 040
+```
+
+**Causa raíz**: `instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)` conecta `commonTest` al build de instrumented tests. Los backtick names (`` `GIVEN ... WHEN ... THEN ...` ``) generan class names con espacios. D8 los rechaza al dexar para Android.
+
+Esta línea estaba en 8 feature modules sin tests de UI Compose, copiada por inercia desde `core:components`.
+
+**Fix**: Eliminar `instrumentedTestVariant.sourceSetTree.set(...)` de todos los módulos que no tienen tests con `compose.uiTest` / `runComposeUiTest { }`. Solo `core:components` la necesita.
+
+**Regla**: `instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)` SOLO en módulos con tests de UI Compose reales (`compose.uiTest` en commonTest). En módulos con solo ViewModel tests en commonTest, no añadirla — los backtick names generan class names con espacios que D8 rechaza al dexar.
+
+---
+
 ## L025 — KMP + instrumentedTestVariant: conflicto kotlin-test-junit vs kotlin-test-junit5
 
 **Fecha**: 2026-05-27
