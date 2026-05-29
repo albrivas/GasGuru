@@ -30,6 +30,6 @@ actual fun PlatformMapView(
     onUserLocationCentered: () -> Unit,
     modifier: Modifier,
 ) {
-    Box(modifier = modifier.fillMaxSize().background(GasGuruTheme.colors.surface))
+    Box(modifier = modifier.fillMaxSize().background(GasGuruTheme.colors.neutral100))
     // V2: UIKitView { MKMapView() } con MKAnnotations por estación
 }

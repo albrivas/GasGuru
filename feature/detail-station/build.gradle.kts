@@ -16,10 +16,6 @@ compose.resources {
 }
 
 kotlin {
-    androidTarget {
-        instrumentedTestVariant.sourceSetTree.set(org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree.test)
-    }
-
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.analytics)
@@ -32,17 +28,17 @@ kotlin {
             implementation(libs.coil3.compose)
             implementation(libs.coil3.network.ktor3)
             implementation(libs.kotlinx.datetime)
-            implementation(compose.components.uiToolingPreview)
+            implementation(libs.jetbrains.compose.ui.tooling.preview)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.turbine)
             implementation(projects.core.testing)
-            implementation(libs.junit5.api)
-            implementation(libs.junit5.extensions)
         }
         androidUnitTest.dependencies {
+            implementation(libs.junit5.api)
+            implementation(libs.junit5.extensions)
             implementation(libs.junit5.engine)
         }
     }

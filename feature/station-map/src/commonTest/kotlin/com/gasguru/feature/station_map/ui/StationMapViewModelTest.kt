@@ -22,7 +22,7 @@ import com.gasguru.core.model.data.Route
 import com.gasguru.core.model.data.UserData
 import com.gasguru.core.model.data.Vehicle
 import com.gasguru.core.model.data.VehicleType
-import com.gasguru.core.testing.CoroutinesTestExtension
+import com.gasguru.core.testing.CoroutineTest
 import com.gasguru.core.testing.fakes.data.database.FakeFavoriteStationDao
 import com.gasguru.core.testing.fakes.data.database.FakeFuelStationDao
 import com.gasguru.core.testing.fakes.data.database.FakePriceAlertDao
@@ -37,20 +37,16 @@ import com.gasguru.core.testing.fakes.data.user.FakeUserDataRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertInstanceOf
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertNull
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
-@ExtendWith(CoroutinesTestExtension::class)
-class StationMapViewModelTest {
+class StationMapViewModelTest : CoroutineTest() {
 
     private lateinit var sut: StationMapViewModel
     private lateinit var fakeUserDataRepository: FakeUserDataRepository
@@ -64,7 +60,7 @@ class StationMapViewModelTest {
     private lateinit var fakePlacesRepository: FakePlacesRepository
     private lateinit var fakeLocationTracker: FakeLocationTracker
 
-    @BeforeEach
+    @BeforeTest
     fun setUp() {
         fakeUserDataRepository = FakeUserDataRepository(
             initialUserData = UserData(
@@ -111,8 +107,7 @@ class StationMapViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN current location WHEN requesting stations THEN loads stations and updates state")
-    fun loadsStationsByCurrentLocation() = runTest {
+    fun `GIVEN stations in dao and current location WHEN GetStationByCurrentLocation event is sent THEN stations are loaded and sorted by price`() = runTest {
         val stations = listOf(
             stationEntity(id = 1, latitude = 40.0, longitude = -3.0, price = 1.50),
             stationEntity(id = 2, latitude = 40.1, longitude = -3.1, price = 1.20),
@@ -133,8 +128,7 @@ class StationMapViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN loaded stations WHEN changing tab THEN sorts by distance")
-    fun sortsByDistanceOnTabChange() = runTest {
+    fun `GIVEN stations loaded by location WHEN ChangeTab event selects DISTANCE tab THEN list is re-sorted by distance ascending`() = runTest {
         val userLocation = LatLng(latitude = 40.0, longitude = -3.0)
         val stations = listOf(
             stationEntity(id = 1, latitude = 40.0, longitude = -3.0, price = 1.50),
@@ -156,8 +150,7 @@ class StationMapViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN stations loaded WHEN map centered THEN shouldCenterMap resets")
-    fun resetsCenterMapFlag() = runTest {
+    fun `GIVEN shouldCenterMap is true after loading WHEN OnMapCentered event is sent THEN shouldCenterMap becomes false`() = runTest {
         fakeFuelStationDao.setStations(
             listOf(stationEntity(id = 1, latitude = 40.0, longitude = -3.0, price = 1.50))
         )
@@ -176,8 +169,7 @@ class StationMapViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN update nearby filter WHEN handling THEN saves filter selection")
-    fun savesFilterSelection() = runTest {
+    fun `GIVEN map screen WHEN UpdateNearbyFilter event is sent with value 5 THEN repository saves NEARBY filter with selection 5`() = runTest {
         sut.handleEvent(StationMapEvent.UpdateNearbyFilter(number = "5"))
         advanceUntilIdle()
 
@@ -188,8 +180,7 @@ class StationMapViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN update brand filter WHEN handling THEN saves brand selection")
-    fun savesBrandFilterSelection() = runTest {
+    fun `GIVEN map screen WHEN UpdateBrandFilter event is sent with Repsol THEN repository saves BRAND filter with Repsol selection`() = runTest {
         sut.handleEvent(StationMapEvent.UpdateBrandFilter(selected = listOf("Repsol")))
         advanceUntilIdle()
 
@@ -200,8 +191,7 @@ class StationMapViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN place selection WHEN handling THEN loads stations for place")
-    fun loadsStationsForPlace() = runTest {
+    fun `GIVEN a place with known location and a station in dao WHEN GetStationByPlace event is sent THEN state contains that station`() = runTest {
         fakePlacesRepository.setLocationForId(
             placeId = "place-1",
             location = LatLng(latitude = 41.0, longitude = -4.0)
@@ -220,8 +210,7 @@ class StationMapViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN start route WHEN handling THEN updates route state and stations")
-    fun startRouteUpdatesState() = runTest {
+    fun `GIVEN route and destination configured WHEN StartRoute event is sent THEN state contains route data destination name and stations`() = runTest {
         val route = Route(
             route = listOf(
                 LatLng(latitude = 40.0, longitude = -3.0),
@@ -258,8 +247,7 @@ class StationMapViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN active route WHEN canceling THEN clears route and reloads stations")
-    fun cancelRouteClearsRouteAndReloadsStations() = runTest {
+    fun `GIVEN an active route WHEN CancelRoute event is sent THEN route and destination name are cleared and stations are reloaded`() = runTest {
         val route = Route(
             route = listOf(
                 LatLng(latitude = 40.0, longitude = -3.0),
@@ -297,8 +285,7 @@ class StationMapViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN route in progress WHEN canceling THEN clears route state and stops loading")
-    fun cancelRouteStopsLoadingAndClearsState() = runTest {
+    fun `GIVEN StartRoute event in progress WHEN CancelRoute event is sent immediately THEN loading stops and route state is null`() = runTest {
         val route = Route(
             route = listOf(
                 LatLng(latitude = 40.0, longitude = -3.0),
@@ -336,8 +323,7 @@ class StationMapViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN cancelled route WHEN starting new route THEN new route loads successfully")
-    fun canStartNewRouteAfterCancellation() = runTest {
+    fun `GIVEN a route was started and then cancelled WHEN a new StartRoute event is sent THEN the new route and destination are loaded correctly`() = runTest {
         val route1 = Route(
             route = listOf(
                 LatLng(latitude = 40.0, longitude = -3.0),
@@ -401,8 +387,7 @@ class StationMapViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN no filters WHEN observing filters THEN returns default values")
-    fun returnsDefaultFilterValues() = runTest {
+    fun `GIVEN filter repository has no saved filters WHEN filters flow is collected THEN default values are returned for all filter types`() = runTest {
         fakeFilterRepository.clearFilters()
         fakeLocationTracker.setLastKnownLocation(LatLng(latitude = 40.0, longitude = -3.0))
 
@@ -417,8 +402,7 @@ class StationMapViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN invalid nearby filter WHEN observing filters THEN returns default 10")
-    fun returnsDefaultNearbyWhenInvalid() = runTest {
+    fun `GIVEN filter repository has NEARBY filter with non-numeric value WHEN filters flow is collected THEN default nearby value of 10 is used`() = runTest {
         fakeFilterRepository.setFilter(
             type = FilterType.NEARBY,
             selection = listOf("invalid")
@@ -434,8 +418,7 @@ class StationMapViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN no current location WHEN getting station by current location THEN handles error")
-    fun handlesNoCurrentLocation() = runTest {
+    fun `GIVEN location tracker returns null WHEN GetStationByCurrentLocation event is sent THEN map stations list remains empty`() = runTest {
         fakeLocationTracker.setLastKnownLocation(null)
         fakeFuelStationDao.setStations(
             listOf(stationEntity(id = 1, latitude = 40.0, longitude = -3.0, price = 1.30))
@@ -451,8 +434,7 @@ class StationMapViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN error getting route WHEN starting route THEN updates error state and emits ShowRouteError")
-    fun handlesRouteError() = runTest {
+    fun `GIVEN route repository is configured to throw WHEN StartRoute event is sent THEN error state is set and ShowRouteError effect is emitted`() = runTest {
         fakeLocationTracker.setLastKnownLocation(LatLng(latitude = 40.0, longitude = -3.0))
         fakePlacesRepository.setLocationForId(
             placeId = "dest",
@@ -474,13 +456,12 @@ class StationMapViewModelTest {
             assertNotNull(state.error)
             assertFalse(state.loading)
             assertNull(state.routeDestinationName)
-            assertInstanceOf(StationMapEffect.ShowRouteError::class.java, awaitItem())
+            assertIs<StationMapEffect.ShowRouteError>(awaitItem())
         }
     }
 
     @Test
-    @DisplayName("GIVEN route emits null WHEN starting route THEN clears loading and emits ShowRouteError")
-    fun handlesNullRouteResult() = runTest {
+    fun `GIVEN route repository returns null route WHEN StartRoute event is sent THEN loading stops and ShowRouteError effect is emitted`() = runTest {
         fakeLocationTracker.setLastKnownLocation(LatLng(latitude = 40.0, longitude = -3.0))
         fakePlacesRepository.setLocationForId(
             placeId = "dest",
@@ -501,13 +482,12 @@ class StationMapViewModelTest {
             val state = sut.state.value
             assertFalse(state.loading)
             assertNull(state.routeDestinationName)
-            assertInstanceOf(StationMapEffect.ShowRouteError::class.java, awaitItem())
+            assertIs<StationMapEffect.ShowRouteError>(awaitItem())
         }
     }
 
     @Test
-    @DisplayName("GIVEN error getting place location WHEN getting stations THEN handles error")
-    fun handlesPlaceLocationError() = runTest {
+    fun `GIVEN places repository is configured to throw WHEN GetStationByPlace event is sent THEN loading stops without crash`() = runTest {
         fakeLocationTracker.setLastKnownLocation(LatLng(latitude = 40.0, longitude = -3.0))
         fakePlacesRepository.setShouldThrowError(true)
 
@@ -520,8 +500,7 @@ class StationMapViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN error getting stations WHEN loading by location THEN updates error state")
-    fun handlesStationLoadingError() = runTest {
+    fun `GIVEN fuel station dao is configured to throw WHEN GetStationByCurrentLocation event is sent THEN error state is set and loading stops`() = runTest {
         fakeLocationTracker.setLastKnownLocation(LatLng(latitude = 40.0, longitude = -3.0))
         fakeFuelStationDao.setShouldThrowError(true)
 

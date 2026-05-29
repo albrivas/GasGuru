@@ -10,26 +10,22 @@ import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.UserData
 import com.gasguru.core.model.data.Vehicle
 import com.gasguru.core.model.data.VehicleType
-import com.gasguru.core.testing.CoroutinesTestExtension
+import com.gasguru.core.testing.CoroutineTest
 import com.gasguru.core.testing.fakes.data.user.FakeUserDataRepository
 import com.gasguru.core.testing.fakes.data.vehicle.FakeVehicleRepository
 import com.gasguru.core.testing.fakes.navigation.FakeNavigationManager
 import com.gasguru.feature.vehicle.ui.AddVehicleEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertNull
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-@ExtendWith(CoroutinesTestExtension::class)
-class AddVehicleViewModelTest {
+class AddVehicleViewModelTest : CoroutineTest() {
 
     private lateinit var sut: AddVehicleViewModel
     private lateinit var fakeNavigationManager: FakeNavigationManager
@@ -39,7 +35,7 @@ class AddVehicleViewModelTest {
     private lateinit var getVehicleByIdUseCase: GetVehicleByIdUseCase
     private lateinit var getUserDataUseCase: GetUserDataUseCase
 
-    @BeforeEach
+    @BeforeTest
     fun setUp() {
         fakeNavigationManager = FakeNavigationManager()
         fakeVehicleRepository = FakeVehicleRepository()
@@ -60,14 +56,7 @@ class AddVehicleViewModelTest {
     )
 
     @Test
-    @DisplayName(
-        """
-        GIVEN initial state
-        WHEN collecting uiState
-        THEN all fields have default empty values and isSaveEnabled is false
-        """
-    )
-    fun initialStateHasEmptyDefaults() = runTest {
+    fun `GIVEN a fresh ViewModel WHEN uiState is observed THEN all fields are null or empty and save is disabled`() = runTest {
         sut.uiState.test {
             val state = awaitItem()
             assertNull(state.selectedVehicleType)
@@ -81,14 +70,7 @@ class AddVehicleViewModelTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN initial state
-        WHEN SelectVehicleType event
-        THEN selectedVehicleType is updated
-        """
-    )
-    fun selectVehicleTypeUpdatesState() = runTest {
+    fun `GIVEN fresh state WHEN SelectVehicleType event is sent with CAR THEN selectedVehicleType is CAR`() = runTest {
         sut.uiState.test {
             awaitItem()
 
@@ -100,14 +82,7 @@ class AddVehicleViewModelTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN initial state
-        WHEN UpdateVehicleName event
-        THEN vehicleName is updated
-        """
-    )
-    fun updateVehicleNameUpdatesState() = runTest {
+    fun `GIVEN fresh state WHEN UpdateVehicleName event is sent with Golf VII THEN vehicleName is Golf VII`() = runTest {
         sut.uiState.test {
             awaitItem()
 
@@ -119,14 +94,7 @@ class AddVehicleViewModelTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN initial state
-        WHEN SelectFuelType event
-        THEN selectedFuelType is updated
-        """
-    )
-    fun selectFuelTypeUpdatesState() = runTest {
+    fun `GIVEN fresh state WHEN SelectFuelType event is sent with GASOLINE_95 THEN selectedFuelType is GASOLINE_95`() = runTest {
         sut.uiState.test {
             awaitItem()
 
@@ -138,14 +106,7 @@ class AddVehicleViewModelTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN no capacity selected
-        WHEN OpenCapacityPicker event
-        THEN showCapacityPicker is true and pickerValue is PICKER_MIN
-        """
-    )
-    fun openPickerWithNoSelectionUsesMin() = runTest {
+    fun `GIVEN no capacity is selected WHEN OpenCapacityPicker event is sent THEN picker is shown with the minimum picker value`() = runTest {
         sut.uiState.test {
             awaitItem()
 
@@ -158,14 +119,7 @@ class AddVehicleViewModelTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN capacity already selected
-        WHEN OpenCapacityPicker event
-        THEN pickerValue matches selected capacity
-        """
-    )
-    fun openPickerWithSelectionUsesSelectedValue() = runTest {
+    fun `GIVEN capacity 60 was previously confirmed WHEN OpenCapacityPicker event is sent THEN picker is shown with 60 as the initial value`() = runTest {
         sut.uiState.test {
             awaitItem()
 
@@ -181,14 +135,7 @@ class AddVehicleViewModelTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN picker open
-        WHEN CloseCapacityPicker event
-        THEN showCapacityPicker is false
-        """
-    )
-    fun closePickerHidesPicker() = runTest {
+    fun `GIVEN picker is open WHEN CloseCapacityPicker event is sent THEN showCapacityPicker becomes false`() = runTest {
         sut.uiState.test {
             awaitItem()
 
@@ -203,14 +150,7 @@ class AddVehicleViewModelTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN picker open
-        WHEN ConfirmCapacityValue event
-        THEN selectedCapacity is updated and picker is closed
-        """
-    )
-    fun confirmCapacityValueUpdatesCapacityAndClosesPicker() = runTest {
+    fun `GIVEN picker is open WHEN ConfirmCapacityValue event is sent with 75 THEN selectedCapacity is 75 and picker is closed`() = runTest {
         sut.uiState.test {
             awaitItem()
 
@@ -226,14 +166,7 @@ class AddVehicleViewModelTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN isMainVehicle is false
-        WHEN ToggleMainVehicle event
-        THEN isMainVehicle becomes true
-        """
-    )
-    fun toggleMainVehicleFlipsFromFalseToTrue() = runTest {
+    fun `GIVEN isMainVehicle is false WHEN ToggleMainVehicle event is sent THEN isMainVehicle becomes true`() = runTest {
         sut.uiState.test {
             awaitItem()
 
@@ -245,14 +178,7 @@ class AddVehicleViewModelTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN isMainVehicle is true
-        WHEN ToggleMainVehicle event
-        THEN isMainVehicle becomes false
-        """
-    )
-    fun toggleMainVehicleFlipsFromTrueToFalse() = runTest {
+    fun `GIVEN isMainVehicle was toggled to true WHEN ToggleMainVehicle event is sent again THEN isMainVehicle reverts to false`() = runTest {
         sut.uiState.test {
             awaitItem()
 
@@ -267,13 +193,7 @@ class AddVehicleViewModelTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN no fuelType and no capacity
-        THEN isSaveEnabled is false
-        """
-    )
-    fun isSaveEnabledFalseWhenBothMissing() = runTest {
+    fun `GIVEN neither fuel type nor capacity is selected WHEN uiState is observed THEN isSaveEnabled is false`() = runTest {
         sut.uiState.test {
             val state = awaitItem()
             assertFalse(state.isSaveEnabled)
@@ -281,13 +201,7 @@ class AddVehicleViewModelTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN fuelType selected but no capacity
-        THEN isSaveEnabled is false
-        """
-    )
-    fun isSaveEnabledFalseWhenOnlyFuelSelected() = runTest {
+    fun `GIVEN only fuel type is selected and capacity is missing WHEN uiState is observed THEN isSaveEnabled is false`() = runTest {
         sut.uiState.test {
             awaitItem()
 
@@ -299,13 +213,7 @@ class AddVehicleViewModelTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN capacity selected but no fuelType
-        THEN isSaveEnabled is false
-        """
-    )
-    fun isSaveEnabledFalseWhenOnlyCapacitySelected() = runTest {
+    fun `GIVEN only capacity is selected and fuel type is missing WHEN uiState is observed THEN isSaveEnabled is false`() = runTest {
         sut.uiState.test {
             awaitItem()
 
@@ -317,13 +225,7 @@ class AddVehicleViewModelTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN fuelType and capacity both selected
-        THEN isSaveEnabled is true
-        """
-    )
-    fun isSaveEnabledTrueWhenBothSet() = runTest {
+    fun `GIVEN both fuel type and capacity are selected WHEN uiState is observed THEN isSaveEnabled is true`() = runTest {
         sut.uiState.test {
             awaitItem()
 
@@ -338,14 +240,7 @@ class AddVehicleViewModelTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN fuelType and capacity set
-        WHEN SaveVehicle event
-        THEN vehicle is saved with correct userId and navigation goes back
-        """
-    )
-    fun saveVehiclePersistsVehicleWithCorrectUserIdAndNavigatesBack() = runTest {
+    fun `GIVEN all vehicle fields are filled WHEN SaveVehicle event is sent THEN vehicle is persisted with correct user id and navigation goes back`() = runTest {
         sut.handleEvent(event = AddVehicleEvent.SelectVehicleType(vehicleType = VehicleType.CAR))
         sut.handleEvent(event = AddVehicleEvent.UpdateVehicleName(name = "Golf VII"))
         sut.handleEvent(event = AddVehicleEvent.SelectFuelType(fuelType = FuelType.GASOLINE_95))
@@ -371,14 +266,7 @@ class AddVehicleViewModelTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN fuelType and capacity set but no name
-        WHEN SaveVehicle event
-        THEN vehicle is saved with null name
-        """
-    )
-    fun saveVehicleWithBlankNameStoresNullName() = runTest {
+    fun `GIVEN vehicle name is left blank WHEN SaveVehicle event is sent THEN vehicle is saved with null name`() = runTest {
         sut.handleEvent(event = AddVehicleEvent.SelectFuelType(fuelType = FuelType.DIESEL))
         sut.handleEvent(event = AddVehicleEvent.ConfirmCapacityValue(value = 40))
 
@@ -393,14 +281,7 @@ class AddVehicleViewModelTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN no vehicleType selected
-        WHEN SaveVehicle event
-        THEN vehicle defaults to CAR type
-        """
-    )
-    fun saveVehicleWithNoVehicleTypeDefaultsToCar() = runTest {
+    fun `GIVEN vehicle type is not selected WHEN SaveVehicle event is sent THEN vehicle is saved with CAR as the default vehicle type`() = runTest {
         sut.handleEvent(event = AddVehicleEvent.SelectFuelType(fuelType = FuelType.GASOLINE_95))
         sut.handleEvent(event = AddVehicleEvent.ConfirmCapacityValue(value = 50))
 
@@ -415,28 +296,14 @@ class AddVehicleViewModelTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN any state
-        WHEN Back event
-        THEN navigationManager.navigateBack is called
-        """
-    )
-    fun backEventCallsNavigateBack() = runTest {
+    fun `GIVEN the add vehicle screen is open WHEN Back event is sent THEN navigation manager navigates back`() = runTest {
         sut.handleEvent(event = AddVehicleEvent.Back)
 
         assertTrue(fakeNavigationManager.navigateBackCalled)
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN a vehicle exists in the repository
-        WHEN the vehicle is loaded
-        THEN state is pre-filled with vehicle data and isEditMode is true
-        """
-    )
-    fun loadVehiclePreFillsStateAndSetsEditMode() = runTest {
+    fun `GIVEN an existing vehicle in repository WHEN onLoadVehicle is called with its id THEN state is pre-filled with vehicle data and edit mode is active`() = runTest {
         val existingVehicle = Vehicle(
             id = 5L,
             userId = 0L,
@@ -462,14 +329,7 @@ class AddVehicleViewModelTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN a principal vehicle exists in the repository
-        WHEN the vehicle is loaded
-        THEN isOriginallyPrincipal is true and isMainVehicle is true
-        """
-    )
-    fun loadPrincipalVehicleSetsIsOriginallyPrincipalTrue() = runTest {
+    fun `GIVEN a principal vehicle in repository WHEN onLoadVehicle is called with its id THEN isMainVehicle and isOriginallyPrincipal are both true`() = runTest {
         val principalVehicle = Vehicle(
             id = 10L,
             userId = 0L,
@@ -489,14 +349,7 @@ class AddVehicleViewModelTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN a principal vehicle loaded in edit mode
-        WHEN ToggleMainVehicle event is sent
-        THEN isMainVehicle remains true
-        """
-    )
-    fun toggleMainVehicleIsIgnoredForOriginallyPrincipalVehicle() = runTest {
+    fun `GIVEN an originally principal vehicle is loaded WHEN ToggleMainVehicle event is sent THEN the toggle is ignored and isMainVehicle remains true`() = runTest {
         val principalVehicle = Vehicle(
             id = 10L,
             userId = 0L,
@@ -521,14 +374,7 @@ class AddVehicleViewModelTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN a vehicle is loaded in edit mode
-        WHEN SaveVehicle event
-        THEN vehicle is updated with same id
-        """
-    )
-    fun saveVehicleInEditModeUpdatesExistingVehicle() = runTest {
+    fun `GIVEN a vehicle is loaded in edit mode WHEN vehicle name is updated and SaveVehicle event is sent THEN existing vehicle is updated in repository`() = runTest {
         val existingVehicle = Vehicle(
             id = 5L,
             userId = 0L,
@@ -555,14 +401,7 @@ class AddVehicleViewModelTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN existing principal vehicle
-        WHEN saving new vehicle with isPrincipal=true
-        THEN only one vehicle is principal
-        """
-    )
-    fun savingPrincipalVehicleClearsOtherPrincipals() = runTest {
+    fun `GIVEN an existing principal vehicle WHEN a new vehicle is saved as principal THEN only one vehicle remains principal in the repository`() = runTest {
         val existingPrincipal = Vehicle(
             id = 1L,
             userId = 0L,

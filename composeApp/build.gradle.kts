@@ -52,6 +52,12 @@ kotlin {
             implementation(projects.core.testing)
             implementation(projects.core.database)
         }
+        iosMain.dependencies {
+            implementation(projects.core.database)
+            implementation(projects.core.supabase)
+            implementation(projects.core.notifications)
+            implementation(projects.core.components)
+        }
         androidUnitTest.dependencies {
             implementation(libs.junit5.api)
             implementation(libs.junit5.extensions)

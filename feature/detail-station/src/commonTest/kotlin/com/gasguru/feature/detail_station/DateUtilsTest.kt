@@ -1,606 +1,315 @@
 package com.gasguru.feature.detail_station
 
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertInstanceOf
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertIs
 
-@DisplayName("DateUtils pure functions")
 class DateUtilsTest {
 
     // region classifyTimeDiff
 
-    @Nested
-    @DisplayName("classifyTimeDiff")
-    inner class ClassifyTimeDiff {
+    @Test
+    fun `GIVEN time diff of 0 ms WHEN classifyTimeDiff is called THEN result is Now`() {
+        val result = classifyTimeDiff(timeDiff = 0L)
+        assertEquals(TimeElapsedCategory.Now, result)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN timeDiff of 0 ms
-            WHEN classifyTimeDiff is called
-            THEN returns Now
-            """
-        )
-        fun zeroMillisecondsReturnsNow() {
-            val result = classifyTimeDiff(timeDiff = 0L)
-            assertEquals(TimeElapsedCategory.Now, result)
-        }
+    @Test
+    fun `GIVEN time diff of one minute minus 1 ms WHEN classifyTimeDiff is called THEN result is Now`() {
+        val result = classifyTimeDiff(timeDiff = ONE_MINUTE_MS - 1L)
+        assertEquals(TimeElapsedCategory.Now, result)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN timeDiff just below one minute (59_999 ms)
-            WHEN classifyTimeDiff is called
-            THEN returns Now
-            """
-        )
-        fun justBelowOneMinuteReturnsNow() {
-            val result = classifyTimeDiff(timeDiff = ONE_MINUTE_MS - 1L)
-            assertEquals(TimeElapsedCategory.Now, result)
-        }
+    @Test
+    fun `GIVEN time diff of exactly one minute WHEN classifyTimeDiff is called THEN result is OneMinute with minutes equal to 1`() {
+        val result = classifyTimeDiff(timeDiff = ONE_MINUTE_MS)
+        assertIs<TimeElapsedCategory.OneMinute>(result)
+        assertEquals(1L, result.minutes)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN timeDiff of exactly one minute (60_000 ms)
-            WHEN classifyTimeDiff is called
-            THEN returns OneMinute with minutes=1
-            """
-        )
-        fun exactlyOneMinuteReturnsOneMinute() {
-            val result = classifyTimeDiff(timeDiff = ONE_MINUTE_MS)
-            assertInstanceOf(TimeElapsedCategory.OneMinute::class.java, result)
-            assertEquals(1L, (result as TimeElapsedCategory.OneMinute).minutes)
-        }
+    @Test
+    fun `GIVEN time diff of 5 minutes WHEN classifyTimeDiff is called THEN result is Minutes with minutes equal to 5`() {
+        val result = classifyTimeDiff(timeDiff = 5 * ONE_MINUTE_MS)
+        assertIs<TimeElapsedCategory.Minutes>(result)
+        assertEquals(5L, result.minutes)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN timeDiff of 5 minutes
-            WHEN classifyTimeDiff is called
-            THEN returns Minutes with minutes=5
-            """
-        )
-        fun fiveMinutesReturnsMinutes() {
-            val result = classifyTimeDiff(timeDiff = 5 * ONE_MINUTE_MS)
-            assertInstanceOf(TimeElapsedCategory.Minutes::class.java, result)
-            assertEquals(5L, (result as TimeElapsedCategory.Minutes).minutes)
-        }
+    @Test
+    fun `GIVEN time diff of one hour minus 1 ms WHEN classifyTimeDiff is called THEN result is Minutes with minutes equal to 59`() {
+        val result = classifyTimeDiff(timeDiff = ONE_HOUR_MS - 1L)
+        assertIs<TimeElapsedCategory.Minutes>(result)
+        assertEquals(59L, result.minutes)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN timeDiff just below one hour (3_599_999 ms)
-            WHEN classifyTimeDiff is called
-            THEN returns Minutes with minutes=59
-            """
-        )
-        fun justBelowOneHourReturnsMinutes() {
-            val result = classifyTimeDiff(timeDiff = ONE_HOUR_MS - 1L)
-            assertInstanceOf(TimeElapsedCategory.Minutes::class.java, result)
-            assertEquals(59L, (result as TimeElapsedCategory.Minutes).minutes)
-        }
+    @Test
+    fun `GIVEN time diff of exactly one hour WHEN classifyTimeDiff is called THEN result is OneHour with hours equal to 1`() {
+        val result = classifyTimeDiff(timeDiff = ONE_HOUR_MS)
+        assertIs<TimeElapsedCategory.OneHour>(result)
+        assertEquals(1L, result.hours)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN timeDiff of exactly one hour
-            WHEN classifyTimeDiff is called
-            THEN returns OneHour with hours=1
-            """
-        )
-        fun exactlyOneHourReturnsOneHour() {
-            val result = classifyTimeDiff(timeDiff = ONE_HOUR_MS)
-            assertInstanceOf(TimeElapsedCategory.OneHour::class.java, result)
-            assertEquals(1L, (result as TimeElapsedCategory.OneHour).hours)
-        }
+    @Test
+    fun `GIVEN time diff of 3 hours WHEN classifyTimeDiff is called THEN result is Hours with hours equal to 3`() {
+        val result = classifyTimeDiff(timeDiff = 3 * ONE_HOUR_MS)
+        assertIs<TimeElapsedCategory.Hours>(result)
+        assertEquals(3L, result.hours)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN timeDiff of 3 hours
-            WHEN classifyTimeDiff is called
-            THEN returns Hours with hours=3
-            """
-        )
-        fun threeHoursReturnsHours() {
-            val result = classifyTimeDiff(timeDiff = 3 * ONE_HOUR_MS)
-            assertInstanceOf(TimeElapsedCategory.Hours::class.java, result)
-            assertEquals(3L, (result as TimeElapsedCategory.Hours).hours)
-        }
+    @Test
+    fun `GIVEN time diff of one day minus 1 ms WHEN classifyTimeDiff is called THEN result is Hours with hours equal to 23`() {
+        val result = classifyTimeDiff(timeDiff = ONE_DAY_MS - 1L)
+        assertIs<TimeElapsedCategory.Hours>(result)
+        assertEquals(23L, result.hours)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN timeDiff just below one day
-            WHEN classifyTimeDiff is called
-            THEN returns Hours with hours=23
-            """
-        )
-        fun justBelowOneDayReturnsHours() {
-            val result = classifyTimeDiff(timeDiff = ONE_DAY_MS - 1L)
-            assertInstanceOf(TimeElapsedCategory.Hours::class.java, result)
-            assertEquals(23L, (result as TimeElapsedCategory.Hours).hours)
-        }
+    @Test
+    fun `GIVEN time diff of exactly one day WHEN classifyTimeDiff is called THEN result is OneDay with days equal to 1`() {
+        val result = classifyTimeDiff(timeDiff = ONE_DAY_MS)
+        assertIs<TimeElapsedCategory.OneDay>(result)
+        assertEquals(1L, result.days)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN timeDiff of exactly one day
-            WHEN classifyTimeDiff is called
-            THEN returns OneDay with days=1
-            """
-        )
-        fun exactlyOneDayReturnsOneDay() {
-            val result = classifyTimeDiff(timeDiff = ONE_DAY_MS)
-            assertInstanceOf(TimeElapsedCategory.OneDay::class.java, result)
-            assertEquals(1L, (result as TimeElapsedCategory.OneDay).days)
-        }
+    @Test
+    fun `GIVEN time diff of 3 days WHEN classifyTimeDiff is called THEN result is Days with days equal to 3`() {
+        val result = classifyTimeDiff(timeDiff = 3 * ONE_DAY_MS)
+        assertIs<TimeElapsedCategory.Days>(result)
+        assertEquals(3L, result.days)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN timeDiff of 3 days
-            WHEN classifyTimeDiff is called
-            THEN returns Days with days=3
-            """
-        )
-        fun threeDaysReturnsDays() {
-            val result = classifyTimeDiff(timeDiff = 3 * ONE_DAY_MS)
-            assertInstanceOf(TimeElapsedCategory.Days::class.java, result)
-            assertEquals(3L, (result as TimeElapsedCategory.Days).days)
-        }
+    @Test
+    fun `GIVEN time diff of one week minus 1 ms WHEN classifyTimeDiff is called THEN result is Days with days equal to 6`() {
+        val result = classifyTimeDiff(timeDiff = ONE_WEEK_MS - 1L)
+        assertIs<TimeElapsedCategory.Days>(result)
+        assertEquals(6L, result.days)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN timeDiff just below one week
-            WHEN classifyTimeDiff is called
-            THEN returns Days with days=6
-            """
-        )
-        fun justBelowOneWeekReturnsDays() {
-            val result = classifyTimeDiff(timeDiff = ONE_WEEK_MS - 1L)
-            assertInstanceOf(TimeElapsedCategory.Days::class.java, result)
-            assertEquals(6L, (result as TimeElapsedCategory.Days).days)
-        }
+    @Test
+    fun `GIVEN time diff of exactly one week WHEN classifyTimeDiff is called THEN result is LongAgo`() {
+        val result = classifyTimeDiff(timeDiff = ONE_WEEK_MS)
+        assertEquals(TimeElapsedCategory.LongAgo, result)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN timeDiff of exactly one week
-            WHEN classifyTimeDiff is called
-            THEN returns LongAgo
-            """
-        )
-        fun exactlyOneWeekReturnsLongAgo() {
-            val result = classifyTimeDiff(timeDiff = ONE_WEEK_MS)
-            assertEquals(TimeElapsedCategory.LongAgo, result)
-        }
-
-        @Test
-        @DisplayName(
-            """
-            GIVEN timeDiff of one month
-            WHEN classifyTimeDiff is called
-            THEN returns LongAgo
-            """
-        )
-        fun oneMonthReturnsLongAgo() {
-            val result = classifyTimeDiff(timeDiff = 30 * ONE_DAY_MS)
-            assertEquals(TimeElapsedCategory.LongAgo, result)
-        }
+    @Test
+    fun `GIVEN time diff of 30 days WHEN classifyTimeDiff is called THEN result is LongAgo`() {
+        val result = classifyTimeDiff(timeDiff = 30 * ONE_DAY_MS)
+        assertEquals(TimeElapsedCategory.LongAgo, result)
     }
 
     // endregion
 
     // region resolveScheduleDayRange
 
-    @Nested
-    @DisplayName("resolveScheduleDayRange")
-    inner class ResolveScheduleDayRange {
+    private val spanishDaysMap = mapOf(
+        "L" to "Lun",
+        "M" to "Mar",
+        "X" to "Mié",
+        "J" to "Jue",
+        "V" to "Vie",
+        "S" to "Sáb",
+        "D" to "Dom",
+    )
 
-        private val spanishDaysMap = mapOf(
-            "L" to "Lun",
-            "M" to "Mar",
-            "X" to "Mié",
-            "J" to "Jue",
-            "V" to "Vie",
-            "S" to "Sáb",
-            "D" to "Dom",
-        )
+    @Test
+    fun `GIVEN day range L-V WHEN resolveScheduleDayRange is called THEN result is Lun-Vie`() {
+        val result = resolveScheduleDayRange(dayRange = "L-V", daysMap = spanishDaysMap)
+        assertEquals("Lun-Vie", result)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN day range L-V
-            WHEN resolveScheduleDayRange is called
-            THEN returns Lun-Vie
-            """
-        )
-        fun lToVReturnsLunViernes() {
-            val result = resolveScheduleDayRange(dayRange = "L-V", daysMap = spanishDaysMap)
-            assertEquals("Lun-Vie", result)
-        }
+    @Test
+    fun `GIVEN day range L-S WHEN resolveScheduleDayRange is called THEN result is Lun-Sab`() {
+        val result = resolveScheduleDayRange(dayRange = "L-S", daysMap = spanishDaysMap)
+        assertEquals("Lun-Sáb", result)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN day range L-S
-            WHEN resolveScheduleDayRange is called
-            THEN returns Lun-Sáb
-            """
-        )
-        fun lToSReturnsLunSabado() {
-            val result = resolveScheduleDayRange(dayRange = "L-S", daysMap = spanishDaysMap)
-            assertEquals("Lun-Sáb", result)
-        }
+    @Test
+    fun `GIVEN day range L-D WHEN resolveScheduleDayRange is called THEN result is Lun-Dom`() {
+        val result = resolveScheduleDayRange(dayRange = "L-D", daysMap = spanishDaysMap)
+        assertEquals("Lun-Dom", result)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN day range L-D
-            WHEN resolveScheduleDayRange is called
-            THEN returns Lun-Dom
-            """
-        )
-        fun lToDReturnsLunDomingo() {
-            val result = resolveScheduleDayRange(dayRange = "L-D", daysMap = spanishDaysMap)
-            assertEquals("Lun-Dom", result)
-        }
+    @Test
+    fun `GIVEN day range M-V WHEN resolveScheduleDayRange is called THEN result is Mar-Vie`() {
+        val result = resolveScheduleDayRange(dayRange = "M-V", daysMap = spanishDaysMap)
+        assertEquals("Mar-Vie", result)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN day range M-V
-            WHEN resolveScheduleDayRange is called
-            THEN returns Mar-Vie
-            """
-        )
-        fun mToVReturnsMarViernes() {
-            val result = resolveScheduleDayRange(dayRange = "M-V", daysMap = spanishDaysMap)
-            assertEquals("Mar-Vie", result)
-        }
+    @Test
+    fun `GIVEN day range M-S WHEN resolveScheduleDayRange is called THEN result is Mar-Sab`() {
+        val result = resolveScheduleDayRange(dayRange = "M-S", daysMap = spanishDaysMap)
+        assertEquals("Mar-Sáb", result)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN day range M-S
-            WHEN resolveScheduleDayRange is called
-            THEN returns Mar-Sáb
-            """
-        )
-        fun mToSReturnsMarSabado() {
-            val result = resolveScheduleDayRange(dayRange = "M-S", daysMap = spanishDaysMap)
-            assertEquals("Mar-Sáb", result)
-        }
+    @Test
+    fun `GIVEN day range M-D WHEN resolveScheduleDayRange is called THEN result is Mar-Dom`() {
+        val result = resolveScheduleDayRange(dayRange = "M-D", daysMap = spanishDaysMap)
+        assertEquals("Mar-Dom", result)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN day range M-D
-            WHEN resolveScheduleDayRange is called
-            THEN returns Mar-Dom
-            """
-        )
-        fun mToDReturnsMarDomingo() {
-            val result = resolveScheduleDayRange(dayRange = "M-D", daysMap = spanishDaysMap)
-            assertEquals("Mar-Dom", result)
-        }
+    @Test
+    fun `GIVEN day range X-V WHEN resolveScheduleDayRange is called THEN result is Mie-Vie`() {
+        val result = resolveScheduleDayRange(dayRange = "X-V", daysMap = spanishDaysMap)
+        assertEquals("Mié-Vie", result)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN day range X-V
-            WHEN resolveScheduleDayRange is called
-            THEN returns Mié-Vie
-            """
-        )
-        fun xToVReturnsMiercoles() {
-            val result = resolveScheduleDayRange(dayRange = "X-V", daysMap = spanishDaysMap)
-            assertEquals("Mié-Vie", result)
-        }
+    @Test
+    fun `GIVEN day range X-S WHEN resolveScheduleDayRange is called THEN result is Mie-Sab`() {
+        val result = resolveScheduleDayRange(dayRange = "X-S", daysMap = spanishDaysMap)
+        assertEquals("Mié-Sáb", result)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN day range X-S
-            WHEN resolveScheduleDayRange is called
-            THEN returns Mié-Sáb
-            """
-        )
-        fun xToSReturnsMiercolesASabado() {
-            val result = resolveScheduleDayRange(dayRange = "X-S", daysMap = spanishDaysMap)
-            assertEquals("Mié-Sáb", result)
-        }
+    @Test
+    fun `GIVEN day range X-D WHEN resolveScheduleDayRange is called THEN result is Mie-Dom`() {
+        val result = resolveScheduleDayRange(dayRange = "X-D", daysMap = spanishDaysMap)
+        assertEquals("Mié-Dom", result)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN day range X-D
-            WHEN resolveScheduleDayRange is called
-            THEN returns Mié-Dom
-            """
-        )
-        fun xToDReturnsMiercolesADomingo() {
-            val result = resolveScheduleDayRange(dayRange = "X-D", daysMap = spanishDaysMap)
-            assertEquals("Mié-Dom", result)
-        }
+    @Test
+    fun `GIVEN day range J-V WHEN resolveScheduleDayRange is called THEN result is Jue-Vie`() {
+        val result = resolveScheduleDayRange(dayRange = "J-V", daysMap = spanishDaysMap)
+        assertEquals("Jue-Vie", result)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN day range J-V
-            WHEN resolveScheduleDayRange is called
-            THEN returns Jue-Vie
-            """
-        )
-        fun jToVReturnsJueVie() {
-            val result = resolveScheduleDayRange(dayRange = "J-V", daysMap = spanishDaysMap)
-            assertEquals("Jue-Vie", result)
-        }
+    @Test
+    fun `GIVEN day range J-S WHEN resolveScheduleDayRange is called THEN result is Jue-Sab`() {
+        val result = resolveScheduleDayRange(dayRange = "J-S", daysMap = spanishDaysMap)
+        assertEquals("Jue-Sáb", result)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN day range J-S
-            WHEN resolveScheduleDayRange is called
-            THEN returns Jue-Sáb
-            """
-        )
-        fun jToSReturnsJueSab() {
-            val result = resolveScheduleDayRange(dayRange = "J-S", daysMap = spanishDaysMap)
-            assertEquals("Jue-Sáb", result)
-        }
+    @Test
+    fun `GIVEN day range J-D WHEN resolveScheduleDayRange is called THEN result is Jue-Dom`() {
+        val result = resolveScheduleDayRange(dayRange = "J-D", daysMap = spanishDaysMap)
+        assertEquals("Jue-Dom", result)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN day range J-D
-            WHEN resolveScheduleDayRange is called
-            THEN returns Jue-Dom
-            """
-        )
-        fun jToDReturnsJueDom() {
-            val result = resolveScheduleDayRange(dayRange = "J-D", daysMap = spanishDaysMap)
-            assertEquals("Jue-Dom", result)
-        }
+    @Test
+    fun `GIVEN day range V-S WHEN resolveScheduleDayRange is called THEN result is Vie-Sab`() {
+        val result = resolveScheduleDayRange(dayRange = "V-S", daysMap = spanishDaysMap)
+        assertEquals("Vie-Sáb", result)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN day range V-S
-            WHEN resolveScheduleDayRange is called
-            THEN returns Vie-Sáb
-            """
-        )
-        fun vToSReturnsVieSab() {
-            val result = resolveScheduleDayRange(dayRange = "V-S", daysMap = spanishDaysMap)
-            assertEquals("Vie-Sáb", result)
-        }
+    @Test
+    fun `GIVEN day range V-D WHEN resolveScheduleDayRange is called THEN result is Vie-Dom`() {
+        val result = resolveScheduleDayRange(dayRange = "V-D", daysMap = spanishDaysMap)
+        assertEquals("Vie-Dom", result)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN day range V-D
-            WHEN resolveScheduleDayRange is called
-            THEN returns Vie-Dom
-            """
-        )
-        fun vToDReturnsVieDom() {
-            val result = resolveScheduleDayRange(dayRange = "V-D", daysMap = spanishDaysMap)
-            assertEquals("Vie-Dom", result)
-        }
+    @Test
+    fun `GIVEN day range S-D WHEN resolveScheduleDayRange is called THEN result is Sab-Dom`() {
+        val result = resolveScheduleDayRange(dayRange = "S-D", daysMap = spanishDaysMap)
+        assertEquals("Sáb-Dom", result)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN day range S-D
-            WHEN resolveScheduleDayRange is called
-            THEN returns Sáb-Dom
-            """
-        )
-        fun sToDReturnsSabDom() {
-            val result = resolveScheduleDayRange(dayRange = "S-D", daysMap = spanishDaysMap)
-            assertEquals("Sáb-Dom", result)
-        }
+    @Test
+    fun `GIVEN single lowercase day token l WHEN resolveScheduleDayRange is called THEN result is Lun ignoring case`() {
+        val result = resolveScheduleDayRange(dayRange = "l", daysMap = spanishDaysMap)
+        assertEquals("Lun", result)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN single day token L (lowercase)
-            WHEN resolveScheduleDayRange is called
-            THEN returns Lun (case-insensitive)
-            """
-        )
-        fun singleDayLowercaseIsCaseInsensitive() {
-            val result = resolveScheduleDayRange(dayRange = "l", daysMap = spanishDaysMap)
-            assertEquals("Lun", result)
-        }
+    @Test
+    fun `GIVEN single day token D WHEN resolveScheduleDayRange is called THEN result is Dom`() {
+        val result = resolveScheduleDayRange(dayRange = "D", daysMap = spanishDaysMap)
+        assertEquals("Dom", result)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN single day token D
-            WHEN resolveScheduleDayRange is called
-            THEN returns Dom
-            """
-        )
-        fun singleDayDReturnsDom() {
-            val result = resolveScheduleDayRange(dayRange = "D", daysMap = spanishDaysMap)
-            assertEquals("Dom", result)
-        }
-
-        @Test
-        @DisplayName(
-            """
-            GIVEN unknown day range token
-            WHEN resolveScheduleDayRange is called
-            THEN returns the original token unchanged
-            """
-        )
-        fun unknownTokenReturnedAsIs() {
-            val result = resolveScheduleDayRange(dayRange = "Z-W", daysMap = spanishDaysMap)
-            assertEquals("Z-W", result)
-        }
+    @Test
+    fun `GIVEN day range with unknown tokens Z-W WHEN resolveScheduleDayRange is called THEN the original string is returned as-is`() {
+        val result = resolveScheduleDayRange(dayRange = "Z-W", daysMap = spanishDaysMap)
+        assertEquals("Z-W", result)
     }
 
     // endregion
 
     // region formatSchedulePure
 
-    @Nested
-    @DisplayName("formatSchedulePure")
-    inner class FormatSchedulePure {
+    private val label24h = "Abierto 24h"
+    private val daysMap = mapOf(
+        "L" to "Lun",
+        "M" to "Mar",
+        "X" to "Mié",
+        "J" to "Jue",
+        "V" to "Vie",
+        "S" to "Sáb",
+        "D" to "Dom",
+    )
 
-        private val label24h = "Abierto 24h"
-        private val daysMap = mapOf(
-            "L" to "Lun",
-            "M" to "Mar",
-            "X" to "Mié",
-            "J" to "Jue",
-            "V" to "Vie",
-            "S" to "Sáb",
-            "D" to "Dom",
+    @Test
+    fun `GIVEN schedule string contains 24H marker WHEN formatSchedulePure is called THEN the 24h label is returned`() {
+        val result = formatSchedulePure(
+            schedule = "L-D:00:00-24:00 (24H)",
+            label24h = label24h,
+            daysMap = daysMap,
         )
+        assertEquals(label24h, result)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN schedule containing 24H (uppercase)
-            WHEN formatSchedulePure is called
-            THEN returns the 24h label
-            """
+    @Test
+    fun `GIVEN schedule string contains lowercase 24h marker WHEN formatSchedulePure is called THEN the 24h label is returned`() {
+        val result = formatSchedulePure(
+            schedule = "L-D:00:00-24:00 (24h)",
+            label24h = label24h,
+            daysMap = daysMap,
         )
-        fun scheduleWith24HReturnsLabel() {
-            val result = formatSchedulePure(
-                schedule = "L-D:00:00-24:00 (24H)",
-                label24h = label24h,
-                daysMap = daysMap,
-            )
-            assertEquals(label24h, result)
-        }
+        assertEquals(label24h, result)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN schedule containing 24h (lowercase)
-            WHEN formatSchedulePure is called
-            THEN returns the 24h label (case-insensitive check)
-            """
+    @Test
+    fun `GIVEN single-segment schedule L-V 09-20 WHEN formatSchedulePure is called THEN result is the translated day range followed by the time range`() {
+        val result = formatSchedulePure(
+            schedule = "L-V:09:00-20:00",
+            label24h = label24h,
+            daysMap = daysMap,
         )
-        fun scheduleWith24hLowercaseReturnsLabel() {
-            val result = formatSchedulePure(
-                schedule = "L-D:00:00-24:00 (24h)",
-                label24h = label24h,
-                daysMap = daysMap,
-            )
-            assertEquals(label24h, result)
-        }
+        assertEquals("Lun-Vie 09:00-20:00", result)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN schedule with a single part L-V:09:00-20:00
-            WHEN formatSchedulePure is called
-            THEN returns Lun-Vie 09:00-20:00
-            """
+    @Test
+    fun `GIVEN two-segment schedule separated by semicolon WHEN formatSchedulePure is called THEN both segments are joined by a newline`() {
+        val result = formatSchedulePure(
+            schedule = "L-V:09:00-20:00;S:10:00-14:00",
+            label24h = label24h,
+            daysMap = daysMap,
         )
-        fun singlePartScheduleFormatsCorrectly() {
-            val result = formatSchedulePure(
-                schedule = "L-V:09:00-20:00",
-                label24h = label24h,
-                daysMap = daysMap,
-            )
-            assertEquals("Lun-Vie 09:00-20:00", result)
-        }
+        assertEquals("Lun-Vie 09:00-20:00\nSáb 10:00-14:00", result)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN schedule with two parts separated by semicolon
-            WHEN formatSchedulePure is called
-            THEN returns both parts joined by newline
-            """
+    @Test
+    fun `GIVEN three-segment schedule separated by semicolons WHEN formatSchedulePure is called THEN all three segments are joined by newlines`() {
+        val result = formatSchedulePure(
+            schedule = "L-V:09:00-20:00;S:10:00-14:00;D:11:00-13:00",
+            label24h = label24h,
+            daysMap = daysMap,
         )
-        fun twoPartScheduleJoinedByNewline() {
-            val result = formatSchedulePure(
-                schedule = "L-V:09:00-20:00;S:10:00-14:00",
-                label24h = label24h,
-                daysMap = daysMap,
-            )
-            assertEquals("Lun-Vie 09:00-20:00\nSáb 10:00-14:00", result)
-        }
+        assertEquals("Lun-Vie 09:00-20:00\nSáb 10:00-14:00\nDom 11:00-13:00", result)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN schedule with three parts separated by semicolons
-            WHEN formatSchedulePure is called
-            THEN returns all three parts joined by newline
-            """
+    @Test
+    fun `GIVEN schedule segments with surrounding whitespace around semicolons WHEN formatSchedulePure is called THEN whitespace is trimmed and segments are correct`() {
+        val result = formatSchedulePure(
+            schedule = "L-V:09:00-20:00 ; S:10:00-14:00",
+            label24h = label24h,
+            daysMap = daysMap,
         )
-        fun threePartScheduleJoinedByNewline() {
-            val result = formatSchedulePure(
-                schedule = "L-V:09:00-20:00;S:10:00-14:00;D:11:00-13:00",
-                label24h = label24h,
-                daysMap = daysMap,
-            )
-            assertEquals("Lun-Vie 09:00-20:00\nSáb 10:00-14:00\nDom 11:00-13:00", result)
-        }
+        assertEquals("Lun-Vie 09:00-20:00\nSáb 10:00-14:00", result)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN schedule parts with surrounding whitespace
-            WHEN formatSchedulePure is called
-            THEN trims whitespace and formats correctly
-            """
+    @Test
+    fun `GIVEN schedule with a single day token S WHEN formatSchedulePure is called THEN result uses the translated single day name`() {
+        val result = formatSchedulePure(
+            schedule = "S:10:00-14:00",
+            label24h = label24h,
+            daysMap = daysMap,
         )
-        fun scheduleTrimsSurroundingWhitespace() {
-            val result = formatSchedulePure(
-                schedule = "L-V:09:00-20:00 ; S:10:00-14:00",
-                label24h = label24h,
-                daysMap = daysMap,
-            )
-            assertEquals("Lun-Vie 09:00-20:00\nSáb 10:00-14:00", result)
-        }
+        assertEquals("Sáb 10:00-14:00", result)
+    }
 
-        @Test
-        @DisplayName(
-            """
-            GIVEN schedule with a single day token
-            WHEN formatSchedulePure is called
-            THEN resolves that single day correctly
-            """
+    @Test
+    fun `GIVEN schedule with L-S range WHEN formatSchedulePure is called THEN result uses translated Lun-Sab range`() {
+        val result = formatSchedulePure(
+            schedule = "L-S:08:00-22:00",
+            label24h = label24h,
+            daysMap = daysMap,
         )
-        fun singleDayTokenFormatsCorrectly() {
-            val result = formatSchedulePure(
-                schedule = "S:10:00-14:00",
-                label24h = label24h,
-                daysMap = daysMap,
-            )
-            assertEquals("Sáb 10:00-14:00", result)
-        }
-
-        @Test
-        @DisplayName(
-            """
-            GIVEN schedule with L-S range
-            WHEN formatSchedulePure is called
-            THEN returns Lun-Sáb with time range
-            """
-        )
-        fun lToSRangeFormatsCorrectly() {
-            val result = formatSchedulePure(
-                schedule = "L-S:08:00-22:00",
-                label24h = label24h,
-                daysMap = daysMap,
-            )
-            assertEquals("Lun-Sáb 08:00-22:00", result)
-        }
+        assertEquals("Lun-Sáb 08:00-22:00", result)
     }
 
     // endregion
