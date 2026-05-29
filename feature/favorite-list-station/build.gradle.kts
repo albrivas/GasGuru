@@ -50,6 +50,7 @@ android {
 
 dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    androidTestImplementation(projects.core.testing)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(compose.uiTooling)
     androidTestImplementation(libs.junit5.api)
