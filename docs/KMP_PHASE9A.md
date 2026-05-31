@@ -6,8 +6,8 @@ Sustituir los dos primeros stubs no-op de `core:data/iosMain` que no requieren p
 
 | Stub | Antes | Después |
 |------|-------|---------|
-| `NetworkMonitorIos` | `flowOf(true)` siempre | `NWPathMonitor` vía `callbackFlow` |
-| `GeocoderAddressIos` | `flowOf(null)` | `CLGeocoder.reverseGeocodeLocation` |
+| `NWPathMonitorNetworkMonitor` | `flowOf(true)` siempre | `NWPathMonitor` vía `callbackFlow` |
+| `CLGeocoderAddress` | `flowOf(null)` | `CLGeocoder.reverseGeocodeLocation` |
 
 ## Decisiones técnicas
 
