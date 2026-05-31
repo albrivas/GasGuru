@@ -9,15 +9,18 @@ import com.gasguru.core.data.repository.places.PlacesRepository
 import com.gasguru.core.data.repository.places.PlacesRepositoryIos
 import com.gasguru.core.data.util.NetworkMonitor
 import com.gasguru.core.data.util.NetworkMonitorIos
+import kotlinx.coroutines.CoroutineDispatcher
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-// Módulo iOS: wiring de stubs V1. Para iOS V2, reemplazar con implementaciones nativas.
-// No incluye RoutesRepository (feature de rutas pendiente para V2).
 fun iosDataModule() = module {
     single<LocationTracker> { LocationTrackerIos() }
-    single<GeocoderAddress> { GeocoderAddressIos() }
-    single<NetworkMonitor> { NetworkMonitorIos() }
+    single<GeocoderAddress> {
+        GeocoderAddressIos(ioDispatcher = get<CoroutineDispatcher>(named(KoinQualifiers.IO_DISPATCHER)))
+    }
+    single<NetworkMonitor> {
+        NetworkMonitorIos(ioDispatcher = get<CoroutineDispatcher>(named(KoinQualifiers.IO_DISPATCHER)))
+    }
     single<PlacesRepository> { PlacesRepositoryIos() }
     single<String>(named(KoinQualifiers.GOOGLE_API_KEY)) { "" }
 }
