@@ -11,7 +11,7 @@ import platform.CoreLocation.CLLocation
 import platform.CoreLocation.CLPlacemark
 
 @OptIn(ExperimentalForeignApi::class)
-class GeocoderAddressIos(
+class CLGeocoderAddress(
     private val ioDispatcher: CoroutineDispatcher,
 ) : GeocoderAddress {
     override fun getAddressFromLocation(latitude: Double, longitude: Double): Flow<String?> =

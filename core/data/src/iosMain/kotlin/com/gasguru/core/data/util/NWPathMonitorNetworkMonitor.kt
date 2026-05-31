@@ -18,7 +18,7 @@ import platform.Network.nw_path_status_satisfied
 import platform.darwin.dispatch_queue_create
 
 @OptIn(ExperimentalForeignApi::class)
-class NetworkMonitorIos(
+class NWPathMonitorNetworkMonitor(
     private val ioDispatcher: CoroutineDispatcher,
 ) : NetworkMonitor {
     override val isOnline: Flow<Boolean> = callbackFlow {
