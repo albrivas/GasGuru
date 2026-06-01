@@ -34,13 +34,11 @@ import com.gasguru.navigation.navigationbar.rememberNavigationBarState
 
 @Composable
 fun NavigationBarScreenRoute(
-    onOpenLocationSettings: () -> Unit,
     routePlanner: RoutePlanArgs? = null,
     onRoutePlanConsumed: () -> Unit = {},
 ) {
     NavigationBarScreen(
         navController = rememberNavController(),
-        onOpenLocationSettings = onOpenLocationSettings,
         routePlanner = routePlanner,
         onRoutePlanConsumed = onRoutePlanConsumed,
     )
@@ -49,7 +47,6 @@ fun NavigationBarScreenRoute(
 @Composable
 internal fun NavigationBarScreen(
     navController: NavHostController,
-    onOpenLocationSettings: () -> Unit,
     routePlanner: RoutePlanArgs? = null,
     onRoutePlanConsumed: () -> Unit = {},
     state: NavigationBarState = rememberNavigationBarState(navController),
@@ -99,9 +96,7 @@ internal fun NavigationBarScreen(
                     startDestination = StationMapGraph.StationMapRoute,
                 ) {
                     composable<StationMapGraph.StationMapRoute> { /* no-op */ }
-                    favoriteGraph(
-                        onOpenLocationSettings = onOpenLocationSettings,
-                    )
+                    favoriteGraph()
                     profileScreen()
                 }
             }
