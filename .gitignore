@@ -229,6 +229,7 @@ google-services.json
 sonar-project.properties
 
 .claude/
+.codegraph/
 
 # Local development notes
 tasks/
