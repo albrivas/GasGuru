@@ -72,6 +72,7 @@
 | [KMP Phase 8B](docs/KMP_PHASE8B.md) | Creación de :composeApp (KMP framework con App() + MainViewController) e :iosApp (Xcode project): armazón iOS mínimo que compila |
 | [KMP Phase 8C](docs/KMP_PHASE8C.md) | App shell (splash + GasGuruApp + NavHost + bottom bar) movido de :app a :composeApp/commonMain. Lambda onOpenLocationSettings desde MainActivity. StringResource en TopLevelRoutes. SplashViewModel con kotlin.time.Clock |
 | [KMP Phase 8D](docs/KMP_PHASE8D.md) | Inicialización Koin desde iOS: KoinInit.kt, MainViewController real, fullScreenDialogProperties expect/actual, LocalAnalyticsHelper movido a core.ui/commonMain, rememberInAppReviewManager expect/actual |
+| [KMP Phase 9A](docs/KMP_PHASE9A.md) | iOS Foundation APIs: NetworkMonitorIos (NWPathMonitor vía callbackFlow), GeocoderAddressIos (CLGeocoder + campos CLPlacemark). Primer patrón callbackFlow + awaitClose sobre APIs nativas Apple |
 | [Widget](docs/WIDGET.md) | Widget de pantalla de inicio con gasolineras favoritas: arquitectura Glance + WorkManager, ciclo de vida y limitaciones |
 | [Analytics](docs/ANALYTICS.md) | Sistema de analíticas con Mixpanel: arquitectura, catálogo de eventos, uso en ViewModels y Composables |
 | [Git Worktree](docs/GIT_WORKTREE.md) | Cómo crear y eliminar worktrees, el problema de local.properties y cómo resolverlo con symlinks |
