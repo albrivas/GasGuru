@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.previewFuelStationDomain
+import com.gasguru.core.ui.LocalOpenLocationSettings
 import com.gasguru.core.ui.generated.resources.favorites
 import com.gasguru.core.ui.mapper.toStationListItems
 import com.gasguru.core.ui.mapper.toUiModel
@@ -44,7 +45,6 @@ import com.gasguru.feature.favorite_list_station.generated.resources.empty_favor
 import com.gasguru.feature.favorite_list_station.generated.resources.ic_file_search
 import com.gasguru.feature.favorite_list_station.generated.resources.tab_distance
 import com.gasguru.feature.favorite_list_station.generated.resources.tab_price
-import com.gasguru.core.ui.LocalOpenLocationSettings
 import com.gasguru.navigation.LocalNavigationManager
 import com.gasguru.navigation.manager.NavigationDestination
 import org.jetbrains.compose.resources.stringResource
