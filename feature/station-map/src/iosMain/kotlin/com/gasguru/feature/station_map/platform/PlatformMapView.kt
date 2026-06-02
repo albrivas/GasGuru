@@ -6,13 +6,20 @@ package com.gasguru.feature.station_map.platform
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.rememberGraphicsLayer
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.UIKitInteropInteractionMode
 import androidx.compose.ui.viewinterop.UIKitInteropProperties
 import androidx.compose.ui.viewinterop.UIKitView
@@ -20,20 +27,24 @@ import androidx.compose.ui.zIndex
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.PriceCategory
+import com.gasguru.core.ui.getPrice
 import com.gasguru.core.ui.models.FuelStationUiModel
+import com.gasguru.core.ui.toColor
 import com.gasguru.core.uikit.components.loading.GasGuruLoading
 import com.gasguru.core.uikit.components.loading.GasGuruLoadingModel
+import com.gasguru.core.uikit.components.marker.StationMarker
+import com.gasguru.core.uikit.components.marker.StationMarkerModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.feature.station_map.ui.model.GeoBounds
 import com.gasguru.feature.station_map.ui.models.RouteUiModel
 import kotlinx.cinterop.CValue
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.useContents
 import platform.CoreLocation.CLLocationCoordinate2D
 import platform.MapKit.MKAnnotationProtocol
 import platform.MapKit.MKAnnotationView
 import platform.MapKit.MKMapView
 import platform.MapKit.MKMapViewDelegateProtocol
-import platform.MapKit.MKMarkerAnnotationView
 import platform.MapKit.MKOverlayProtocol
 import platform.MapKit.MKOverlayRenderer
 import platform.MapKit.MKPolyline
@@ -41,6 +52,7 @@ import platform.MapKit.MKPolylineRenderer
 import platform.MapKit.addOverlay
 import platform.MapKit.removeOverlay
 import platform.UIKit.UIColor
+import platform.UIKit.UIImage
 import platform.darwin.NSObject
 
 private const val STATION_MARKER_REUSE_ID = "station_marker"
@@ -64,6 +76,8 @@ actual fun PlatformMapView(
     val currentOnStationClick by rememberUpdatedState(onStationClick)
     val currentOnMapCentered by rememberUpdatedState(onMapCentered)
     val currentOnUserLocationCentered by rememberUpdatedState(onUserLocationCentered)
+
+    val markerImages = remember { mutableStateMapOf<Int, UIImage>() }
 
     val mapDelegate = remember {
         object : NSObject(), MKMapViewDelegateProtocol {
@@ -101,15 +115,18 @@ actual fun PlatformMapView(
                 val view = (
                     mapView.dequeueReusableAnnotationViewWithIdentifier(
                         identifier = STATION_MARKER_REUSE_ID,
-                    ) as? MKMarkerAnnotationView
+                    ) as? MKAnnotationView
                     )
-                    ?: MKMarkerAnnotationView(
+                    ?: MKAnnotationView(
                         annotation = viewForAnnotation,
                         reuseIdentifier = STATION_MARKER_REUSE_ID,
                     )
                 view.annotation = viewForAnnotation
                 view.canShowCallout = false
-                view.markerTintColor = viewForAnnotation.priceCategory.toMarkerColor()
+                val imgHeight = view.image?.size?.useContents { height } ?: 0.0
+                view.centerOffset = platform.CoreGraphics.CGPointMake(0.0, -(imgHeight / 2.0))
+                view.image = markerImages[viewForAnnotation.stationId]
+                    ?: viewForAnnotation.priceCategory.toFallbackImage()
                 return view
             }
         }
@@ -146,6 +163,26 @@ actual fun PlatformMapView(
     }
 
     Box(modifier = modifier) {
+        // Hidden area: renders each StationMarker composable and captures it to UIImage.
+        // size(0.dp) + wrapContentSize(unbounded) keeps layout impact to zero.
+        Box(
+            modifier = Modifier
+                .size(0.dp)
+                .wrapContentSize(align = Alignment.TopStart, unbounded = true),
+        ) {
+            stations.forEach { station ->
+                val isSelected = selectedStationId == station.fuelStation.idServiceStation
+                StationMarkerCapture(
+                    station = station,
+                    isSelected = isSelected,
+                    userSelectedFuelType = userSelectedFuelType,
+                    onImageCaptured = { image ->
+                        markerImages[station.fuelStation.idServiceStation] = image
+                    },
+                )
+            }
+        }
+
         UIKitView<MKMapView>(
             factory = { mapView },
             update = { mv ->
@@ -172,6 +209,19 @@ actual fun PlatformMapView(
                                 stationTitle = station.fuelStation.brandStationName,
                             )
                         )
+                    }
+
+                // Update annotation views already on screen when their UIImage arrives
+                existingAnnotations
+                    .filter { it.stationId in newStationIds }
+                    .forEach { annotation ->
+                        markerImages[annotation.stationId]?.let { image ->
+                            (mv.viewForAnnotation(annotation) as? MKAnnotationView)?.let { view ->
+                                view.image = image
+                                val h = image.size.useContents { height }
+                                view.centerOffset = platform.CoreGraphics.CGPointMake(0.0, -(h / 2.0))
+                            }
+                        }
                     }
 
                 // Replace polyline overlay only when the route reference changes
@@ -206,6 +256,40 @@ actual fun PlatformMapView(
     }
 }
 
+@Composable
+private fun StationMarkerCapture(
+    station: FuelStationUiModel,
+    isSelected: Boolean,
+    userSelectedFuelType: FuelType?,
+    onImageCaptured: (UIImage) -> Unit,
+) {
+    val graphicsLayer = rememberGraphicsLayer()
+    val price = userSelectedFuelType.getPrice(fuelStation = station.fuelStation)
+    val color = station.fuelStation.priceCategory.toColor()
+
+    Box(
+        modifier = Modifier
+            .wrapContentSize()
+            .drawWithContent {
+                graphicsLayer.record { this@drawWithContent.drawContent() }
+            },
+    ) {
+        StationMarker(
+            model = StationMarkerModel(
+                icon = station.brandIcon,
+                price = price,
+                color = color,
+                isSelected = isSelected,
+            ),
+        )
+    }
+
+    LaunchedEffect(station.fuelStation.idServiceStation, price, color, isSelected) {
+        val imageBitmap = graphicsLayer.toImageBitmap()
+        imageBitmap.toUIImage()?.let(onImageCaptured)
+    }
+}
+
 private class StationAnnotation(
     val stationId: Int,
     val priceCategory: PriceCategory,
@@ -218,9 +302,4 @@ private class StationAnnotation(
     override fun subtitle(): String? = null
 }
 
-private fun PriceCategory.toMarkerColor(): UIColor = when (this) {
-    PriceCategory.CHEAP -> UIColor(red = 0.2, green = 0.78, blue = 0.35, alpha = 1.0)
-    PriceCategory.NORMAL -> UIColor(red = 1.0, green = 0.58, blue = 0.0, alpha = 1.0)
-    PriceCategory.EXPENSIVE -> UIColor(red = 1.0, green = 0.23, blue = 0.19, alpha = 1.0)
-    PriceCategory.NONE -> UIColor(red = 0.56, green = 0.56, blue = 0.58, alpha = 1.0)
-}
+private fun PriceCategory.toFallbackImage(): UIImage? = null
