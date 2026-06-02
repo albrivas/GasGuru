@@ -44,6 +44,7 @@ import com.gasguru.feature.favorite_list_station.generated.resources.empty_favor
 import com.gasguru.feature.favorite_list_station.generated.resources.ic_file_search
 import com.gasguru.feature.favorite_list_station.generated.resources.tab_distance
 import com.gasguru.feature.favorite_list_station.generated.resources.tab_price
+import com.gasguru.core.ui.LocalOpenLocationSettings
 import com.gasguru.navigation.LocalNavigationManager
 import com.gasguru.navigation.manager.NavigationDestination
 import org.jetbrains.compose.resources.stringResource
@@ -54,11 +55,11 @@ import com.gasguru.core.ui.generated.resources.Res as CoreUiRes
 @Composable
 fun FavoriteListStationScreenRoute(
     viewModel: FavoriteListStationViewModel = koinViewModel(),
-    onOpenLocationSettings: () -> Unit = {},
 ) {
     val navigationManager = LocalNavigationManager.current
     val state by viewModel.favoriteStations.collectAsStateWithLifecycle()
     val tabState by viewModel.tabState.collectAsStateWithLifecycle()
+    val onOpenLocationSettings = LocalOpenLocationSettings.current
     FavoriteListStationScreen(
         uiState = state,
         tabState = tabState,

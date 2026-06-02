@@ -9,6 +9,7 @@ import com.gasguru.core.domain.location.IsLocationEnabledUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.ui.LocalAnalyticsHelper
+import com.gasguru.core.ui.LocalOpenLocationSettings
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.feature.onboarding_welcome.navigation.OnboardingRoutes
 import com.gasguru.navigation.LocalDeepLinkStateHolder
@@ -48,11 +49,11 @@ fun App(
         LocalNavigationManager provides navigationManager,
         LocalDeepLinkStateHolder provides deepLinkStateHolder,
         LocalAnalyticsHelper provides analyticsHelper,
+        LocalOpenLocationSettings provides onOpenLocationSettings,
     ) {
         MyApplicationTheme(darkTheme = darkTheme) {
             GasGuruApp(
                 appState = appState,
-                onOpenLocationSettings = onOpenLocationSettings,
                 startDestination = startDestination,
             )
         }

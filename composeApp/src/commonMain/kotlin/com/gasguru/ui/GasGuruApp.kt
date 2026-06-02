@@ -35,6 +35,7 @@ import com.gasguru.core.uikit.components.alert.GasGuruAlertDialogModel
 import com.gasguru.core.uikit.components.alert_bar.AlertBar
 import com.gasguru.core.uikit.components.alert_bar.AlertBarModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
+import com.gasguru.core.ui.LocalOpenLocationSettings
 import com.gasguru.feature.onboarding_welcome.navigation.OnboardingRoutes
 import com.gasguru.navigation.root.GasGuruNavHost
 import org.jetbrains.compose.resources.stringResource
@@ -43,23 +44,20 @@ import com.gasguru.core.ui.generated.resources.Res as CoreUiRes
 @Composable
 fun GasGuruApp(
     appState: GasGuruAppState,
-    onOpenLocationSettings: () -> Unit,
     startDestination: Any = OnboardingRoutes.NewOnboardingRoute,
 ) {
     val isOffline by appState.isOffline.collectAsStateWithLifecycle()
     val isLocationDisabled by appState.isLocationDisabled.collectAsStateWithLifecycle()
     val isOnboardingComplete by appState.isOnboardingComplete.collectAsStateWithLifecycle()
     var showOfflineAlert by remember { mutableStateOf(false) }
+    val onOpenLocationSettings = LocalOpenLocationSettings.current
 
     LaunchedEffect(isOffline) {
         showOfflineAlert = isOffline
     }
 
     Box(Modifier.fillMaxSize()) {
-        GasGuruNavHost(
-            startDestination = startDestination,
-            onOpenLocationSettings = onOpenLocationSettings,
-        )
+        GasGuruNavHost(startDestination = startDestination)
 
         if (isLocationDisabled && isOnboardingComplete) {
             GasGuruAlertDialog(

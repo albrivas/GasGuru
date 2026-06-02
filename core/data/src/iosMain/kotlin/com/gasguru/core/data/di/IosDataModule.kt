@@ -14,7 +14,9 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 fun iosDataModule() = module {
-    single<LocationTracker> { LocationTrackerIos() }
+    single<LocationTracker> {
+        LocationTrackerIos(ioDispatcher = get<CoroutineDispatcher>(named(KoinQualifiers.IO_DISPATCHER)))
+    }
     single<GeocoderAddress> {
         CLGeocoderAddress(ioDispatcher = get<CoroutineDispatcher>(named(KoinQualifiers.IO_DISPATCHER)))
     }
