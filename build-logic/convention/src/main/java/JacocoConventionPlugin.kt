@@ -133,6 +133,7 @@ class JacocoConventionPlugin : Plugin<Project> {
             "${projectDir}/src/main/java",
             "${projectDir}/src/main/kotlin",
             "${projectDir}/src/commonMain/kotlin",
+            "${projectDir}/src/androidMain/kotlin",
         )
 
     private fun Project.jacocoExecutionData() =
