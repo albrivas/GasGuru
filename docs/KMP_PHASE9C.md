@@ -228,6 +228,18 @@ No se tocan:
 - **Dark mode automático**: `MKMapView` sigue la apariencia del sistema iOS por defecto cuando no se asigna `overrideUserInterfaceStyle`. No se necesita código extra. Los `UIUserInterfaceStyleDark/Light` no están disponibles como constantes directas en K/N 2.2.x — no importar.
 - **Polimorfismo `MKPolyline : MKOverlayProtocol`**: `MKPolyline` conforma `MKOverlay` en ObjC → implementa `MKOverlayProtocol` en K/N. Se puede pasar directamente a `removeOverlay(overlay:)` sin cast.
 
+### Lecciones post-MVP (fixes durante validación manual)
+
+- **`CLLocationManager.startUpdatingLocation()` falla silenciosamente justo tras grant de permiso**: inmediatamente después de que el usuario concede el permiso por primera vez, un nuevo `CLLocationManager.startUpdatingLocation()` puede no disparar `didUpdateLocations` (el sistema necesita un momento de inicialización). Solución: usar `requestLocation()` (one-shot) en `getCurrentLocation()` vía `suspendCancellableCoroutine`. `requestLocation()` está diseñado para este caso y es más fiable. El `startUpdatingLocation()` se mantiene solo para `getCurrentLocationFlow` (uso continuo).
+
+- **`loading = true` por defecto + `getCurrentLocation()` colgado = loading infinito**: `StationMapUiState(loading = true)` es el valor inicial. Si `getCurrentLocationUseCase()` nunca retorna (e.g. location no llega), el loading nunca se quita. Fix: añadir `?: _state.update { it.copy(loading = false) }` tras el `?.let { }` en `getStationByCurrentLocation()`.
+
+- **`NSData.dataWithBytes` no existe en Kotlin/Native**: el factory method `+[NSData dataWithBytes:length:]` no mapea como `NSData.dataWithBytes(...)`. En su lugar usar `NSData.create(bytes = pinned.addressOf(0), length = n)` (mapea al init `initWithBytes:length:`). Requiere `@OptIn(BetaInteropApi::class)`.
+
+- **`UIImage` capturada de GraphicsLayer aparece 3× demasiado grande**: `GraphicsLayer.toImageBitmap()` captura a la densidad real del dispositivo (2x/3x píxeles). `UIImage.imageWithData(data)` asume escala 1x por defecto → el marker ocupa 3× su tamaño lógico en el mapa. Fix: `UIImage(data = nsData, scale = UIScreen.mainScreen.scale)` para que UIKit interprete la imagen a la densidad correcta.
+
+- **Renderizar composable a UIImage para MapKit**: `MKAnnotationView` solo acepta `UIImage`, no composables. Patrón correcto en CMP 1.10+: `rememberGraphicsLayer()` + `Modifier.drawWithContent { graphicsLayer.record { this@drawWithContent.drawContent() } }` en un `Box` oculto (`size(0.dp) + wrapContentSize(unbounded=true)`). Capturar con `graphicsLayer.toImageBitmap()` en un `LaunchedEffect`. Actualizar la annotation view ya mostrada en el `UIKitView.update` block leyendo el `SnapshotStateMap<Int, UIImage>` (triggerea re-ejecución del `update` automáticamente vía Compose snapshot).
+
 ## Próximo: Phase 9C.2 — Map Polish
 
 Clustering con `MKClusterAnnotation` + markers con precio y logo de marca rendereados via Core Graphics en un `UIImage`. Ver sección Phase 9C.2 en `docs/KMP_MIGRATION.md`.
