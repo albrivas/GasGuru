@@ -1,6 +1,10 @@
+@file:OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
+
 package com.gasguru.core.data.di
 
+import cocoapods.GooglePlaces.GMSPlacesClient
 import com.gasguru.core.common.KoinQualifiers
+import com.gasguru.core.data.DataSecrets
 import com.gasguru.core.data.repository.geocoder.CLGeocoderAddress
 import com.gasguru.core.data.repository.geocoder.GeocoderAddress
 import com.gasguru.core.data.repository.location.LocationTracker
@@ -25,8 +29,11 @@ fun iosDataModule() = module {
     single<NetworkMonitor> {
         NWPathMonitorNetworkMonitor(ioDispatcher = get<CoroutineDispatcher>(named(KoinQualifiers.IO_DISPATCHER)))
     }
-    single<PlacesRepository> { PlacesRepositoryIos() }
-    single<String>(named(KoinQualifiers.GOOGLE_API_KEY)) { "" }
+    single<String>(named(KoinQualifiers.GOOGLE_API_KEY)) { DataSecrets.GOOGLE_API_KEY }
+    single<PlacesRepository> {
+        GMSPlacesClient.provideAPIKey(DataSecrets.GOOGLE_API_KEY)
+        PlacesRepositoryIos(ioDispatcher = get<CoroutineDispatcher>(named(KoinQualifiers.IO_DISPATCHER)))
+    }
     // Routes API requires iOS-specific Ktor client + API key setup (pending Phase 9D).
     // No-op: the map and route-planner work, but no polyline is drawn on iOS yet.
     single<RoutesRepository> { RoutesRepository { _, _ -> flowOf(null) } }

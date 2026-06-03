@@ -1,8 +1,13 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.gasguru.kmp.library)
     alias(libs.plugins.gasguru.koin)
     alias(libs.plugins.gasguru.proguard)
     alias(libs.plugins.gasguru.secrets.google)
+    alias(libs.plugins.buildkonfig)
+    kotlin("native.cocoapods")
 }
 
 android {
@@ -12,16 +17,47 @@ android {
     }
 }
 
+val localProps = Properties().apply {
+    rootProject.file("local.properties").takeIf { it.exists() }
+        ?.inputStream()
+        ?.use { load(it) }
+}
+
+buildkonfig {
+    packageName = "com.gasguru.core.data"
+    objectName = "DataSecrets"
+
+    defaultConfigs {
+        val googleApiKey = localProps.getProperty("googleApiKey")
+            ?: System.getenv("GOOGLE_API_KEY").orEmpty()
+        buildConfigField(FieldSpec.Type.STRING, "GOOGLE_API_KEY", googleApiKey)
+    }
+}
+
 kotlin {
+    cocoapods {
+        summary = "GasGuru core data layer"
+        homepage = "https://github.com/gasguru/GasGuru"
+        version = "1.0"
+        ios.deploymentTarget = "15.0"
+
+        pod("GooglePlaces") {
+            version = "~> 8.5"
+        }
+    }
+
     sourceSets {
-        commonMain.dependencies {
-            implementation(projects.core.analytics)
-            implementation(projects.core.database)
-            implementation(projects.core.model)
-            implementation(projects.core.common)
-            implementation(projects.core.supabase)
-            implementation(projects.core.notifications)
-            implementation(libs.io.arrow.kt.arrow.core)
+        commonMain {
+            kotlin.srcDir(tasks.named("generateBuildKonfig"))
+            dependencies {
+                implementation(projects.core.analytics)
+                implementation(projects.core.database)
+                implementation(projects.core.model)
+                implementation(projects.core.common)
+                implementation(projects.core.supabase)
+                implementation(projects.core.notifications)
+                implementation(libs.io.arrow.kt.arrow.core)
+            }
         }
         androidMain.dependencies {
             implementation(projects.core.network)
