@@ -9,10 +9,13 @@ targets:
     platform: iOS
     sources:
       - path: iosApp
-    info:
-      path: iosApp/Info.plist
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.gasguru.iosApp
+        INFOPLIST_FILE: iosApp/Info.plist
         SWIFT_VERSION: "5.0"
         TARGETED_DEVICE_FAMILY: "1,2"
+      configs:
+        debug:
+          PRODUCT_BUNDLE_IDENTIFIER: com.gasguru.debug
+        release:
+          PRODUCT_BUNDLE_IDENTIFIER: com.gasguru
