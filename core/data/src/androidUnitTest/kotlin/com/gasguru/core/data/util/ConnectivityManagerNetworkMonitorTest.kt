@@ -7,12 +7,12 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import app.cash.turbine.test
 import com.gasguru.core.testing.CoroutinesTestExtension
+import io.mockk.Runs
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkConstructor
-import io.mockk.Runs
 import io.mockk.slot
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest

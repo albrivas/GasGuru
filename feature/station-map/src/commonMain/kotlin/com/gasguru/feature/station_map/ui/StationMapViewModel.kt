@@ -254,7 +254,7 @@ class StationMapViewModel(
                     _state.update { it.copy(loading = true, listStations = emptyList()) }
                     getStationByLocation(location = location)
                 }
-            }
+            } ?: _state.update { it.copy(loading = false) }
         }
     }
 

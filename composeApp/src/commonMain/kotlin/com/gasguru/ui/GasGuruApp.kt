@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.composeApp.generated.resources.Res
 import com.gasguru.composeApp.generated.resources.not_connected
+import com.gasguru.core.ui.LocalOpenLocationSettings
 import com.gasguru.core.ui.generated.resources.alert_location_disabled_description
 import com.gasguru.core.ui.generated.resources.alert_location_disabled_primary_button
 import com.gasguru.core.ui.generated.resources.alert_location_disabled_title
@@ -35,7 +36,6 @@ import com.gasguru.core.uikit.components.alert.GasGuruAlertDialogModel
 import com.gasguru.core.uikit.components.alert_bar.AlertBar
 import com.gasguru.core.uikit.components.alert_bar.AlertBarModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
-import com.gasguru.core.ui.LocalOpenLocationSettings
 import com.gasguru.feature.onboarding_welcome.navigation.OnboardingRoutes
 import com.gasguru.navigation.root.GasGuruNavHost
 import org.jetbrains.compose.resources.stringResource

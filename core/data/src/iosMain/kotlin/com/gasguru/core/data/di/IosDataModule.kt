@@ -1,15 +1,17 @@
 package com.gasguru.core.data.di
 
 import com.gasguru.core.common.KoinQualifiers
-import com.gasguru.core.data.repository.geocoder.GeocoderAddress
 import com.gasguru.core.data.repository.geocoder.CLGeocoderAddress
+import com.gasguru.core.data.repository.geocoder.GeocoderAddress
 import com.gasguru.core.data.repository.location.LocationTracker
 import com.gasguru.core.data.repository.location.LocationTrackerIos
 import com.gasguru.core.data.repository.places.PlacesRepository
 import com.gasguru.core.data.repository.places.PlacesRepositoryIos
-import com.gasguru.core.data.util.NetworkMonitor
+import com.gasguru.core.data.repository.route.RoutesRepository
 import com.gasguru.core.data.util.NWPathMonitorNetworkMonitor
+import com.gasguru.core.data.util.NetworkMonitor
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.flowOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -25,4 +27,7 @@ fun iosDataModule() = module {
     }
     single<PlacesRepository> { PlacesRepositoryIos() }
     single<String>(named(KoinQualifiers.GOOGLE_API_KEY)) { "" }
+    // Routes API requires iOS-specific Ktor client + API key setup (pending Phase 9D).
+    // No-op: the map and route-planner work, but no polyline is drawn on iOS yet.
+    single<RoutesRepository> { RoutesRepository { _, _ -> flowOf(null) } }
 }
