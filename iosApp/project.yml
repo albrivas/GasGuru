@@ -17,5 +17,7 @@ targets:
       configs:
         debug:
           PRODUCT_BUNDLE_IDENTIFIER: com.gasguru.debug
+          PRODUCT_NAME: GasGuru Debug
         release:
           PRODUCT_BUNDLE_IDENTIFIER: com.gasguru
+          PRODUCT_NAME: GasGuru
