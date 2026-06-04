@@ -31,7 +31,7 @@ fun iosDataModule() = module {
     }
     single<String>(named(KoinQualifiers.GOOGLE_API_KEY)) { DataSecrets.GOOGLE_API_KEY }
     single<PlacesRepository> {
-        GMSPlacesClient.provideAPIKey(DataSecrets.GOOGLE_API_KEY)
+        GMSPlacesClient.provideAPIKey(DataSecrets.PLACES_API_KEY_IOS)
         PlacesRepositoryIos(ioDispatcher = get<CoroutineDispatcher>(named(KoinQualifiers.IO_DISPATCHER)))
     }
     // Routes API requires iOS-specific Ktor client + API key setup (pending Phase 9D).

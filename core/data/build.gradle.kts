@@ -31,6 +31,10 @@ buildkonfig {
         val googleApiKey = localProps.getProperty("googleApiKey")
             ?: System.getenv("GOOGLE_API_KEY").orEmpty()
         buildConfigField(FieldSpec.Type.STRING, "GOOGLE_API_KEY", googleApiKey)
+
+        val placesApiKeyIos = localProps.getProperty("placesApiKeyIos")
+            ?: System.getenv("PLACES_API_KEY_IOS").orEmpty()
+        buildConfigField(FieldSpec.Type.STRING, "PLACES_API_KEY_IOS", placesApiKeyIos)
     }
 }
 
