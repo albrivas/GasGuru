@@ -3,6 +3,7 @@ platform :ios, '15.0'
 target 'iosApp' do
   use_frameworks!
   pod 'composeApp', :path => '../composeApp'
+  pod 'GooglePlaces', '~> 8.5'
 end
 
 post_install do |installer|

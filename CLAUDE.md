@@ -75,6 +75,7 @@
 | [KMP Phase 9A](docs/KMP_PHASE9A.md) | iOS Foundation APIs: NetworkMonitorIos (NWPathMonitor vía callbackFlow), GeocoderAddressIos (CLGeocoder + campos CLPlacemark). Primer patrón callbackFlow + awaitClose sobre APIs nativas Apple |
 | [KMP Phase 9B](docs/KMP_PHASE9B.md) | iOS LocationTracker + LocationPermission: CLLocationManager + delegate NSObject Kotlin/Native, LocalOpenLocationSettings CompositionLocal (elimina prop drilling x8 archivos), NSLocationWhenInUseUsageDescription en Info.plist |
 | [KMP Phase 9C](docs/KMP_PHASE9C.md) | iOS MapKit + UIKitView: MKMapViewDelegateProtocol desde Kotlin/Native, StationAnnotation, polyline con allocArray cinterop, extension functions de categorías ObjC, diff idempotente de annotations |
+| [KMP Phase 9D](docs/KMP_PHASE9D.md) | iOS PlacesRepository: Google Places SDK via CocoaPods, BuildKonfig para API key, GMSPlacesClient cinterop, pod en iosApp/Podfile, GOOGLE_API_KEY Koin qualifier real |
 | [Widget](docs/WIDGET.md) | Widget de pantalla de inicio con gasolineras favoritas: arquitectura Glance + WorkManager, ciclo de vida y limitaciones |
 | [Analytics](docs/ANALYTICS.md) | Sistema de analíticas con Mixpanel: arquitectura, catálogo de eventos, uso en ViewModels y Composables |
 | [Git Worktree](docs/GIT_WORKTREE.md) | Cómo crear y eliminar worktrees, el problema de local.properties y cómo resolverlo con symlinks |

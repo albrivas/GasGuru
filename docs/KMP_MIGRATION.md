@@ -323,8 +323,9 @@ Phase 9: iOS Feature Parity (9A → 9I, sub-PRs)
 | 7 | feature/kmp-phase7-features-ios | Features + iOS app | **Android + Android Auto + iOS** |
 | 9A-9B | feature/kmp-phase9-ios-parity | `:core:data`, `:feature:station-map` | **Android + Android Auto + iOS** (conectividad, geocoder, ubicación, permisos) |
 | 9C | feature/kmp-phase9c-ios-mapkit | `:feature:station-map` | **iOS mapa interactivo** (MapKit MVP — markers, ruta, centrado) |
+| 9D | feature/kmp-phase9d-places-ios | `:core:data` | **iOS búsqueda de lugares** (Google Places SDK — paridad con Android) |
 | 9C.2 | (pendiente) | `:feature:station-map` | iOS map polish (clustering + markers con precio/logo) |
-| 9D-9I | (pendiente) | `:core:data`, `:core:analytics`, `:core:notifications`, `:core:ui`, `:feature:detail-station` | **Android + Android Auto + iOS funcional (paridad completa)** |
+| 9E-9I | (pendiente) | `:core:data`, `:core:analytics`, `:core:notifications`, `:core:ui`, `:feature:detail-station` | **Android + Android Auto + iOS funcional (paridad completa)** |
 
 ---
 
@@ -1140,7 +1141,7 @@ Esta fase se hace **después de Phase 7** (todas las features en CMP), porque a�
 | 1 | `:core:data` NetworkMonitor | ~~`flowOf(true)` siempre~~ | ~~Detección de conectividad real~~ | ✅ Phase 9A |
 | 2 | `:core:data` Geocoder | ~~`flowOf(null)`~~ | ~~Reverse geocoding (coords → dirección)~~ | ✅ Phase 9A |
 | 3 | `:core:data` LocationTracker | ~~`null`/false en flows~~ | ~~Ubicación del usuario + permisos~~ | ✅ Phase 9B |
-| 4 | `:core:data` PlacesRepository | `emptyList()` | Búsqueda de lugares | Búsqueda no funciona |
+| 4 | `:core:data` PlacesRepository | ~~`emptyList()`~~ | ~~Búsqueda de lugares~~ | ✅ Phase 9D |
 | 5 | `:feature:station-map` PlatformMapView | ~~`Box` con color de fondo~~ | ~~Mapa interactivo con marcadores~~ | ✅ Phase 9C (MVP) — polish en 9C.2 |
 | 6 | `:feature:station-map` LocationPermission | ~~`isGranted=true` siempre~~ | ~~Pedir permiso de ubicación~~ | ✅ Phase 9B |
 | 7 | `:feature:detail-station` MapsNavigation | Lambda vacía | Abrir Maps externo | No abre Maps |
@@ -1174,9 +1175,9 @@ En cada sub-fase se lista qué decisiones técnicas hay que cerrar antes de impl
    ↓
 9C Mapa interactivo (MVP)           [MapKit — DECIDIDO: MapKit nativo]              ✅
    ↓
-9C.2 Map polish                     [Clustering + custom markers con precio/logo]
+9D Places                           [Google Places SDK iOS — DECIDIDO: Google Places]  ✅
    ↓
-9D Places                           [MKLocalSearch vs Google Places SDK iOS — DECIDIR]
+9C.2 Map polish                     [Clustering + custom markers con precio/logo]
    ↓
 9E MapsNav + Share + NotifPerm      [iOS standard APIs]
    ↓
@@ -1403,4 +1404,4 @@ Tras Phase 9, retomar la idea de **mover `initKoin()` Android** de `:app` → `c
 
 ---
 
-**Estado actual (post Phase 9C)**: las Phases 0-8D están completadas. Las sub-fases 9A, 9B y 9C (MVP) están completadas — la app iOS ya muestra el mapa con estaciones tap-eables, polyline de ruta y punto de ubicación. Stubs cerrados: #1 NetworkMonitor, #2 Geocoder, #3 LocationTracker, #5 PlatformMapView, #6 LocationPermission (5 de 12). Quedan 7 stubs activos (ver inventario §9). El siguiente paso inmediato es **Phase 9D** (PlacesRepository — búsqueda de lugares) o **Phase 9C.2** (map polish — clustering + markers con precio). Tras Phase 9, abordar **Phase 8E** (mover `initKoin` Android a `composeApp/androidMain`, simetría con iOS) y opcionalmente **Phase 8** (`jvm()` target global para tests sin emulador).
+**Estado actual (post Phase 9D)**: las Phases 0-8D están completadas. Las sub-fases 9A, 9B, 9C (MVP) y 9D están completadas — la app iOS ya muestra el mapa con estaciones tap-eables, polyline de ruta, punto de ubicación y búsqueda de lugares funcional con Google Places SDK (paridad con Android). Stubs cerrados: #1 NetworkMonitor, #2 Geocoder, #3 LocationTracker, #4 PlacesRepository, #5 PlatformMapView, #6 LocationPermission (6 de 12). Quedan 6 stubs activos (ver inventario §9). El siguiente paso inmediato es **Phase 9C.2** (map polish — clustering + markers con precio/logo) o **Phase 9E** (detail station actions: MapsNavigation + ShareAction + NotificationPermission). Tras Phase 9, abordar **Phase 8E** (mover `initKoin` Android a `composeApp/androidMain`, simetría con iOS) y opcionalmente **Phase 8** (`jvm()` target global para tests sin emulador).
