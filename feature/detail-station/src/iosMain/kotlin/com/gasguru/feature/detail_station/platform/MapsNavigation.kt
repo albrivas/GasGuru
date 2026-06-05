@@ -12,62 +12,62 @@ import platform.UIKit.UIAlertControllerStyleActionSheet
 import platform.UIKit.UIApplication
 
 @Composable
-actual fun rememberNavigateToMapsAction(): (LatLng) -> Unit = remember {
-    {
-            location ->
-        val lat = location.latitude
-        val lng = location.longitude
-        val app = UIApplication.sharedApplication
+actual fun rememberNavigateToMapsAction(stationName: String): (LatLng) -> Unit =
+    remember(stationName) {
+        { location ->
+            val lat = location.latitude
+            val lng = location.longitude
+            val app = UIApplication.sharedApplication
 
-        val sheet = UIAlertController.alertControllerWithTitle(
-            title = null,
-            message = null,
-            preferredStyle = UIAlertControllerStyleActionSheet,
-        )
+            val sheet = UIAlertController.alertControllerWithTitle(
+                title = stationName,
+                message = "¿Con qué app quieres ir?",
+                preferredStyle = UIAlertControllerStyleActionSheet,
+            )
 
-        sheet.addAction(
-            UIAlertAction.actionWithTitle(
-                title = "Apple Maps",
-                style = UIAlertActionStyleDefault,
-            ) { _ ->
-                NSURL(string = "http://maps.apple.com/?daddr=$lat,$lng")
-                    .let { app.openURL(it) }
-            },
-        )
-
-        val gmapsUrl = NSURL(string = "comgooglemaps://?daddr=$lat,$lng&directionsmode=driving")
-        if (app.canOpenURL(gmapsUrl)) {
             sheet.addAction(
                 UIAlertAction.actionWithTitle(
-                    title = "Google Maps",
+                    title = "Apple Maps",
                     style = UIAlertActionStyleDefault,
-                ) { _ -> app.openURL(gmapsUrl) },
+                ) { _ ->
+                    NSURL(string = "http://maps.apple.com/?daddr=$lat,$lng")
+                        .let { app.openURL(it) }
+                },
             )
-        }
 
-        val wazeUrl = NSURL(string = "waze://?ll=$lat,$lng&navigate=yes")
-        if (app.canOpenURL(wazeUrl)) {
+            val gmapsUrl = NSURL(string = "comgooglemaps://?daddr=$lat,$lng&directionsmode=driving")
+            if (app.canOpenURL(gmapsUrl)) {
+                sheet.addAction(
+                    UIAlertAction.actionWithTitle(
+                        title = "Google Maps",
+                        style = UIAlertActionStyleDefault,
+                    ) { _ -> app.openURL(gmapsUrl) },
+                )
+            }
+
+            val wazeUrl = NSURL(string = "waze://?ll=$lat,$lng&navigate=yes")
+            if (app.canOpenURL(wazeUrl)) {
+                sheet.addAction(
+                    UIAlertAction.actionWithTitle(
+                        title = "Waze",
+                        style = UIAlertActionStyleDefault,
+                    ) { _ -> app.openURL(wazeUrl) },
+                )
+            }
+
             sheet.addAction(
                 UIAlertAction.actionWithTitle(
-                    title = "Waze",
-                    style = UIAlertActionStyleDefault,
-                ) { _ -> app.openURL(wazeUrl) },
+                    title = "Cancel",
+                    style = UIAlertActionStyleCancel,
+                    handler = null,
+                ),
+            )
+
+            val presenter = topMostViewController() ?: return@remember
+            presenter.presentViewController(
+                viewControllerToPresent = sheet,
+                animated = true,
+                completion = null,
             )
         }
-
-        sheet.addAction(
-            UIAlertAction.actionWithTitle(
-                title = "Cancel",
-                style = UIAlertActionStyleCancel,
-                handler = null,
-            ),
-        )
-
-        val presenter = topMostViewController() ?: return@remember
-        presenter.presentViewController(
-            viewControllerToPresent = sheet,
-            animated = true,
-            completion = null,
-        )
     }
-}
