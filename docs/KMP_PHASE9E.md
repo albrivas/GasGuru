@@ -101,6 +101,18 @@ No se añaden tests: las implementaciones son APIs de plataforma sin lógica tes
 
 ---
 
+## Polish post-merge: iPhone-only target para render correcto del ActionSheet
+
+Tras el merge inicial de la phase, se detectó que el `UIAlertController.actionSheet` se renderizaba como Alert centrado horizontal (botones en horizontal) en lugar del ActionSheet vertical apilado desde abajo que es el patrón iOS estándar.
+
+**Causa raíz**: El template Xcode dejaba `TARGETED_DEVICE_FAMILY = "1,2"` (Universal iPhone + iPad) en `project.pbxproj`. Con ese target, el `UIHostingController` que SwiftUI instala para `WindowGroup` puede reportar `horizontalSizeClass = .regular`. En width Regular, UIKit convierte el `actionSheet` en un popover y, al no tener `popoverPresentationController.sourceView` configurado, lo degrada silenciosamente a Alert centrado.
+
+**Fix aplicado**: `TARGETED_DEVICE_FAMILY = "1"` en Debug y Release de `iosApp.xcodeproj/project.pbxproj`. Coherente con el producto (solo portrait, sin UI optimizada para iPad). Fuerza compact width → ActionSheet apilado vertical nativo, sin cambios en código Kotlin.
+
+Ver lección **L033** en `tasks/lessons.md` para regla general de size class en KMP + SwiftUI host.
+
+---
+
 ## Próximos pasos
 
 - **Phase 9C.2** — Map polish iOS: clustering + visual de markers con precio/logo en MapKit (paridad visual Android)
