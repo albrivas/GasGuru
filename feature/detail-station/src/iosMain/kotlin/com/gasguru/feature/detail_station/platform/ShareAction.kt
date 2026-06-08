@@ -12,11 +12,7 @@ actual fun rememberShareAction(): (String) -> Unit = remember {
             activityItems = listOf(shareText),
             applicationActivities = null,
         )
-        val presenter = topMostViewController() ?: return@remember
-        presenter.presentViewController(
-            viewControllerToPresent = sheet,
-            animated = true,
-            completion = null,
-        )
+        sheet.completionWithItemsHandler = { _, _, _, _ -> dismissOverlayWindow() }
+        presentInOverlayWindow(sheet)
     }
 }

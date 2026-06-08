@@ -14,7 +14,8 @@ import platform.UIKit.UIApplication
 @Composable
 actual fun rememberNavigateToMapsAction(stationName: String): (LatLng) -> Unit =
     remember(stationName) {
-        { location ->
+        {
+                location ->
             val lat = location.latitude
             val lng = location.longitude
             val app = UIApplication.sharedApplication
@@ -30,6 +31,7 @@ actual fun rememberNavigateToMapsAction(stationName: String): (LatLng) -> Unit =
                     title = "Apple Maps",
                     style = UIAlertActionStyleDefault,
                 ) { _ ->
+                    dismissOverlayWindow()
                     NSURL(string = "http://maps.apple.com/?daddr=$lat,$lng")
                         .let { app.openURL(it) }
                 },
@@ -41,7 +43,10 @@ actual fun rememberNavigateToMapsAction(stationName: String): (LatLng) -> Unit =
                     UIAlertAction.actionWithTitle(
                         title = "Google Maps",
                         style = UIAlertActionStyleDefault,
-                    ) { _ -> app.openURL(gmapsUrl) },
+                    ) { _ ->
+                        dismissOverlayWindow()
+                        app.openURL(gmapsUrl)
+                    },
                 )
             }
 
@@ -51,7 +56,10 @@ actual fun rememberNavigateToMapsAction(stationName: String): (LatLng) -> Unit =
                     UIAlertAction.actionWithTitle(
                         title = "Waze",
                         style = UIAlertActionStyleDefault,
-                    ) { _ -> app.openURL(wazeUrl) },
+                    ) { _ ->
+                        dismissOverlayWindow()
+                        app.openURL(wazeUrl)
+                    },
                 )
             }
 
@@ -59,15 +67,9 @@ actual fun rememberNavigateToMapsAction(stationName: String): (LatLng) -> Unit =
                 UIAlertAction.actionWithTitle(
                     title = "Cancel",
                     style = UIAlertActionStyleCancel,
-                    handler = null,
-                ),
+                ) { _ -> dismissOverlayWindow() },
             )
 
-            val presenter = topMostViewController() ?: return@remember
-            presenter.presentViewController(
-                viewControllerToPresent = sheet,
-                animated = true,
-                completion = null,
-            )
+            presentInOverlayWindow(sheet)
         }
     }
