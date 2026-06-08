@@ -2,6 +2,7 @@ package com.gasguru.feature.detail_station.platform
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalUriHandler
 import com.gasguru.core.model.data.LatLng
 import platform.Foundation.NSURL
 import platform.UIKit.UIAlertAction
@@ -12,8 +13,9 @@ import platform.UIKit.UIAlertControllerStyleActionSheet
 import platform.UIKit.UIApplication
 
 @Composable
-actual fun rememberNavigateToMapsAction(stationName: String): (LatLng) -> Unit =
-    remember(stationName) {
+actual fun rememberNavigateToMapsAction(stationName: String): (LatLng) -> Unit {
+    val uriHandler = LocalUriHandler.current
+    return remember(stationName) {
         {
                 location ->
             val lat = location.latitude
@@ -32,8 +34,7 @@ actual fun rememberNavigateToMapsAction(stationName: String): (LatLng) -> Unit =
                     style = UIAlertActionStyleDefault,
                 ) { _ ->
                     dismissOverlayWindow()
-                    NSURL(string = "http://maps.apple.com/?daddr=$lat,$lng")
-                        .let { app.openURL(it) }
+                    uriHandler.openUri("http://maps.apple.com/?daddr=$lat,$lng")
                 },
             )
 
@@ -45,7 +46,7 @@ actual fun rememberNavigateToMapsAction(stationName: String): (LatLng) -> Unit =
                         style = UIAlertActionStyleDefault,
                     ) { _ ->
                         dismissOverlayWindow()
-                        app.openURL(gmapsUrl)
+                        uriHandler.openUri("comgooglemaps://?daddr=$lat,$lng&directionsmode=driving")
                     },
                 )
             }
@@ -58,7 +59,7 @@ actual fun rememberNavigateToMapsAction(stationName: String): (LatLng) -> Unit =
                         style = UIAlertActionStyleDefault,
                     ) { _ ->
                         dismissOverlayWindow()
-                        app.openURL(wazeUrl)
+                        uriHandler.openUri("waze://?ll=$lat,$lng&navigate=yes")
                     },
                 )
             }
@@ -73,3 +74,4 @@ actual fun rememberNavigateToMapsAction(stationName: String): (LatLng) -> Unit =
             presentInOverlayWindow(sheet)
         }
     }
+}
