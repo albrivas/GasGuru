@@ -158,7 +158,7 @@ internal fun DetailStationScreen(
             val shareText = stationState.buildShareText(address = uiState.address)
 
             val shareStation = rememberShareAction()
-            val navigateToMaps = rememberNavigateToMapsAction()
+            val navigateToMaps = rememberNavigateToMapsAction(stationName = stationState.formattedName)
             val requestNotificationPermission = rememberNotificationPermissionRequester(
                 onPermissionGranted = {
                     onEvent(DetailStationEvent.TogglePriceAlert(!stationState.hasPriceAlert))
