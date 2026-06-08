@@ -6,6 +6,7 @@ import platform.UIKit.UIViewController
 import platform.UIKit.UIWindow
 import platform.UIKit.UIWindowLevelAlert
 import platform.UIKit.UIWindowScene
+import platform.UIKit.popoverPresentationController
 
 // Overlay window used to present UIAlertController / UIActivityViewController from a plain
 // UIViewController, bypassing the UIHostingController that SwiftUI installs as the root VC.
@@ -23,6 +24,9 @@ internal fun presentInOverlayWindow(viewController: UIViewController) {
     window.windowLevel = UIWindowLevelAlert + 1.0
     window.makeKeyAndVisible()
     overlayWindow = window
+    // iOS 26+: actionSheet requires sourceView on popoverPresentationController;
+    // without it the system falls back to a centered alert-style dialog.
+    viewController.popoverPresentationController?.sourceView = hostVC.view
     hostVC.presentViewController(
         viewControllerToPresent = viewController,
         animated = true,
