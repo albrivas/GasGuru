@@ -3,11 +3,11 @@ package com.gasguru.core.ui.review
 import android.app.Activity
 import com.google.android.play.core.review.ReviewManager
 
-actual class InAppReviewManager(
+class InAppReviewManagerAndroid(
     private val reviewManager: ReviewManager,
     private val activity: Activity,
-) {
-    actual suspend fun launchReviewFlow(
+) : InAppReviewManager {
+    override suspend fun launchReviewFlow(
         onReviewCompleted: () -> Unit,
         onReviewFailed: (Exception) -> Unit,
     ) {

@@ -14,7 +14,7 @@ actual fun rememberInAppReviewManager(): InAppReviewManager? {
     val activity = context.findActivity()
     return remember(activity) {
         activity?.let {
-            InAppReviewManager(
+            InAppReviewManagerAndroid(
                 reviewManager = ReviewManagerFactory.create(context),
                 activity = it,
             )
