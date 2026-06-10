@@ -7,7 +7,7 @@ import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.UserData
 import com.gasguru.core.model.data.Vehicle
 import com.gasguru.core.model.data.VehicleType
-import com.gasguru.core.testing.CoroutinesTestExtension
+import com.gasguru.core.testing.CoroutineTest
 import com.gasguru.core.testing.fakes.data.user.FakeUserDataRepository
 import com.gasguru.core.testing.fakes.data.vehicle.FakeVehicleRepository
 import com.gasguru.core.testing.fakes.navigation.FakeNavigationManager
@@ -15,19 +15,15 @@ import com.gasguru.feature.onboarding_welcome.ui.CapacityTankEvent
 import com.gasguru.navigation.manager.NavigationDestination
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertNull
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-@ExtendWith(CoroutinesTestExtension::class)
-class CapacityTankViewModelTest {
+class CapacityTankViewModelTest : CoroutineTest() {
 
     private lateinit var sut: CapacityTankViewModel
     private lateinit var fakeNavigationManager: FakeNavigationManager
@@ -44,7 +40,7 @@ class CapacityTankViewModelTest {
         isPrincipal = true,
     )
 
-    @BeforeEach
+    @BeforeTest
     fun setUp() {
         fakeNavigationManager = FakeNavigationManager()
         fakeUserDataRepository = FakeUserDataRepository(
@@ -65,10 +61,7 @@ class CapacityTankViewModelTest {
     }
 
     @Test
-    @DisplayName(
-        "GIVEN initial state WHEN collecting uiState THEN selectedCapacity is null, showPicker is false and isContinueEnabled is false"
-    )
-    fun initialStateIsEmpty() = runTest {
+    fun `GIVEN a fresh ViewModel WHEN uiState is observed THEN selectedCapacity is null showPicker is false and isContinueEnabled is false`() = runTest {
         sut.uiState.test {
             val state = awaitItem()
             assertNull(state.selectedCapacity)
@@ -78,8 +71,7 @@ class CapacityTankViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN initial state WHEN collecting uiState THEN commonValues contains expected items")
-    fun initialStateHasExpectedCommonValues() = runTest {
+    fun `GIVEN a fresh ViewModel WHEN uiState is observed THEN commonValues contains the expected preset capacities`() = runTest {
         sut.uiState.test {
             val state = awaitItem()
             assertEquals(listOf(40, 45, 50, 55, 60, 70), state.commonValues)
@@ -87,10 +79,7 @@ class CapacityTankViewModelTest {
     }
 
     @Test
-    @DisplayName(
-        "GIVEN initial state WHEN SelectCommonValue event THEN selectedCapacity is updated and isContinueEnabled is true"
-    )
-    fun selectCommonValueUpdatesSelectedCapacity() = runTest {
+    fun `GIVEN fresh state WHEN SelectCommonValue event is sent with 50 THEN selectedCapacity is 50 and isContinueEnabled is true`() = runTest {
         sut.uiState.test {
             awaitItem()
 
@@ -103,10 +92,7 @@ class CapacityTankViewModelTest {
     }
 
     @Test
-    @DisplayName(
-        "GIVEN no capacity selected WHEN OpenPicker event THEN showPicker is true and pickerValue is PICKER_MIN"
-    )
-    fun openPickerWithNoSelectionSetsPickerValueToMin() = runTest {
+    fun `GIVEN no capacity is selected WHEN OpenPicker event is sent THEN picker is shown with the minimum value`() = runTest {
         sut.uiState.test {
             awaitItem()
 
@@ -119,10 +105,7 @@ class CapacityTankViewModelTest {
     }
 
     @Test
-    @DisplayName(
-        "GIVEN capacity selected WHEN OpenPicker event THEN showPicker is true and pickerValue matches selected capacity"
-    )
-    fun openPickerWithSelectionSetsPickerValueToSelectedCapacity() = runTest {
+    fun `GIVEN capacity 60 is already selected WHEN OpenPicker event is sent THEN picker is shown with 60 as the initial value`() = runTest {
         sut.uiState.test {
             awaitItem()
 
@@ -138,8 +121,7 @@ class CapacityTankViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN picker open WHEN ClosePicker event THEN showPicker is false")
-    fun closePickerHidesPicker() = runTest {
+    fun `GIVEN picker is open WHEN ClosePicker event is sent THEN showPicker becomes false`() = runTest {
         sut.uiState.test {
             awaitItem()
 
@@ -154,10 +136,7 @@ class CapacityTankViewModelTest {
     }
 
     @Test
-    @DisplayName(
-        "GIVEN picker open WHEN ConfirmPickerValue event THEN selectedCapacity is updated and showPicker is false"
-    )
-    fun confirmPickerValueUpdatesCapacityAndClosesPicker() = runTest {
+    fun `GIVEN picker is open WHEN ConfirmPickerValue event is sent with 75 THEN selectedCapacity is 75 and picker is closed`() = runTest {
         sut.uiState.test {
             awaitItem()
 
@@ -173,10 +152,7 @@ class CapacityTankViewModelTest {
     }
 
     @Test
-    @DisplayName(
-        "GIVEN capacity selected WHEN Continue event THEN save use case is called with correct capacity and navigates to Home"
-    )
-    fun continueWithSelectedCapacitySavesAndNavigatesToHome() = runTest {
+    fun `GIVEN a capacity of 55 is selected WHEN Continue event is sent THEN vehicle capacity is saved and navigation goes to Home`() = runTest {
         sut.handleEvent(event = CapacityTankEvent.SelectCommonValue(value = 55))
 
         sut.handleEvent(event = CapacityTankEvent.Continue)
@@ -188,8 +164,7 @@ class CapacityTankViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN no capacity selected WHEN Continue event THEN does not save or navigate")
-    fun continueWithNoSelectionDoesNotSaveOrNavigate() = runTest {
+    fun `GIVEN no capacity is selected WHEN Continue event is sent THEN nothing is saved and no navigation occurs`() = runTest {
         sut.handleEvent(event = CapacityTankEvent.Continue)
 
         assertTrue(fakeVehicleRepository.updatedTankCapacities.isEmpty())

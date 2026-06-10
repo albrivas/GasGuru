@@ -9,12 +9,12 @@ import androidx.compose.ui.platform.LocalContext
 import com.google.android.play.core.review.ReviewManagerFactory
 
 @Composable
-fun rememberInAppReviewManager(): InAppReviewManager? {
+actual fun rememberInAppReviewManager(): InAppReviewManager? {
     val context = LocalContext.current
     val activity = context.findActivity()
     return remember(activity) {
         activity?.let {
-            InAppReviewManager(
+            InAppReviewManagerAndroid(
                 reviewManager = ReviewManagerFactory.create(context),
                 activity = it,
             )

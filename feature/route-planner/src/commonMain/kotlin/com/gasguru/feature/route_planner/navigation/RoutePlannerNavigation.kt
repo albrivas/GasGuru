@@ -1,11 +1,11 @@
 package com.gasguru.feature.route_planner.navigation
 
-import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.dialog
 import com.gasguru.core.ui.ConfigureDialogSystemBars
+import com.gasguru.core.ui.fullScreenDialogProperties
 import com.gasguru.feature.route_planner.ui.RoutePlannerScreenRoute
 import com.gasguru.navigation.constants.NavigationKeys
 import com.gasguru.navigation.extensions.getPreviousResult
@@ -18,10 +18,7 @@ fun NavController.navigateToRoutePlannerScreen(navOptions: NavOptions? = null) {
 
 fun NavGraphBuilder.routePlannerScreen() {
     dialog<RoutePlannerRoute>(
-        dialogProperties = DialogProperties(
-            usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = false
-        )
+        dialogProperties = fullScreenDialogProperties()
     ) { navBackResult ->
         val result = navBackResult.getPreviousResult<PlaceArgs>(NavigationKeys.SELECTED_PLACE)
         if (result != null) {

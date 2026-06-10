@@ -18,8 +18,10 @@ kotlin {
             api(projects.navigation)
             api(libs.io.arrow.kt.arrow.core)
             api(libs.kotlinx.coroutines.test)
+            api(kotlin("test-annotations-common"))
         }
         androidMain.dependencies {
+            api(kotlin("test-junit5"))
             api(projects.core.network)
             api(libs.junit)
             api(libs.androidx.test.core)

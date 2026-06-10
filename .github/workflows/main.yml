@@ -5,9 +5,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  checks:
     if: ${{ github.actor != 'dependabot[bot]' && !startsWith(github.head_ref, 'sync/') && !startsWith(github.head_ref, 'docs/')}}
-    name: Build
+    name: Checks & Tests
     runs-on: ubuntu-22.04
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -64,6 +64,7 @@ jobs:
           SHA1_PLAY_STORE: ${{ secrets.SHA1_PLAY_STORE }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_API_KEY: ${{ secrets.SUPABASE_API_KEY }}
+          PLACES_API_KEY_IOS: ${{ secrets.PLACES_API_KEY_IOS }}
         run: |
           echo "googleApiKey=$GOOGLE_MAPS_API_KEY" >> local.properties
           echo "googleStyleId=$GOOGLE_STYLE_MAP_ID" >> local.properties
@@ -77,6 +78,7 @@ jobs:
           echo "sha1PlayStore=$SHA1_PLAY_STORE" >> local.properties
           echo "supabaseUrl=$SUPABASE_URL" >> local.properties
           echo "supabaseKey=$SUPABASE_API_KEY" >> local.properties
+          echo "placesApiKeyIos=$PLACES_API_KEY_IOS" >> local.properties
 
       - name: Create google-services.json
         env:
@@ -110,6 +112,82 @@ jobs:
             -Dsonar.pullrequest.base="$PR_BASE"
         working-directory: ./
 
+  instrumented:
+    if: ${{ github.actor != 'dependabot[bot]' && !startsWith(github.head_ref, 'sync/') && !startsWith(github.head_ref, 'docs/')}}
+    name: Instrumented Tests
+    needs: checks
+    runs-on: ubuntu-22.04
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # main
+        with:
+          tool-cache: false
+          android: false
+          dotnet: true
+          haskell: true
+          large-packages: false
+          docker-images: true
+          swap-storage: true
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'zulu'
+          cache: gradle
+
+      - name: Cache Gradle packages
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: ${{ runner.os }}-gradle
+
+      - name: Generate local.properties
+        env:
+          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+          GOOGLE_STYLE_MAP_ID: ${{ secrets.GOOGLE_STYLE_MAP_ID }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          ONE_SIGNAL: ${{ secrets.ONE_SIGNAL }}
+          MIXPANEL: ${{ secrets.MIXPANEL }}
+          CLARITY_PROJECT_ID: ${{ secrets.CLARITY_PROJECT_ID }}
+          SHA1_DEBUG: ${{ secrets.SHA1_DEBUG }}
+          SHA1_PLAY_STORE: ${{ secrets.SHA1_PLAY_STORE }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_API_KEY: ${{ secrets.SUPABASE_API_KEY }}
+          PLACES_API_KEY_IOS: ${{ secrets.PLACES_API_KEY_IOS }}
+        run: |
+          echo "googleApiKey=$GOOGLE_MAPS_API_KEY" >> local.properties
+          echo "googleStyleId=$GOOGLE_STYLE_MAP_ID" >> local.properties
+          echo "storePassword=$KEYSTORE_PASSWORD" >> local.properties
+          echo "keyAlias=$KEYSTORE_ALIAS" >> local.properties
+          echo "keyPassword=$KEY_PASSWORD" >> local.properties
+          echo "onesignalAppId=$ONE_SIGNAL" >> local.properties
+          echo "mixpanelProjectToken=$MIXPANEL" >> local.properties
+          echo "clarityProjectId=$CLARITY_PROJECT_ID" >> local.properties
+          echo "sha1Debug=$SHA1_DEBUG" >> local.properties
+          echo "sha1PlayStore=$SHA1_PLAY_STORE" >> local.properties
+          echo "supabaseUrl=$SUPABASE_URL" >> local.properties
+          echo "supabaseKey=$SUPABASE_API_KEY" >> local.properties
+          echo "placesApiKeyIos=$PLACES_API_KEY_IOS" >> local.properties
+
+      - name: Create google-services.json
+        env:
+          DATA: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: echo $DATA | base64 -di > app/google-services.json
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+        working-directory: ./
+
       - name: Enable KVM group perms
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -135,8 +213,10 @@ jobs:
           api-level: 34
           target: google_apis
           arch: x86_64
+          avd-name: gasguru-avd
+          force-avd-creation: false
           disable-animations: true
-          emulator-options: "-no-snapshot-save -no-window -no-boot-anim -no-audio"
+          emulator-options: "-no-window -no-boot-anim -no-audio"
           script: |
             ./gradlew connectedCheck
             adb install app/build/outputs/apk/prod/release/app-prod-release.apk

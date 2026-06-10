@@ -23,10 +23,6 @@ kotlin {
         homepage = "https://github.com/gasguru/GasGuru"
         version = "1.0"
         ios.deploymentTarget = "15.0"
-
-        pod("Mixpanel-swift") {
-            version = "~> 6.2"
-        }
     }
 
     sourceSets {

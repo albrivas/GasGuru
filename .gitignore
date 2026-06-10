@@ -228,4 +228,8 @@ google-services.json
 .gitconfig
 sonar-project.properties
 
-.claude/settings.local.json
+.claude/
+.codegraph/
+
+# Local development notes
+tasks/

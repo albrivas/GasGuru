@@ -5,29 +5,25 @@ import com.gasguru.core.analytics.NoOpAnalyticsHelper
 import com.gasguru.core.domain.search.ClearRecentSearchQueriesUseCase
 import com.gasguru.core.domain.search.GetRecentSearchQueryUseCase
 import com.gasguru.core.model.data.RecentSearchQuery
-import com.gasguru.core.testing.CoroutinesTestExtension
+import com.gasguru.core.testing.CoroutineTest
 import com.gasguru.core.testing.fakes.data.search.FakeOfflineRecentSearchRepository
 import com.gasguru.core.ui.RecentSearchQueriesUiState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
-@ExtendWith(CoroutinesTestExtension::class)
-class RoutePlannerViewModelTest {
+class RoutePlannerViewModelTest : CoroutineTest() {
 
     private lateinit var sut: RoutePlannerViewModel
     private lateinit var clearRecentSearchQueriesUseCase: ClearRecentSearchQueriesUseCase
     private lateinit var getRecentSearchQueryUseCase: GetRecentSearchQueryUseCase
     private lateinit var recentSearchRepository: FakeOfflineRecentSearchRepository
 
-    @BeforeEach
+    @BeforeTest
     fun setUp() {
         recentSearchRepository = FakeOfflineRecentSearchRepository()
         clearRecentSearchQueriesUseCase = ClearRecentSearchQueriesUseCase(recentSearchRepository)
@@ -48,8 +44,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN initial state WHEN accessing state THEN should have empty queries and START as current input")
-    fun initialState() = runTest {
+    fun `GIVEN a fresh ViewModel WHEN state is observed THEN initial state has empty queries and START as current input`() = runTest {
         sut.state.test {
             val initialState = awaitItem()
 
@@ -61,16 +56,14 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN initial state WHEN checking route enabled THEN should be disabled")
-    fun routeDisabledInitially() = runTest {
+    fun `GIVEN a fresh ViewModel WHEN isRouteEnabled is observed THEN initial value is false`() = runTest {
         sut.isRouteEnabled.test {
             assertEquals(false, awaitItem())
         }
     }
 
     @Test
-    @DisplayName("GIVEN empty queries WHEN both start and end queries are filled THEN should enable route")
-    fun enablesRouteWhenBothQueriesFilled() = runTest {
+    fun `GIVEN start and end queries are both filled WHEN isRouteEnabled is observed THEN value changes to true`() = runTest {
         sut.isRouteEnabled.test {
             assertEquals(false, awaitItem())
 
@@ -88,8 +81,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN initial state WHEN changing current input THEN should update current input field")
-    fun updatesCurrentInputField() = runTest {
+    fun `GIVEN START is the current input field WHEN ChangeCurrentInput event with END is sent THEN state reflects END as the current input`() = runTest {
         sut.state.test {
             awaitItem()
 
@@ -100,8 +92,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN current input is START WHEN selecting place THEN should update start query")
-    fun updatesStartQueryWhenCurrentInputIsStart() = runTest {
+    fun `GIVEN current input is START WHEN SelectPlace event is sent THEN start query is updated and end query remains empty`() = runTest {
         sut.state.test {
             awaitItem()
 
@@ -118,8 +109,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN current input is END WHEN selecting place THEN should update end query")
-    fun updatesEndQueryWhenCurrentInputIsEnd() = runTest {
+    fun `GIVEN current input is changed to END WHEN SelectPlace event is sent THEN end query is updated and start query remains empty`() = runTest {
         sut.state.test {
             awaitItem()
 
@@ -139,8 +129,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN empty queries WHEN selecting current location THEN should fill start query first")
-    fun fillsEmptyStartQueryWhenSelectingCurrentLocation() = runTest {
+    fun `GIVEN both queries are empty WHEN SelectCurrentLocation event is sent THEN start query is set to current location and end query remains empty`() = runTest {
         sut.state.test {
             awaitItem()
 
@@ -153,8 +142,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN start query filled WHEN selecting current location THEN should fill end query")
-    fun fillsEmptyEndQueryWhenStartIsNotEmpty() = runTest {
+    fun `GIVEN start query is already filled WHEN SelectCurrentLocation event is sent THEN end query is set to current location`() = runTest {
         sut.state.test {
             awaitItem()
 
@@ -172,8 +160,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN empty queries WHEN selecting recent place THEN should fill start query first")
-    fun fillsEmptyStartQueryWhenSelectingRecentPlace() = runTest {
+    fun `GIVEN both queries are empty WHEN SelectRecentPlace event is sent THEN start query is filled with the recent place`() = runTest {
         sut.state.test {
             awaitItem()
 
@@ -189,8 +176,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN filled start query WHEN clearing start field THEN should clear start query")
-    fun clearsStartQuery() = runTest {
+    fun `GIVEN start query has been filled WHEN ClearStartDestinationField event is sent THEN start query becomes empty`() = runTest {
         sut.state.test {
             awaitItem()
 
@@ -206,8 +192,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN both queries filled WHEN swapping destinations THEN should swap start and end queries")
-    fun swapsStartAndEndQueries() = runTest {
+    fun `GIVEN both start and end queries are filled WHEN ChangeDestinations event is sent THEN start and end queries are swapped`() = runTest {
         sut.state.test {
             awaitItem()
 
@@ -236,8 +221,7 @@ class RoutePlannerViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    @DisplayName("GIVEN clear recent event WHEN handling event THEN should call clear recent searches use case")
-    fun callsClearRecentSearchesUseCase() = runTest {
+    fun `GIVEN recent searches exist WHEN ClearRecentSearches event is sent THEN repository clear method is called once`() = runTest {
         sut.handleEvent(RoutePlannerUiEvent.ClearRecentSearches)
 
         advanceUntilIdle()
@@ -246,10 +230,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    @DisplayName(
-        "GIVEN use case returns recent queries WHEN collecting state THEN should emit Success state with recent queries"
-    )
-    fun emitsSuccessStateWithRecentQueries() = runTest {
+    fun `GIVEN repository has two recent queries WHEN recentSearchQueriesUiState flow is collected THEN emits Loading then Success with both queries`() = runTest {
         sut.recentSearchQueriesUiState.test {
             assertEquals(RecentSearchQueriesUiState.Loading, awaitItem())
 
@@ -261,8 +242,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    @DisplayName("GIVEN empty queries WHEN filling and clearing queries THEN should update route enabled state")
-    fun updatesRouteEnabledStateWhenQueriesChange() = runTest {
+    fun `GIVEN route is enabled with both queries filled WHEN start query is cleared THEN isRouteEnabled reverts to false`() = runTest {
         sut.isRouteEnabled.test {
             assertEquals(false, awaitItem())
 

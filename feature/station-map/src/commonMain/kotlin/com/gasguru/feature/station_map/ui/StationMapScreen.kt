@@ -1,3 +1,7 @@
+@file:Suppress(
+    "LongParameterList"
+) // Composable de pantalla raíz: parámetros separados (state + callbacks) es patrón común en Compose.
+
 package com.gasguru.feature.station_map.ui
 
 import androidx.compose.animation.AnimatedContent
@@ -45,12 +49,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.components.searchbar.GasGuruSearchBar
 import com.gasguru.core.components.searchbar.GasGuruSearchBarModel
 import com.gasguru.core.model.data.FuelStationBrandsType
-import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.ui.generated.resources.Res
 import com.gasguru.core.ui.generated.resources.alert_location_rationale_description
 import com.gasguru.core.ui.generated.resources.alert_location_rationale_primary_button
@@ -61,7 +63,6 @@ import com.gasguru.core.ui.generated.resources.alert_permission_denied_title
 import com.gasguru.core.ui.generated.resources.nearby_stations
 import com.gasguru.core.ui.mapper.toStationListItems
 import com.gasguru.core.ui.mapper.toUiModel
-import com.gasguru.core.ui.models.FuelStationUiModel
 import com.gasguru.core.uikit.components.alert.GasGuruAlertDialog
 import com.gasguru.core.uikit.components.alert.GasGuruAlertDialogModel
 import com.gasguru.core.uikit.components.chip.FilterType
@@ -94,7 +95,6 @@ import com.gasguru.feature.station_map.generated.resources.tab_distance
 import com.gasguru.feature.station_map.generated.resources.tab_price
 import com.gasguru.feature.station_map.platform.PlatformMapView
 import com.gasguru.feature.station_map.platform.rememberLocationPermissionState
-import com.gasguru.feature.station_map.ui.models.RouteUiModel
 import com.gasguru.navigation.LocalDeepLinkStateHolder
 import com.gasguru.navigation.LocalNavigationManager
 import com.gasguru.navigation.manager.NavigationDestination

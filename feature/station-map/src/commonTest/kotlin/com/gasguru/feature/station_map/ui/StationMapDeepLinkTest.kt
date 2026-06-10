@@ -1,42 +1,31 @@
 package com.gasguru.feature.station_map.ui
 
-import com.gasguru.core.testing.CoroutinesTestExtension
+import com.gasguru.core.testing.CoroutineTest
 import com.gasguru.core.testing.fakes.navigation.FakeNavigationManager
 import com.gasguru.navigation.deeplink.DeepLinkStateHolder
 import com.gasguru.navigation.manager.NavigationDestination
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNull
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
-@ExtendWith(CoroutinesTestExtension::class)
-class StationMapDeepLinkTest {
+class StationMapDeepLinkTest : CoroutineTest() {
 
     private lateinit var deepLinkStateHolder: DeepLinkStateHolder
     private lateinit var fakeNavigationManager: FakeNavigationManager
 
-    @BeforeEach
+    @BeforeTest
     fun setUp() {
         deepLinkStateHolder = DeepLinkStateHolder()
         fakeNavigationManager = FakeNavigationManager()
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN pendingStationId is set
-        WHEN deep link is consumed (clear + navigateTo)
-        THEN pendingStationId is null and navigateTo was called exactly once
-    """
-    )
-    fun consumeDeepLinkNavigatesOnce() = runTest {
+    fun `GIVEN pending station id in deep link holder WHEN deep link is consumed and navigation is triggered THEN only one destination is navigated and pending id is cleared`() = runTest {
         deepLinkStateHolder.setPendingStationId(stationId = 123)
 
         val stationId = deepLinkStateHolder.pendingStationId.value!!
@@ -57,14 +46,7 @@ class StationMapDeepLinkTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN pendingStationId was consumed (null after clear)
-        WHEN setPendingStationId is called again with the same value
-        THEN StateFlow emits the new value (null → id transition triggers new navigation)
-    """
-    )
-    fun pendingStationIdEmitsAfterClearAndReSet() = runTest {
+    fun `GIVEN pending station id is set then cleared then set again WHEN collecting the flow THEN all state transitions are emitted in order`() = runTest {
         val emittedValues = mutableListOf<Int?>()
         val job = launch {
             deepLinkStateHolder.pendingStationId.collect { value -> emittedValues.add(value) }
@@ -84,14 +66,7 @@ class StationMapDeepLinkTest {
     }
 
     @Test
-    @DisplayName(
-        """
-        GIVEN pendingStationId is set to a value
-        WHEN setPendingStationId is called again with the same value (no clear in between)
-        THEN StateFlow does NOT emit a duplicate (StateFlow deduplicates equal values)
-    """
-    )
-    fun setPendingStationIdWithSameValueIsDeduplicatedByStateFlow() = runTest {
+    fun `GIVEN pending station id is set twice with the same value WHEN collecting the flow THEN the second emission is deduplicated by StateFlow`() = runTest {
         val emittedValues = mutableListOf<Int?>()
         val job = launch {
             deepLinkStateHolder.pendingStationId.collect { value -> emittedValues.add(value) }

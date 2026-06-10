@@ -60,12 +60,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
-import com.gasguru.core.analytics.LocalAnalyticsHelper
 import com.gasguru.core.model.data.FuelStationBrandsType
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.Vehicle
 import com.gasguru.core.model.data.VehicleType
 import com.gasguru.core.model.data.previewFuelStationDomain
+import com.gasguru.core.ui.LocalAnalyticsHelper
 import com.gasguru.core.ui.iconTint
 import com.gasguru.core.ui.mapper.toPriceUiModel
 import com.gasguru.core.ui.mapper.toUiModel
@@ -158,7 +158,7 @@ internal fun DetailStationScreen(
             val shareText = stationState.buildShareText(address = uiState.address)
 
             val shareStation = rememberShareAction()
-            val navigateToMaps = rememberNavigateToMapsAction()
+            val navigateToMaps = rememberNavigateToMapsAction(stationName = stationState.formattedName)
             val requestNotificationPermission = rememberNotificationPermissionRequester(
                 onPermissionGranted = {
                     onEvent(DetailStationEvent.TogglePriceAlert(!stationState.hasPriceAlert))
@@ -478,7 +478,11 @@ fun HeaderStation(
                         .semantics {
                             iconTint = if (stationState.hasPriceAlert) accentBlue else black
                         },
-                    imageVector = if (stationState.hasPriceAlert) Icons.Outlined.NotificationsActive else Icons.Outlined.Notifications,
+                    imageVector = if (stationState.hasPriceAlert) {
+                        Icons.Outlined.NotificationsActive
+                    } else {
+                        Icons.Outlined.Notifications
+                    },
                     contentDescription = "Price alert icon",
                     tint = if (stationState.hasPriceAlert) accentBlue else black,
                 )

@@ -1,3 +1,5 @@
+@file:Suppress("SingleForNonSharedDependency") // LocationTrackerRepository: mantiene state interno; debe ser singleton.
+
 package com.gasguru.core.data.di
 
 import com.gasguru.core.common.KoinQualifiers
@@ -13,12 +15,11 @@ import com.gasguru.core.data.util.ConnectivityManagerNetworkMonitor
 import com.gasguru.core.data.util.NetworkMonitor
 import com.gasguru.core.network.datasource.PlacesDataSource
 import com.gasguru.core.network.datasource.PlacesDataSourceImp
-import com.gasguru.core.network.datasource.RoutesDataSource
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-val androidDataModule = module {
+fun androidDataModule() = module {
     single<LocationTracker> {
         LocationTrackerRepository(
             locationClient = get(),

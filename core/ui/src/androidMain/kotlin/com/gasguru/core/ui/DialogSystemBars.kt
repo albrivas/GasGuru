@@ -3,9 +3,15 @@ package com.gasguru.core.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
 import androidx.core.view.WindowCompat
 import com.gasguru.core.uikit.theme.GasGuruTheme
+
+actual fun fullScreenDialogProperties() = DialogProperties(
+    usePlatformDefaultWidth = false,
+    decorFitsSystemWindows = false,
+)
 
 @Composable
 actual fun ConfigureDialogSystemBars(invertColors: Boolean) {

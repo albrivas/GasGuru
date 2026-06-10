@@ -658,6 +658,7 @@ style:
     excludeImportStatements: true
     excludeCommentStatements: false
     excludeRawStrings: true
+    excludes: [ '**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**' ]
   MayBeConst:
     active: true
   ModifierOrder:
@@ -822,6 +823,9 @@ formatting:
   SpacingBetweenDeclarationsWithComments:
     active: true
     spacing: 1
+  MaximumLineLength:
+    active: true
+    excludes: [ '**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**' ]
   PackageName:
     active: false
 

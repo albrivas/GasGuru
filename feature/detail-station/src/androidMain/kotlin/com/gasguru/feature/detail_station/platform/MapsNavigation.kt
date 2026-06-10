@@ -9,7 +9,7 @@ import com.gasguru.core.model.data.LatLng
 
 @SuppressLint("QueryPermissionsNeeded")
 @Composable
-actual fun rememberNavigateToMapsAction(): (LatLng) -> Unit {
+actual fun rememberNavigateToMapsAction(stationName: String): (LatLng) -> Unit {
     val context = LocalContext.current
     return { location ->
         val lat = location.latitude

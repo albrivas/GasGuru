@@ -65,10 +65,10 @@ import com.gasguru.feature.route_planner.generated.resources.start_route
 import com.gasguru.feature.route_planner.generated.resources.your_location
 import com.gasguru.navigation.LocalNavigationManager
 import com.gasguru.navigation.constants.NavigationKeys
+import com.gasguru.navigation.extensions.navigateBackWith
 import com.gasguru.navigation.manager.NavigationDestination
 import com.gasguru.navigation.models.PlaceArgs
 import com.gasguru.navigation.models.RoutePlanArgs
-import com.gasguru.navigation.extensions.navigateBackWith
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel

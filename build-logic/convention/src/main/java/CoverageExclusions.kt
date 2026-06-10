@@ -55,6 +55,8 @@ object CoverageExclusions {
         // Platform-specific Composable expect/actual implementations (androidMain / iosMain):
         // these require Android context or iOS runtime and cannot be covered by JVM unit tests.
         "**/platform/**",
+        // iosMain source sets are never reachable by JVM unit tests.
+        "**/iosMain/**",
     )
 
     /**

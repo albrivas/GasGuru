@@ -19,6 +19,7 @@ plugins {
     alias(libs.plugins.gasguru.jacoco)
     alias(libs.plugins.gasguru.sonar)
     alias(libs.plugins.stability.analyzer) apply false
+    alias(libs.plugins.buildkonfig) apply false
 }
 
 allprojects {
@@ -39,6 +40,11 @@ allprojects {
                 "src/test/kotlin",
                 "src/extended/java",
                 "src/external/java",
+                "src/commonMain/kotlin",
+                "src/commonTest/kotlin",
+                "src/androidMain/kotlin",
+                "src/androidUnitTest/kotlin",
+                "src/iosMain/kotlin",
             )
         )
 

@@ -4,4 +4,4 @@ import androidx.compose.runtime.Composable
 import com.gasguru.core.model.data.LatLng
 
 @Composable
-expect fun rememberNavigateToMapsAction(): (LatLng) -> Unit
+expect fun rememberNavigateToMapsAction(stationName: String): (LatLng) -> Unit

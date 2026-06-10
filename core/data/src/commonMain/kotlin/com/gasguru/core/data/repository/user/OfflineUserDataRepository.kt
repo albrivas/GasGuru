@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import kotlin.time.Clock
 
 class OfflineUserDataRepository(
     private val userDataDao: UserDataDao,
@@ -43,7 +44,7 @@ class OfflineUserDataRepository(
     }
 
     override suspend fun updateLastUpdate() {
-        upsertUserData { it.copy(lastUpdate = System.currentTimeMillis()) }
+        upsertUserData { it.copy(lastUpdate = Clock.System.now().toEpochMilliseconds()) }
     }
 
     private suspend fun upsertUserData(update: (UserData) -> UserData) {
