@@ -1,7 +1,5 @@
 package com.gasguru.ui
 
-import android.content.Intent
-import android.provider.Settings
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -48,7 +46,6 @@ fun GasGuruApp(
     appState: GasGuruAppState,
     startDestination: Any = OnboardingRoutes.NewOnboardingRoute,
 ) {
-    val context = LocalContext.current
     val isOffline by appState.isOffline.collectAsStateWithLifecycle()
     val isLocationDisabled by appState.isLocationDisabled.collectAsStateWithLifecycle()
     val isOnboardingComplete by appState.isOnboardingComplete.collectAsStateWithLifecycle()
