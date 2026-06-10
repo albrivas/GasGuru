@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="add_vehicle_title">Nuevo vehículo</string>
+    <string name="edit_vehicle_title">Editar vehículo</string>
+    <string name="add_vehicle_type_section">Tipo de vehículo</string>
+    <string name="add_vehicle_name_section">Nombre</string>
+    <string name="add_vehicle_name_placeholder">Ej. Golf VII</string>
+    <string name="add_vehicle_fuel_section">Combustible</string>
+    <string name="add_vehicle_capacity_section">Capacidad del depósito</string>
+    <string name="add_vehicle_capacity_placeholder">Ej. 55</string>
+    <string name="add_vehicle_capacity_unit">litros</string>
+    <string name="add_vehicle_main_vehicle_title">Usar como vehículo principal</string>
+    <string name="add_vehicle_main_vehicle_subtitle">Los precios y cálculos de la app se mostrarán para este vehículo</string>
+    <string name="add_vehicle_save_button">Guardar vehículo</string>
+    <string name="add_vehicle_capacity_picker_title">Selecciona la capacidad</string>
+    <string name="add_vehicle_capacity_picker_range">Mínimo 1 · Máximo 999</string>
+    <string name="add_vehicle_capacity_picker_confirm">Confirmar</string>
+    <string name="add_vehicle_back_content_description">Volver</string>
+</resources>

@@ -22,6 +22,7 @@ import com.gasguru.core.notifications.NotificationService
 import com.gasguru.core.notifications.di.notificationModule
 import com.gasguru.core.supabase.di.supabaseModule
 import com.gasguru.di.appModule
+import com.gasguru.di.appShellModule
 import com.gasguru.di.remoteDataSourceModule
 import com.gasguru.feature.detail_station.di.detailStationModule
 import com.gasguru.feature.favorite_list_station.di.favoriteListStationModule
@@ -119,13 +120,14 @@ class GasGuruApplication : Application() {
                 placesModule(),
                 supabaseModule,
                 notificationModule,
-                commonDataModule,
-                androidDataModule,
-                dataProviderModule,
+                commonDataModule(),
+                androidDataModule(),
+                dataProviderModule(),
                 domainModule(),
                 navigationModule(),
                 remoteDataSourceModule(),
                 appModule(),
+                appShellModule(),
                 stationMapModule(),
                 detailStationModule(),
                 favoriteListStationModule(),

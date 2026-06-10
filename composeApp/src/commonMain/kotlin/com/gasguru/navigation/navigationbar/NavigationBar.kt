@@ -1,0 +1,73 @@
+package com.gasguru.navigation.navigationbar
+
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
+import com.gasguru.core.uikit.theme.GasGuruTheme
+import org.jetbrains.compose.resources.stringResource
+
+@Composable
+internal fun NavigationBottomBar(state: NavigationBarState) {
+    NavigationBar(
+        containerColor = GasGuruTheme.colors.neutralWhite,
+    ) {
+        state.topLevelRoutes.forEach { destination ->
+            val isSelected = state.isSelected(destination)
+            BarItem(
+                icon = destination.icon,
+                label = stringResource(destination.label),
+                isSelected = isSelected,
+                onNavigateToDestination = {
+                    if (!isSelected) {
+                        state.onNavItemClick(destination)
+                    }
+                },
+            )
+        }
+    }
+}
+
+@Composable
+private fun RowScope.BarItem(
+    icon: ImageVector,
+    label: String,
+    isSelected: Boolean,
+    onNavigateToDestination: () -> Unit,
+) {
+    NavigationBarItem(
+        selected = isSelected,
+        label = {
+            Text(
+                text = label,
+                style = if (isSelected) {
+                    GasGuruTheme.typography.captionBold
+                } else {
+                    GasGuruTheme.typography.captionRegular
+                },
+            )
+        },
+        icon = {
+            Icon(
+                modifier = Modifier.size(24.dp),
+                imageVector = icon,
+                contentDescription = null,
+            )
+        },
+        colors = NavigationBarItemDefaults.colors(
+            selectedIconColor = GasGuruTheme.colors.primary600,
+            selectedTextColor = GasGuruTheme.colors.primary600,
+            indicatorColor = GasGuruTheme.colors.primary600.copy(alpha = 0.16f),
+            unselectedIconColor = GasGuruTheme.colors.neutral600,
+            unselectedTextColor = GasGuruTheme.colors.textSubtle,
+        ),
+        onClick = onNavigateToDestination,
+    )
+}

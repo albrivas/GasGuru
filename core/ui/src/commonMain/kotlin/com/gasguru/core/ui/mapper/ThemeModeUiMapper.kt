@@ -11,5 +11,9 @@ import com.gasguru.core.uikit.components.icon.ThemeModeIcons
 fun ThemeMode.toUi(): ThemeModeUi = when (this) {
     ThemeMode.DARK -> ThemeModeUi(mode = this, titleRes = Res.string.theme_mode_dark, iconRes = ThemeModeIcons.Dark)
     ThemeMode.LIGHT -> ThemeModeUi(mode = this, titleRes = Res.string.theme_mode_light, iconRes = ThemeModeIcons.Light)
-    ThemeMode.SYSTEM -> ThemeModeUi(mode = this, titleRes = Res.string.theme_mode_system, iconRes = ThemeModeIcons.System)
+    ThemeMode.SYSTEM -> ThemeModeUi(
+        mode = this,
+        titleRes = Res.string.theme_mode_system,
+        iconRes = ThemeModeIcons.System
+    )
 }

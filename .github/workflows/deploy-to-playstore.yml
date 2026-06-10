@@ -1,4 +1,4 @@
-name: Deploy to Play Store
+1name: Deploy to Play Store
 
 on:
   push:
@@ -30,6 +30,7 @@ jobs:
           SHA1_PLAY_STORE: ${{ secrets.SHA1_PLAY_STORE }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_API_KEY: ${{ secrets.SUPABASE_API_KEY }}
+          PLACES_API_KEY_IOS: ${{ secrets.PLACES_API_KEY_IOS }}
         run: |
           echo "googleApiKey=$GOOGLE_MAPS_API_KEY" >> local.properties
           echo "googleStyleId=$GOOGLE_STYLE_MAP_ID" >> local.properties
@@ -43,6 +44,7 @@ jobs:
           echo "sha1PlayStore=$SHA1_PLAY_STORE" >> local.properties
           echo "supabaseUrl=$SUPABASE_URL" >> local.properties
           echo "supabaseKey=$SUPABASE_API_KEY" >> local.properties
+          echo "placesApiKeyIos=$PLACES_API_KEY_IOS" >> local.properties
 
       - name: Create google-services.json
         env:

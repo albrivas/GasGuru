@@ -16,10 +16,6 @@ compose.resources {
 }
 
 kotlin {
-    androidTarget {
-        instrumentedTestVariant.sourceSetTree.set(org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree.test)
-    }
-
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.ui)
@@ -27,7 +23,7 @@ kotlin {
             implementation(projects.core.model)
             implementation(projects.core.components)
             implementation(projects.navigation)
-            implementation(compose.components.uiToolingPreview)
+            implementation(libs.jetbrains.compose.ui.tooling.preview)
         }
     }
 }

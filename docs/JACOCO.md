@@ -115,6 +115,19 @@ property("sonar.coverage.exclusions", CoverageExclusions.sonarCoverageExclusions
 
 JaCoCo no distingue entre módulos Android o KMP — simplemente necesita los `.class` files y el `.exec`. En módulos KMP las clases compiladas están en `tmp/kotlin-classes/debug/**`. Si esa ruta no está configurada en `jacocoClassDirectories()`, JaCoCo no encuentra las clases y reporta 0% aunque los tests pasen.
 
+### Source directories en módulos KMP
+
+`jacocoSourceDirectories()` controla qué carpetas ve Sonar como código fuente al mapear bytecode a cobertura. El plugin incluye las siguientes rutas:
+
+| Carpeta | Propósito |
+|---------|-----------|
+| `src/main/java` | Código Java legacy (módulos Android puro) |
+| `src/main/kotlin` | Código Kotlin Android puro |
+| `src/commonMain/kotlin` | Código compartido KMP (iOS + Android) |
+| `src/androidMain/kotlin` | Código específico Android en módulos KMP (actual Android) |
+
+`src/iosMain/kotlin` está **excluida** intencionalmente: el código iOS nativo (CLLocationManager, NWPathMonitor, etc.) se compila con Kotlin/Native y no puede ejecutarse en la JVM, por lo que su cobertura sería siempre 0%. Sonar tampoco puede analizar bytecode iOS desde JaCoCo.
+
 ## Por que pueden salir duplicados
 JaCoCo falla si analiza la **misma clase dos veces** desde diferentes carpetas.
 Por eso el plugin solo toma clases desde:

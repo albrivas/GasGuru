@@ -291,4 +291,3 @@ private fun AddVehicleButton(onClick: () -> Unit) {
         )
     }
 }
-

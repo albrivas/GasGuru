@@ -10,7 +10,7 @@ class FakeGeocoderAddress(
 ) : GeocoderAddress {
     override fun getAddressFromLocation(latitude: Double, longitude: Double): Flow<String?> = flow {
         if (shouldThrow) {
-            throw IllegalStateException("Geocoder error")
+            error("Geocoder error")
         }
         emit(address)
     }
