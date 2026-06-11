@@ -11,15 +11,18 @@ struct iOSApp: App {
 }
 
 class AppDelegate: NSObject, UIApplicationDelegate {
+
+    private var pushService: PushNotificationServiceIos?
+
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
-        initKoin()
+        initKoin(launchOptions: launchOptions)
         return true
     }
 
-    private func initKoin() {
+    private func initKoin(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
         let analyticsHelper: AnalyticsHelper
 
         #if DEBUG
@@ -28,8 +31,17 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         analyticsHelper = MixpanelAnalyticsHelperIos()
         #endif
 
-        let analyticsModule = AnalyticsModuleIosKt.provideAnalyticsModuleIos(analyticsHelper: analyticsHelper)
+        let oneSignalManager = OneSignalManagerIos(launchOptions: launchOptions)
 
-        KoinInitKt.doInitKoin(platformModules: [analyticsModule])
+        let analyticsModule = AnalyticsModuleIosKt.provideAnalyticsModuleIos(analyticsHelper: analyticsHelper)
+        let notificationModule = NotificationModuleIosKt.provideNotificationModuleIos(oneSignalManager: oneSignalManager)
+
+        let deepLinkStateHolder = KoinInitKt.doInitKoin(platformModules: [analyticsModule, notificationModule])
+        let service = PushNotificationServiceIos(
+            analyticsHelper: analyticsHelper,
+            deepLinkStateHolder: deepLinkStateHolder
+        )
+        service.start()
+        self.pushService = service
     }
 }

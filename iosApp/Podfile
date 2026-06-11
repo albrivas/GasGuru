@@ -5,6 +5,7 @@ target 'iosApp' do
   pod 'composeApp', :path => '../composeApp'
   pod 'GooglePlaces', '~> 8.5'
   pod 'Mixpanel-swift', '~> 6.4'
+  pod 'OneSignalXCFramework', '>= 5.2.9', '< 6.0'
 end
 
 post_install do |installer|

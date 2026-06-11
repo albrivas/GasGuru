@@ -7,7 +7,6 @@ import com.gasguru.core.data.di.iosDataModule
 import com.gasguru.core.database.di.daoModule
 import com.gasguru.core.database.di.databaseModule
 import com.gasguru.core.domain.di.domainModule
-import com.gasguru.core.notifications.di.notificationModule
 import com.gasguru.core.supabase.datasource.RemoteDataSource
 import com.gasguru.core.supabase.datasource.SupabaseRemoteDataSource
 import com.gasguru.core.supabase.di.supabaseModule
@@ -19,14 +18,16 @@ import com.gasguru.feature.profile.di.profileModule
 import com.gasguru.feature.route_planner.di.routePlannerModule
 import com.gasguru.feature.station_map.di.stationMapModule
 import com.gasguru.feature.vehicle.di.vehicleModule
+import com.gasguru.navigation.deeplink.DeepLinkStateHolder
 import com.gasguru.navigation.di.navigationModule
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
-// Called from Swift as KoinInitKt.doInitKoin(platformModules:)
-fun initKoin(platformModules: List<Module>) {
-    startKoin {
+// Called from Swift as KoinInitKt.doInitKoin(platformModules:).
+// Returns DeepLinkStateHolder so Swift can forward push taps before the Compose UI is ready.
+fun initKoin(platformModules: List<Module>): DeepLinkStateHolder {
+    val koin = startKoin {
         modules(
             platformModules + listOf(
                 coroutineModule,
@@ -34,7 +35,6 @@ fun initKoin(platformModules: List<Module>) {
                 daoModule,
                 supabaseModule,
                 module { single<RemoteDataSource> { get<SupabaseRemoteDataSource>() } },
-                notificationModule,
                 iosDataModule(),
                 commonDataModule(),
                 domainModule(),
@@ -50,5 +50,6 @@ fun initKoin(platformModules: List<Module>) {
                 searchBarModule(),
             ),
         )
-    }
+    }.koin
+    return koin.get()
 }
