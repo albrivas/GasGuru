@@ -12,11 +12,61 @@ PODS:
     - jsonlogic (~> 1.2.0)
     - MixpanelSwiftCommon (~> 1.0.0)
   - MixpanelSwiftCommon (1.0.1)
+  - OneSignalXCFramework (5.5.2):
+    - OneSignalXCFramework/OneSignalComplete (= 5.5.2)
+  - OneSignalXCFramework/OneSignal (5.5.2):
+    - OneSignalXCFramework/OneSignalCore
+    - OneSignalXCFramework/OneSignalExtension
+    - OneSignalXCFramework/OneSignalLiveActivities
+    - OneSignalXCFramework/OneSignalNotifications
+    - OneSignalXCFramework/OneSignalOSCore
+    - OneSignalXCFramework/OneSignalOutcomes
+    - OneSignalXCFramework/OneSignalUser
+  - OneSignalXCFramework/OneSignalComplete (5.5.2):
+    - OneSignalXCFramework/OneSignal
+    - OneSignalXCFramework/OneSignalInAppMessages
+    - OneSignalXCFramework/OneSignalLocation
+  - OneSignalXCFramework/OneSignalCore (5.5.2)
+  - OneSignalXCFramework/OneSignalExtension (5.5.2):
+    - OneSignalXCFramework/OneSignalCore
+    - OneSignalXCFramework/OneSignalOSCore
+    - OneSignalXCFramework/OneSignalOutcomes
+  - OneSignalXCFramework/OneSignalInAppMessages (5.5.2):
+    - OneSignalXCFramework/OneSignalCore
+    - OneSignalXCFramework/OneSignalNotifications
+    - OneSignalXCFramework/OneSignalOSCore
+    - OneSignalXCFramework/OneSignalOutcomes
+    - OneSignalXCFramework/OneSignalUser
+  - OneSignalXCFramework/OneSignalLiveActivities (5.5.2):
+    - OneSignalXCFramework/OneSignalCore
+    - OneSignalXCFramework/OneSignalOSCore
+    - OneSignalXCFramework/OneSignalUser
+  - OneSignalXCFramework/OneSignalLocation (5.5.2):
+    - OneSignalXCFramework/OneSignalCore
+    - OneSignalXCFramework/OneSignalNotifications
+    - OneSignalXCFramework/OneSignalOSCore
+    - OneSignalXCFramework/OneSignalUser
+  - OneSignalXCFramework/OneSignalNotifications (5.5.2):
+    - OneSignalXCFramework/OneSignalCore
+    - OneSignalXCFramework/OneSignalExtension
+    - OneSignalXCFramework/OneSignalOSCore
+    - OneSignalXCFramework/OneSignalOutcomes
+  - OneSignalXCFramework/OneSignalOSCore (5.5.2):
+    - OneSignalXCFramework/OneSignalCore
+  - OneSignalXCFramework/OneSignalOutcomes (5.5.2):
+    - OneSignalXCFramework/OneSignalCore
+    - OneSignalXCFramework/OneSignalOSCore
+  - OneSignalXCFramework/OneSignalUser (5.5.2):
+    - OneSignalXCFramework/OneSignalCore
+    - OneSignalXCFramework/OneSignalNotifications
+    - OneSignalXCFramework/OneSignalOSCore
+    - OneSignalXCFramework/OneSignalOutcomes
 
 DEPENDENCIES:
   - composeApp (from `../composeApp`)
   - GooglePlaces (~> 8.5)
   - Mixpanel-swift (~> 6.4)
+  - OneSignalXCFramework (< 6.0, >= 5.2.9)
 
 SPEC REPOS:
   trunk:
@@ -25,6 +75,7 @@ SPEC REPOS:
     - jsonlogic
     - Mixpanel-swift
     - MixpanelSwiftCommon
+    - OneSignalXCFramework
 
 EXTERNAL SOURCES:
   composeApp:
@@ -37,7 +88,8 @@ SPEC CHECKSUMS:
   jsonlogic: 006f892470384401b8ca5b5d8d4cdadb3a0d5c9b
   Mixpanel-swift: 9eb2ea2d0463970687c984e07040669f787b7a49
   MixpanelSwiftCommon: 6fc461403945422a2e1d0989d712c0db2c26ecdb
+  OneSignalXCFramework: 2f46ff87ccefd9afe8e3b5f9fe357072191205ff
 
-PODFILE CHECKSUM: a305607774295dfd98b745d3629bcf5902fa5901
+PODFILE CHECKSUM: 48ec6e861186873555910dc13c56634f37276cf7
 
 COCOAPODS: 1.16.2
