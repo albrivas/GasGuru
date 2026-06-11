@@ -1,8 +1,11 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.gasguru.kmp.library)
     alias(libs.plugins.gasguru.koin)
     alias(libs.plugins.gasguru.proguard)
-    kotlin("native.cocoapods")
+    alias(libs.plugins.buildkonfig)
 }
 
 android {
@@ -17,17 +20,31 @@ android {
     }
 }
 
-kotlin {
-    cocoapods {
-        summary = "GasGuru Analytics — Mixpanel integration for iOS"
-        homepage = "https://github.com/gasguru/GasGuru"
-        version = "1.0"
-        ios.deploymentTarget = "15.0"
-    }
+val localProps = Properties().apply {
+    rootProject.file("local.properties").takeIf { it.exists() }
+        ?.inputStream()
+        ?.use { load(it) }
+}
 
+buildkonfig {
+    packageName = "com.gasguru.core.analytics"
+    objectName = "AnalyticsSecrets"
+
+    val mixpanelToken = localProps.getProperty("mixpanelProjectToken")
+        ?: System.getenv("MIXPANEL").orEmpty()
+
+    defaultConfigs {
+        buildConfigField(FieldSpec.Type.STRING, "MIXPANEL_TOKEN", mixpanelToken)
+    }
+}
+
+kotlin {
     sourceSets {
-        commonMain.dependencies {
-            // AnalyticsEvent, AnalyticsHelper, NoOpAnalyticsHelper — Kotlin puro
+        commonMain {
+            kotlin.srcDir(tasks.named("generateBuildKonfig"))
+            dependencies {
+                // AnalyticsEvent, AnalyticsHelper, NoOpAnalyticsHelper — Kotlin puro
+            }
         }
         androidMain.dependencies {
             implementation(libs.androidx.compose.runtime)

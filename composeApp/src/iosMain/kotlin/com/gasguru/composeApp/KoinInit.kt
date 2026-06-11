@@ -1,6 +1,5 @@
 package com.gasguru.composeApp
 
-import com.gasguru.core.analytics.di.analyticsModuleIos
 import com.gasguru.core.common.coroutineModule
 import com.gasguru.core.components.searchbar.di.searchBarModule
 import com.gasguru.core.data.di.commonDataModule
@@ -22,32 +21,34 @@ import com.gasguru.feature.station_map.di.stationMapModule
 import com.gasguru.feature.vehicle.di.vehicleModule
 import com.gasguru.navigation.di.navigationModule
 import org.koin.core.context.startKoin
+import org.koin.core.module.Module
 import org.koin.dsl.module
 
-// Called from Swift as KoinInitKt.doInitKoin() (Kotlin/Native prefixes 'init' with 'do')
-fun initKoin() {
+// Called from Swift as KoinInitKt.doInitKoin(platformModules:)
+fun initKoin(platformModules: List<Module>) {
     startKoin {
         modules(
-            analyticsModuleIos,
-            coroutineModule,
-            databaseModule,
-            daoModule,
-            supabaseModule,
-            module { single<RemoteDataSource> { get<SupabaseRemoteDataSource>() } },
-            notificationModule,
-            iosDataModule(),
-            commonDataModule(),
-            domainModule(),
-            navigationModule(),
-            appShellModule(),
-            detailStationModule(),
-            favoriteListStationModule(),
-            onboardingModule(),
-            profileModule(),
-            routePlannerModule(),
-            stationMapModule(),
-            vehicleModule(),
-            searchBarModule(),
+            platformModules + listOf(
+                coroutineModule,
+                databaseModule,
+                daoModule,
+                supabaseModule,
+                module { single<RemoteDataSource> { get<SupabaseRemoteDataSource>() } },
+                notificationModule,
+                iosDataModule(),
+                commonDataModule(),
+                domainModule(),
+                navigationModule(),
+                appShellModule(),
+                detailStationModule(),
+                favoriteListStationModule(),
+                onboardingModule(),
+                profileModule(),
+                routePlannerModule(),
+                stationMapModule(),
+                vehicleModule(),
+                searchBarModule(),
+            ),
         )
     }
 }

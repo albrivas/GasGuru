@@ -23,6 +23,7 @@ kotlin {
         framework {
             baseName = "ComposeApp"
             isStatic = true
+            export(projects.core.analytics)
         }
     }
 
@@ -30,7 +31,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core.uikit)
             implementation(projects.core.ui)
-            implementation(projects.core.analytics)
+            api(projects.core.analytics)
             implementation(projects.core.common)
             implementation(projects.core.data)
             implementation(projects.core.domain)
