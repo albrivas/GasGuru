@@ -137,8 +137,8 @@ class DetailStationViewModel(
         val station = currentStation()
         when (isFavorite) {
             true -> {
-                station?.let { analyticsHelper.trackStationFavorited(brand = it.brandStationBrandsType.name) }
                 saveFavoriteStationUseCase(stationId = id)
+                analyticsHelper.trackStationFavorited(brand = station?.brandStationBrandsType?.name.orEmpty())
             }
             false -> {
                 station?.let {
@@ -165,10 +165,10 @@ class DetailStationViewModel(
     private fun onPriceAlertClick(isEnabled: Boolean) = viewModelScope.launch {
         when (isEnabled) {
             true -> {
+                analyticsHelper.trackPriceAlertEnabled()
                 val userData = userDataUseCase().first()
                 val station = (fuelStation.value as DetailStationUiState.Success).stationModel.fuelStation
                 val price = userData.principalVehicle().fuelType.extractPrice(station)
-                analyticsHelper.trackPriceAlertEnabled()
                 addPriceAlertUseCase(stationId = id, lastNotifiedPrice = price)
             }
 
