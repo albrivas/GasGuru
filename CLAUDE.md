@@ -78,6 +78,7 @@
 | [KMP Phase 9D](docs/KMP_PHASE9D.md) | iOS PlacesRepository: Google Places SDK via CocoaPods, BuildKonfig para API key, GMSPlacesClient cinterop, pod en iosApp/Podfile, GOOGLE_API_KEY Koin qualifier real |
 | [KMP Phase 9E](docs/KMP_PHASE9E.md) | iOS detail station platform actions: UIAlertController action sheet para Maps (Apple/Google/Waze con canOpenURL), UIActivityViewController para share, UNUserNotificationCenter con branching de status (NotDetermined → request, Denied → openSettings), helper topMostViewController, LSApplicationQueriesSchemes en Info.plist |
 | [KMP Phase 9F](docs/KMP_PHASE9F.md) | iOS in-app review con StoreKit: SKStoreReviewController.requestReviewInScene, fire-and-forget onReviewCompleted, refactor InAppReviewManager de expect/actual class a interface en commonMain |
+| [KMP Phase 9G](docs/KMP_PHASE9G.md) | iOS analytics Mixpanel: Swift bridge via `@ObjCName` en interfaz Kotlin → protocolo ObjC → clase Swift implementa con Mixpanel-swift 6.4. `KoinInit` acepta `AnalyticsHelper` como parámetro. Debug usa `LogAnalyticsHelperIos`, release usa Mixpanel. |
 | [Widget](docs/WIDGET.md) | Widget de pantalla de inicio con gasolineras favoritas: arquitectura Glance + WorkManager, ciclo de vida y limitaciones |
 | [Analytics](docs/ANALYTICS.md) | Sistema de analíticas con Mixpanel: arquitectura, catálogo de eventos, uso en ViewModels y Composables |
 | [Git Worktree](docs/GIT_WORKTREE.md) | Cómo crear y eliminar worktrees, el problema de local.properties y cómo resolverlo con symlinks |
