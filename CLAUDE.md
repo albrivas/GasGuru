@@ -80,6 +80,7 @@
 | [KMP Phase 9F](docs/KMP_PHASE9F.md) | iOS in-app review con StoreKit: SKStoreReviewController.requestReviewInScene, fire-and-forget onReviewCompleted, refactor InAppReviewManager de expect/actual class a interface en commonMain |
 | [KMP Phase 9G](docs/KMP_PHASE9G.md) | iOS analytics Mixpanel: Swift bridge via `@ObjCName` en interfaz Kotlin → protocolo ObjC → clase Swift implementa con Mixpanel-swift 6.4. `KoinInit` acepta `AnalyticsHelper` como parámetro. Debug usa `LogAnalyticsHelperIos`, release usa Mixpanel. |
 | [KMP Phase 9H](docs/KMP_PHASE9H.md) | iOS push notifications OneSignal: Swift bridge (mismo patrón 9G), pod `OneSignalXCFramework >= 5.2.9`, `NotificationService.init()` → `start()`, `initKoin()` devuelve `DeepLinkStateHolder`, primer `iosApp.entitlements` del proyecto |
+| [iOS Bridge](docs/IOS_BRIDGE.md) | Contrato único Swift → KMP: `IosBridge` en `composeApp/iosMain`, cómo añadir métodos, cuándo usarlo vs otros patrones |
 | [Widget](docs/WIDGET.md) | Widget de pantalla de inicio con gasolineras favoritas: arquitectura Glance + WorkManager, ciclo de vida y limitaciones |
 | [Analytics](docs/ANALYTICS.md) | Sistema de analíticas con Mixpanel: arquitectura, catálogo de eventos, uso en ViewModels y Composables |
 | [Git Worktree](docs/GIT_WORKTREE.md) | Cómo crear y eliminar worktrees, el problema de local.properties y cómo resolverlo con symlinks |
