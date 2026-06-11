@@ -1,9 +1,16 @@
 package com.gasguru.core.analytics
 
+import kotlin.experimental.ExperimentalObjCName
+import kotlin.native.ObjCName
+
+@OptIn(ExperimentalObjCName::class)
+@ObjCName("AnalyticsEvent", exact = true)
 data class AnalyticsEvent(
     val type: String,
     val extras: List<Param> = emptyList(),
 ) {
+    @OptIn(ExperimentalObjCName::class)
+    @ObjCName("AnalyticsEventParam", exact = true)
     data class Param(val key: String, val value: String)
 
     val category: String
