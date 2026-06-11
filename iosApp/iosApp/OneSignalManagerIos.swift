@@ -6,7 +6,7 @@ final class OneSignalManagerIos: NSObject, OneSignalManager {
 
     init(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
         super.init()
-        let appId = NotificationsSecrets.shared.ONESIGNAL_APP_ID
+        let appId = NotificationModuleKt.getOneSignalAppId()
         #if DEBUG
         OneSignal.Debug.setLogLevel(.LL_VERBOSE)
         #else
@@ -19,7 +19,7 @@ final class OneSignalManagerIos: NSObject, OneSignalManager {
         if enable {
             OneSignal.Notifications.requestPermission({ _ in }, fallbackToSettings: false)
         }
-        OneSignal.User.addTag("enable_stations_alerts", String(enable))
+        OneSignal.User.addTag(key: "enable_stations_alerts", value: String(enable))
     }
 
     func getPlayerId() async throws -> String? {

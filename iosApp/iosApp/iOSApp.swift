@@ -12,6 +12,7 @@ struct iOSApp: App {
 
 class AppDelegate: NSObject, UIApplicationDelegate {
 
+    private var bridge: IosBridge?
     private var pushService: PushNotificationServiceIos?
 
     func application(
@@ -34,14 +35,12 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         let oneSignalManager = OneSignalManagerIos(launchOptions: launchOptions)
 
         let analyticsModule = AnalyticsModuleIosKt.provideAnalyticsModuleIos(analyticsHelper: analyticsHelper)
-        let notificationModule = NotificationModuleIosKt.provideNotificationModuleIos(oneSignalManager: oneSignalManager)
+        let notificationModule = NotificationModuleKt.provideNotificationModuleIos(oneSignalManager: oneSignalManager)
 
-        let deepLinkStateHolder = KoinInitKt.doInitKoin(platformModules: [analyticsModule, notificationModule])
-        let service = PushNotificationServiceIos(
-            analyticsHelper: analyticsHelper,
-            deepLinkStateHolder: deepLinkStateHolder
-        )
+        bridge = KoinInitKt.doInitKoin(platformModules: [analyticsModule, notificationModule])
+
+        let service = PushNotificationServiceIos(analyticsHelper: analyticsHelper, bridge: bridge!)
         service.start()
-        self.pushService = service
+        pushService = service
     }
 }

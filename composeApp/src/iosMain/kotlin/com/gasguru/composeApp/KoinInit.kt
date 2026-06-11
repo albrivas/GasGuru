@@ -25,8 +25,8 @@ import org.koin.core.module.Module
 import org.koin.dsl.module
 
 // Called from Swift as KoinInitKt.doInitKoin(platformModules:).
-// Returns DeepLinkStateHolder so Swift can forward push taps before the Compose UI is ready.
-fun initKoin(platformModules: List<Module>): DeepLinkStateHolder {
+// Returns IosBridge — the single contract between Swift and KMP internals.
+fun initKoin(platformModules: List<Module>): IosBridge {
     val koin = startKoin {
         modules(
             platformModules + listOf(
@@ -51,5 +51,5 @@ fun initKoin(platformModules: List<Module>): DeepLinkStateHolder {
             ),
         )
     }.koin
-    return koin.get()
+    return IosBridge(deepLinkStateHolder = koin.get<DeepLinkStateHolder>())
 }

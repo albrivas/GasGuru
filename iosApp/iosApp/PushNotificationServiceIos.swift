@@ -4,11 +4,11 @@ import OneSignalFramework
 final class PushNotificationServiceIos: NSObject, NotificationService, OSNotificationClickListener {
 
     private let analyticsHelper: AnalyticsHelper
-    private let deepLinkStateHolder: DeepLinkStateHolder
+    private let bridge: IosBridge
 
-    init(analyticsHelper: AnalyticsHelper, deepLinkStateHolder: DeepLinkStateHolder) {
+    init(analyticsHelper: AnalyticsHelper, bridge: IosBridge) {
         self.analyticsHelper = analyticsHelper
-        self.deepLinkStateHolder = deepLinkStateHolder
+        self.bridge = bridge
         super.init()
     }
 
@@ -33,6 +33,6 @@ final class PushNotificationServiceIos: NSObject, NotificationService, OSNotific
             analyticsHelper,
             notificationType: "price_alert"
         )
-        deepLinkStateHolder.setPendingStationId(stationId: resolvedId)
+        bridge.handlePushTap(stationId: resolvedId)
     }
 }
