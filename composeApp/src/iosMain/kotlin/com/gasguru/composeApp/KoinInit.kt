@@ -1,5 +1,6 @@
 package com.gasguru.composeApp
 
+import com.gasguru.composeApp.bridge.IosBridge
 import com.gasguru.core.common.coroutineModule
 import com.gasguru.core.components.searchbar.di.searchBarModule
 import com.gasguru.core.data.di.commonDataModule
@@ -7,7 +8,6 @@ import com.gasguru.core.data.di.iosDataModule
 import com.gasguru.core.database.di.daoModule
 import com.gasguru.core.database.di.databaseModule
 import com.gasguru.core.domain.di.domainModule
-import com.gasguru.core.notifications.di.notificationModule
 import com.gasguru.core.supabase.datasource.RemoteDataSource
 import com.gasguru.core.supabase.datasource.SupabaseRemoteDataSource
 import com.gasguru.core.supabase.di.supabaseModule
@@ -24,9 +24,10 @@ import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
-// Called from Swift as KoinInitKt.doInitKoin(platformModules:)
-fun initKoin(platformModules: List<Module>) {
-    startKoin {
+// Called from Swift as KoinInitKt.doInitKoin(platformModules:).
+// Returns IosBridge — the single contract between Swift and KMP internals.
+fun initKoin(platformModules: List<Module>): IosBridge {
+    val koin = startKoin {
         modules(
             platformModules + listOf(
                 coroutineModule,
@@ -34,7 +35,6 @@ fun initKoin(platformModules: List<Module>) {
                 daoModule,
                 supabaseModule,
                 module { single<RemoteDataSource> { get<SupabaseRemoteDataSource>() } },
-                notificationModule,
                 iosDataModule(),
                 commonDataModule(),
                 domainModule(),
@@ -50,5 +50,6 @@ fun initKoin(platformModules: List<Module>) {
                 searchBarModule(),
             ),
         )
-    }
+    }.koin
+    return koin.get<IosBridge>()
 }

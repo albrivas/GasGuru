@@ -88,7 +88,7 @@ class GasGuruApplication : Application() {
     }
 
     private fun initPushNotifications() {
-        pushNotificationService.init()
+        pushNotificationService.start()
     }
 
     private fun initSyncManager() {

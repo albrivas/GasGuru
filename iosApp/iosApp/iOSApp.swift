@@ -11,15 +11,19 @@ struct iOSApp: App {
 }
 
 class AppDelegate: NSObject, UIApplicationDelegate {
+
+    private var bridge: IosBridge?
+    private var pushService: PushNotificationServiceIos?
+
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
-        initKoin()
+        initKoin(launchOptions: launchOptions)
         return true
     }
 
-    private func initKoin() {
+    private func initKoin(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
         let analyticsHelper: AnalyticsHelper
 
         #if DEBUG
@@ -28,8 +32,22 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         analyticsHelper = MixpanelAnalyticsHelperIos()
         #endif
 
-        let analyticsModule = AnalyticsModuleIosKt.provideAnalyticsModuleIos(analyticsHelper: analyticsHelper)
+        let oneSignalManager = OneSignalManagerIos(launchOptions: launchOptions)
 
-        KoinInitKt.doInitKoin(platformModules: [analyticsModule])
+        let analyticsModule = AnalyticsModuleIosKt.provideAnalyticsModuleIos(analyticsHelper: analyticsHelper)
+        let notificationModule = NotificationModuleKt.provideNotificationModuleIos(oneSignalManager: oneSignalManager)
+
+        bridge = KoinInitKt.doInitKoin(platformModules: [analyticsModule, notificationModule])
+
+        let service = PushNotificationServiceIos(analyticsHelper: analyticsHelper, bridge: bridge!)
+        service.start()
+        pushService = service
+
+        // Test push notification tap handling by simulating a tap after a delay. Remove this in production.
+        // #if DEBUG
+        // DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+        //     self.bridge?.handlePushTap(stationId: 1234)
+        // }
+        // #endif
     }
 }

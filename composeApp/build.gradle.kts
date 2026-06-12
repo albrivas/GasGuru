@@ -24,6 +24,7 @@ kotlin {
             baseName = "ComposeApp"
             isStatic = true
             export(projects.core.analytics)
+            export(projects.core.notifications)
         }
     }
 
@@ -56,7 +57,7 @@ kotlin {
         iosMain.dependencies {
             implementation(projects.core.database)
             implementation(projects.core.supabase)
-            implementation(projects.core.notifications)
+            api(projects.core.notifications)
             implementation(projects.core.components)
         }
         androidUnitTest.dependencies {
