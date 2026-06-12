@@ -5,6 +5,6 @@ import kotlin.native.ObjCName
 
 @OptIn(ExperimentalObjCName::class)
 @ObjCName("IosBridge", exact = true)
-interface IosBridge {
+fun interface IosBridge {
     fun handlePushTap(stationId: Int)
 }
