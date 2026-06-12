@@ -16,10 +16,10 @@ final class MixpanelAnalyticsHelperIos: NSObject, AnalyticsHelper {
         Mixpanel.mainInstance().track(event: event.type, properties: properties)
     }
 
-    func updateSuperProperties(properties: [AnyHashable: Any]) {
+    func updateSuperProperties(properties: [String: Any]) {
         let mixpanelProps = properties.reduce(into: [String: MixpanelType]()) { result, pair in
-            if let key = pair.key as? String, let value = pair.value as? MixpanelType {
-                result[key] = value
+            if let value = pair.value as? MixpanelType {
+                result[pair.key] = value
             }
         }
         Mixpanel.mainInstance().registerSuperProperties(mixpanelProps)
