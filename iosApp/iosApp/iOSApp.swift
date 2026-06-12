@@ -42,5 +42,12 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         let service = PushNotificationServiceIos(analyticsHelper: analyticsHelper, bridge: bridge!)
         service.start()
         pushService = service
+
+        // Test push notification tap handling by simulating a tap after a delay. Remove this in production.
+        // #if DEBUG
+        // DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+        //     self.bridge?.handlePushTap(stationId: 1234)
+        // }
+        // #endif
     }
 }
