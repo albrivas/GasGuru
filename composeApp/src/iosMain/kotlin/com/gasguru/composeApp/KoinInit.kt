@@ -1,5 +1,6 @@
 package com.gasguru.composeApp
 
+import com.gasguru.composeApp.bridge.IosBridge
 import com.gasguru.core.common.coroutineModule
 import com.gasguru.core.components.searchbar.di.searchBarModule
 import com.gasguru.core.data.di.commonDataModule
@@ -18,7 +19,6 @@ import com.gasguru.feature.profile.di.profileModule
 import com.gasguru.feature.route_planner.di.routePlannerModule
 import com.gasguru.feature.station_map.di.stationMapModule
 import com.gasguru.feature.vehicle.di.vehicleModule
-import com.gasguru.navigation.deeplink.DeepLinkStateHolder
 import com.gasguru.navigation.di.navigationModule
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
@@ -51,5 +51,5 @@ fun initKoin(platformModules: List<Module>): IosBridge {
             ),
         )
     }.koin
-    return IosBridge(deepLinkStateHolder = koin.get<DeepLinkStateHolder>())
+    return koin.get<IosBridge>()
 }

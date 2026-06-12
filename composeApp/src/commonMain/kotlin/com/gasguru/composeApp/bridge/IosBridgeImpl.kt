@@ -1,11 +1,12 @@
-package com.gasguru.composeApp
+package com.gasguru.composeApp.bridge
 
 import com.gasguru.navigation.deeplink.DeepLinkStateHolder
 
-class IosBridge internal constructor(
+class IosBridgeImpl(
     private val deepLinkStateHolder: DeepLinkStateHolder,
-) {
-    fun handlePushTap(stationId: Int) {
+) : IosBridge {
+
+    override fun handlePushTap(stationId: Int) {
         deepLinkStateHolder.setPendingStationId(stationId = stationId)
     }
 }
