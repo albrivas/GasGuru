@@ -54,6 +54,15 @@ kotlin {
             implementation(projects.core.testing)
             implementation(projects.core.database)
         }
+        androidMain.dependencies {
+            implementation(libs.koin.android)
+            implementation(projects.core.analytics)
+            implementation(projects.core.database)
+            implementation(projects.core.network)
+            implementation(projects.core.notifications)
+            implementation(projects.core.supabase)
+            implementation(projects.core.components)
+        }
         iosMain.dependencies {
             implementation(projects.core.database)
             implementation(projects.core.supabase)

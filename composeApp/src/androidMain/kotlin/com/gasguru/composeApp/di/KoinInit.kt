@@ -1,15 +1,18 @@
-package com.gasguru.composeApp
+package com.gasguru.composeApp.di
 
-import com.gasguru.composeApp.bridge.IosBridge
+import android.app.Application
+import com.gasguru.core.analytics.di.analyticsModule
 import com.gasguru.core.common.coroutineModule
 import com.gasguru.core.components.searchbar.di.searchBarModule
+import com.gasguru.core.data.di.androidDataModule
 import com.gasguru.core.data.di.commonDataModule
-import com.gasguru.core.data.di.iosDataModule
+import com.gasguru.core.data.di.dataProviderModule
 import com.gasguru.core.database.di.daoModule
 import com.gasguru.core.database.di.databaseModule
 import com.gasguru.core.domain.di.domainModule
-import com.gasguru.core.supabase.datasource.RemoteDataSource
-import com.gasguru.core.supabase.datasource.SupabaseRemoteDataSource
+import com.gasguru.core.network.di.networkModule
+import com.gasguru.core.network.di.placesModule
+import com.gasguru.core.notifications.di.notificationModule
 import com.gasguru.core.supabase.di.supabaseModule
 import com.gasguru.di.appShellModule
 import com.gasguru.feature.detail_station.di.detailStationModule
@@ -20,36 +23,47 @@ import com.gasguru.feature.route_planner.di.routePlannerModule
 import com.gasguru.feature.station_map.di.stationMapModule
 import com.gasguru.feature.vehicle.di.vehicleModule
 import com.gasguru.navigation.di.navigationModule
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
+import org.koin.core.logger.Level
 import org.koin.core.module.Module
-import org.koin.dsl.module
 
-// Called from Swift as KoinInitKt.doInitKoin(platformModules:).
-// Returns IosBridge — the single contract between Swift and KMP internals.
-fun initKoin(platformModules: List<Module>): IosBridge {
-    val koin = startKoin {
+// Called from GasGuruApplication.initKoin(). platformModules covers flavor-specific
+// (remoteDataSourceModule) and app-specific (appModule with Widget + MixpanelAPI) bindings.
+fun initKoin(
+    application: Application,
+    platformModules: List<Module> = emptyList(),
+    enableDebug: Boolean = false,
+) {
+    startKoin {
+        androidLogger(level = if (enableDebug) Level.DEBUG else Level.ERROR)
+        androidContext(application)
         modules(
             platformModules + listOf(
+                analyticsModule,
                 coroutineModule,
                 databaseModule,
                 daoModule,
+                networkModule(),
+                placesModule(),
                 supabaseModule,
-                module { single<RemoteDataSource> { get<SupabaseRemoteDataSource>() } },
-                iosDataModule(),
+                notificationModule,
                 commonDataModule(),
+                androidDataModule(),
+                dataProviderModule(),
                 domainModule(),
                 navigationModule(),
                 appShellModule(),
+                stationMapModule(),
                 detailStationModule(),
                 favoriteListStationModule(),
-                onboardingModule(),
                 profileModule(),
                 routePlannerModule(),
-                stationMapModule(),
+                onboardingModule(),
                 vehicleModule(),
                 searchBarModule(),
             ),
         )
-    }.koin
-    return koin.get<IosBridge>()
+    }
 }
