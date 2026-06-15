@@ -1400,9 +1400,9 @@ Documentar bugs en GitHub issues etiqueta `ios`. Cuando el checklist pase → **
 
 ---
 
-### Post-Phase 9: Phase 8E (limpieza `:app`)
+### Post-Phase 9: Phase 8E (limpieza `:app`) ✅ COMPLETADA
 
-Tras Phase 9, retomar la idea de **mover `initKoin()` Android** de `:app` → `composeApp/androidMain` como espejo del `KoinInit.kt` iOS, **mover `SessionAnalyticsExt`** a `commonMain`, y **reducir deps de `:app/build.gradle.kts`**. Mucho más rápido y seguro tras Phase 9, cuando la lista de módulos en `KoinInit` Android sea el espejo exacto del iOS.
+`initKoin()` Android movido de `:app/GasGuruApplication` → `composeApp/androidMain/KoinInit.kt` como espejo del `KoinInit.kt` iOS. `SessionAnalyticsExt` movido a `composeApp/commonMain`. Deps redundantes de `:app/build.gradle.kts` eliminadas (features + varios `core.*` que ya llegan transitivamente). `KoinModulesTest` en `:app` mantiene acceso a todos los módulos vía `testImplementation`. Ver `docs/KMP_PHASE8E.md`.
 
 ---
 
