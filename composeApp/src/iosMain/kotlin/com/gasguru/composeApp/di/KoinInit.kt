@@ -1,4 +1,4 @@
-package com.gasguru.composeApp
+package com.gasguru.composeApp.di
 
 import com.gasguru.composeApp.bridge.IosBridge
 import com.gasguru.core.common.coroutineModule

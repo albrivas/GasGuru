@@ -1,4 +1,4 @@
-package com.gasguru.composeApp
+package com.gasguru.composeApp.di
 
 import android.app.Application
 import com.gasguru.core.analytics.di.analyticsModule

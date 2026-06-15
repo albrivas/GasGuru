@@ -6,7 +6,7 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import com.gasguru.composeApp.initKoin
+import com.gasguru.composeApp.di.initKoin
 import com.gasguru.core.data.sync.SyncManager
 import com.gasguru.core.notifications.NotificationService
 import com.gasguru.di.appModule
