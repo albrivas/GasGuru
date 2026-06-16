@@ -221,8 +221,6 @@ jobs:
             ./gradlew connectedCheck
             adb install app/build/outputs/apk/prod/release/app-prod-release.apk
             adb shell settings put system system_locales es-ES
-            adb shell am broadcast -a android.intent.action.LOCALE_CHANGED --receiver-foreground
-            sleep 3
             maestro test .maestro/config.yaml
 
       - name: Upload Maestro test results and logcat
