@@ -2,14 +2,14 @@ appId: com.gasguru
 
 name: "Onboarding flow"
 ---
-- tapOn: "Continue"
-- tapOn: "Continue"
-- tapOn: "Continue"
-- tapOn: "Start"
+- tapOn: "Continuar"
+- tapOn: "Continuar"
+- tapOn: "Continuar"
+- tapOn: "Empezar"
 - tapOn: "SP 95"
-- tapOn: "Continue"
+- tapOn: "Continuar"
 - tapOn: 40 L
-- tapOn: "Continue"
+- tapOn: "Continuar"
 - waitForAnimationToEnd
 - assertVisible:
     id: "search_bar"
