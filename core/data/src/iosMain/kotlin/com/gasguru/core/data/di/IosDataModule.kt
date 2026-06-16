@@ -12,10 +12,10 @@ import com.gasguru.core.data.repository.location.LocationTrackerIos
 import com.gasguru.core.data.repository.places.PlacesRepository
 import com.gasguru.core.data.repository.places.PlacesRepositoryIos
 import com.gasguru.core.data.repository.route.RoutesRepository
+import com.gasguru.core.data.repository.route.RoutesRepositoryIos
 import com.gasguru.core.data.util.NWPathMonitorNetworkMonitor
 import com.gasguru.core.data.util.NetworkMonitor
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.flowOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -34,7 +34,9 @@ fun iosDataModule() = module {
         GMSPlacesClient.provideAPIKey(DataSecrets.PLACES_API_KEY_IOS)
         PlacesRepositoryIos(ioDispatcher = get<CoroutineDispatcher>(named(KoinQualifiers.IO_DISPATCHER)))
     }
-    // Routes API requires iOS-specific Ktor client + API key setup (pending Phase 9D).
-    // No-op: the map and route-planner work, but no polyline is drawn on iOS yet.
-    single<RoutesRepository> { RoutesRepository { _, _ -> flowOf(null) } }
+    single<RoutesRepository> {
+        RoutesRepositoryIos(
+            ioDispatcher = get<CoroutineDispatcher>(named(KoinQualifiers.IO_DISPATCHER)),
+        )
+    }
 }

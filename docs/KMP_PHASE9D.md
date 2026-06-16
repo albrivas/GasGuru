@@ -132,6 +132,29 @@ pod install  (iosApp/)                                     # ✅ GooglePlaces 8.
 
 ---
 
+## Routes iOS (post-fix)
+
+El stub `RoutesRepository { _, _ -> flowOf(null) }` de `IosDataModule` se cerró en un fix posterior a Phase 9D usando **`MKDirections`** (MapKit nativo), alineado con la elección de MapKit de Phase 9C.
+
+### Decisión técnica: MKDirections (no Google Routes API)
+
+El mapa iOS es MapKit → el routing usa `MKDirections` para coherencia:
+- Sin API key, sin Ktor, sin pods — cinterop automático de `platform.MapKit`.
+- `callbackFlow + awaitClose` (mismo patrón de 9A/9B/9C) sobre `calculateDirectionsWithCompletionHandler`.
+- `MKRoute.polyline.toLatLngList()` via `allocArray<CLLocationCoordinate2D>` + `getCoordinates(_:range:)` + `NSMakeRange` — mismo patrón que `createMKPolyline` en `Mappers.kt`.
+- Distancia/duración formateadas con `MKDistanceFormatter` y `NSDateComponentsFormatter` (locale-aware).
+
+### Archivos añadidos
+
+| Archivo | Descripción |
+|---------|-------------|
+| `core/data/src/iosMain/.../repository/route/RoutesRepositoryIos.kt` | `MKDirections` + `callbackFlow` |
+| `core/data/src/iosMain/.../repository/route/MKRouteMapper.kt` | `MKRoute → Route`, `MKPolyline → List<LatLng>` |
+
+`IosDataModule.kt` sustituye el stub por `RoutesRepositoryIos(ioDispatcher = ...)`.
+
+---
+
 ## Próximos pasos
 
 - **Phase 9C.2** — Map polish iOS: clustering + custom markers con precio/logo en MapKit

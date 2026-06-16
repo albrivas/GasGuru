@@ -53,6 +53,7 @@ import platform.MapKit.addOverlay
 import platform.MapKit.removeOverlay
 import platform.UIKit.UIColor
 import platform.UIKit.UIImage
+import platform.UIKit.UIUserInterfaceStyle
 import platform.darwin.NSObject
 
 private const val STATION_MARKER_REUSE_ID = "station_marker"
@@ -76,6 +77,7 @@ actual fun PlatformMapView(
     val currentOnStationClick by rememberUpdatedState(onStationClick)
     val currentOnMapCentered by rememberUpdatedState(onMapCentered)
     val currentOnUserLocationCentered by rememberUpdatedState(onUserLocationCentered)
+    val isDark = GasGuruTheme.colors.isDark
 
     val markerImages = remember { mutableStateMapOf<Int, UIImage>() }
 
@@ -186,6 +188,9 @@ actual fun PlatformMapView(
         UIKitView<MKMapView>(
             factory = { mapView },
             update = { mv ->
+                mv.overrideUserInterfaceStyle =
+                    if (isDark) UIUserInterfaceStyle.UIUserInterfaceStyleDark
+                    else UIUserInterfaceStyle.UIUserInterfaceStyleLight
                 mv.showsUserLocation = isLocationPermissionGranted
 
                 // Diff annotations: add new, remove stale
