@@ -13,13 +13,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.components.fuelItem.FuelStationItem
 import com.gasguru.core.uikit.components.fuelItem.FuelStationItemModel
 import com.gasguru.core.uikit.components.swipe.SwipeItem
 import com.gasguru.core.uikit.components.swipe.SwipeItemModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
+import com.gasguru.core.uikit.utils.TestTags
+import com.gasguru.core.uikit.utils.maestroTestTag
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Composable
@@ -48,7 +49,7 @@ fun StationList(
             .border(1.dp, GasGuruTheme.colors.neutral300, RoundedCornerShape(8.dp))
             .background(color = GasGuruTheme.colors.neutralWhite)
             .wrapContentHeight()
-            .testTag(testTag),
+            .maestroTestTag(testTag),
     ) {
         itemsIndexed(
             items = stations,
@@ -57,7 +58,7 @@ fun StationList(
             val stationItem = @Composable {
                 FuelStationItem(
                     modifier = Modifier
-                        .testTag("item $index")
+                        .maestroTestTag(TestTags.Home.stationItem(index))
                         .animateItem(),
                     model = FuelStationItemModel(
                         idServiceStation = item.idServiceStation,

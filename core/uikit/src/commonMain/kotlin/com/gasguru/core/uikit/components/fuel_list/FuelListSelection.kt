@@ -11,8 +11,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import com.gasguru.core.uikit.utils.maestroTestTag
 import com.gasguru.core.uikit.components.selectedItem.SelectedItem
 import com.gasguru.core.uikit.components.selectedItem.SelectedItemModel
 import com.gasguru.core.uikit.generated.resources.Res
@@ -36,7 +36,7 @@ fun FuelListSelection(
     ) {
         itemsIndexed(list) { index, fuel ->
             SelectedItem(
-                modifier = Modifier.testTag("list_item_$index"),
+                modifier = Modifier.maestroTestTag("list_item_$index"),
                 model = SelectedItemModel(
                     title = fuel.nameRes,
                     isSelected = fuel.nameRes == selectedFuel,
