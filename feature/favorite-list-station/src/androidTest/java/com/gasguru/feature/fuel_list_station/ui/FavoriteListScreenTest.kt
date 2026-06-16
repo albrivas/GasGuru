@@ -54,7 +54,7 @@ class FavoriteListScreenTest : BaseTest() {
             )
         }
 
-        onNodeWithTag(testTag = "item 0").isDisplayed()
+        onNodeWithTag(testTag = "home_station_item_0").isDisplayed()
     }
 
     @Test
@@ -75,8 +75,8 @@ class FavoriteListScreenTest : BaseTest() {
             )
         }
 
-        onNodeWithTag(testTag = "item 0").isDisplayed()
-        onNodeWithTag(testTag = "item 0").performTouchInput { swipeLeft() }
-        onNodeWithTag(testTag = "item 0").isNotDisplayed()
+        onNodeWithTag(testTag = "home_station_item_0").isDisplayed()
+        onNodeWithTag(testTag = "home_station_item_0").performTouchInput { swipeLeft() }
+        onNodeWithTag(testTag = "home_station_item_0").isNotDisplayed()
     }
 }
