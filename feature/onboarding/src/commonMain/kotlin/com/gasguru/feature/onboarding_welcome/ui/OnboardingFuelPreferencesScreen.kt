@@ -16,8 +16,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
+import com.gasguru.core.uikit.utils.TestTags
+import com.gasguru.core.uikit.utils.maestroTestTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.model.data.FuelType
@@ -150,7 +151,7 @@ internal fun OnboardingFuelPreferences(
                 },
                 enabled = selectedFuel != null,
                 text = stringResource(Res.string.onboarding_continue),
-                modifier = Modifier.testTag("button_next_onboarding"),
+                modifier = Modifier.maestroTestTag(TestTags.Onboarding.FUEL_NEXT),
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(

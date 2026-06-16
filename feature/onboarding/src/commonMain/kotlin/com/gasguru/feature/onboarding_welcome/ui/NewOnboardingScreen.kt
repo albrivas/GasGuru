@@ -32,6 +32,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.gasguru.core.uikit.utils.TestTags
+import com.gasguru.core.uikit.utils.maestroTestTag
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.uikit.components.GasGuruButton
 import com.gasguru.core.uikit.theme.GasGuruTheme
@@ -243,7 +245,9 @@ private fun OnboardingBottomSection(
                 text = stringResource(
                     if (isLastPage) Res.string.onboarding_start else Res.string.onboarding_continue,
                 ),
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .maestroTestTag(TestTags.Onboarding.CONTINUE_BUTTON),
             )
         }
     }
