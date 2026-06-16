@@ -3,11 +3,16 @@ name: "Home station detail flow"
 ---
 - assertVisible:
     id: "search_bar"
-- tapOn: "Mostrar lista"
+- tapOn:
+    id: "home_show_list_button"
 - waitForAnimationToEnd
-- tapOn: "Gasolinera 0"
+- tapOn:
+    id: "home_station_item_0"
 - waitForAnimationToEnd
-- assertVisible: "Back to map"
-- tapOn: "Back to map"
+- assertVisible:
+    id: "detail_back_to_map"
+- tapOn:
+    id: "detail_back_to_map"
 - waitForAnimationToEnd
-- assertVisible: "Estaciones cercanas"
+- assertVisible:
+    id: "search_bar"
