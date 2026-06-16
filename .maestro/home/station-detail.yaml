@@ -1,0 +1,13 @@
+appId: com.gasguru
+name: "Home station detail flow"
+---
+- assertVisible:
+    id: "search_bar"
+- tapOn: "Mostrar lista"
+- waitForAnimationToEnd
+- tapOn: "Gasolinera 0"
+- waitForAnimationToEnd
+- assertVisible: "Back to map"
+- tapOn: "Back to map"
+- waitForAnimationToEnd
+- assertVisible: "Estaciones cercanas"

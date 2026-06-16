@@ -1,0 +1,45 @@
+appId: com.gasguru
+name: "Plan route Talavera to Madrid"
+---
+- assertVisible: "Estaciones cercanas"
+- swipe:
+    from:
+      text: "Precio"
+    direction: DOWN
+- waitForAnimationToEnd
+- tapOn: "Create route"
+- waitForAnimationToEnd
+- assertVisible: "Planifica tu ruta"
+- tapOn: "Origen"
+- waitForAnimationToEnd
+- inputText: "Talavera de la Reina"
+- extendedWaitUntil:
+    visible:
+      text: "Talavera de la Reina, España"
+    timeout: 10000
+- tapOn: "Talavera de la Reina, España"
+- waitForAnimationToEnd
+- tapOn: "Destino"
+- waitForAnimationToEnd
+- inputText: "Madrid"
+- extendedWaitUntil:
+    visible:
+      text: "Madrid, España"
+    timeout: 10000
+- tapOn: "Madrid, España"
+- waitForAnimationToEnd
+- tapOn: "Iniciar ruta"
+- extendedWaitUntil:
+    visible:
+      id: "route-destination"
+    timeout: 15000
+- assertVisible:
+    id: "route-destination"
+- assertVisible:
+    id: "route-info"
+- tapOn:
+    id: "route-close-button"
+- waitForAnimationToEnd
+- assertNotVisible:
+    id: "route-destination"
+- assertVisible: "Estaciones cercanas"

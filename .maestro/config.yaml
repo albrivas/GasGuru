@@ -2,4 +2,11 @@ appId: com.gasguru
 ---
 - launchApp:
     clearState: true
+    permissions:
+      location: allow
+- setLocation:
+    latitude: 40.4168
+    longitude: -3.7038
 - runFlow: "onboarding/onboarding.yaml"
+- runFlow: "home/station-detail.yaml"
+- runFlow: "route-planner/talavera-to-madrid.yaml"
