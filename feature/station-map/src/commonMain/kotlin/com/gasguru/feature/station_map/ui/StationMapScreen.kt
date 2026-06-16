@@ -95,6 +95,8 @@ import com.gasguru.feature.station_map.generated.resources.tab_distance
 import com.gasguru.feature.station_map.generated.resources.tab_price
 import com.gasguru.feature.station_map.platform.PlatformMapView
 import com.gasguru.feature.station_map.platform.rememberLocationPermissionState
+import com.gasguru.core.uikit.utils.TestTags
+import com.gasguru.core.uikit.utils.maestroTestTag
 import com.gasguru.navigation.LocalDeepLinkStateHolder
 import com.gasguru.navigation.LocalNavigationManager
 import com.gasguru.navigation.manager.NavigationDestination
@@ -268,11 +270,13 @@ internal fun StationMapScreen(
                     )
                     if (isSheetPartiallyExpanded(scaffoldState)) {
                         Text(
-                            modifier = Modifier.clickable {
-                                coroutine.launch {
-                                    scaffoldState.bottomSheetState.expand()
-                                }
-                            },
+                            modifier = Modifier
+                                .maestroTestTag(TestTags.Home.SHOW_LIST_BUTTON)
+                                .clickable {
+                                    coroutine.launch {
+                                        scaffoldState.bottomSheetState.expand()
+                                    }
+                                },
                             text = stringResource(StationMapRes.string.sheet_button),
                             style = GasGuruTheme.typography.baseRegular,
                             color = GasGuruTheme.colors.primary600,
@@ -419,7 +423,7 @@ fun FloatingButtons(
             if (showRoutePlannerButton) {
                 FloatingActionButton(
                     onClick = navigateToRoutePlanner,
-                    modifier = modifier,
+                    modifier = modifier.maestroTestTag(TestTags.Home.CREATE_ROUTE_FAB),
                     containerColor = GasGuruTheme.colors.primary100,
                     contentColor = GasGuruTheme.colors.neutralBlack,
                 ) {
