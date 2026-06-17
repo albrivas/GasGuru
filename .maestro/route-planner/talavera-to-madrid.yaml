@@ -14,9 +14,11 @@ name: "Plan route Talavera to Madrid"
 - inputText: "Talavera de la Reina"
 - extendedWaitUntil:
     visible:
-      text: "Talavera de la Reina, España"
+      text: "Talavera de la Reina"
     timeout: 10000
-- tapOn: "Talavera de la Reina, España"
+- tapOn:
+    text: "Talavera de la Reina"
+    index: 0
 - waitForAnimationToEnd
 - tapOn:
     id: "route_destination_field"
@@ -24,9 +26,11 @@ name: "Plan route Talavera to Madrid"
 - inputText: "Madrid"
 - extendedWaitUntil:
     visible:
-      text: "Madrid, España"
+      text: "Madrid"
     timeout: 10000
-- tapOn: "Madrid, España"
+- tapOn:
+    text: "Madrid"
+    index: 0
 - waitForAnimationToEnd
 - tapOn:
     id: "route_start_button"
