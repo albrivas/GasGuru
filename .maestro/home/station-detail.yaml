@@ -14,5 +14,10 @@ name: "Home station detail flow"
 - tapOn:
     id: "detail_back_to_map"
 - waitForAnimationToEnd
+- swipe:
+    from:
+      id: "map_station_list"
+    direction: DOWN
+- waitForAnimationToEnd
 - assertVisible:
     id: "search_bar"
