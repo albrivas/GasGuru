@@ -3,11 +3,6 @@ name: "Plan route Talavera to Madrid"
 ---
 - assertVisible:
     id: "search_bar"
-- swipe:
-    from:
-      id: "map_station_list"
-    direction: DOWN
-- waitForAnimationToEnd
 - tapOn:
     id: "home_create_route_fab"
 - waitForAnimationToEnd
