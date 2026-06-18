@@ -1115,14 +1115,32 @@ Para cada fase, ejecutar en este orden:
 ./gradlew :feature:search:jvmTest    # mismo
 ```
 
-Actualmente, los tests de Compose en `commonTest` requieren `connectedAndroidTest` (emulador) porque ningún módulo excepto `:core:model` tiene `jvm()`.
+Actualmente, los tests de Compose en `commonTest` requieren `connectedAndroidTest` (emulador) porque ningún módulo excepto `:core:model` y `:core:database` tienen `jvm()`.
 
-### Qué cambia
+### Estrategia: por módulo de abajo hacia arriba
 
-1. **`KmpLibraryConventionPlugin`** y **`KmpComposeLibraryConventionPlugin`**: añadir `jvm()` a los targets.
-2. **`jvmTest.dependencies`** en los módulos CMP: añadir `compose.desktop.currentOs` para el renderer Skia.
-3. **`core/components/build.gradle.kts`**: eliminar el bloque `exclude("**/GasGuruSearchBarContentTest*")` — los tests pasarán a correr vía `jvmTest`.
-4. Todos los módulos con `commonMain` que tengan dependencias Android-only necesitan moverlas a `androidMain` en lugar de `commonMain`.
+El target `jvm()` se añade **por módulo** (no en el convention plugin), porque tocarlo globalmente rompería módulos que aún tienen dependencias Android/iOS-only en `commonMain`. El avance es bottom-up siguiendo el grafo de dependencias.
+
+Para módulos con `expect`/`actual` manuales (sin codegen de Room/KSP), añadir `jvm()` requiere crear actuals de JVM en `jvmMain`. **No usar source set intermedio `commonJvmAndroid`** para compartir actuals entre `androidMain` y `jvmMain`: modificar el `dependsOn` de `androidMain` interfiere con el default hierarchy template de KMP y rompe la compilación de iOS. Duplicar la línea trivial de `Dispatchers.IO` es la solución correcta.
+
+### Progreso
+
+| Módulo | `jvm()` | `jvmTest` | Observaciones |
+|--------|---------|-----------|---------------|
+| `:core:model` | ✅ | ✅ | Sin `expect`/`actual` — sin actuals de JVM necesarios |
+| `:core:database` | ✅ | ✅ | `actual` de Room autogenerado por KSP (`kspJvm`). DAOs movidos de `androidInstrumentedTest` a `jvmTest` |
+| `:core:common` | ✅ | ✅ | `IoDispatcher.kt` y `AppVersion.kt` con actuals en `jvmMain` |
+| `:core:network` | pendiente | — | — |
+| `:core:analytics` | pendiente | — | — |
+| `:core:supabase` | pendiente | — | — |
+| `:core:notifications` | pendiente | — | — |
+| `:core:data` | pendiente | — | — |
+| `:core:domain` | pendiente | — | — |
+| `:core:testing` | pendiente | — | — |
+| `:core:ui` | pendiente | — | CMP: requiere `compose.desktop.currentOs` en `jvmTest` |
+| `:core:uikit` | pendiente | — | CMP: ídem |
+| `:core:components` | pendiente | — | CMP + eliminar `exclude("**/GasGuruSearchBarContentTest*")` |
+| features | pendiente | — | CMP: payoff final — tests de Compose sin emulador |
 
 ### Restricción de Maestro
 
