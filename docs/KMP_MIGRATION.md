@@ -265,12 +265,20 @@ androidMain        iosMain
 - [ ] ViewModel tests migrados a commonTest
 - [ ] PR → develop y merge
 
-### Phase 8: `jvm()` Target — Tests sin Emulador
-- [ ] Añadir `jvm()` a `KmpLibraryConventionPlugin` y `KmpComposeLibraryConventionPlugin`
-- [ ] Mover dependencias Android-only de `commonMain` a `androidMain` en todos los módulos
-- [ ] Añadir `compose.desktop.currentOs` en `jvmTest` de módulos CMP
+### Phase 10A: `jvm()` en convention plugins ✅
+- [x] Añadir `jvm()` a `KmpLibraryConventionPlugin` (guard `composeApp`)
+- [x] Añadir `lifecycle-runtime-compose` JetBrains a `KmpComposeLibraryConventionPlugin`
+- [x] Añadir `jvmMain` actuals no-op para core:network, core:ui, core:uikit, feature:detail-station, feature:station-map
+- [x] Exponer `kotlinx.coroutines.core` y `navigation-compose` como `api` para classpath JVM
+- [x] Ampliar `detekt setSource` con `jvmMain`/`jvmTest`
+- [x] PR → develop y merge
+
+### Phase 10B: Tests de UI en CMP
+- [ ] Añadir `compose.uiTest` en `commonTest` y `compose.desktop.currentOs` en `jvmTest`
+- [ ] Reescribir `BaseTest` con `runComposeUiTest` (eliminar `createComposeExtension`)
+- [ ] Migrar los 10 tests de UI de `androidTest` a `commonTest`
 - [ ] Eliminar exclusión `GasGuruSearchBarContentTest` en `core:components`
-- [ ] Verificar que `./gradlew allTests` pasa sin emulador
+- [ ] Verificar que `./gradlew :core:components:jvmTest` pasa sin emulador
 - [ ] PR → develop y merge
 
 ---
@@ -1102,7 +1110,7 @@ Para cada fase, ejecutar en este orden:
 
 ---
 
-## Phase 8: Tests de UI en CMP sin Emulador
+## Phase 10: Tests de UI en CMP sin Emulador
 
 **Objetivo**: Ejecutar todos los tests de Compose UI directamente en la Mac, sin emulador, en segundos — igual que Flutter widget tests.
 
@@ -1129,7 +1137,7 @@ Maestro sigue necesitando emulador/device real para tests E2E (flujos de usuario
 
 ---
 
-### Phase 8A — `jvm()` en convention plugins
+### Phase 10A — `jvm()` en convention plugins
 
 **Objetivo**: hacer que todos los módulos KMP/CMP publiquen la variante `jvm`, prerequisito para Phase 8B.
 
@@ -1160,18 +1168,31 @@ Maestro sigue necesitando emulador/device real para tests E2E (flujos de usuario
 ./gradlew :composeApp:compileKotlinIosSimulatorArm64  # regresión iOS
 ```
 
-**Progreso**:
+**Progreso** ✅ Completado:
 
-| Módulo | `jvm()` vía plugin | `jvmMain` actuals |
-|--------|-------------------|-------------------|
-| `:core:model` | ✅ (por módulo, antes del plugin) | — sin expect/actual |
-| `:core:database` | ✅ (por módulo, antes del plugin) | — Room KSP genera |
-| `:core:common` | ✅ (por módulo) | ✅ `IoDispatcher` + `AppVersion` |
-| Resto de módulos KMP/CMP | pendiente (vía plugin) | pendiente donde aplica |
+| Módulo | `jvm()` | `jvmMain` actuals |
+|--------|---------|-------------------|
+| `:core:model` | ✅ plugin (manual eliminado) | — sin expect/actual |
+| `:core:database` | ✅ plugin (manual eliminado) | — Room KSP genera en `kspJvm` |
+| `:core:common` | ✅ plugin | ✅ `IoDispatcher` + `AppVersion` |
+| `:core:network` | ✅ plugin | ✅ `routesPlugin` no-op |
+| `:core:ui` | ✅ plugin | ✅ `ConfigureDialogSystemBars`, `fullScreenDialogProperties`, `rememberInAppReviewManager` |
+| `:core:uikit` | ✅ plugin | ✅ `SystemBarsEffect`, `ThemePreviews`, `maestroTestTag` |
+| `feature:detail-station` | ✅ plugin | ✅ `rememberNavigateToMapsAction`, `rememberNotificationPermissionRequester`, `rememberShareAction` |
+| `feature:station-map` | ✅ plugin | ✅ `rememberLocationPermissionState`, `PlatformMapView` |
+| Resto KMP/CMP (sin expect manual) | ✅ plugin | — no necesitan actuals |
+| `:composeApp` | excluido (guard `name != "composeApp"`) | — cocoapods, no ejecuta tests |
+
+**Dependencias JVM que se expusieron como `api`** (para evitar errores de classpath en el target JVM):
+- `core:common`: `kotlinx.coroutines.core` → cambiado de `implementation` a `api`
+- `navigation`: `jetbrains.navigation.compose` → cambiado de `implementation` a `api`
+- `KmpComposeLibraryConventionPlugin`: añadido `jetbrains.lifecycle.runtime.compose` como `api` en commonMain
+
+**Lección aprendida**: los módulos KMP que usaban `kotlinx.coroutines.flow.Flow` directamente sin declarar `implementation(kotlinx.coroutines.core)` en su `commonMain` compilaban bien para Android/iOS (resolución más permisiva) pero fallaban en JVM (resolución Gradle estricta). La solución de raíz fue cambiar la dep en `core:common` a `api` para que se propague correctamente a todos los consumidores en JVM.
 
 ---
 
-### Phase 8B — Migrar tests de UI a `commonTest`
+### Phase 10B — Migrar tests de UI a `commonTest`
 
 **Objetivo**: mover los 10 archivos de test de UI de `androidTest`/`androidInstrumentedTest` a `commonTest`, reemplazando `BaseTest` + `createComposeExtension` por `runComposeUiTest` de CMP.
 
