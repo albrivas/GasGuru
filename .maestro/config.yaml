@@ -1,4 +1,4 @@
-appId: com.gasguru
+appId: ${APP_ID}
 ---
 - launchApp:
     clearState: true

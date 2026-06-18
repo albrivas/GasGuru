@@ -1,4 +1,4 @@
-appId: com.gasguru
+appId: ${APP_ID}
 name: "Plan route Talavera to Madrid"
 ---
 - assertVisible:
@@ -17,8 +17,7 @@ name: "Plan route Talavera to Madrid"
       text: "Talavera de la Reina"
     timeout: 10000
 - tapOn:
-    text: "Talavera de la Reina"
-    index: 0
+    text: "Talavera de la Reina, .*"
 - waitForAnimationToEnd
 - tapOn:
     id: "route_destination_field"
@@ -29,8 +28,7 @@ name: "Plan route Talavera to Madrid"
       text: "Madrid"
     timeout: 10000
 - tapOn:
-    text: "Madrid"
-    index: 0
+    text: "Madrid, .*"
 - waitForAnimationToEnd
 - tapOn:
     id: "route_start_button"

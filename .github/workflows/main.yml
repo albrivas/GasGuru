@@ -220,7 +220,7 @@ jobs:
           script: |
             ./gradlew connectedCheck
             adb install app/build/outputs/apk/prod/release/app-prod-release.apk
-            maestro test .maestro/config.yaml
+            maestro test --env APP_ID=com.gasguru .maestro/config.yaml
 
       - name: Upload Maestro test results and logcat
         if: always()
