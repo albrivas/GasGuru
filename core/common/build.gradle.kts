@@ -27,6 +27,8 @@ android {
 }
 
 kotlin {
+    jvm()
+
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.model)
