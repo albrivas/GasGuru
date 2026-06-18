@@ -61,6 +61,7 @@ kotlin {
                 implementation(projects.core.supabase)
                 implementation(projects.core.notifications)
                 implementation(libs.io.arrow.kt.arrow.core)
+                implementation(libs.kotlinx.coroutines.core)
             }
         }
         androidMain.dependencies {
