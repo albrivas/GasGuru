@@ -45,6 +45,8 @@ allprojects {
                 "src/androidMain/kotlin",
                 "src/androidUnitTest/kotlin",
                 "src/iosMain/kotlin",
+                "src/jvmMain/kotlin",
+                "src/jvmTest/kotlin",
             )
         )
 
