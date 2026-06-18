@@ -1,0 +1,49 @@
+appId: ${APP_ID}
+name: "Plan route Talavera to Madrid"
+---
+- assertVisible:
+    id: "search_bar"
+- tapOn:
+    id: "home_create_route_fab"
+- waitForAnimationToEnd
+- assertVisible:
+    id: "route_origin_field"
+- tapOn:
+    id: "route_origin_field"
+- waitForAnimationToEnd
+- inputText: "Talavera de la Reina"
+- extendedWaitUntil:
+    visible:
+      text: "Talavera de la Reina"
+    timeout: 10000
+- tapOn:
+    text: "Talavera de la Reina, .*"
+- waitForAnimationToEnd
+- tapOn:
+    id: "route_destination_field"
+- waitForAnimationToEnd
+- inputText: "Madrid"
+- extendedWaitUntil:
+    visible:
+      text: "Madrid"
+    timeout: 10000
+- tapOn:
+    text: "Madrid, .*"
+- waitForAnimationToEnd
+- tapOn:
+    id: "route_start_button"
+- extendedWaitUntil:
+    visible:
+      id: "route-destination"
+    timeout: 15000
+- assertVisible:
+    id: "route-destination"
+- assertVisible:
+    id: "route-info"
+- tapOn:
+    id: "route-close-button"
+- waitForAnimationToEnd
+- assertNotVisible:
+    id: "route-destination"
+- assertVisible:
+    id: "search_bar"

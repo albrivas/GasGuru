@@ -53,6 +53,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.semantics
+import com.gasguru.core.uikit.utils.TestTags
+import com.gasguru.core.uikit.utils.maestroTestTag
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -433,7 +435,8 @@ fun HeaderStation(
                 .align(Alignment.TopStart)
                 .statusBarsPadding()
                 .padding(start = 16.dp)
-                .clip(CircleShape),
+                .clip(CircleShape)
+                .maestroTestTag(TestTags.DetailStation.BACK_TO_MAP),
             onClick = onBack,
             colors = IconButtonDefaults.iconButtonColors(containerColor = GasGuruTheme.colors.neutralWhite),
         ) {

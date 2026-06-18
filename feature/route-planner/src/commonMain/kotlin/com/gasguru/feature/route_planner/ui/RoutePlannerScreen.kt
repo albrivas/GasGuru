@@ -44,6 +44,8 @@ import com.gasguru.core.model.data.RecentSearchQuery
 import com.gasguru.core.ui.RecentSearchQueriesUiState
 import com.gasguru.core.uikit.components.GasGuruButton
 import com.gasguru.core.uikit.components.divider.DividerLength
+import com.gasguru.core.uikit.utils.TestTags
+import com.gasguru.core.uikit.utils.maestroTestTag
 import com.gasguru.core.uikit.components.divider.DividerThickness
 import com.gasguru.core.uikit.components.divider.GasGuruDivider
 import com.gasguru.core.uikit.components.divider.GasGuruDividerModel
@@ -168,6 +170,7 @@ internal fun RoutePlannerScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .systemBarsPadding()
+                        .maestroTestTag(TestTags.RoutePlanner.START_ROUTE_BUTTON),
                 )
             }
         },
@@ -328,6 +331,7 @@ fun RoutePickerCard(
                     .weight(1f)
             ) {
                 ClickableFieldRow(
+                    modifier = Modifier.maestroTestTag(TestTags.RoutePlanner.ORIGIN_FIELD),
                     text = origin,
                     placeholder = stringResource(Res.string.route_origin_placeholder),
                     onClick = onPickOrigin,
@@ -341,6 +345,7 @@ fun RoutePickerCard(
                     )
                 )
                 ClickableFieldRow(
+                    modifier = Modifier.maestroTestTag(TestTags.RoutePlanner.DESTINATION_FIELD),
                     text = destination,
                     placeholder = stringResource(Res.string.route_destination_placeholder),
                     onClick = onPickDestination,

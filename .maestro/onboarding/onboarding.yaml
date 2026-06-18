@@ -1,15 +1,23 @@
-appId: com.gasguru
+appId: ${APP_ID}
 
 name: "Onboarding flow"
 ---
-- tapOn: "Continue"
-- tapOn: "Continue"
-- tapOn: "Continue"
-- tapOn: "Start"
-- tapOn: "SP 95"
-- tapOn: "Continue"
-- tapOn: 40 L
-- tapOn: "Continue"
+- tapOn:
+    id: "onboarding_continue_button"
+- tapOn:
+    id: "onboarding_continue_button"
+- tapOn:
+    id: "onboarding_continue_button"
+- tapOn:
+    id: "onboarding_continue_button"
+- tapOn:
+    id: "list_item_0"
+- tapOn:
+    id: "button_next_onboarding"
+- tapOn:
+    id: "onboarding_capacity_chip_40"
+- tapOn:
+    id: "button_capacity_continue"
 - waitForAnimationToEnd
 - assertVisible:
     id: "search_bar"
