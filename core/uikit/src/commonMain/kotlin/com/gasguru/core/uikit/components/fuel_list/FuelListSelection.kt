@@ -12,7 +12,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.gasguru.core.uikit.utils.maestroTestTag
 import com.gasguru.core.uikit.components.selectedItem.SelectedItem
 import com.gasguru.core.uikit.components.selectedItem.SelectedItemModel
 import com.gasguru.core.uikit.generated.resources.Res
@@ -20,6 +19,7 @@ import com.gasguru.core.uikit.generated.resources.ic_gasoline_95
 import com.gasguru.core.uikit.generated.resources.preview_fuel_type
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
+import com.gasguru.core.uikit.utils.maestroTestTag
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

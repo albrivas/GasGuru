@@ -189,8 +189,11 @@ actual fun PlatformMapView(
             factory = { mapView },
             update = { mv ->
                 mv.overrideUserInterfaceStyle =
-                    if (isDark) UIUserInterfaceStyle.UIUserInterfaceStyleDark
-                    else UIUserInterfaceStyle.UIUserInterfaceStyleLight
+                    if (isDark) {
+                        UIUserInterfaceStyle.UIUserInterfaceStyleDark
+                    } else {
+                        UIUserInterfaceStyle.UIUserInterfaceStyleLight
+                    }
                 mv.showsUserLocation = isLocationPermissionGranted
 
                 // Diff annotations: add new, remove stale
