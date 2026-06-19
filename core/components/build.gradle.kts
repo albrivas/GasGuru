@@ -57,10 +57,8 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
 
-// CMP UI tests use runComposeUiTest which requires Android rendering —
-// they run via connectedAndroidTest, not JVM unit tests
+// GasGuruSearchBarContentTest uses runComposeUiTest (Skiko renderer) — needs a display.
+// Runs via connectedAndroidTest only; exclude from all JVM-based test tasks.
 tasks.withType<Test>().configureEach {
-    if (name.contains("UnitTest", ignoreCase = true)) {
-        exclude("**/GasGuruSearchBarContentTest*")
-    }
+    exclude("**/GasGuruSearchBarContentTest*")
 }
