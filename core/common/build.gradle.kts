@@ -27,10 +27,12 @@ android {
 }
 
 kotlin {
+    jvm()
+
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.model)
-            implementation(libs.kotlinx.coroutines.core)
+            api(libs.kotlinx.coroutines.core)
             implementation(libs.koin.core)
             api(libs.kotlinx.datetime)
         }
@@ -43,7 +45,7 @@ kotlin {
             implementation(libs.koin.android)
         }
         commonTest.dependencies {
-            implementation(kotlin("test"))
+            implementation(libs.kotlin.test)
             implementation(libs.kotest.assertions.core)
         }
     }

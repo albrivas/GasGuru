@@ -109,7 +109,11 @@ class JacocoConventionPlugin : Plugin<Project> {
                 exclude(jacocoExcludes)
             }
         } else if (isKmpModule()) {
-            val classPath = if (tasks.names.contains("jvmTest")) {
+            // Use JVM classes only for modules with real jvmTest sources (e.g. core:database
+            // migration tests). For all other KMP modules, use Android debug classes so that
+            // testDebugUnitTest.exec matches and jvmMain no-ops don't pollute coverage.
+            val hasJvmTestSources = file("src/jvmTest/kotlin").let { it.exists() && it.walkTopDown().any { f -> f.isFile } }
+            val classPath = if (hasJvmTestSources) {
                 "classes/kotlin/jvm/main/**"
             } else {
                 "tmp/kotlin-classes/debug/**"

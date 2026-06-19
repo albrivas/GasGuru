@@ -44,8 +44,6 @@ import com.gasguru.core.model.data.RecentSearchQuery
 import com.gasguru.core.ui.RecentSearchQueriesUiState
 import com.gasguru.core.uikit.components.GasGuruButton
 import com.gasguru.core.uikit.components.divider.DividerLength
-import com.gasguru.core.uikit.utils.TestTags
-import com.gasguru.core.uikit.utils.maestroTestTag
 import com.gasguru.core.uikit.components.divider.DividerThickness
 import com.gasguru.core.uikit.components.divider.GasGuruDivider
 import com.gasguru.core.uikit.components.divider.GasGuruDividerModel
@@ -56,6 +54,8 @@ import com.gasguru.core.uikit.components.searchlist.SearchListType
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
+import com.gasguru.core.uikit.utils.TestTags
+import com.gasguru.core.uikit.utils.maestroTestTag
 import com.gasguru.feature.route_planner.generated.resources.Res
 import com.gasguru.feature.route_planner.generated.resources.ic_current_location
 import com.gasguru.feature.route_planner.generated.resources.ic_swap

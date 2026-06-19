@@ -51,7 +51,7 @@ kotlin {
             implementation(libs.mixpanel)
         }
         commonTest.dependencies {
-            implementation(kotlin("test"))
+            implementation(libs.kotlin.test)
         }
     }
 }

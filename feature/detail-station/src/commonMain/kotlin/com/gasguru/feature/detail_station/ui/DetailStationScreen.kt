@@ -53,8 +53,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.semantics
-import com.gasguru.core.uikit.utils.TestTags
-import com.gasguru.core.uikit.utils.maestroTestTag
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -90,6 +88,8 @@ import com.gasguru.core.uikit.components.tank_cost_card.TankCostCardModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
+import com.gasguru.core.uikit.utils.TestTags
+import com.gasguru.core.uikit.utils.maestroTestTag
 import com.gasguru.feature.detail_station.analytics.trackInAppReviewCompleted
 import com.gasguru.feature.detail_station.analytics.trackInAppReviewFailed
 import com.gasguru.feature.detail_station.formatSchedule

@@ -21,11 +21,15 @@ class KmpLibraryConventionPlugin : Plugin<Project> {
             extensions.configure<LibraryExtension> {
                 configureKotlinAndroid(this)
             }
+            val projectName = name
             extensions.configure<KotlinMultiplatformExtension> {
                 androidTarget()
                 iosX64()
                 iosArm64()
                 iosSimulatorArm64()
+                if (projectName != "composeApp") {
+                    jvm()
+                }
             }
             tasks.withType<Test>().configureEach {
                 useJUnitPlatform()

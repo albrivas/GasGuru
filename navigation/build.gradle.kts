@@ -16,7 +16,7 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.compose.multiplatform.runtime)
-            implementation(libs.jetbrains.navigation.compose)
+            api(libs.jetbrains.navigation.compose)
             implementation(projects.core.model)
         }
     }

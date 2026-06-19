@@ -265,12 +265,20 @@ androidMain        iosMain
 - [ ] ViewModel tests migrados a commonTest
 - [ ] PR → develop y merge
 
-### Phase 8: `jvm()` Target — Tests sin Emulador
-- [ ] Añadir `jvm()` a `KmpLibraryConventionPlugin` y `KmpComposeLibraryConventionPlugin`
-- [ ] Mover dependencias Android-only de `commonMain` a `androidMain` en todos los módulos
-- [ ] Añadir `compose.desktop.currentOs` en `jvmTest` de módulos CMP
+### Phase 10A: `jvm()` en convention plugins ✅
+- [x] Añadir `jvm()` a `KmpLibraryConventionPlugin` (guard `composeApp`)
+- [x] Añadir `lifecycle-runtime-compose` JetBrains a `KmpComposeLibraryConventionPlugin`
+- [x] Añadir `jvmMain` actuals no-op para core:network, core:ui, core:uikit, feature:detail-station, feature:station-map
+- [x] Exponer `kotlinx.coroutines.core` y `navigation-compose` como `api` para classpath JVM
+- [x] Ampliar `detekt setSource` con `jvmMain`/`jvmTest`
+- [x] PR → develop y merge
+
+### Phase 10B: Tests de UI en CMP
+- [ ] Añadir `compose.uiTest` en `commonTest` y `compose.desktop.currentOs` en `jvmTest`
+- [ ] Reescribir `BaseTest` con `runComposeUiTest` (eliminar `createComposeExtension`)
+- [ ] Migrar los 10 tests de UI de `androidTest` a `commonTest`
 - [ ] Eliminar exclusión `GasGuruSearchBarContentTest` en `core:components`
-- [ ] Verificar que `./gradlew allTests` pasa sin emulador
+- [ ] Verificar que `./gradlew :core:components:jvmTest` pasa sin emulador
 - [ ] PR → develop y merge
 
 ---
@@ -1102,35 +1110,151 @@ Para cada fase, ejecutar en este orden:
 
 ---
 
-## Phase 8: `jvm()` Target — Tests de Compose sin Emulador
+## Phase 10: Tests de UI en CMP sin Emulador
 
-**Objetivo**: Añadir el target `jvm()` a todos los módulos KMP/CMP para poder ejecutar tests de Compose UI directamente en la máquina de desarrollo (Mac/Linux/Windows) sin necesidad de emulador Android ni simulador iOS, igual que Flutter widget tests.
+**Objetivo**: Ejecutar todos los tests de Compose UI directamente en la Mac, sin emulador, en segundos — igual que Flutter widget tests.
 
-### Por qué
+**Dos sub-fases independientes**:
+- **8A** — Añadir `jvm()` a los convention plugins + actuals de JVM en los módulos que lo necesitan (andamiaje).
+- **8B** — Migrar los tests de UI de `androidTest`/`androidInstrumentedTest` a `commonTest` con `runComposeUiTest` (el payoff real).
 
-`runComposeUiTest` en un módulo con `jvm()` target usa el renderer **Skia en JVM** (desktop), sin Android framework. Esto permite:
+### Contexto técnico
+
+`runComposeUiTest` de CMP usa el renderer **Skia en JVM** (el mismo que en iOS), sin Android framework. Al combinarlo con el target `jvm()` en los módulos CMP:
 
 ```bash
-./gradlew :core:components:jvmTest   # corre en tu Mac, sin emulador, en segundos
-./gradlew :feature:search:jvmTest    # mismo
+./gradlew :core:uikit:jvmTest        # 8 tests de componentes — en segundos, sin emulador
+./gradlew :feature:profile:jvmTest   # tests de pantalla — ídem
 ```
 
-Actualmente, los tests de Compose en `commonTest` requieren `connectedAndroidTest` (emulador) porque ningún módulo excepto `:core:model` tiene `jvm()`.
+**Tests de ViewModel** (en `commonTest`): ya corren sin emulador hoy vía `testDebugUnitTest`. Añadir `jvm()` no los cambia — simplemente los hace ejecutables también con `:jvmTest`.
 
-### Qué cambia
-
-1. **`KmpLibraryConventionPlugin`** y **`KmpComposeLibraryConventionPlugin`**: añadir `jvm()` a los targets.
-2. **`jvmTest.dependencies`** en los módulos CMP: añadir `compose.desktop.currentOs` para el renderer Skia.
-3. **`core/components/build.gradle.kts`**: eliminar el bloque `exclude("**/GasGuruSearchBarContentTest*")` — los tests pasarán a correr vía `jvmTest`.
-4. Todos los módulos con `commonMain` que tengan dependencias Android-only necesitan moverlas a `androidMain` en lugar de `commonMain`.
+**Tests de UI actuales** (`androidTest`/`androidInstrumentedTest`): usan `createComposeExtension()` de `de.mannodermaus.junit5.compose` (Android-only). Ninguno usa el `Context` de Android — todos ya usan `getCmpString`/`Res.*`. El único cambio al migrar es reemplazar `extension.use { setContent { } }` por `runComposeUiTest { setContent { } }`.
 
 ### Restricción de Maestro
 
-Maestro sigue necesitando emulador/device real para los tests end-to-end (flujos completos de usuario). `jvm()` solo elimina la necesidad de emulador para **tests de componentes y features** (lógica de UI, árboles semánticos). Los smoke tests de Maestro permanecen en Android/iOS.
+Maestro sigue necesitando emulador/device real para tests E2E (flujos de usuario completos). `jvm()` solo elimina el emulador para tests de componentes y pantallas (árboles semánticos). Los flows de Maestro permanecen en Android/iOS.
 
-### Prerrequisito
+---
 
-Esta fase se hace **después de Phase 7** (todas las features en CMP), porque añadir `jvm()` a módulos que aún tienen dependencias Android-only (Google Maps, etc.) rompe la compilación.
+### Phase 10A — `jvm()` en convention plugins
+
+**Objetivo**: hacer que todos los módulos KMP/CMP publiquen la variante `jvm`, prerequisito para Phase 8B.
+
+**Estrategia**: añadir `jvm()` a `KmpLibraryConventionPlugin` y `KmpComposeLibraryConventionPlugin` (en lugar de hacerlo módulo a módulo). Todos los módulos KMP/CMP tienen ya su código Android/iOS-only correctamente en `androidMain`/`iosMain` — no rompe la compilación.
+
+**Módulos con `expect`/`actual` manuales** que necesitan actuals en `jvmMain` (los demás no tienen `expect` o usan codegen KSP):
+
+| Módulo | `expect` que necesita actual JVM | Actual JVM |
+|--------|----------------------------------|-----------|
+| `:core:common` | `ioDispatcher`, `getAppVersion` | ✅ Ya hecho (`jvmMain/`) |
+| `:core:network` | `routesPlugin(packageName)` | No-op / `EmptyPlugin` |
+| `:core:ui` | `ConfigureDialogSystemBars`, `fullScreenDialogProperties`, `rememberInAppReviewManager` | No-ops |
+| `:core:uikit` | `SystemBarsEffect`, `ThemePreviews`, `maestroTestTag` | No-ops / `@Preview` vacío |
+| `feature:detail-station` | `rememberNavigateToMapsAction`, `rememberNotificationPermissionRequester`, `rememberShareAction` | No-ops |
+| `feature:station-map` | `rememberLocationPermissionState`, `PlatformMapView` | No-ops / `Box` vacío |
+
+> **Regla de actuals JVM**: como el target `jvm()` existe únicamente para tests (no es un artefacto de producción), los actuals para APIs platform-specific (mapas, permisos, notificaciones) son no-ops mínimos que satisfacen el compilador.
+
+**`KmpRoomConventionPlugin`**: añadir `kspJvm` ya se hace por módulo (`core:database` ya lo tiene). El convention plugin de Room no necesita cambiarse — Room no se usa en JVM en ningún otro módulo.
+
+**Verificación**:
+```bash
+./gradlew :core:common:compileKotlinJvm          # ya pasa
+./gradlew :core:network:compileKotlinJvm
+./gradlew :core:ui:compileKotlinJvm
+./gradlew :core:uikit:compileKotlinJvm
+./gradlew :app:assembleDebug                     # regresión Android
+./gradlew :composeApp:compileKotlinIosSimulatorArm64  # regresión iOS
+```
+
+**Progreso** ✅ Completado:
+
+| Módulo | `jvm()` | `jvmMain` actuals |
+|--------|---------|-------------------|
+| `:core:model` | ✅ plugin (manual eliminado) | — sin expect/actual |
+| `:core:database` | ✅ plugin (manual eliminado) | — Room KSP genera en `kspJvm` |
+| `:core:common` | ✅ plugin | ✅ `IoDispatcher` + `AppVersion` |
+| `:core:network` | ✅ plugin | ✅ `routesPlugin` no-op |
+| `:core:ui` | ✅ plugin | ✅ `ConfigureDialogSystemBars`, `fullScreenDialogProperties`, `rememberInAppReviewManager` |
+| `:core:uikit` | ✅ plugin | ✅ `SystemBarsEffect`, `ThemePreviews`, `maestroTestTag` |
+| `feature:detail-station` | ✅ plugin | ✅ `rememberNavigateToMapsAction`, `rememberNotificationPermissionRequester`, `rememberShareAction` |
+| `feature:station-map` | ✅ plugin | ✅ `rememberLocationPermissionState`, `PlatformMapView` |
+| Resto KMP/CMP (sin expect manual) | ✅ plugin | — no necesitan actuals |
+| `:composeApp` | excluido (guard `name != "composeApp"`) | — cocoapods, no ejecuta tests |
+
+**Dependencias JVM que se expusieron como `api`** (para evitar errores de classpath en el target JVM):
+- `core:common`: `kotlinx.coroutines.core` → cambiado de `implementation` a `api`
+- `navigation`: `jetbrains.navigation.compose` → cambiado de `implementation` a `api`
+- `KmpComposeLibraryConventionPlugin`: añadido `jetbrains.lifecycle.runtime.compose` como `api` en commonMain
+
+**Lección aprendida**: los módulos KMP que usaban `kotlinx.coroutines.flow.Flow` directamente sin declarar `implementation(kotlinx.coroutines.core)` en su `commonMain` compilaban bien para Android/iOS (resolución más permisiva) pero fallaban en JVM (resolución Gradle estricta). La solución de raíz fue cambiar la dep en `core:common` a `api` para que se propague correctamente a todos los consumidores en JVM.
+
+---
+
+### Phase 10B — Migrar tests de UI a `commonTest`
+
+**Objetivo**: mover los 10 archivos de test de UI de `androidTest`/`androidInstrumentedTest` a `commonTest`, reemplazando `BaseTest` + `createComposeExtension` por `runComposeUiTest` de CMP.
+
+**Tests a migrar**:
+
+| Test | Módulo | Source set actual |
+|------|--------|-------------------|
+| `GasGuruAlertDialogTest` | `:core:uikit` | `androidTest` |
+| `FuelStationItemTest` | `:core:uikit` | `androidTest` |
+| `FuelListSelectionTest` | `:core:uikit` | `androidTest` |
+| `FuelTypeChipTest` | `:core:uikit` | `androidTest` |
+| `NumberWheelPickerTest` | `:core:uikit` | `androidTest` |
+| `RouteNavigationCardTest` | `:core:uikit` | `androidTest` |
+| `SelectedItemTest` | `:core:uikit` | `androidTest` |
+| `TankCostCardTest` | `:core:uikit` | `androidTest` |
+| `FavoriteListScreenTest` | `:feature:favorite-list-station` | `androidTest` |
+| `ProfileScreenTest` | `:feature:profile` | `androidTest` |
+| `DetailStationScreenTest` | `:feature:detail-station` | `androidInstrumentedTest` |
+| `OnboardingFuelPreferencesTest` | `:feature:onboarding` | `androidInstrumentedTest` |
+
+**Cambios en `BaseTest`** (en `core:testing`):
+- Crear `BaseTest` en `commonTest` usando `runComposeUiTest { }` de CMP.
+- El `testContext: Context` y `getStringResource(@StringRes)` se eliminan — ningún test los usa.
+- `getCmpString` se mantiene (es ya CMP-compatible).
+- La versión Android de `BaseTest` en `androidMain` puede eliminarse o mantenerse vacía.
+
+**Cambio por test** (mecánico, mismo patrón en todos):
+```kotlin
+// Antes
+fun myTest() = extension.use {
+    setContent { MyComposable(...) }
+    onNodeWithText("...").assertIsDisplayed()
+}
+
+// Después
+@Test
+fun myTest() = runComposeUiTest {
+    setContent { MyComposable(...) }
+    onNodeWithText("...").assertIsDisplayed()
+}
+```
+
+**Dependencias a añadir** en módulos CMP con tests de UI:
+```kotlin
+// commonTest
+implementation(compose.uiTest)
+
+// jvmTest (renderer Skia para desktop)
+implementation(compose.desktop.currentOs)
+```
+
+**Eliminar**:
+- `de.mannodermaus.junit5.compose` de `core:testing` y todos los módulos que lo usen.
+- `exclude("**/GasGuruSearchBarContentTest*")` en `core/components/build.gradle.kts`.
+
+**Verificación**:
+```bash
+./gradlew :core:uikit:jvmTest                    # 8 tests de componentes en JVM
+./gradlew :feature:profile:jvmTest               # ProfileScreenTest en JVM
+./gradlew :feature:detail-station:jvmTest        # DetailStationScreenTest en JVM
+./gradlew :app:assembleDebug                     # regresión Android
+```
 
 ---
 

@@ -79,6 +79,8 @@ import com.gasguru.core.uikit.components.route_navigation_card.RouteNavigationCa
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
+import com.gasguru.core.uikit.utils.TestTags
+import com.gasguru.core.uikit.utils.maestroTestTag
 import com.gasguru.feature.station_map.generated.resources.filter_brand
 import com.gasguru.feature.station_map.generated.resources.filter_brand_number
 import com.gasguru.feature.station_map.generated.resources.filter_brand_title
@@ -95,8 +97,6 @@ import com.gasguru.feature.station_map.generated.resources.tab_distance
 import com.gasguru.feature.station_map.generated.resources.tab_price
 import com.gasguru.feature.station_map.platform.PlatformMapView
 import com.gasguru.feature.station_map.platform.rememberLocationPermissionState
-import com.gasguru.core.uikit.utils.TestTags
-import com.gasguru.core.uikit.utils.maestroTestTag
 import com.gasguru.navigation.LocalDeepLinkStateHolder
 import com.gasguru.navigation.LocalNavigationManager
 import com.gasguru.navigation.manager.NavigationDestination
