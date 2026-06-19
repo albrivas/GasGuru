@@ -20,6 +20,11 @@ kotlin {
             api(libs.kotlinx.coroutines.test)
             api(kotlin("test-annotations-common"))
         }
+        val jvmMain by getting {
+            dependencies {
+                api(kotlin("test-junit5"))
+            }
+        }
         androidMain.dependencies {
             api(kotlin("test-junit5"))
             api(projects.core.network)
