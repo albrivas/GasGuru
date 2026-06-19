@@ -57,6 +57,9 @@ object CoverageExclusions {
         "**/platform/**",
         // iosMain source sets are never reachable by JVM unit tests.
         "**/iosMain/**",
+        // jvmMain contains only no-op actuals (JVM target exists solely for running tests
+        // without emulator). These stubs have 0 coverage by design.
+        "**/jvmMain/**",
     )
 
     /**

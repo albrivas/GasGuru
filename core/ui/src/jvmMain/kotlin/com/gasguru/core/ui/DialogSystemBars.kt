@@ -7,6 +7,7 @@ actual fun fullScreenDialogProperties(): DialogProperties = DialogProperties(
     usePlatformDefaultWidth = false,
 )
 
+@Suppress("EmptyFunctionBlock")
 @Composable
 actual fun ConfigureDialogSystemBars(invertColors: Boolean) {
 }

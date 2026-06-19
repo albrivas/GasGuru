@@ -1,4 +1,4 @@
-@file:Suppress("LongParameterList")
+@file:Suppress("LongParameterList", "EmptyFunctionBlock")
 
 package com.gasguru.feature.station_map.platform
 
