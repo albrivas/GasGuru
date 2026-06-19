@@ -26,8 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
-import com.gasguru.core.uikit.utils.TestTags
-import com.gasguru.core.uikit.utils.maestroTestTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,6 +35,8 @@ import com.gasguru.core.uikit.components.capacity_picker.CapacityPickerBottomShe
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
+import com.gasguru.core.uikit.utils.TestTags
+import com.gasguru.core.uikit.utils.maestroTestTag
 import com.gasguru.feature.onboarding.generated.resources.Res
 import com.gasguru.feature.onboarding.generated.resources.capacity_picker_confirm
 import com.gasguru.feature.onboarding.generated.resources.capacity_picker_range
