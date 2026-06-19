@@ -44,7 +44,7 @@ kotlin {
             api(libs.compose.multiplatform.components.resources)
         }
         commonTest.dependencies {
-            implementation(kotlin("test"))
+            implementation(libs.kotlin.test)
         }
     }
 }

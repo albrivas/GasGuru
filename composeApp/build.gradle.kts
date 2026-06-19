@@ -48,7 +48,7 @@ kotlin {
             implementation(projects.feature.vehicle)
         }
         commonTest.dependencies {
-            implementation(kotlin("test"))
+            implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.turbine)
             implementation(projects.core.testing)

@@ -35,7 +35,7 @@ kotlin {
             implementation(libs.maps.utils)
         }
         commonTest.dependencies {
-            implementation(kotlin("test"))
+            implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.turbine)
             implementation(projects.core.testing)

@@ -45,7 +45,7 @@ kotlin {
             implementation(libs.koin.android)
         }
         commonTest.dependencies {
-            implementation(kotlin("test"))
+            implementation(libs.kotlin.test)
             implementation(libs.kotest.assertions.core)
         }
     }

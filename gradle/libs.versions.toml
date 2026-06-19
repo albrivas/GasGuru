@@ -148,6 +148,7 @@ junit5-extensions = { module = "de.mannodermaus.junit5:android-test-extensions",
 junit5-compose = { module = "de.mannodermaus.junit5:android-test-compose", version.ref = "junit5Extensions" }
 junit5-runner = { module = "de.mannodermaus.junit5:android-test-runner", version.ref = "junit5Extensions" }
 junit5-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit5Api" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5", version.ref = "kotlin" }
 kotlin-test-annotations-common = { module = "org.jetbrains.kotlin:kotlin-test-annotations-common", version.ref = "kotlin" }
 material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIcons" }
