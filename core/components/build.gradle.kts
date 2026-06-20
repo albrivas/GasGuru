@@ -42,6 +42,9 @@ kotlin {
             implementation(libs.junit5.engine)
             implementation(libs.junit5.extensions)
         }
+        jvmTest.dependencies {
+            implementation(compose.desktop.currentOs)
+        }
     }
 }
 
@@ -57,8 +60,12 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
 
-// GasGuruSearchBarContentTest uses runComposeUiTest (Skiko renderer) — needs a display.
-// Runs via connectedAndroidTest only; exclude from all JVM-based test tasks.
+// GasGuruSearchBarContentTest uses runComposeUiTest with the Skiko renderer.
+// jvmTest has compose.desktop.currentOs (Skiko desktop, runs headless).
+// testDebugUnitTest (androidUnitTest) resolves compose.ui.test to the Android artefact
+// which requires instrumentation — exclude it there to avoid NullPointerExceptions.
 tasks.withType<Test>().configureEach {
-    exclude("**/GasGuruSearchBarContentTest*")
+    if (name != "jvmTest") {
+        exclude("**/GasGuruSearchBarContentTest*")
+    }
 }
