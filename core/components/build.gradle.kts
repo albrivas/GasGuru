@@ -1,7 +1,4 @@
-@file:OptIn(
-    org.jetbrains.compose.ExperimentalComposeLibrary::class,
-    org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class,
-)
+@file:OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
 
 plugins {
     alias(libs.plugins.gasguru.kmp.compose.library)
@@ -15,12 +12,6 @@ compose.resources {
 }
 
 kotlin {
-    androidTarget {
-        // Connect commonTest to the Android instrumented test variant
-        // so that `connectedAndroidTest` picks up CMP UI tests from commonTest
-        instrumentedTestVariant.sourceSetTree.set(org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree.test)
-    }
-
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.analytics)
