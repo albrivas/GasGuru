@@ -26,19 +26,9 @@ el renderer Skia no puede ejecutar composables en tests JVM.
 ### 1. `build.gradle.kts` — setup idéntico para todos los módulos
 
 ```kotlin
-@file:OptIn(
-    org.jetbrains.compose.ExperimentalComposeLibrary::class,
-    org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class,
-)
+@file:OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
 
 kotlin {
-    // Wirear connectedAndroidTest para recoger tests CMP desde commonTest
-    androidTarget {
-        instrumentedTestVariant.sourceSetTree.set(
-            org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree.test,
-        )
-    }
-
     sourceSets {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -64,6 +54,14 @@ tasks.withType<Test>().configureEach {
     }
 }
 ```
+
+> **⚠️ No añadir `instrumentedTestVariant.sourceSetTree.set(test)`** aunque la documentación de KMP
+> lo mencione para conectar `commonTest` con `connectedAndroidTest`. Si `commonTest` mezcla tests de
+> UI con tests unitarios que usan nombres en backticks con espacios (`` fun `GIVEN ... WHEN ...`() ``),
+> el paso `dexBuilderDebugAndroidTest` falla con
+> `D8: Space characters in SimpleName ... are not allowed prior to DEX version 040`
+> cuando `minSdk < 35`. Como GasGuru usa `minSdk = 26` y el objetivo real es headless en `jvmTest`,
+> ese routing no es necesario.
 
 ### 2. Código del test — de `BaseTest` a `runComposeUiTest`
 
@@ -143,20 +141,24 @@ setContent {
 El estándar recomendado por JetBrains y la comunidad KMP es poner los tests de UI en `commonTest`
 (no en `jvmTest`). Las razones:
 
-- Tests en `commonTest` pueden reejecutarse en dispositivo real vía `connectedAndroidTest`
-  (wireable con `instrumentedTestVariant.sourceSetTree.set(...)`).
 - `jvmTest` es el source set para la **dependencia** del renderer desktop (`compose.desktop.currentOs`),
   no para las clases de test.
 - El bloque `exclude` es el idioma estándar para evitar que `testDebugUnitTest` los ejecute
   (limitación documentada por JetBrains, no un workaround).
+- Tests en `commonTest` podrían reejecutarse en dispositivo real vía `connectedAndroidTest` usando
+  `instrumentedTestVariant.sourceSetTree.set(...)`, pero **no se usa en este proyecto** porque
+  mezclar ese routing con tests unitarios que usan nombres en backticks rompe D8 con `minSdk < 35`
+  (ver sección Lecciones aprendidas).
 
 ## Lecciones aprendidas
 
 - `isDisplayed()` en compose.ui.test **sí lanza** AssertionError si el nodo no existe (no es soft-assert).
 - Los ViewModel tests en `commonTest` **no** se excluyen del bloque `tasks.withType<Test>` — solo los UI tests.
-- `core:uikit` no tenía el bloque `androidTarget { }` en el `kotlin { }` block — hay que añadirlo
-  junto con `@file:OptIn(...)`.
 - Borrar completamente `src/androidTest/` / `src/androidInstrumentedTest/` una vez movidos los tests.
 - No es posible compartir código de test entre módulos KMP vía source sets de test (`commonTest`):
   los consumidores solo ven el classpath `main`. Por eso los helpers de test viven en `commonMain`/
   `androidMain` de `core:testing` (p.ej. `BaseTest` en `androidMain`).
+- **`instrumentedTestVariant.sourceSetTree.set(test)` + backticks + `minSdk < 35` → D8 rompe**:
+  no añadir este bloque si `commonTest` contiene tests unitarios con nombres en backticks con espacios.
+  `assembleAndroidTest` intenta dexar esas clases y D8 prohíbe espacios hasta DEX 040 (`minSdk >= 35`).
+  El bloque `exclude` no ayuda porque solo afecta a tareas de *ejecución*, no al `dexBuilder`.
