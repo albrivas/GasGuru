@@ -274,11 +274,16 @@ androidMain        iosMain
 - [x] PR → develop y merge
 
 ### Phase 10B: Tests de UI en CMP
-- [ ] Añadir `compose.uiTest` en `commonTest` y `compose.desktop.currentOs` en `jvmTest`
-- [ ] Reescribir `BaseTest` con `runComposeUiTest` (eliminar `createComposeExtension`)
-- [ ] Migrar los 10 tests de UI de `androidTest` a `commonTest`
-- [ ] Eliminar exclusión `GasGuruSearchBarContentTest` en `core:components`
-- [ ] Verificar que `./gradlew :core:components:jvmTest` pasa sin emulador
+- [x] Añadir `compose.uiTest` en `commonTest` y `compose.desktop.currentOs` en `jvmTest` en todos los módulos afectados
+- [x] Reescribir tests con `runComposeUiTest` (eliminar `BaseTest` / `createComposeExtension` / JUnit5 de los módulos UI)
+- [x] `GasGuruSearchBarContentTest` en `:core:components` → `commonTest` (commit #553, prueba de concepto)
+- [x] 6 tests de `:core:uikit` → `commonTest` (GasGuruAlertDialogTest, TankCostCardTest, FuelListSelectionTest, SelectedItemTest, FuelStationItemTest, RouteNavigationCardTest)
+- [x] `ProfileScreenTest` → `:feature:profile/commonTest`
+- [x] `FavoriteListScreenTest` → `:feature:favorite-list-station/commonTest`
+- [x] `OnboardingFuelPreferencesTest` → `:feature:onboarding/commonTest`
+- [x] `DetailStationScreenTest` → `:feature:detail-station/commonTest`
+- [x] Verificar que todos los módulos pasan `./gradlew :<modulo>:jvmTest` sin emulador ✅
+- [x] Verificar que `testDebugUnitTest` sigue pasando (ViewModel tests no afectados) ✅
 - [ ] PR → develop y merge
 
 ---
