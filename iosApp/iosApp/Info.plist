@@ -27,8 +27,13 @@
 	</array>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>GasGuru needs your location to show nearby gas stations.</string>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.gasguru.stationsync</string>
+	</array>
 	<key>UIBackgroundModes</key>
 	<array>
+		<string>fetch</string>
 		<string>remote-notification</string>
 	</array>
 	<key>UILaunchScreen</key>

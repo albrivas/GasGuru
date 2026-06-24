@@ -17,5 +17,11 @@ fun appShellModule() = module {
             ioDispatcher = get(named(KoinQualifiers.IO_DISPATCHER)),
         )
     }
-    single<IosBridge> { IosBridgeImpl(deepLinkStateHolder = get()) }
+    single<IosBridge> {
+        IosBridgeImpl(
+            deepLinkStateHolder = get(),
+            getFuelStationUseCase = get(),
+            scope = get(named(KoinQualifiers.APPLICATION_SCOPE)),
+        )
+    }
 }

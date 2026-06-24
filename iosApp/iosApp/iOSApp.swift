@@ -1,5 +1,6 @@
 import SwiftUI
 import ComposeApp
+import BackgroundTasks
 
 @main
 struct iOSApp: App {
@@ -12,6 +13,8 @@ struct iOSApp: App {
 
 class AppDelegate: NSObject, UIApplicationDelegate {
 
+    private static let stationSyncId = "com.gasguru.stationsync"
+
     private var bridge: IosBridge?
     private var pushService: PushNotificationServiceIos?
 
@@ -20,8 +23,16 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
         initKoin(launchOptions: launchOptions)
+        registerBackgroundTasks()
+        scheduleStationSync()
         return true
     }
+
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        scheduleStationSync()
+    }
+
+    // MARK: - Koin
 
     private func initKoin(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
         let analyticsHelper: AnalyticsHelper
@@ -49,5 +60,35 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         //     self.bridge?.handlePushTap(stationId: 1234)
         // }
         // #endif
+    }
+
+    // MARK: - Background sync (BGTaskScheduler)
+
+    private func registerBackgroundTasks() {
+        BGTaskScheduler.shared.register(
+            forTaskWithIdentifier: Self.stationSyncId,
+            using: nil
+        ) { [weak self] task in
+            self?.handleStationSync(task as! BGAppRefreshTask)
+        }
+    }
+
+    private func scheduleStationSync() {
+        let request = BGAppRefreshTaskRequest(identifier: Self.stationSyncId)
+        request.earliestBeginDate = Date(timeIntervalSinceNow: 30 * 60)
+        try? BGTaskScheduler.shared.submit(request)
+    }
+
+    private func handleStationSync(_ task: BGAppRefreshTask) {
+        // Re-schedule the next fetch before doing any work.
+        scheduleStationSync()
+
+        task.expirationHandler = {
+            task.setTaskCompleted(success: false)
+        }
+
+        bridge?.refreshStations { success in
+            task.setTaskCompleted(success: success)
+        }
     }
 }
