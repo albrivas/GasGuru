@@ -70,6 +70,7 @@ interface IosBridge {
 ```kotlin
 class IosBridgeImpl(
     private val deepLinkStateHolder: DeepLinkStateHolder,
+    private val analyticsHelper: AnalyticsHelper,
     private val getFuelStationUseCase: GetFuelStationUseCase,
     private val scope: CoroutineScope,
 ) : IosBridge {
@@ -84,6 +85,10 @@ class IosBridgeImpl(
                 getFuelStationUseCase.getFuelInAllStations()
                 true
             } catch (exception: Exception) {
+                analyticsHelper.trackStationSyncWorkerRetried(
+                    errorMessage = exception.message.orEmpty(),
+                    errorType = exception::class.simpleName.orEmpty(),
+                )
                 false
             }
             withContext(Dispatchers.Main) { onComplete(success) }
@@ -98,6 +103,7 @@ class IosBridgeImpl(
 single<IosBridge> {
     IosBridgeImpl(
         deepLinkStateHolder = get(),
+        analyticsHelper = get(),
         getFuelStationUseCase = get(),
         scope = get(named(KoinQualifiers.APPLICATION_SCOPE)),
     )
@@ -205,9 +211,11 @@ fun refreshStations_whenRepositorySucceeds_callsOnCompleteWithTrue() = runTest {
 |---------|--------|
 | `composeApp/src/iosMain/kotlin/.../di/KoinInit.kt` | `koin.get<SyncManager>().execute()` |
 | `composeApp/src/commonMain/kotlin/.../bridge/IosBridge.kt` | `fun interface` → `interface` + `refreshStations` |
-| `composeApp/src/commonMain/kotlin/.../bridge/IosBridgeImpl.kt` | Nuevas deps + implementación `refreshStations` |
-| `composeApp/src/commonMain/kotlin/.../di/AppShellModule.kt` | `IosBridgeImpl` wired con `getFuelStationUseCase` + `scope` |
-| `composeApp/src/commonTest/kotlin/.../bridge/IosBridgeImplTest.kt` | 2 tests nuevos + fakes locales |
+| `composeApp/src/commonMain/kotlin/.../bridge/IosBridgeImpl.kt` | `AnalyticsHelper` + tracking en `catch` + `refreshStations` |
+| `composeApp/src/commonMain/kotlin/.../di/AppShellModule.kt` | `analyticsHelper = get()` en `IosBridgeImpl(...)` |
+| `composeApp/src/commonMain/kotlin/com/gasguru/analytics/WorkerAnalyticsExt.kt` | Movido desde `:app` a commonMain |
+| `app/src/main/java/com/gasguru/analytics/WorkerAnalyticsExt.kt` | **Eliminado** (resuelve desde `:composeApp`) |
+| `composeApp/src/commonTest/kotlin/.../bridge/IosBridgeImplTest.kt` | `RecordingAnalyticsHelper` + aserción en path de fallo |
 | `iosApp/iosApp/Info.plist` | `BGTaskSchedulerPermittedIdentifiers`, `UIBackgroundModes` |
 | `iosApp/iosApp/iOSApp.swift` | `import BackgroundTasks`, registro + scheduling + handler |
 

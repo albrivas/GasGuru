@@ -7,6 +7,7 @@
 ```
 Swift (AppDelegate)  ──────▶  IosBridge (protocolo ObjC)  ──────▶  IosBridgeImpl (commonMain)
                                                                      └─ DeepLinkStateHolder
+                                                                     └─ AnalyticsHelper
                                                                      └─ GetFuelStationUseCase
                                                                      └─ CoroutineScope (APPLICATION_SCOPE)
 ```

@@ -95,22 +95,15 @@ No es necesario especificarla al crear el evento.
 
 #### `MixpanelAnalyticsHelper` — Producción
 
-Inyecta `Context` y la instancia de `MixpanelAPI` via Koin. En el bloque `init` registra
-super properties estáticas una sola vez (`registerSuperPropertiesOnce`). El método
-`updateSuperProperties` permite actualizar las propiedades dinámicas:
+Inyecta la instancia de `MixpanelAPI` via Koin. No registra super properties estáticas —
+Mixpanel recoge `$os` (Android/iOS) y `$app_version_string` **automáticamente** en ambas
+plataformas, por lo que las propiedades custom `platform`/`app_version` son redundantes y
+se eliminaron (ver nota en la sección Super Properties).
 
 ```kotlin
 class MixpanelAnalyticsHelper(
-    private val context: Context,
     private val mixpanel: MixpanelAPI,
 ) : AnalyticsHelper {
-    init {
-        val appVersion = context.packageManager.getPackageInfo(context.packageName, 0).versionName
-        mixpanel.registerSuperPropertiesOnce(JSONObject().apply {
-            put("app_version", appVersion)
-            put("platform", "android")
-        })
-    }
 
     override fun logEvent(event: AnalyticsEvent) {
         val properties = JSONObject()
@@ -136,7 +129,7 @@ val analyticsModule = module {
     }
     single<AnalyticsHelper> {
         if (BuildConfig.DEBUG) LogcatAnalyticsHelper()
-        else MixpanelAnalyticsHelper(context = androidContext(), mixpanel = get())
+        else MixpanelAnalyticsHelper(mixpanel = get())
     }
 }
 ```
@@ -184,10 +177,15 @@ Las super properties se adjuntan automáticamente a **todos** los eventos vía
 
 | Propiedad | Tipo | Cuándo se actualiza |
 |-----------|------|---------------------|
-| `app_version` | `String` | Al iniciar la app (estática, `registerSuperPropertiesOnce`) |
-| `platform` | `String` (`"android"`) | Al iniciar la app (estática, `registerSuperPropertiesOnce`) |
 | `primary_fuel_type` | `String` | Al arrancar la app tras cargar `getUserDataUseCase` |
 | `vehicle_count` | `Int` | Al arrancar la app tras cargar `getUserDataUseCase` |
+
+> **Nota — `$os` y `$app_version_string` (automáticas):** Los SDKs de Mixpanel para Android
+> e iOS adjuntan automáticamente `$os` (`"Android"` / `"iOS"`) y `$app_version_string` a todos
+> los eventos. Las propiedades custom `platform` y `app_version` que existían previamente en
+> `MixpanelAnalyticsHelper` (Android) se eliminaron por ser redundantes y porque en iOS nunca
+> se habían registrado, rompiendo la paridad. Para segmentar por plataforma en el dashboard de
+> Mixpanel usa el filtro `$os`.
 
 **Actualizar super properties dinámicas:**
 
