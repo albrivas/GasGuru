@@ -342,6 +342,7 @@ Phase 9: iOS Feature Parity (9A → 9I, sub-PRs)
 | 9F | feature/kmp-phase9f-in-app-review-ios | `:core:ui` | **iOS in-app review** (SKStoreReviewController + refactor InAppReviewManager a interface) |
 | 9G | feature/kmp-phase9g-analytics-ios | `:core:analytics`, `:composeApp`, `iosApp` | **iOS analytics** (Mixpanel-swift via Swift bridge `@ObjCName` + KoinInit param) |
 | 9H | feature/kmp-phase9h-onesignal-ios | `:core:notifications` | **iOS push notifications** (OneSignal Swift bridge, prompt al crear primera alerta, deeplink desde tap) |
+| 9J | feature/kmp-phase9j-ios-background-sync | `:composeApp`, `iosApp` | **iOS background sync** (SyncManager.execute() en KoinInit, IosBridge.refreshStations + BGTaskScheduler) |
 | 9I | (pendiente) | Validación E2E | **Android + Android Auto + iOS funcional (paridad completa)** |
 
 ---
@@ -1321,6 +1322,8 @@ En cada sub-fase se lista qué decisiones técnicas hay que cerrar antes de impl
    ↓
 9H Push OneSignal                   [Swift bridge, sin Extension]                ✅
    ↓
+9J Background sync iOS              [SyncManager + IosBridge + BGTaskScheduler]  ✅
+   ↓
 9I Validación E2E + Phase 9 doc
 ```
 
@@ -1508,6 +1511,49 @@ En cada sub-fase se lista qué decisiones técnicas hay que cerrar antes de impl
 - Posible extension target en Xcode project
 
 **Verificación**: device iOS real (no simulador) → recibir push de alerta de precio.
+
+---
+
+### Phase 9J — iOS background sync ✅ COMPLETADA
+
+**Contexto**: tras completar 9A-9H, iOS seguía sin sincronizar datos en background. Había dos huecos:
+
+- **Hueco A (bug)**: `SyncManager.execute()` (sincroniza alertas de precio offline cuando vuelve la conectividad) nunca se llamaba en iOS — solo en `GasGuruApplication.initSyncManager()` de Android.
+- **Hueco B (paridad)**: `StationSyncWorker` (WorkManager periódico, 30 min con constraint de red) no tenía equivalente iOS.
+
+**Decisión**: paridad completa — cerrar A y B en la misma rama. Ver `docs/KMP_PHASE9J.md`.
+
+**Parte A — SyncManager (fix del bug)**:
+- `KoinInit.kt` (iosMain): añadido `koin.get<SyncManager>().execute()` justo antes de devolver el bridge. `SyncManager` ya vivía en commonMain y estaba en el grafo Koin de iOS — solo faltaba invocarlo.
+
+**Parte B — Refresco periódico (BGTaskScheduler)**:
+- `IosBridge.kt`: `fun interface` → `interface`; añadido `fun refreshStations(onComplete: (Boolean) -> Unit)`.
+- `IosBridgeImpl.kt`: inyecta `GetFuelStationUseCase` + `CoroutineScope(APPLICATION_SCOPE)`; `refreshStations` lanza corrutina, llama `getFuelInAllStations()`, devuelve `true`/`false` al callback via `withContext(Dispatchers.Main)`.
+- `AppShellModule.kt`: `IosBridgeImpl` wired con las nuevas deps.
+- `Info.plist`: `BGTaskSchedulerPermittedIdentifiers` con `com.gasguru.stationsync`; `UIBackgroundModes` con `fetch`.
+- `iOSApp.swift`: registra handler `BGAppRefreshTask`, programa la tarea (`earliestBeginDate` = 30 min), re-encola en `applicationDidEnterBackground`, llama `bridge.refreshStations` desde `handleStationSync`.
+
+**Archivos modificados**:
+
+| Archivo | Cambio |
+|---------|--------|
+| `composeApp/src/iosMain/.../di/KoinInit.kt` | `koin.get<SyncManager>().execute()` |
+| `composeApp/src/commonMain/.../bridge/IosBridge.kt` | `fun interface` → `interface` + `refreshStations` |
+| `composeApp/src/commonMain/.../bridge/IosBridgeImpl.kt` | Implementar `refreshStations`, deps `GetFuelStationUseCase` + `CoroutineScope` |
+| `composeApp/src/commonMain/.../di/AppShellModule.kt` | Nuevas deps en `IosBridgeImpl(...)` |
+| `composeApp/src/commonTest/.../bridge/IosBridgeImplTest.kt` | 2 tests nuevos para `refreshStations` |
+| `iosApp/iosApp/Info.plist` | `BGTaskSchedulerPermittedIdentifiers`, `UIBackgroundModes` |
+| `iosApp/iosApp/iOSApp.swift` | Registro + scheduling + handler de `BGAppRefreshTask` |
+
+**Verificación**:
+
+```
+./gradlew :composeApp:compileKotlinIosSimulatorArm64   ✅
+./gradlew :composeApp:testDebugUnitTest                ✅ (3 tests: handlePushTap + 2 refreshStations)
+./gradlew :app:assembleProdDebug                       ✅
+```
+
+**Nota de paridad**: BGAppRefreshTask trata `earliestBeginDate` como límite inferior, no como intervalo garantizado — el SO decide cuándo ejecutar según uso de la app y carga del sistema. Es el comportamiento esperado de `BGAppRefreshTask` (equivalente al constraint de WorkManager), no un bug.
 
 ---
 

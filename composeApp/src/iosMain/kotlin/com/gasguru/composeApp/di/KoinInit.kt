@@ -5,6 +5,7 @@ import com.gasguru.core.common.coroutineModule
 import com.gasguru.core.components.searchbar.di.searchBarModule
 import com.gasguru.core.data.di.commonDataModule
 import com.gasguru.core.data.di.iosDataModule
+import com.gasguru.core.data.sync.SyncManager
 import com.gasguru.core.database.di.daoModule
 import com.gasguru.core.database.di.databaseModule
 import com.gasguru.core.domain.di.domainModule
@@ -51,5 +52,6 @@ fun initKoin(platformModules: List<Module>): IosBridge {
             ),
         )
     }.koin
+    koin.get<SyncManager>().execute()
     return koin.get<IosBridge>()
 }

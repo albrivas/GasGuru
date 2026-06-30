@@ -7,7 +7,9 @@
 ```
 Swift (AppDelegate)  ──────▶  IosBridge (protocolo ObjC)  ──────▶  IosBridgeImpl (commonMain)
                                                                      └─ DeepLinkStateHolder
-                                                                     └─ (futuras deps Koin)
+                                                                     └─ AnalyticsHelper
+                                                                     └─ GetFuelStationUseCase
+                                                                     └─ CoroutineScope (APPLICATION_SCOPE)
 ```
 
 **Por qué existe**: `composeApp` solo exporta a Swift los módulos `core.analytics` y `core.notifications`. El resto del grafo Koin (navegación, datos, etc.) es interno. Swift no puede acceder a esos tipos directamente. `IosBridge` actúa de fachada: recibe eventos de la plataforma con tipos primitivos y los despacha a los objetos Kotlin correctos sin que Swift los conozca.
@@ -108,6 +110,7 @@ Swift ve el nuevo método automáticamente en el protocolo ObjC — compilar `co
 | Método | Descripción | Desde |
 |--------|-------------|-------|
 | `handlePushTap(stationId: Int)` | Tap en push notification → abre detalle de estación | `PushNotificationServiceIos.onClick` |
+| `refreshStations(onComplete: (Boolean) -> Unit)` | Refresca la DB de estaciones en background; llama al callback con `true`/`false` en Main thread | `AppDelegate.handleStationSync(_:)` via `BGTaskScheduler` |
 
 ---
 
