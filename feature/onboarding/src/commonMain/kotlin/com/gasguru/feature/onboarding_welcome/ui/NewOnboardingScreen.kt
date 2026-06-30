@@ -37,6 +37,8 @@ import com.gasguru.core.uikit.components.GasGuruButton
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
+import com.gasguru.core.uikit.utils.TestTags
+import com.gasguru.core.uikit.utils.maestroTestTag
 import com.gasguru.feature.onboarding.generated.resources.Res
 import com.gasguru.feature.onboarding.generated.resources.onboarding_back
 import com.gasguru.feature.onboarding.generated.resources.onboarding_continue
@@ -243,7 +245,9 @@ private fun OnboardingBottomSection(
                 text = stringResource(
                     if (isLastPage) Res.string.onboarding_start else Res.string.onboarding_continue,
                 ),
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .maestroTestTag(TestTags.Onboarding.CONTINUE_BUTTON),
             )
         }
     }

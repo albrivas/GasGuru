@@ -1,5 +1,7 @@
 package com.gasguru.di
 
+import com.gasguru.composeApp.bridge.IosBridge
+import com.gasguru.composeApp.bridge.IosBridgeImpl
 import com.gasguru.core.common.KoinQualifiers
 import com.gasguru.splash.SplashViewModel
 import org.koin.core.module.dsl.viewModel
@@ -13,6 +15,14 @@ fun appShellModule() = module {
             fuelStation = get(),
             userData = get(),
             ioDispatcher = get(named(KoinQualifiers.IO_DISPATCHER)),
+        )
+    }
+    single<IosBridge> {
+        IosBridgeImpl(
+            deepLinkStateHolder = get(),
+            analyticsHelper = get(),
+            getFuelStationUseCase = get(),
+            scope = get(named(KoinQualifiers.APPLICATION_SCOPE)),
         )
     }
 }

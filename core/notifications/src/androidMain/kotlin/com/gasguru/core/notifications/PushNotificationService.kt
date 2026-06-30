@@ -18,7 +18,7 @@ class PushNotificationService(
         private const val KEY_STATION_ID = "station_id"
     }
 
-    override fun init() {
+    override fun start() {
         setupNotificationClickListener()
     }
 

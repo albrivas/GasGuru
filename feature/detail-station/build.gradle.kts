@@ -1,7 +1,4 @@
-@file:OptIn(
-    org.jetbrains.compose.ExperimentalComposeLibrary::class,
-    org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class,
-)
+@file:OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
 
 plugins {
     alias(libs.plugins.gasguru.kmp.compose.library)
@@ -31,15 +28,19 @@ kotlin {
             implementation(libs.jetbrains.compose.ui.tooling.preview)
         }
         commonTest.dependencies {
-            implementation(kotlin("test"))
+            implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.turbine)
             implementation(projects.core.testing)
+            implementation(compose.uiTest)
         }
         androidUnitTest.dependencies {
             implementation(libs.junit5.api)
             implementation(libs.junit5.extensions)
             implementation(libs.junit5.engine)
+        }
+        jvmTest.dependencies {
+            implementation(compose.desktop.currentOs)
         }
     }
 }
@@ -52,11 +53,11 @@ android {
 }
 
 dependencies {
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(compose.uiTooling)
-    androidTestImplementation(libs.junit5.api)
-    androidTestImplementation(libs.junit5.extensions)
-    androidTestImplementation(projects.core.testing)
-    androidTestImplementation(projects.core.ui)
+}
+
+tasks.withType<Test>().configureEach {
+    if (name != "jvmTest") {
+        exclude("**/DetailStationScreenTest*")
+    }
 }

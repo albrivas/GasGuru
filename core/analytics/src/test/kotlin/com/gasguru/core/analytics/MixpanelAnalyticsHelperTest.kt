@@ -1,8 +1,5 @@
 package com.gasguru.core.analytics
 
-import android.content.Context
-import android.content.pm.PackageInfo
-import android.content.pm.PackageManager
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import io.mockk.every
 import io.mockk.just
@@ -20,34 +17,11 @@ import org.junit.jupiter.api.Test
 class MixpanelAnalyticsHelperTest {
 
     private val mixpanelApi: MixpanelAPI = mockk(relaxed = true)
-    private val packageManager: PackageManager = mockk(relaxed = true)
-    private val context: Context = mockk(relaxed = true)
     private lateinit var analyticsHelper: MixpanelAnalyticsHelper
 
     @BeforeEach
     fun setUp() {
-        every { context.packageName } returns "com.gasguru"
-        every { context.packageManager } returns packageManager
-        every { packageManager.getPackageInfo("com.gasguru", 0) } returns PackageInfo().apply {
-            versionName = "1.0.0"
-        }
-        analyticsHelper = MixpanelAnalyticsHelper(context = context, mixpanel = mixpanelApi)
-    }
-
-    @Test
-    @DisplayName(
-        """
-        GIVEN analytics helper is created
-        WHEN init runs
-        THEN registers app_version and platform as super properties once
-        """
-    )
-    fun initRegistersStaticSuperProperties() {
-        val propertiesSlot = slot<JSONObject>()
-        verify { mixpanelApi.registerSuperPropertiesOnce(capture(propertiesSlot)) }
-
-        assertEquals("1.0.0", propertiesSlot.captured.getString("app_version"))
-        assertEquals("android", propertiesSlot.captured.getString("platform"))
+        analyticsHelper = MixpanelAnalyticsHelper(mixpanel = mixpanelApi)
     }
 
     @Test
@@ -104,7 +78,7 @@ class MixpanelAnalyticsHelperTest {
                 AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.VEHICLE_TYPE, value = "CAR"),
                 AnalyticsEvent.Param(
                     key = AnalyticsEvent.ParamKeys.FUEL_TYPE,
-                    value = "GASOLINE_95"
+                    value = "GASOLINE_95",
                 ),
             ),
         )
@@ -115,7 +89,7 @@ class MixpanelAnalyticsHelperTest {
         assertEquals("CAR", capturedProperties.getString(AnalyticsEvent.ParamKeys.VEHICLE_TYPE))
         assertEquals(
             "GASOLINE_95",
-            capturedProperties.getString(AnalyticsEvent.ParamKeys.FUEL_TYPE)
+            capturedProperties.getString(AnalyticsEvent.ParamKeys.FUEL_TYPE),
         )
     }
 
