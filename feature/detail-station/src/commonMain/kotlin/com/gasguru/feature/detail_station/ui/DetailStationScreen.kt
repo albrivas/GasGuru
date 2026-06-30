@@ -88,6 +88,8 @@ import com.gasguru.core.uikit.components.tank_cost_card.TankCostCardModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
+import com.gasguru.core.uikit.utils.TestTags
+import com.gasguru.core.uikit.utils.maestroTestTag
 import com.gasguru.feature.detail_station.analytics.trackInAppReviewCompleted
 import com.gasguru.feature.detail_station.analytics.trackInAppReviewFailed
 import com.gasguru.feature.detail_station.formatSchedule
@@ -433,7 +435,8 @@ fun HeaderStation(
                 .align(Alignment.TopStart)
                 .statusBarsPadding()
                 .padding(start = 16.dp)
-                .clip(CircleShape),
+                .clip(CircleShape)
+                .maestroTestTag(TestTags.DetailStation.BACK_TO_MAP),
             onClick = onBack,
             colors = IconButtonDefaults.iconButtonColors(containerColor = GasGuruTheme.colors.neutralWhite),
         ) {

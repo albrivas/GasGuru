@@ -1,0 +1,23 @@
+appId: ${APP_ID}
+name: "Home station detail flow"
+---
+- assertVisible:
+    id: "search_bar"
+- tapOn:
+    id: "home_show_list_button"
+- waitForAnimationToEnd
+- tapOn:
+    id: "home_station_item_0"
+- waitForAnimationToEnd
+- assertVisible:
+    id: "detail_back_to_map"
+- tapOn:
+    id: "detail_back_to_map"
+- waitForAnimationToEnd
+- swipe:
+    from:
+      id: "map_station_list"
+    direction: DOWN
+- waitForAnimationToEnd
+- assertVisible:
+    id: "search_bar"

@@ -1,7 +1,4 @@
-@file:OptIn(
-    org.jetbrains.compose.ExperimentalComposeLibrary::class,
-    org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class,
-)
+@file:OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
 
 plugins {
     alias(libs.plugins.gasguru.kmp.compose.library)
@@ -15,12 +12,6 @@ compose.resources {
 }
 
 kotlin {
-    androidTarget {
-        // Connect commonTest to the Android instrumented test variant
-        // so that `connectedAndroidTest` picks up CMP UI tests from commonTest
-        instrumentedTestVariant.sourceSetTree.set(org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree.test)
-    }
-
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.analytics)
@@ -31,7 +22,7 @@ kotlin {
             implementation(projects.core.common)
         }
         commonTest.dependencies {
-            implementation(kotlin("test"))
+            implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.turbine)
             implementation(projects.core.testing)
@@ -41,6 +32,9 @@ kotlin {
             implementation(libs.junit5.api)
             implementation(libs.junit5.engine)
             implementation(libs.junit5.extensions)
+        }
+        jvmTest.dependencies {
+            implementation(compose.desktop.currentOs)
         }
     }
 }
@@ -57,10 +51,12 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
 
-// CMP UI tests use runComposeUiTest which requires Android rendering —
-// they run via connectedAndroidTest, not JVM unit tests
+// GasGuruSearchBarContentTest uses runComposeUiTest with the Skiko renderer.
+// jvmTest has compose.desktop.currentOs (Skiko desktop, runs headless).
+// testDebugUnitTest (androidUnitTest) resolves compose.ui.test to the Android artefact
+// which requires instrumentation — exclude it there to avoid NullPointerExceptions.
 tasks.withType<Test>().configureEach {
-    if (name.contains("UnitTest", ignoreCase = true)) {
+    if (name != "jvmTest") {
         exclude("**/GasGuruSearchBarContentTest*")
     }
 }

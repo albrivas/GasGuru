@@ -18,10 +18,15 @@ kotlin {
             api(projects.navigation)
             api(libs.io.arrow.kt.arrow.core)
             api(libs.kotlinx.coroutines.test)
-            api(kotlin("test-annotations-common"))
+            api(libs.kotlin.test.annotations.common)
+        }
+        val jvmMain by getting {
+            dependencies {
+                api(libs.kotlin.test.junit5)
+            }
         }
         androidMain.dependencies {
-            api(kotlin("test-junit5"))
+            api(libs.kotlin.test.junit5)
             api(projects.core.network)
             api(libs.junit)
             api(libs.androidx.test.core)
@@ -39,7 +44,7 @@ kotlin {
             api(libs.compose.multiplatform.components.resources)
         }
         commonTest.dependencies {
-            implementation(kotlin("test"))
+            implementation(libs.kotlin.test)
         }
     }
 }

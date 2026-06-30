@@ -80,7 +80,12 @@ adb install app/build/outputs/apk/debug/app-prod-debug.apk
 ```
 5. Execute the E2E test with Maestro:
 ```bash
-maestro test .maestro/config.yaml
+# Debug/mock build (local development)
+maestro test --env APP_ID=com.gasguru.mock.debug .maestro/config.yaml
+
+# Production build
+maestro test --env APP_ID=com.gasguru .maestro/config.yaml
+
 # Record test in local
-maestro record --local config.yaml
+maestro record --env APP_ID=com.gasguru.mock.debug --local config.yaml
 ```

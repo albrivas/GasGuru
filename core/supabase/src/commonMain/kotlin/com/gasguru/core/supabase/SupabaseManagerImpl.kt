@@ -19,7 +19,7 @@ class SupabaseManagerImpl(
     ) {
         supabaseClient
             .from(TABLE_ALERTS)
-            .insert(
+            .upsert(
                 PriceAlertSupabase(
                     stationId = stationId,
                     onesignalPlayerId = onesignalPlayerId,

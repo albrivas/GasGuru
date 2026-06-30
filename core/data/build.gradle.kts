@@ -61,6 +61,7 @@ kotlin {
                 implementation(projects.core.supabase)
                 implementation(projects.core.notifications)
                 implementation(libs.io.arrow.kt.arrow.core)
+                implementation(libs.kotlinx.coroutines.core)
             }
         }
         androidMain.dependencies {
@@ -72,7 +73,7 @@ kotlin {
             implementation(libs.maps.utils)
         }
         commonTest.dependencies {
-            implementation(kotlin("test"))
+            implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.turbine)
         }

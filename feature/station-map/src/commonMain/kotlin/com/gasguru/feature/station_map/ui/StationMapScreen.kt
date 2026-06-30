@@ -79,6 +79,8 @@ import com.gasguru.core.uikit.components.route_navigation_card.RouteNavigationCa
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
+import com.gasguru.core.uikit.utils.TestTags
+import com.gasguru.core.uikit.utils.maestroTestTag
 import com.gasguru.feature.station_map.generated.resources.filter_brand
 import com.gasguru.feature.station_map.generated.resources.filter_brand_number
 import com.gasguru.feature.station_map.generated.resources.filter_brand_title
@@ -268,11 +270,13 @@ internal fun StationMapScreen(
                     )
                     if (isSheetPartiallyExpanded(scaffoldState)) {
                         Text(
-                            modifier = Modifier.clickable {
-                                coroutine.launch {
-                                    scaffoldState.bottomSheetState.expand()
-                                }
-                            },
+                            modifier = Modifier
+                                .maestroTestTag(TestTags.Home.SHOW_LIST_BUTTON)
+                                .clickable {
+                                    coroutine.launch {
+                                        scaffoldState.bottomSheetState.expand()
+                                    }
+                                },
                             text = stringResource(StationMapRes.string.sheet_button),
                             style = GasGuruTheme.typography.baseRegular,
                             color = GasGuruTheme.colors.primary600,
@@ -419,7 +423,7 @@ fun FloatingButtons(
             if (showRoutePlannerButton) {
                 FloatingActionButton(
                     onClick = navigateToRoutePlanner,
-                    modifier = modifier,
+                    modifier = modifier.maestroTestTag(TestTags.Home.CREATE_ROUTE_FAB),
                     containerColor = GasGuruTheme.colors.primary100,
                     contentColor = GasGuruTheme.colors.neutralBlack,
                 ) {

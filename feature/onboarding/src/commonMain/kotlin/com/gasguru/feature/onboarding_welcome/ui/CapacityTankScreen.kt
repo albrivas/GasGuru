@@ -25,7 +25,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -36,6 +35,8 @@ import com.gasguru.core.uikit.components.capacity_picker.CapacityPickerBottomShe
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
+import com.gasguru.core.uikit.utils.TestTags
+import com.gasguru.core.uikit.utils.maestroTestTag
 import com.gasguru.feature.onboarding.generated.resources.Res
 import com.gasguru.feature.onboarding.generated.resources.capacity_picker_confirm
 import com.gasguru.feature.onboarding.generated.resources.capacity_picker_range
@@ -139,7 +140,7 @@ internal fun CapacityTankScreen(
                 onClick = { onEvent(CapacityTankEvent.Continue) },
                 enabled = uiState.isContinueEnabled,
                 text = stringResource(Res.string.onboarding_continue),
-                modifier = Modifier.testTag("button_capacity_continue"),
+                modifier = Modifier.maestroTestTag(TestTags.Onboarding.CAPACITY_CONTINUE),
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
@@ -304,6 +305,7 @@ private fun CapacityValueChip(
                     Modifier
                 },
             )
+            .maestroTestTag(TestTags.Onboarding.capacityChip(value))
             .clickable { onClick() },
         contentAlignment = Alignment.Center,
     ) {

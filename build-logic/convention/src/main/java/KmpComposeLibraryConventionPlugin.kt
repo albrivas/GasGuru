@@ -27,6 +27,7 @@ class KmpComposeLibraryConventionPlugin : Plugin<Project> {
                     api(compose.components.resources)
                     implementation(getLibrary("kotlinx.serialization.json"))
                     implementation(getLibrary("jetbrains.lifecycle.viewmodel.compose"))
+                    api(getLibrary("jetbrains.lifecycle.runtime.compose"))
                     implementation(getLibrary("koin.compose.viewmodel"))
                 }
                 sourceSets.androidMain.dependencies {

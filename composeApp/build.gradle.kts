@@ -23,6 +23,8 @@ kotlin {
         framework {
             baseName = "ComposeApp"
             isStatic = true
+            export(projects.core.analytics)
+            export(projects.core.notifications)
         }
     }
 
@@ -30,7 +32,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core.uikit)
             implementation(projects.core.ui)
-            implementation(projects.core.analytics)
+            api(projects.core.analytics)
             implementation(projects.core.common)
             implementation(projects.core.data)
             implementation(projects.core.domain)
@@ -46,16 +48,25 @@ kotlin {
             implementation(projects.feature.vehicle)
         }
         commonTest.dependencies {
-            implementation(kotlin("test"))
+            implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.turbine)
             implementation(projects.core.testing)
             implementation(projects.core.database)
         }
+        androidMain.dependencies {
+            implementation(libs.koin.android)
+            implementation(projects.core.analytics)
+            implementation(projects.core.database)
+            implementation(projects.core.network)
+            implementation(projects.core.notifications)
+            implementation(projects.core.supabase)
+            implementation(projects.core.components)
+        }
         iosMain.dependencies {
             implementation(projects.core.database)
             implementation(projects.core.supabase)
-            implementation(projects.core.notifications)
+            api(projects.core.notifications)
             implementation(projects.core.components)
         }
         androidUnitTest.dependencies {

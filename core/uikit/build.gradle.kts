@@ -1,3 +1,5 @@
+@file:OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+
 plugins {
     alias(libs.plugins.gasguru.kmp.compose.library)
 }
@@ -26,11 +28,27 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.androidx.core.ktx)
         }
-        androidInstrumentedTest.dependencies {
-            implementation(projects.core.testing)
-            implementation(libs.junit5.compose)
-            implementation(libs.junit5.api)
-            implementation(libs.junit5.extensions)
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(compose.uiTest)
         }
+        jvmTest.dependencies {
+            implementation(compose.desktop.currentOs)
+        }
+    }
+}
+
+tasks.withType<Test>().configureEach {
+    if (name != "jvmTest") {
+        exclude(
+            "**/GasGuruAlertDialogTest*",
+            "**/TankCostCardTest*",
+            "**/FuelListSelectionTest*",
+            "**/SelectedItemTest*",
+            "**/FuelStationItemTest*",
+            "**/RouteNavigationCardTest*",
+            "**/FuelTypeChipTest*",
+            "**/NumberWheelPickerTest*",
+        )
     }
 }
