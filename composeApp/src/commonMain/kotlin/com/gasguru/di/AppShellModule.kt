@@ -20,6 +20,7 @@ fun appShellModule() = module {
     single<IosBridge> {
         IosBridgeImpl(
             deepLinkStateHolder = get(),
+            analyticsHelper = get(),
             getFuelStationUseCase = get(),
             scope = get(named(KoinQualifiers.APPLICATION_SCOPE)),
         )
