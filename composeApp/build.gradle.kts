@@ -1,8 +1,13 @@
 plugins {
     alias(libs.plugins.gasguru.kmp.compose.library)
     alias(libs.plugins.gasguru.koin)
+    alias(libs.plugins.gasguru.flavors)
     kotlin("native.cocoapods")
 }
+
+// Detect mock vs prod from Xcode's CONFIGURATION env var (e.g. "Debug-Mock" / "Release-Mock").
+// This is set by Xcode when it invokes Gradle to embed the KMP framework.
+val isMockIosBuild = System.getenv("CONFIGURATION")?.contains("Mock", ignoreCase = true) == true
 
 android {
     namespace = "com.gasguru.composeApp"
@@ -19,6 +24,14 @@ kotlin {
         homepage = "https://github.com/gasguru/GasGuru"
         version = "1.0"
         ios.deploymentTarget = "15.0"
+
+        // Map custom Xcode configurations to native build types so that
+        // the Kotlin/Native cocoapods plugin can resolve them correctly.
+        // Without this, "Debug-Mock" / "Release-Mock" configs break syncFramework.
+        xcodeConfigurationToNativeBuildType["Debug-Mock"] =
+            org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType.DEBUG
+        xcodeConfigurationToNativeBuildType["Release-Mock"] =
+            org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType.RELEASE
 
         framework {
             baseName = "ComposeApp"
@@ -68,6 +81,11 @@ kotlin {
             implementation(projects.core.supabase)
             api(projects.core.notifications)
             implementation(projects.core.components)
+            // :mocknetwork (with 12MB JSON) is only linked when building for Mock scheme.
+            // iOS-prod stays clean — parity with Android's mockImplementation.
+            if (isMockIosBuild) {
+                implementation(projects.mocknetwork)
+            }
         }
         androidUnitTest.dependencies {
             implementation(libs.junit5.api)

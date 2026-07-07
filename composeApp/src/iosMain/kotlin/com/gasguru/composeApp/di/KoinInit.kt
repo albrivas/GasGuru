@@ -25,6 +25,15 @@ import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
+/**
+ * Prod data source module for iOS, wired when the app runs with the Prod scheme.
+ * For Mock builds, Swift passes [com.gasguru.mocknetwork.di.mockModule] instead
+ * via [platformModules] — selected at compile-time with [#if MOCK] in iOSApp.swift.
+ */
+fun prodRemoteDataSourceModule() = module {
+    single<RemoteDataSource> { get<SupabaseRemoteDataSource>() }
+}
+
 // Called from Swift as KoinInitKt.doInitKoin(platformModules:).
 // Returns IosBridge — the single contract between Swift and KMP internals.
 fun initKoin(platformModules: List<Module>): IosBridge {
@@ -35,7 +44,6 @@ fun initKoin(platformModules: List<Module>): IosBridge {
                 databaseModule,
                 daoModule,
                 supabaseModule,
-                module { single<RemoteDataSource> { get<SupabaseRemoteDataSource>() } },
                 iosDataModule(),
                 commonDataModule(),
                 domainModule(),
