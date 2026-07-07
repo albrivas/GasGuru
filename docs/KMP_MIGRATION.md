@@ -286,6 +286,18 @@ androidMain        iosMain
 - [x] Verificar que `testDebugUnitTest` sigue pasando (ViewModel tests no afectados) ✅
 - [ ] PR → develop y merge
 
+### Phase 11: Config unificada Android/iOS (entorno + versionado) ✅
+- [x] `:mocknetwork` migrado a KMP (`gasguru.kmp.compose.library`, JSON → `composeResources/files/`, `Res.readBytes`, sin `androidContext`)
+- [x] `EnvironmentsConventionPlugin` reemplaza `FlavorsConventionPlugin`: lee `versions.properties`, inyecta `versionCode`/`versionName` en Android y genera xcconfigs en `iosApp/Config/`
+- [x] `composeApp/build.gradle.kts`: `:mocknetwork` condicional en `iosMain` por `CONFIGURATION` env var; mapping `Debug-Mock`/`Release-Mock` a `NativeBuildType`
+- [x] `KoinInit.kt` (iosMain): `RemoteDataSource` binding quitado del hardcode → viene de `platformModules` (Swift)
+- [x] `iOSApp.swift`: `#if MOCK` selecciona `mockModule()` o `prodRemoteDataSourceModule()` en compile-time
+- [x] `project.yml` (XcodeGen): 4 configs (`debug`, `release`, `debug-mock`, `release-mock`) + 2 schemes compartidos (`GasGuru-Prod`, `GasGuru-Mock`); xcconfigs como `baseConfiguration`
+- [x] CI: eliminado step `chkfung/android-version-actions` — versión viene de `versions.properties` directamente en Gradle
+- [x] `iosApp/Config/` añadido a `.gitignore` (artefacto de build generado)
+- [x] `./gradlew :app:testMockDebugUnitTest :app:testProdDebugUnitTest` ✅ | `codeCheck` ✅
+- [ ] PR → develop y merge
+
 ---
 
 ## Grafo de Dependencias y Orden de Migración

@@ -39,11 +39,17 @@ Trigger:
 Pasos principales:
 1) Checkout y JDK 17
 2) Genera `local.properties` y `app/google-services.json`
-3) Lee `versions.properties` y actualiza `versionCode` / `versionName`
+3) Lee `versions.properties` (para construir el tag de GitHub Release)
 4) `bundleProdRelease`
 5) Firma del AAB
 6) Subida a Google Play (track production)
 7) Crea GitHub Release
+
+> **Nota (Phase 11)**: El step de bump `chkfung/android-version-actions` fue eliminado.
+> `EnvironmentsConventionPlugin` (en `build-logic/convention/`) lee `versions.properties`
+> directamente en tiempo de configuración de Gradle e inyecta `versionCode`/`versionName`
+> tanto en el APK/AAB como en los xcconfigs de iOS. El archivo `app/build.gradle.kts` ya
+> no necesita valores hardcodeados ni una action que los sobreescriba.
 
 ## Secretos necesarios
 Se usan secrets en GitHub Actions:

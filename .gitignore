@@ -233,3 +233,6 @@ sonar-project.properties
 
 # Local development notes
 tasks/
+
+# Generated iOS xcconfigs (produced by EnvironmentsConventionPlugin at build time)
+iosApp/Config/

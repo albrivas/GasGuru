@@ -179,12 +179,39 @@ single { OfflineFuelStationRepository(...) } bind FuelStationRepository::class
 
 Esto registra `OfflineFuelStationRepository` como su tipo concreto **y** como `FuelStationRepository`, permitiendo ambas formas de inyección.
 
-### Módulos flavor-specific
-`remoteDataSourceModule` tiene dos implementaciones:
-- `app/src/prod/.../ProdDataSourceModule.kt` → `RemoteDataSourceImp`
-- `app/src/mock/.../MockNetworkDataSource.kt` → `MockRemoteDataSource` (incluye `mockWebServerModule` con `includes()`)
+### Módulos flavor-specific — selección de data source (Phase 11)
 
-`GasGuruApplication` solo referencia `remoteDataSourceModule`; el build system selecciona la implementación correcta según el flavor activo.
+#### Android (flavors AGP)
+`remoteDataSourceModule` tiene dos implementaciones seleccionadas en **compile-time** por el flavor:
+- `app/src/prod/.../ProdDataSourceModule.kt` → `SupabaseRemoteDataSource`
+- `app/src/mock/.../MockNetworkDataSource.kt` → `MockRemoteDataSource` (incluye `mockModule()`)
+
+`GasGuruApplication` solo referencia `remoteDataSourceModule`; el build system inyecta la implementación del flavor activo.
+
+El flavor activo lo configura `EnvironmentsConventionPlugin` en `build-logic/convention/`, que lee `versions.properties` y define los `productFlavors` `mock`/`prod`.
+
+#### iOS (schemes Xcode)
+En iOS, el mecanismo es equivalente pero usa `SWIFT_ACTIVE_COMPILATION_CONDITIONS`:
+- El scheme **`GasGuru-Mock`** activa la flag `MOCK` (vía `gasguru-mock.xcconfig` generado).
+- El scheme **`GasGuru-Prod`** no activa `MOCK`.
+
+En `iOSApp.swift`:
+```swift
+#if MOCK
+let dataSourceModule = MockModuleKt.mockModule()
+#else
+let dataSourceModule = KoinInitKt.prodRemoteDataSourceModule()
+#endif
+bridge = KoinInitKt.doInitKoin(platformModules: [..., dataSourceModule])
+```
+
+`KoinInit.kt` (iosMain) ya no cablea `RemoteDataSource` inline; siempre llega de `platformModules`.
+
+#### `:mocknetwork` (KMP)
+Tras la migración, `:mocknetwork` es un módulo KMP (`gasguru.kmp.compose.library`):
+- `MockRemoteDataSource` está en `commonMain` y lee el JSON de 12 MB con `Res.readBytes`.
+- El JSON reside en `src/commonMain/composeResources/files/`.
+- En iOS, `:mocknetwork` solo se linka en el scheme Mock (condicional por `CONFIGURATION` env var en `composeApp/build.gradle.kts`).
 
 ### KMP readiness
-En la migración a KMP, los módulos `core` que no tengan dependencias de Android pueden mover sus Koin modules a `commonMain` sin cambios en el DSL. Los módulos con `androidContext()` permanecerán en `androidMain`.
+La migración a KMP está completa. Todos los módulos Koin están en `commonMain` cuando no tienen dependencias de plataforma. Los módulos con dependencias Android (`androidContext()` etc.) permanecen en `androidMain`.
