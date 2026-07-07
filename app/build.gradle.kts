@@ -37,9 +37,7 @@ android {
 
     defaultConfig {
         applicationId = "com.gasguru"
-        versionCode = 1
-        versionName = "1.0"
-
+        // versionCode and versionName are set by EnvironmentsConventionPlugin from versions.properties
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
