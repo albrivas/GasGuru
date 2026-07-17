@@ -14,12 +14,10 @@ data class AddVehicleUiState(
     val selectedVehicleType: VehicleType? = null,
     val vehicleName: String = "",
     val fuelTypes: List<FuelTypeUiModel> = FuelTypeUiModel.ALL_FUELS,
-    val selectedFuelType: FuelType? = null,
+    val selectedFuelType: FuelType? = FuelType.GASOLINE_95,
     val selectedCapacity: Int? = null,
     val isMainVehicle: Boolean = false,
     val isOriginallyPrincipal: Boolean = false,
-    val showCapacityPicker: Boolean = false,
-    val pickerValue: Int = PICKER_MIN,
 ) {
     val isSaveEnabled: Boolean
         get() = selectedFuelType != null && selectedCapacity != null

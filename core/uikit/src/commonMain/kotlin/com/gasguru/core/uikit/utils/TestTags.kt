@@ -24,4 +24,9 @@ object TestTags {
     object DetailStation {
         const val BACK_TO_MAP = "detail_back_to_map"
     }
+
+    object Vehicle {
+        const val FUEL_SELECTOR = "vehicle_fuel_selector"
+        const val FUEL_PICKER_CLOSE = "vehicle_fuel_picker_close"
+    }
 }

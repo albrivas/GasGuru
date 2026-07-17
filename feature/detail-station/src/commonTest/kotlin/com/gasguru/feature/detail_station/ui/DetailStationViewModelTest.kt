@@ -242,6 +242,81 @@ class DetailStationViewModelTest : CoroutineTest() {
     }
 
     @Test
+    fun `GIVEN principal vehicle is not first in the list WHEN vehicle flow is collected THEN emits the vehicle marked as principal`() = runTest {
+        fakeUserDataRepository.setUserData(
+            UserData(
+                lastUpdate = 123L,
+                vehicles = listOf(
+                    Vehicle(
+                        id = 1L,
+                        fuelType = FuelType.DIESEL,
+                        name = null,
+                        tankCapacity = 40,
+                        vehicleType = VehicleType.CAR,
+                        isPrincipal = false,
+                    ),
+                    Vehicle(
+                        id = 2L,
+                        fuelType = FuelType.GASOLINE_95,
+                        name = null,
+                        tankCapacity = 55,
+                        vehicleType = VehicleType.CAR,
+                        isPrincipal = true,
+                    ),
+                ),
+            )
+        )
+        sut = createViewModel()
+
+        sut.vehicle.test {
+            assertNull(awaitItem())
+            val loadedVehicle = awaitItem()
+            assertNotNull(loadedVehicle)
+            assertEquals(2L, loadedVehicle.id)
+            assertEquals(55, loadedVehicle.tankCapacity)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `GIVEN vehicle flow already collecting WHEN the principal vehicle changes to a different one THEN emits the new principal vehicle`() = runTest {
+        sut.vehicle.test {
+            assertNull(awaitItem())
+            val initialVehicle = awaitItem()
+            assertEquals(1L, initialVehicle?.id)
+
+            fakeUserDataRepository.setUserData(
+                UserData(
+                    lastUpdate = 123L,
+                    vehicles = listOf(
+                        Vehicle(
+                            id = 1L,
+                            fuelType = FuelType.GASOLINE_95,
+                            name = null,
+                            tankCapacity = 40,
+                            vehicleType = VehicleType.CAR,
+                            isPrincipal = false,
+                        ),
+                        Vehicle(
+                            id = 2L,
+                            fuelType = FuelType.DIESEL,
+                            name = null,
+                            tankCapacity = 60,
+                            vehicleType = VehicleType.CAR,
+                            isPrincipal = true,
+                        ),
+                    ),
+                )
+            )
+
+            val updatedVehicle = awaitItem()
+            assertEquals(2L, updatedVehicle?.id)
+            assertEquals(60, updatedVehicle?.tankCapacity)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
     fun `GIVEN a station is loaded WHEN ShareStation event is sent THEN analytics logs a STATION_SHARED event with station brand`() = runTest {
         fakeLocationTracker.setLastKnownLocation(testLocation())
         fakeFuelStationDao.setStations(listOf(stationEntity(id = 10, price = 1.55)))

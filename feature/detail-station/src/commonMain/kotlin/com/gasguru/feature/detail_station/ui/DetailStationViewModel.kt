@@ -191,7 +191,7 @@ class DetailStationViewModel(
     )
 
     val vehicle: StateFlow<Vehicle?> = userDataUseCase().map {
-        it.vehicles.firstOrNull()
+        it.principalVehicle()
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),

@@ -1,4 +1,2 @@
-- Bug fixes and performance improvements
-- Bug fixes and performance improvements
-- Bug fixes and performance improvements
-- Swipe to delete vehicles from the profile screen
+- Added a fuel type picker to the vehicle form
+- Fixed tank cost showing the wrong vehicle on station detail
