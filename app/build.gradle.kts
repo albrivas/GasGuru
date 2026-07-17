@@ -85,7 +85,6 @@ dependencies {
     implementation(projects.composeApp)
     implementation(projects.core.analytics)
     implementation(projects.core.data)
-    implementation(projects.core.database)
     implementation(projects.core.domain)
     implementation(projects.core.common)
     implementation(projects.core.supabase)
