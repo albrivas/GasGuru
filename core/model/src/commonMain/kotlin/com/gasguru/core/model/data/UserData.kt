@@ -10,3 +10,6 @@ data class UserData(
 
 fun UserData.principalVehicle(): Vehicle =
     vehicles.firstOrNull { it.isPrincipal } ?: vehicles.first()
+
+fun UserData.principalVehicleOrNull(): Vehicle? =
+    vehicles.firstOrNull { it.isPrincipal } ?: vehicles.firstOrNull()
