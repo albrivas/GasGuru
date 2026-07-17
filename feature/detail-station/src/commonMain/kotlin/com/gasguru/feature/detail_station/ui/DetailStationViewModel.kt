@@ -18,7 +18,6 @@ import com.gasguru.core.domain.vehicle.UpdateVehicleTankCapacityUseCase
 import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.Vehicle
 import com.gasguru.core.model.data.principalVehicle
-import com.gasguru.core.model.data.principalVehicleOrNull
 import com.gasguru.core.ui.mapper.toUiModel
 import com.gasguru.feature.detail_station.analytics.trackPriceAlertDisabled
 import com.gasguru.feature.detail_station.analytics.trackPriceAlertEnabled
@@ -192,7 +191,7 @@ class DetailStationViewModel(
     )
 
     val vehicle: StateFlow<Vehicle?> = userDataUseCase().map {
-        it.principalVehicleOrNull()
+        it.principalVehicle()
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
