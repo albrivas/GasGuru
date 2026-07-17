@@ -16,4 +16,5 @@
     <string name="add_vehicle_capacity_picker_range">Mínimo 1 · Máximo 999</string>
     <string name="add_vehicle_capacity_picker_confirm">Confirmar</string>
     <string name="add_vehicle_back_content_description">Volver</string>
+    <string name="add_vehicle_fuel_picker_close_content_description">Cerrar</string>
 </resources>
