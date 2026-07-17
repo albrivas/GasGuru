@@ -13,7 +13,41 @@
 - ¿Es input del usuario que el VM debe procesar? → **Event**.
 - ¿Es algo que ocurre **una vez** (Snackbar, Intent, permiso, dialog, vibración)? → **Effect**.
 
-## 2. Por qué `Channel.BUFFERED` y no `SharedFlow`
+## 2. Antes de todo: ¿este dato es Screen UI State o UI element state?
+
+La tabla anterior asume que el dato en cuestión debe vivir en el `UiState` del VM. Pero no todo lo que se ve en pantalla pertenece ahí — antes de decidir si algo es State/Event/Effect, hay que preguntarse si pertenece al VM en absoluto.
+
+Google distingue dos tipos de estado en la capa de UI ([State holders and UI state](https://developer.android.com/topic/architecture/ui-layer/stateholders)):
+
+| Tipo | Qué es | Ejemplos | Dónde vive |
+|---|---|---|---|
+| **Screen UI state** | Datos de negocio/dominio que hay que renderizar | vehículo seleccionado, lista de estaciones, combustible elegido | `UiState` del VM (`StateFlow`) |
+| **UI element state** | Cómo se renderiza un elemento, sin lógica de negocio | ¿está abierto un sheet/dialog?, posición de scroll, expandido/colapsado | `remember { mutableStateOf(...) }` en el composable |
+
+**Por qué**: el UI element state no necesita sobrevivir a rotación de forma significativa (perder la visibilidad de un sheet al rotar es aceptable — no rompe nada) y se recalcula trivialmente. Meterlo en el `UiState` del VM obliga a añadir eventos y lógica de VM (`Open*`/`Close*`) para algo sin ninguna regla de negocio detrás: es ceremonia sin beneficio.
+
+**Ejemplo correcto ya existente — `DetailStationScreen.kt`**:
+```kotlin
+var showCapacitySheet by remember { mutableStateOf(value = false) }
+
+if (showCapacitySheet && vehicle != null) {
+    CapacityPickerSheet(
+        initialCapacity = vehicle.tankCapacity,
+        onDismiss = { showCapacitySheet = false },      // local, no toca el VM
+        onConfirm = { newCapacity ->
+            onUpdateTankCapacity(newCapacity)             // esto sí es dato → VM
+            showCapacitySheet = false
+        },
+    )
+}
+```
+Solo el **valor confirmado** (`newCapacity`) cruza al VM. La visibilidad del sheet nunca sale del composable.
+
+**Antipatrón detectado y corregido — `AddVehicleScreen.kt` (selector de combustible)**: en un primer intento se añadió `showFuelPicker: Boolean` al `UiState`, más eventos `OpenFuelPicker`/`CloseFuelPicker` que el VM procesaba solo para hacer `copy(showFuelPicker = true/false)`. Cero lógica de negocio, solo ida y vuelta VM↔UI para abrir/cerrar un sheet. Se sustituyó por `remember { mutableStateOf(false) }` local en el composable (mismo fix aplicado también al picker de capacidad de esa pantalla, que tenía el mismo problema).
+
+**Regla de pulgar**: si abrir/cerrar algo no necesita tocar ninguna otra propiedad del `UiState` ni ejecutar lógica del VM, no es un Event — es UI element state y vive en el composable con `remember`.
+
+## 3. Por qué `Channel.BUFFERED` y no `SharedFlow`
 
 | | `Channel.BUFFERED` + `receiveAsFlow()` | `MutableSharedFlow(replay=0, extraBufferCapacity=N)` |
 |---|---|---|
@@ -25,7 +59,7 @@ Para Effects de feature la relación es siempre 1↔1, así que `Channel.BUFFERE
 
 **Excepción legítima de SharedFlow**: `NavigationManager` (`navigation/src/commonMain/kotlin/com/gasguru/navigation/manager/NavigationManagerImpl.kt`) usa `MutableSharedFlow` porque es un bus global compartido por todo el grafo de navegación.
 
-## 3. Por qué no `collectAsStateWithLifecycle` para Effects
+## 4. Por qué no `collectAsStateWithLifecycle` para Effects
 
 `collectAsStateWithLifecycle` retiene el **último valor** en una `State<T>`. Con un Effect esto provoca que, tras una rotación, el composable re-procese el último Effect recibido (Snackbar dobletado, Intent doble, etc.). No hay forma limpia de "consumir y olvidar" sin meter banderas extra en el state.
 
@@ -41,7 +75,7 @@ LaunchedEffect(Unit) {
 
 `LaunchedEffect(Unit)` vuelve a suscribirse al recomponer tras un cambio de configuración. El VM sobrevive la rotación y el `Channel` sigue activo — si había un Effect pendiente, se entrega una única vez.
 
-## 4. Convención de naming y estructura
+## 5. Convención de naming y estructura
 
 - **Archivo**: `<Feature>Effect.kt` en el mismo paquete que `<Feature>UiState.kt`.
 - **Tipo**: `sealed class <Feature>Effect` con subtypes `data object` o `data class`.
@@ -86,7 +120,7 @@ internal fun <Feature>Screen(
 )
 ```
 
-## 5. Referencia funcional: `StationMapEffect`
+## 6. Referencia funcional: `StationMapEffect`
 
 Implementación completa ya integrada y testeada:
 
@@ -95,7 +129,7 @@ Implementación completa ya integrada y testeada:
 - **Screen** (colecta + `snackbarHostState.showSnackbar`): `feature/station-map/src/main/java/com/gasguru/feature/station_map/ui/StationMapScreen.kt`
 - **Test con Turbine**: `feature/station-map/src/test/kotlin/com/gasguru/feature/station_map/ui/StationMapViewModelTest.kt`
 
-## 6. Cuándo aplicar
+## 7. Cuándo aplicar
 
 - Mostrar Snackbar, Toast o Dialog one-shot.
 - Lanzar `Intent` (compartir, abrir Maps, llamar).
@@ -104,13 +138,13 @@ Implementación completa ya integrada y testeada:
 - Refrescar Glance widget desde un VM tras una acción del usuario.
 - Navegar con resultado / limpiar back-stack puntual cuando NavigationManager no encaja directamente.
 
-## 7. Cuándo NO aplicar
+## 8. Cuándo NO aplicar
 
 - **Navegación normal** — usar `NavigationManager` directamente desde el VM (`navigationManager.navigateTo(destination)`). NavigationManager ya es un bus de eventos (MutableSharedFlow) y se comporta como un Effect de forma transparente. Añadir un `*Effect` intermedio crearía indirección redundante.
 - **Estado persistente** que debe sobrevivir a rotación — usar `UiState`.
 - **Error con botón de reintento visible** en pantalla — debe vivir en `UiState`, no en un Effect (un Effect desaparece al consumirse; el banner de error necesita permanecer).
 
-## 8. Tests con Turbine — patrón mínimo
+## 9. Tests con Turbine — patrón mínimo
 
 Dependencia en `libs.versions.toml`: `turbine` (ya declarada; ver usages en `:feature:station-map`).
 

@@ -56,15 +56,14 @@ class AddVehicleViewModelTest : CoroutineTest() {
     )
 
     @Test
-    fun `GIVEN a fresh ViewModel WHEN uiState is observed THEN all fields are null or empty and save is disabled`() = runTest {
+    fun `GIVEN a fresh ViewModel WHEN uiState is observed THEN GASOLINE_95 is preselected and the rest of the fields are null or empty`() = runTest {
         sut.uiState.test {
             val state = awaitItem()
             assertNull(state.selectedVehicleType)
             assertEquals("", state.vehicleName)
-            assertNull(state.selectedFuelType)
+            assertEquals(FuelType.GASOLINE_95, state.selectedFuelType)
             assertNull(state.selectedCapacity)
             assertFalse(state.isMainVehicle)
-            assertFalse(state.showCapacityPicker)
             assertFalse(state.isSaveEnabled)
         }
     }
@@ -94,74 +93,26 @@ class AddVehicleViewModelTest : CoroutineTest() {
     }
 
     @Test
-    fun `GIVEN fresh state WHEN SelectFuelType event is sent with GASOLINE_95 THEN selectedFuelType is GASOLINE_95`() = runTest {
+    fun `GIVEN fresh state with default GASOLINE_95 WHEN SelectFuelType event is sent with DIESEL THEN selectedFuelType is DIESEL`() = runTest {
         sut.uiState.test {
             awaitItem()
 
-            sut.handleEvent(event = AddVehicleEvent.SelectFuelType(fuelType = FuelType.GASOLINE_95))
+            sut.handleEvent(event = AddVehicleEvent.SelectFuelType(fuelType = FuelType.DIESEL))
             val state = awaitItem()
 
-            assertEquals(FuelType.GASOLINE_95, state.selectedFuelType)
+            assertEquals(FuelType.DIESEL, state.selectedFuelType)
         }
     }
 
     @Test
-    fun `GIVEN no capacity is selected WHEN OpenCapacityPicker event is sent THEN picker is shown with the minimum picker value`() = runTest {
+    fun `GIVEN fresh state WHEN ConfirmCapacityValue event is sent with 75 THEN selectedCapacity is 75`() = runTest {
         sut.uiState.test {
-            awaitItem()
-
-            sut.handleEvent(event = AddVehicleEvent.OpenCapacityPicker)
-            val state = awaitItem()
-
-            assertTrue(state.showCapacityPicker)
-            assertEquals(AddVehicleUiState.PICKER_MIN, state.pickerValue)
-        }
-    }
-
-    @Test
-    fun `GIVEN capacity 60 was previously confirmed WHEN OpenCapacityPicker event is sent THEN picker is shown with 60 as the initial value`() = runTest {
-        sut.uiState.test {
-            awaitItem()
-
-            sut.handleEvent(event = AddVehicleEvent.ConfirmCapacityValue(value = 60))
-            awaitItem()
-
-            sut.handleEvent(event = AddVehicleEvent.OpenCapacityPicker)
-            val state = awaitItem()
-
-            assertTrue(state.showCapacityPicker)
-            assertEquals(60, state.pickerValue)
-        }
-    }
-
-    @Test
-    fun `GIVEN picker is open WHEN CloseCapacityPicker event is sent THEN showCapacityPicker becomes false`() = runTest {
-        sut.uiState.test {
-            awaitItem()
-
-            sut.handleEvent(event = AddVehicleEvent.OpenCapacityPicker)
-            awaitItem()
-
-            sut.handleEvent(event = AddVehicleEvent.CloseCapacityPicker)
-            val state = awaitItem()
-
-            assertFalse(state.showCapacityPicker)
-        }
-    }
-
-    @Test
-    fun `GIVEN picker is open WHEN ConfirmCapacityValue event is sent with 75 THEN selectedCapacity is 75 and picker is closed`() = runTest {
-        sut.uiState.test {
-            awaitItem()
-
-            sut.handleEvent(event = AddVehicleEvent.OpenCapacityPicker)
             awaitItem()
 
             sut.handleEvent(event = AddVehicleEvent.ConfirmCapacityValue(value = 75))
             val state = awaitItem()
 
             assertEquals(75, state.selectedCapacity)
-            assertFalse(state.showCapacityPicker)
         }
     }
 
@@ -193,7 +144,7 @@ class AddVehicleViewModelTest : CoroutineTest() {
     }
 
     @Test
-    fun `GIVEN neither fuel type nor capacity is selected WHEN uiState is observed THEN isSaveEnabled is false`() = runTest {
+    fun `GIVEN fresh state with default fuel and no capacity WHEN uiState is observed THEN isSaveEnabled is false`() = runTest {
         sut.uiState.test {
             val state = awaitItem()
             assertFalse(state.isSaveEnabled)
@@ -201,26 +152,14 @@ class AddVehicleViewModelTest : CoroutineTest() {
     }
 
     @Test
-    fun `GIVEN only fuel type is selected and capacity is missing WHEN uiState is observed THEN isSaveEnabled is false`() = runTest {
-        sut.uiState.test {
-            awaitItem()
-
-            sut.handleEvent(event = AddVehicleEvent.SelectFuelType(fuelType = FuelType.GASOLINE_95))
-            val state = awaitItem()
-
-            assertFalse(state.isSaveEnabled)
-        }
-    }
-
-    @Test
-    fun `GIVEN only capacity is selected and fuel type is missing WHEN uiState is observed THEN isSaveEnabled is false`() = runTest {
+    fun `GIVEN only capacity is confirmed and fuel type keeps its default WHEN uiState is observed THEN isSaveEnabled is true`() = runTest {
         sut.uiState.test {
             awaitItem()
 
             sut.handleEvent(event = AddVehicleEvent.ConfirmCapacityValue(value = 50))
             val state = awaitItem()
 
-            assertFalse(state.isSaveEnabled)
+            assertTrue(state.isSaveEnabled)
         }
     }
 
@@ -229,7 +168,7 @@ class AddVehicleViewModelTest : CoroutineTest() {
         sut.uiState.test {
             awaitItem()
 
-            sut.handleEvent(event = AddVehicleEvent.SelectFuelType(fuelType = FuelType.GASOLINE_95))
+            sut.handleEvent(event = AddVehicleEvent.SelectFuelType(fuelType = FuelType.DIESEL))
             awaitItem()
 
             sut.handleEvent(event = AddVehicleEvent.ConfirmCapacityValue(value = 50))
