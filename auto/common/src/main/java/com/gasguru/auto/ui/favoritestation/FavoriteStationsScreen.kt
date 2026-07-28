@@ -7,6 +7,7 @@ import androidx.car.app.model.ItemList
 import androidx.car.app.model.PlaceListMapTemplate
 import androidx.car.app.model.Template
 import com.gasguru.auto.analytics.trackAutoStationNavigationStarted
+import com.gasguru.auto.common.R
 import com.gasguru.auto.common.getAutomotiveThemeColor
 import com.gasguru.auto.navigation.StationNavigationHelper
 import com.gasguru.auto.ui.component.StationRowComponent
@@ -16,6 +17,8 @@ import com.gasguru.core.domain.location.GetCurrentLocationUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.model.data.principalVehicle
 import com.gasguru.core.ui.mapper.toUiModel
+import com.gasguru.core.ui.sort.StationSortCriteria
+import com.gasguru.core.ui.sort.sortedByCriteria
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
@@ -25,7 +28,10 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import com.gasguru.core.ui.R as CoreUiR
 
-class FavoriteStationsScreen(carContext: CarContext) : Screen(carContext), KoinComponent {
+class FavoriteStationsScreen(
+    carContext: CarContext,
+    private val sortCriteria: StationSortCriteria,
+) : Screen(carContext), KoinComponent {
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
@@ -75,7 +81,7 @@ class FavoriteStationsScreen(carContext: CarContext) : Screen(carContext), KoinC
     override fun onGetTemplate(): Template {
         val builder = PlaceListMapTemplate
             .Builder()
-            .setTitle(carContext.getString(CoreUiR.string.favorites))
+            .setTitle(buildTitle())
             .setHeaderAction(Action.BACK)
 
         builder.setLoading(uiState.loading)
@@ -85,7 +91,11 @@ class FavoriteStationsScreen(carContext: CarContext) : Screen(carContext), KoinC
             builder.setLoading(false)
             val items = ItemList.Builder()
 
-            uiState.stations.forEach { station ->
+            val sortedStations = uiState.selectedFuel?.let { selectedFuel ->
+                uiState.stations.sortedByCriteria(criteria = sortCriteria, fuelType = selectedFuel)
+            } ?: uiState.stations
+
+            sortedStations.forEach { station ->
                 items.addItem(
                     StationRowComponent.createStationRow(
                         stationModel = station,
@@ -112,5 +122,15 @@ class FavoriteStationsScreen(carContext: CarContext) : Screen(carContext), KoinC
         builder.setOnContentRefreshListener { updateStationList() }
 
         return builder.build()
+    }
+
+    private fun buildTitle(): String {
+        val favoritesTitle = carContext.getString(CoreUiR.string.favorites)
+        val criteriaLabel = when (sortCriteria) {
+            StationSortCriteria.PRICE -> carContext.getString(R.string.sort_by_price)
+            StationSortCriteria.DISTANCE -> carContext.getString(R.string.sort_by_distance)
+            StationSortCriteria.NONE -> return favoritesTitle
+        }
+        return "$favoritesTitle · $criteriaLabel"
     }
 }

@@ -10,4 +10,7 @@
     <string name="location_disabled_message">Enable phone location to find gas stations</string>
     <string name="enable_location">Refresh</string>
     <string name="app_title">GasGuru Finder</string>
+    <string name="sort_by_price">Price</string>
+    <string name="sort_by_distance">Distance</string>
+    <string name="sort_full_list">Full list</string>
 </resources>

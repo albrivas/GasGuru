@@ -12,7 +12,7 @@ import androidx.car.app.model.Template
 import com.gasguru.auto.analytics.trackAutoFavoriteStationsOpened
 import com.gasguru.auto.analytics.trackAutoNearbyStationsOpened
 import com.gasguru.auto.common.R
-import com.gasguru.auto.ui.favoritestation.FavoriteStationsScreen
+import com.gasguru.auto.ui.favoritestation.FavoriteSortCriteriaScreen
 import com.gasguru.auto.ui.nearbystation.NearbyStationsScreen
 import com.gasguru.core.analytics.AnalyticsHelper
 import org.koin.core.component.KoinComponent
@@ -52,7 +52,7 @@ class MapAutomotiveScreen(carContext: CarContext) : Screen(carContext), KoinComp
                 .setBrowsable(true)
                 .setOnClickListener {
                     analyticsHelper.trackAutoFavoriteStationsOpened()
-                    screenManager.push(FavoriteStationsScreen(carContext))
+                    screenManager.push(FavoriteSortCriteriaScreen(carContext))
                 }
                 .build()
         )
