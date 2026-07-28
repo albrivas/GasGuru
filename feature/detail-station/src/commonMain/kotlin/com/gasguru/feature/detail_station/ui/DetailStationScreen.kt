@@ -3,7 +3,6 @@ package com.gasguru.feature.detail_station.ui
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,22 +25,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.NotificationsActive
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -73,11 +67,12 @@ import com.gasguru.core.ui.mapper.toPriceUiModel
 import com.gasguru.core.ui.mapper.toUiModel
 import com.gasguru.core.ui.models.FuelTypeUiModel
 import com.gasguru.core.ui.review.rememberInAppReviewManager
+import com.gasguru.core.uikit.components.bottom_sheet.GasGuruBottomSheet
+import com.gasguru.core.uikit.components.bottom_sheet.GasGuruBottomSheetModel
 import com.gasguru.core.uikit.components.divider.DividerLength
 import com.gasguru.core.uikit.components.divider.DividerThickness
 import com.gasguru.core.uikit.components.divider.GasGuruDivider
 import com.gasguru.core.uikit.components.divider.GasGuruDividerModel
-import com.gasguru.core.uikit.components.drag_handle.DragHandle
 import com.gasguru.core.uikit.components.fuel_type_chip.FuelTypeChipModel
 import com.gasguru.core.uikit.components.icon.UiKitIcons
 import com.gasguru.core.uikit.components.information_card.InformationCard
@@ -105,7 +100,6 @@ import com.gasguru.feature.detail_station.generated.resources.fuel_types
 import com.gasguru.feature.detail_station.generated.resources.schedule
 import com.gasguru.feature.detail_station.generated.resources.station_detail
 import com.gasguru.feature.detail_station.generated.resources.vehicle_default_name
-import com.gasguru.feature.detail_station.generated.resources.vehicle_picker_close_content_description
 import com.gasguru.feature.detail_station.generated.resources.vehicle_picker_title
 import com.gasguru.feature.detail_station.getTimeElapsedString
 import com.gasguru.feature.detail_station.platform.rememberNavigateToMapsAction
@@ -542,7 +536,6 @@ fun HeaderStation(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun VehiclePickerBottomSheet(
     vehicles: List<VehicleItemCardModel>,
@@ -550,49 +543,13 @@ private fun VehiclePickerBottomSheet(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val sheetState = rememberModalBottomSheetState()
-    val coroutineScope = rememberCoroutineScope()
-
-    fun animatedDismiss() {
-        coroutineScope.launch { sheetState.hide() }.invokeOnCompletion {
-            if (!sheetState.isVisible) {
-                onDismiss()
-            }
-        }
-    }
-
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        sheetState = sheetState,
-        containerColor = GasGuruTheme.colors.neutral100,
-        contentColor = GasGuruTheme.colors.neutral100,
-        shape = MaterialTheme.shapes.large,
-        dragHandle = { DragHandle() },
-        modifier = modifier.statusBarsPadding(),
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = stringResource(Res.string.vehicle_picker_title),
-                style = GasGuruTheme.typography.baseBold,
-                color = GasGuruTheme.colors.textMain,
-                modifier = Modifier.weight(weight = 1f),
-            )
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = stringResource(Res.string.vehicle_picker_close_content_description),
-                tint = GasGuruTheme.colors.neutralBlack,
-                modifier = Modifier
-                    .size(size = 32.dp)
-                    .maestroTestTag(TestTags.DetailStation.VEHICLE_PICKER_CLOSE)
-                    .clickable { animatedDismiss() },
-            )
-        }
-
+    GasGuruBottomSheet(
+        model = GasGuruBottomSheetModel(
+            title = stringResource(Res.string.vehicle_picker_title),
+            onDismiss = onDismiss,
+        ),
+        modifier = modifier,
+    ) { dismiss ->
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -617,7 +574,7 @@ private fun VehiclePickerBottomSheet(
                     showChevron = false,
                     onClick = {
                         onSelect(vehicleItem.id)
-                        animatedDismiss()
+                        dismiss()
                     },
                 )
             }

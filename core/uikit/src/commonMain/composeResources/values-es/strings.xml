@@ -25,4 +25,5 @@
     <string name="vehicle_default_name">Mi Vehículo</string>
     <string name="location_disabled_description">Para poder ver las estaciones cercanas necesitamos que actives la localización en tu dispositivo</string>
     <string name="location_disabled_button">Activar localización</string>
+    <string name="bottom_sheet_close_content_description">Cerrar</string>
 </resources>
