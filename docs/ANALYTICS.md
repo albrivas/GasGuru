@@ -258,13 +258,14 @@ evento hay que registrarlo en ese `when` para evitar que caiga en `unknown`.
 
 ### vehicle
 
-**Dónde se instrumenta:** `AddVehicleViewModel`, `ProfileViewModel`
+**Dónde se instrumenta:** `AddVehicleViewModel`, `ProfileViewModel`, `DetailStationViewModel`
 
 | Evento | Tipo | Parámetros |
 |--------|------|-----------|
 | Vehículo creado | `VEHICLE_CREATED` | `vehicle_type`, `fuel_type`, `capacity_litres`, `is_principal` |
 | Vehículo editado | `VEHICLE_EDITED` | `vehicle_type`, `fuel_type` |
 | Vehículo eliminado | `VEHICLE_DELETED` | `was_principal: Boolean`, `vehicles_remaining: Int` |
+| Vehículo cambiado desde el detalle de estación | `VEHICLE_SWITCHED` | `vehicle_type: String` |
 
 ---
 
