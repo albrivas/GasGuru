@@ -72,3 +72,14 @@ fun AnalyticsHelper.trackInAppReviewFailed(errorMessage: String) {
         )
     )
 }
+
+fun AnalyticsHelper.trackVehicleSwitched(vehicleType: String) {
+    logEvent(
+        AnalyticsEvent(
+            type = AnalyticsEvent.Types.VEHICLE_SWITCHED,
+            extras = listOf(
+                AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.VEHICLE_TYPE, value = vehicleType),
+            ),
+        )
+    )
+}

@@ -23,6 +23,9 @@ object TestTags {
 
     object DetailStation {
         const val BACK_TO_MAP = "detail_back_to_map"
+        const val CHANGE_VEHICLE = "tank_cost_change_vehicle_button"
+        const val VEHICLE_PICKER_CLOSE = "detail_vehicle_picker_close"
+        fun vehiclePickerItem(vehicleId: Long) = "detail_vehicle_picker_item_$vehicleId"
     }
 
     object Vehicle {

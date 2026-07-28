@@ -1,7 +1,6 @@
-package com.gasguru.feature.profile.ui.mapper
+package com.gasguru.core.ui.mapper
 
 import com.gasguru.core.model.data.Vehicle
-import com.gasguru.core.ui.mapper.toUiModel
 import com.gasguru.core.ui.models.VehicleTypeUiModel
 import com.gasguru.core.uikit.components.vehicle_item.VehicleItemCardModel
 

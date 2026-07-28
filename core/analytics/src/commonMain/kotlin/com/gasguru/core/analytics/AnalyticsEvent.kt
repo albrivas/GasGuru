@@ -30,6 +30,7 @@ data class AnalyticsEvent(
         const val VEHICLE_CREATED = "vehicle_created"
         const val VEHICLE_EDITED = "vehicle_edited"
         const val VEHICLE_DELETED = "vehicle_deleted"
+        const val VEHICLE_SWITCHED = "vehicle_switched"
 
         // Station map
         const val STATION_SELECTED = "station_selected"
@@ -112,6 +113,7 @@ data class AnalyticsEvent(
             Types.VEHICLE_CREATED,
             Types.VEHICLE_EDITED,
             Types.VEHICLE_DELETED,
+            Types.VEHICLE_SWITCHED,
             -> VEHICLE
 
             Types.STATION_SELECTED,

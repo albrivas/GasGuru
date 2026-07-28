@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.components.pulse_dot.PulseDot
 import com.gasguru.core.uikit.generated.resources.Res
@@ -43,13 +44,14 @@ import org.jetbrains.compose.resources.stringResource
 fun VehicleItemCard(
     model: VehicleItemCardModel,
     modifier: Modifier = Modifier,
+    showChevron: Boolean = true,
     onClick: (() -> Unit)? = null,
 ) {
     val clickableModifier = modifier.then(if (onClick != null) Modifier.clickable { onClick() } else Modifier)
     if (model.isSelected) {
-        ActiveVehicleRow(model = model, modifier = clickableModifier)
+        ActiveVehicleRow(model = model, modifier = clickableModifier, showChevron = showChevron)
     } else {
-        InactiveVehicleRow(model = model, modifier = clickableModifier)
+        InactiveVehicleRow(model = model, modifier = clickableModifier, showChevron = showChevron)
     }
 }
 
@@ -57,6 +59,7 @@ fun VehicleItemCard(
 private fun ActiveVehicleRow(
     model: VehicleItemCardModel,
     modifier: Modifier = Modifier,
+    showChevron: Boolean = true,
 ) {
     Row(
         modifier = modifier
@@ -115,11 +118,14 @@ private fun ActiveVehicleRow(
                 )
             }
         }
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-            contentDescription = null,
-            tint = GasGuruTheme.colors.neutral600,
-        )
+        if (showChevron) {
+            Icon(
+                modifier = Modifier.testTag("vehicle_item_chevron"),
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = null,
+                tint = GasGuruTheme.colors.neutral600,
+            )
+        }
     }
 }
 
@@ -127,6 +133,7 @@ private fun ActiveVehicleRow(
 private fun InactiveVehicleRow(
     model: VehicleItemCardModel,
     modifier: Modifier = Modifier,
+    showChevron: Boolean = true,
 ) {
     Row(
         modifier = modifier
@@ -172,11 +179,14 @@ private fun InactiveVehicleRow(
                 )
             }
         }
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-            contentDescription = null,
-            tint = GasGuruTheme.colors.neutral600,
-        )
+        if (showChevron) {
+            Icon(
+                modifier = Modifier.testTag("vehicle_item_chevron"),
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = null,
+                tint = GasGuruTheme.colors.neutral600,
+            )
+        }
     }
 }
 
@@ -223,6 +233,31 @@ private fun VehicleItemCardUnselectedPreview() {
                     tankCapacityLitres = 18,
                     isSelected = false,
                 ),
+            )
+        }
+    }
+}
+
+@Composable
+@ThemePreviews
+private fun VehicleItemCardWithoutChevronPreview() {
+    MyApplicationTheme {
+        Column(
+            modifier = Modifier
+                .clip(RoundedCornerShape(14.dp))
+                .background(GasGuruTheme.colors.neutralWhite)
+                .border(1.dp, GasGuruTheme.colors.neutral300, RoundedCornerShape(14.dp)),
+        ) {
+            VehicleItemCard(
+                model = VehicleItemCardModel(
+                    id = 1L,
+                    name = "Golf VIII",
+                    vehicleTypeIconRes = Res.drawable.ic_vehicle_car,
+                    fuelTypeTranslationRes = Res.string.preview_fuel_type,
+                    tankCapacityLitres = 55,
+                    isSelected = true,
+                ),
+                showChevron = false,
             )
         }
     }
