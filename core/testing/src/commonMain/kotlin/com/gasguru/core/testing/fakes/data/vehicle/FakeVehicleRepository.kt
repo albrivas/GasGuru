@@ -17,11 +17,13 @@ class FakeVehicleRepository(
     val updatedFuelTypes = mutableListOf<Pair<Long, FuelType>>()
     val updatedTankCapacities = mutableListOf<Pair<Long, Int>>()
     val deletedVehicleIds = mutableListOf<Long>()
+    val upsertedVehicles = mutableListOf<Vehicle>()
 
     override fun getVehiclesForUser(userId: Long): Flow<List<Vehicle>> =
         vehiclesFlow.map { list -> list.filter { it.userId == userId } }
 
     override suspend fun upsertVehicle(vehicle: Vehicle): Long {
+        upsertedVehicles.add(vehicle)
         vehiclesFlow.update { list ->
             val existing = list.indexOfFirst { it.id == vehicle.id }
             if (existing >= 0) {
