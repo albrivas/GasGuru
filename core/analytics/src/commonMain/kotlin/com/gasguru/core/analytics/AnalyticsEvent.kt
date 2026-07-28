@@ -81,6 +81,7 @@ data class AnalyticsEvent(
         const val AUTO_NEARBY_STATIONS_OPENED = "auto_nearby_stations_opened"
         const val AUTO_FAVORITE_STATIONS_OPENED = "auto_favorite_stations_opened"
         const val AUTO_STATION_NAVIGATION_STARTED = "auto_station_navigation_started"
+        const val AUTO_FAVORITE_SORT_SELECTED = "auto_favorite_sort_selected"
 
         // Price alerts
         const val PRICE_ALERT_TRIGGERED = "price_alert_triggered"
@@ -158,6 +159,7 @@ data class AnalyticsEvent(
             Types.AUTO_NEARBY_STATIONS_OPENED,
             Types.AUTO_FAVORITE_STATIONS_OPENED,
             Types.AUTO_STATION_NAVIGATION_STARTED,
+            Types.AUTO_FAVORITE_SORT_SELECTED,
             -> AUTO
 
             Types.PRICE_ALERT_TRIGGERED,
