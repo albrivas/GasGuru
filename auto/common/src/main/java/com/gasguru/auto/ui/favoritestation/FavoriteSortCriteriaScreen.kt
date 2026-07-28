@@ -15,13 +15,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import com.gasguru.core.ui.R as CoreUiR
 
-/**
- * Menú de criterio de ordenamiento para la pantalla de Favoritos en Android Auto.
- *
- * El criterio por defecto es siempre Precio (primera fila) y no se persiste entre sesiones:
- * esta pantalla no guarda estado propio, cada opción simplemente empuja una nueva
- * [FavoriteStationsScreen] con el criterio elegido.
- */
+// No stored state: sorting never persists across Android Auto sessions.
 class FavoriteSortCriteriaScreen(carContext: CarContext) : Screen(carContext), KoinComponent {
 
     private val analyticsHelper: AnalyticsHelper by inject()

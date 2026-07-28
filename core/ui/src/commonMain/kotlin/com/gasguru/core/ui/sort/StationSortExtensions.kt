@@ -5,12 +5,6 @@ import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.ui.models.FuelStationUiModel
 import kotlin.jvm.JvmName
 
-/**
- * Ordena la lista según [criteria], usando el precio del [fuelType] seleccionado por el usuario.
- *
- * Función pura, sin efectos secundarios ni dependencias de Koin: puede llamarse tanto desde un
- * ViewModel como desde una `Screen` de Android Auto.
- */
 fun List<FuelStationUiModel>.sortedByCriteria(
     criteria: StationSortCriteria,
     fuelType: FuelType,
@@ -20,10 +14,7 @@ fun List<FuelStationUiModel>.sortedByCriteria(
     StationSortCriteria.NONE -> this
 }
 
-/**
- * Sobrecarga sobre [FuelStation] para consumidores que aún no tienen [FuelStationUiModel]
- * (por ejemplo, el widget de favoritos).
- */
+// JvmName avoids a signature clash with the FuelStationUiModel overload after type erasure.
 @JvmName("sortedFuelStationsByCriteria")
 fun List<FuelStation>.sortedByCriteria(
     criteria: StationSortCriteria,
