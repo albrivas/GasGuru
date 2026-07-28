@@ -31,5 +31,4 @@
     <string name="share_download">Descarga GasGuru y encuentra las gasolineras más baratas</string>
     <string name="vehicle_default_name">Mi vehículo</string>
     <string name="vehicle_picker_title">Cambiar vehículo</string>
-    <string name="vehicle_picker_close_content_description">Cerrar selector de vehículo</string>
 </resources>
