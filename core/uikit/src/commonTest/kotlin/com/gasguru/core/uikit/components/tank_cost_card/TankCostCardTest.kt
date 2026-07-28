@@ -10,6 +10,7 @@ import com.gasguru.core.uikit.components.fuel_type_chip.FuelTypeChipModel
 import com.gasguru.core.uikit.generated.resources.Res
 import com.gasguru.core.uikit.generated.resources.full_tank_cost
 import com.gasguru.core.uikit.theme.MyApplicationTheme
+import com.gasguru.core.uikit.utils.TestTags
 import org.jetbrains.compose.resources.stringResource
 import kotlin.test.Test
 import kotlin.test.assertTrue
@@ -18,13 +19,13 @@ import kotlin.test.assertTrue
 class TankCostCardTest {
 
     // "Gasoline 95" — literal para el string preview_fuel_type que es dato del modelo
-    private fun defaultModel(onEditClick: () -> Unit = {}) = TankCostCardModel(
+    private fun defaultModel(onChangeVehicleClick: () -> Unit = {}) = TankCostCardModel(
         fuelTypeChip = FuelTypeChipModel(nameRes = "Gasoline 95"),
         totalCost = "86.72 €",
         litres = "55.6 L",
         pricePerLitre = "1.559 €/l",
         vehicleName = "Golf VIII",
-        onEditClick = onEditClick,
+        onChangeVehicleClick = onChangeVehicleClick,
     )
 
     @Test
@@ -83,18 +84,18 @@ class TankCostCardTest {
     }
 
     @Test
-    fun editButtonClickInvokesCallback() = runComposeUiTest {
-        var editClicked = false
+    fun changeVehicleButtonClickInvokesCallback() = runComposeUiTest {
+        var changeVehicleClicked = false
 
         setContent {
             MyApplicationTheme {
-                TankCostCard(model = defaultModel(onEditClick = { editClicked = true }))
+                TankCostCard(model = defaultModel(onChangeVehicleClick = { changeVehicleClicked = true }))
             }
         }
 
-        onNodeWithTag("tank_cost_edit_button").performClick()
+        onNodeWithTag(TestTags.DetailStation.CHANGE_VEHICLE).performClick()
 
-        assertTrue(editClicked)
+        assertTrue(changeVehicleClicked)
     }
 
     @Test

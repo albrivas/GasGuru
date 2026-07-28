@@ -8,5 +8,5 @@ data class TankCostCardModel(
     val litres: String,
     val pricePerLitre: String,
     val vehicleName: String,
-    val onEditClick: () -> Unit = {},
+    val onChangeVehicleClick: () -> Unit = {},
 )
