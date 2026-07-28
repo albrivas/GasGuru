@@ -8,21 +8,21 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.runComposeUiTest
 import com.gasguru.core.model.data.ThemeMode
+import com.gasguru.core.ui.generated.resources.gasoline_95
 import com.gasguru.core.ui.mapper.toUi
 import com.gasguru.core.uikit.components.vehicle_item.VehicleItemCardModel
+import com.gasguru.core.uikit.generated.resources.Res
+import com.gasguru.core.uikit.generated.resources.ic_vehicle_car
+import com.gasguru.feature.profile.generated.resources.version
 import com.gasguru.feature.profile.ui.ProfileContentUi
 import com.gasguru.feature.profile.ui.ProfileEvents
 import com.gasguru.feature.profile.ui.ProfileScreen
 import com.gasguru.feature.profile.ui.ProfileUiState
-import com.gasguru.core.ui.generated.resources.Res as CoreUiRes
-import com.gasguru.core.ui.generated.resources.gasoline_95
-import com.gasguru.core.uikit.generated.resources.Res
-import com.gasguru.core.uikit.generated.resources.ic_vehicle_car
-import com.gasguru.feature.profile.generated.resources.Res as ProfileRes
-import com.gasguru.feature.profile.generated.resources.version
 import org.jetbrains.compose.resources.stringResource
 import kotlin.test.Test
 import kotlin.test.assertTrue
+import com.gasguru.core.ui.generated.resources.Res as CoreUiRes
+import com.gasguru.feature.profile.generated.resources.Res as ProfileRes
 
 @OptIn(ExperimentalTestApi::class)
 class ProfileScreenTest {
