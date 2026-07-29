@@ -90,6 +90,7 @@ class FavoriteStationsScreen(
         if (!uiState.loading) {
             builder.setLoading(false)
             val items = ItemList.Builder()
+                .setNoItemsMessage(carContext.getString(R.string.no_favorite_stations))
 
             val sortedStations = uiState.selectedFuel?.let { selectedFuel ->
                 uiState.stations.sortedByCriteria(criteria = sortCriteria, fuelType = selectedFuel)

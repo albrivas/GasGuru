@@ -13,4 +13,5 @@
     <string name="sort_by_price">Precio</string>
     <string name="sort_by_distance">Distancia</string>
     <string name="sort_full_list">Lista completa</string>
+    <string name="no_favorite_stations">No tienes gasolineras favoritas</string>
 </resources>

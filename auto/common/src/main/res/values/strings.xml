@@ -13,4 +13,5 @@
     <string name="sort_by_price">Price</string>
     <string name="sort_by_distance">Distance</string>
     <string name="sort_full_list">Full list</string>
+    <string name="no_favorite_stations">No favorite stations</string>
 </resources>
