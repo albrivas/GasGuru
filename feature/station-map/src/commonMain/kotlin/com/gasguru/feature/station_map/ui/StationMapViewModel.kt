@@ -25,6 +25,8 @@ import com.gasguru.core.model.data.UserData
 import com.gasguru.core.model.data.principalVehicle
 import com.gasguru.core.ui.mapper.toUiModel
 import com.gasguru.core.ui.models.FuelStationUiModel
+import com.gasguru.core.ui.sort.StationSortCriteria
+import com.gasguru.core.ui.sort.sortedByCriteria
 import com.gasguru.feature.station_map.analytics.trackFilterBrandChanged
 import com.gasguru.feature.station_map.analytics.trackFilterNearbyChanged
 import com.gasguru.feature.station_map.analytics.trackFilterScheduleChanged
@@ -385,11 +387,14 @@ class StationMapViewModel(
         stations: List<FuelStationUiModel>,
         selectedTab: StationSortTab,
         userData: UserData,
-    ) = when (selectedTab) {
-        StationSortTab.PRICE -> stations.sortedBy {
-            userData.principalVehicle().fuelType.extractPrice(it.fuelStation)
-        }
-        StationSortTab.DISTANCE -> stations.sortedBy { it.fuelStation.distance }
+    ) = stations.sortedByCriteria(
+        criteria = selectedTab.toSortCriteria(),
+        fuelType = userData.principalVehicle().fuelType,
+    )
+
+    private fun StationSortTab.toSortCriteria(): StationSortCriteria = when (this) {
+        StationSortTab.PRICE -> StationSortCriteria.PRICE
+        StationSortTab.DISTANCE -> StationSortCriteria.DISTANCE
     }
 
     private fun Map<FilterType, Filter>.getBrandFilter() =

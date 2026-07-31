@@ -6,6 +6,9 @@ object CoverageExclusions {
         ":core:notifications",
         ":navigation",
         ":mocknetwork",
+        // Android Auto glue (CarContext, Screen, Session, Row.Builder): requires Robolectric
+        // or a real Android Auto host to exercise, which this project doesn't use.
+        ":auto:common",
     )
 
     val excludedFilePatterns = listOf(

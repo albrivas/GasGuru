@@ -9,6 +9,8 @@ import com.gasguru.core.domain.location.GetLastKnownLocationUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.model.data.principalVehicle
 import com.gasguru.core.ui.mapper.toUiModel
+import com.gasguru.core.ui.sort.StationSortCriteria
+import com.gasguru.core.ui.sort.sortedByCriteria
 import com.gasguru.feature.favorite_list_station.analytics.trackStationUnfavoritedFromList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -57,15 +59,10 @@ class FavoriteListStationViewModel(
                             FavoriteStationListUiState.EmptyFavorites
                         } else {
                             val listUiModel = stations.favoriteStations.map { it.toUiModel() }
-                            val sortedStations = when (tabState.selectedTab) {
-                                0 -> listUiModel.sortedBy {
-                                    userData.principalVehicle().fuelType.extractPrice(
-                                        it.fuelStation
-                                    )
-                                }
-                                1 -> listUiModel.sortedBy { it.fuelStation.distance }
-                                else -> listUiModel
-                            }
+                            val sortedStations = listUiModel.sortedByCriteria(
+                                criteria = tabState.selectedTab.toSortCriteria(),
+                                fuelType = userData.principalVehicle().fuelType,
+                            )
                             FavoriteStationListUiState.Favorites(
                                 favoriteStations = sortedStations,
                                 userSelectedFuelType = userData.principalVehicle().fuelType,
@@ -94,5 +91,11 @@ class FavoriteListStationViewModel(
 
     private fun changeTab(position: Int) {
         _tabState.update { it.copy(selectedTab = position) }
+    }
+
+    private fun Int.toSortCriteria(): StationSortCriteria = when (this) {
+        0 -> StationSortCriteria.PRICE
+        1 -> StationSortCriteria.DISTANCE
+        else -> StationSortCriteria.NONE
     }
 }
