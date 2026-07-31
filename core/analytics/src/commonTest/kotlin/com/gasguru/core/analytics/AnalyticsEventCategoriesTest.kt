@@ -53,6 +53,12 @@ class AnalyticsEventCategoriesTest {
         AnalyticsEvent.Categories.fromType(AnalyticsEvent.Types.VEHICLE_DELETED),
     )
 
+    @Test
+    fun vehicleSwitchedMapsToVehicle() = assertEquals(
+        AnalyticsEvent.Categories.VEHICLE,
+        AnalyticsEvent.Categories.fromType(AnalyticsEvent.Types.VEHICLE_SWITCHED),
+    )
+
     // endregion
 
     // region Session

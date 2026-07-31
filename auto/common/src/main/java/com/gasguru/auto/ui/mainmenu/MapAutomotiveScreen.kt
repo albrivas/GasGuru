@@ -1,20 +1,31 @@
 package com.gasguru.auto.ui.mainmenu
 
 import android.Manifest
+import android.content.pm.PackageManager
 import androidx.car.app.CarContext
 import androidx.car.app.Screen
 import androidx.car.app.model.Action
+import androidx.car.app.model.CarIcon
 import androidx.car.app.model.ItemList
 import androidx.car.app.model.MessageTemplate
+import androidx.car.app.model.ParkedOnlyOnClickListener
 import androidx.car.app.model.PlaceListMapTemplate
 import androidx.car.app.model.Row
 import androidx.car.app.model.Template
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import com.gasguru.auto.analytics.trackAutoFavoriteStationsOpened
 import com.gasguru.auto.analytics.trackAutoNearbyStationsOpened
 import com.gasguru.auto.common.R
-import com.gasguru.auto.ui.favoritestation.FavoriteStationsScreen
+import com.gasguru.auto.ui.favoritestation.FavoriteSortCriteriaScreen
 import com.gasguru.auto.ui.nearbystation.NearbyStationsScreen
 import com.gasguru.core.analytics.AnalyticsHelper
+import com.gasguru.core.domain.location.IsLocationEnabledUseCase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import com.gasguru.core.ui.R as CoreUiR
@@ -22,6 +33,10 @@ import com.gasguru.core.ui.R as CoreUiR
 class MapAutomotiveScreen(carContext: CarContext) : Screen(carContext), KoinComponent {
 
     private val analyticsHelper: AnalyticsHelper by inject()
+    private val isLocationEnabledUseCase: IsLocationEnabledUseCase by inject()
+
+    private val coroutineScope = CoroutineScope(Dispatchers.Main)
+    private var locationEnabledJob: Job? = null
 
     private var hasLocationPermission = false
     private var uiState = MainMenuUiState(
@@ -29,6 +44,13 @@ class MapAutomotiveScreen(carContext: CarContext) : Screen(carContext), KoinComp
     )
 
     init {
+        lifecycle.addObserver(
+            object : DefaultLifecycleObserver {
+                override fun onDestroy(owner: LifecycleOwner) {
+                    coroutineScope.cancel()
+                }
+            }
+        )
         checkPermissions()
     }
 
@@ -52,7 +74,7 @@ class MapAutomotiveScreen(carContext: CarContext) : Screen(carContext), KoinComp
                 .setBrowsable(true)
                 .setOnClickListener {
                     analyticsHelper.trackAutoFavoriteStationsOpened()
-                    screenManager.push(FavoriteStationsScreen(carContext))
+                    screenManager.push(FavoriteSortCriteriaScreen(carContext))
                 }
                 .build()
         )
@@ -61,31 +83,48 @@ class MapAutomotiveScreen(carContext: CarContext) : Screen(carContext), KoinComp
     }
 
     private fun checkPermissions() {
-        val hasLocationPermissions = carContext.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) ==
-            android.content.pm.PackageManager.PERMISSION_GRANTED
+        hasLocationPermission = carContext.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) ==
+            PackageManager.PERMISSION_GRANTED
 
-        if (hasLocationPermissions) {
-            hasLocationPermission = true
-            uiState = MainMenuUiState(permissionDenied = false)
-            invalidate()
+        if (hasLocationPermission) {
+            observeLocationEnabled()
         } else {
-            try {
-                carContext.requestPermissions(
-                    listOf(
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    )
-                ) { granted, rejected ->
-                    if (granted.contains(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                        hasLocationPermission = true
-                        uiState = MainMenuUiState(permissionDenied = false)
-                    } else {
-                        uiState = MainMenuUiState()
-                    }
+            locationEnabledJob?.cancel()
+            uiState = MainMenuUiState(permissionDenied = true)
+            invalidate()
+        }
+    }
+
+    private fun requestLocationPermission() {
+        try {
+            carContext.requestPermissions(
+                listOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            ) { granted, _ ->
+                hasLocationPermission = granted.contains(Manifest.permission.ACCESS_FINE_LOCATION)
+                if (hasLocationPermission) {
+                    observeLocationEnabled()
+                } else {
+                    uiState = MainMenuUiState(permissionDenied = true)
                     invalidate()
                 }
-            } catch (_: SecurityException) {
-                uiState = MainMenuUiState()
+            }
+        } catch (_: SecurityException) {
+            uiState = MainMenuUiState(permissionDenied = true)
+            invalidate()
+        }
+    }
+
+    private fun observeLocationEnabled() {
+        locationEnabledJob?.cancel()
+        locationEnabledJob = coroutineScope.launch {
+            isLocationEnabledUseCase().collect { locationEnabled ->
+                uiState = MainMenuUiState(
+                    permissionDenied = false,
+                    locationDisabled = !locationEnabled
+                )
                 invalidate()
             }
         }
@@ -93,6 +132,7 @@ class MapAutomotiveScreen(carContext: CarContext) : Screen(carContext), KoinComp
 
     override fun onGetTemplate(): Template = when {
         uiState.permissionDenied -> buildPermissionDeniedTemplate()
+        uiState.locationDisabled -> buildLocationDisabledTemplate()
         uiState.needsOnboarding -> buildOnboardingTemplate()
         else -> buildMapTemplate()
     }
@@ -101,12 +141,20 @@ class MapAutomotiveScreen(carContext: CarContext) : Screen(carContext), KoinComp
         MessageTemplate.Builder(carContext.getString(R.string.permission_required_message))
             .setTitle(carContext.getString(R.string.permission_required_title))
             .setHeaderAction(Action.APP_ICON)
+            .setIcon(CarIcon.ERROR)
             .addAction(
                 Action.Builder()
                     .setTitle(carContext.getString(R.string.grant_permissions))
-                    .setOnClickListener { checkPermissions() }
+                    .setOnClickListener(ParkedOnlyOnClickListener.create { requestLocationPermission() })
                     .build()
             )
+            .build()
+
+    private fun buildLocationDisabledTemplate(): Template =
+        MessageTemplate.Builder(carContext.getString(R.string.location_disabled_message))
+            .setTitle(carContext.getString(R.string.location_disabled_title))
+            .setHeaderAction(Action.APP_ICON)
+            .setIcon(CarIcon.ERROR)
             .build()
 
     private fun buildOnboardingTemplate(): Template =
@@ -116,7 +164,7 @@ class MapAutomotiveScreen(carContext: CarContext) : Screen(carContext), KoinComp
             .addAction(
                 Action.Builder()
                     .setTitle(carContext.getString(R.string.complete_onboarding))
-                    .setOnClickListener { checkPermissions() }
+                    .setOnClickListener(ParkedOnlyOnClickListener.create { checkPermissions() })
                     .build()
             )
             .build()

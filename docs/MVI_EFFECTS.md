@@ -28,20 +28,19 @@ Google distingue dos tipos de estado en la capa de UI ([State holders and UI sta
 
 **Ejemplo correcto ya existente — `DetailStationScreen.kt`**:
 ```kotlin
-var showCapacitySheet by remember { mutableStateOf(value = false) }
+var showVehiclePicker by remember { mutableStateOf(value = false) }
 
-if (showCapacitySheet && vehicle != null) {
-    CapacityPickerSheet(
-        initialCapacity = vehicle.tankCapacity,
-        onDismiss = { showCapacitySheet = false },      // local, no toca el VM
-        onConfirm = { newCapacity ->
-            onUpdateTankCapacity(newCapacity)             // esto sí es dato → VM
-            showCapacitySheet = false
+if (showVehiclePicker) {
+    VehiclePickerBottomSheet(
+        vehicles = vehicles,
+        onSelect = { vehicleId ->
+            onSelectVehicle(vehicleId)      // esto sí es dato → VM
         },
+        onDismiss = { showVehiclePicker = false },      // local, no toca el VM
     )
 }
 ```
-Solo el **valor confirmado** (`newCapacity`) cruza al VM. La visibilidad del sheet nunca sale del composable.
+Solo el **vehículo elegido** (`vehicleId`) cruza al VM. La visibilidad del sheet nunca sale del composable.
 
 **Antipatrón detectado y corregido — `AddVehicleScreen.kt` (selector de combustible)**: en un primer intento se añadió `showFuelPicker: Boolean` al `UiState`, más eventos `OpenFuelPicker`/`CloseFuelPicker` que el VM procesaba solo para hacer `copy(showFuelPicker = true/false)`. Cero lógica de negocio, solo ida y vuelta VM↔UI para abrir/cerrar un sheet. Se sustituyó por `remember { mutableStateOf(false) }` local en el composable (mismo fix aplicado también al picker de capacidad de esa pantalla, que tenía el mismo problema).
 
