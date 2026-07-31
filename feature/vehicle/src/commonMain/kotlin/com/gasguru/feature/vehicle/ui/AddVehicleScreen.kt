@@ -23,23 +23,17 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,8 +49,9 @@ import com.gasguru.core.model.data.VehicleType
 import com.gasguru.core.ui.models.FuelTypeUiModel
 import com.gasguru.core.ui.models.VehicleTypeUiModel
 import com.gasguru.core.uikit.components.GasGuruButton
+import com.gasguru.core.uikit.components.bottom_sheet.GasGuruBottomSheet
+import com.gasguru.core.uikit.components.bottom_sheet.GasGuruBottomSheetModel
 import com.gasguru.core.uikit.components.capacity_picker.CapacityPickerBottomSheet
-import com.gasguru.core.uikit.components.drag_handle.DragHandle
 import com.gasguru.core.uikit.components.icon.UiKitIcons
 import com.gasguru.core.uikit.components.selectedItem.SelectedItem
 import com.gasguru.core.uikit.components.selectedItem.SelectedItemModel
@@ -75,7 +70,6 @@ import com.gasguru.feature.vehicle.generated.resources.add_vehicle_capacity_pick
 import com.gasguru.feature.vehicle.generated.resources.add_vehicle_capacity_placeholder
 import com.gasguru.feature.vehicle.generated.resources.add_vehicle_capacity_section
 import com.gasguru.feature.vehicle.generated.resources.add_vehicle_capacity_unit
-import com.gasguru.feature.vehicle.generated.resources.add_vehicle_fuel_picker_close_content_description
 import com.gasguru.feature.vehicle.generated.resources.add_vehicle_fuel_section
 import com.gasguru.feature.vehicle.generated.resources.add_vehicle_main_vehicle_subtitle
 import com.gasguru.feature.vehicle.generated.resources.add_vehicle_main_vehicle_title
@@ -87,7 +81,6 @@ import com.gasguru.feature.vehicle.generated.resources.add_vehicle_type_section
 import com.gasguru.feature.vehicle.generated.resources.edit_vehicle_title
 import com.gasguru.feature.vehicle.viewmodel.AddVehicleUiState
 import com.gasguru.feature.vehicle.viewmodel.AddVehicleViewModel
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -406,7 +399,6 @@ private fun FuelSection(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun FuelTypePickerBottomSheet(
     fuelTypes: List<FuelTypeUiModel>,
@@ -415,49 +407,13 @@ private fun FuelTypePickerBottomSheet(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val sheetState = rememberModalBottomSheetState()
-    val coroutineScope = rememberCoroutineScope()
-
-    fun animatedDismiss() {
-        coroutineScope.launch { sheetState.hide() }.invokeOnCompletion {
-            if (!sheetState.isVisible) {
-                onDismiss()
-            }
-        }
-    }
-
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        sheetState = sheetState,
-        containerColor = GasGuruTheme.colors.neutral100,
-        contentColor = GasGuruTheme.colors.neutral100,
-        shape = MaterialTheme.shapes.large,
-        dragHandle = { DragHandle() },
-        modifier = modifier.statusBarsPadding(),
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = stringResource(Res.string.add_vehicle_fuel_section),
-                style = GasGuruTheme.typography.baseBold,
-                color = GasGuruTheme.colors.textMain,
-                modifier = Modifier.weight(weight = 1f),
-            )
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = stringResource(Res.string.add_vehicle_fuel_picker_close_content_description),
-                tint = GasGuruTheme.colors.neutralBlack,
-                modifier = Modifier
-                    .size(size = 32.dp)
-                    .maestroTestTag(TestTags.Vehicle.FUEL_PICKER_CLOSE)
-                    .clickable { animatedDismiss() },
-            )
-        }
-
+    GasGuruBottomSheet(
+        model = GasGuruBottomSheetModel(
+            title = stringResource(Res.string.add_vehicle_fuel_section),
+            onDismiss = onDismiss,
+        ),
+        modifier = modifier,
+    ) { dismiss ->
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -481,7 +437,7 @@ private fun FuelTypePickerBottomSheet(
                         image = fuelTypeUiModel.iconRes,
                         onItemSelected = {
                             onSelect(fuelTypeUiModel.type)
-                            animatedDismiss()
+                            dismiss()
                         },
                     ),
                 )

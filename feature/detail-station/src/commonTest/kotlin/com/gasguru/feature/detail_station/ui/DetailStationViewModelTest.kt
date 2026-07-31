@@ -19,7 +19,7 @@ import com.gasguru.core.domain.location.GetLastKnownLocationUseCase
 import com.gasguru.core.domain.maps.GetStaticMapUrlUseCase
 import com.gasguru.core.domain.places.GetAddressFromLocationUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
-import com.gasguru.core.domain.vehicle.UpdateVehicleTankCapacityUseCase
+import com.gasguru.core.domain.vehicle.SaveVehicleUseCase
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.UserData
@@ -43,6 +43,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -208,16 +209,117 @@ class DetailStationViewModelTest : CoroutineTest() {
     }
 
     @Test
-    fun `GIVEN a vehicle is loaded WHEN UpdateTankCapacity event is sent with 60 THEN vehicle repository records the updated capacity`() = runTest {
-        sut.vehicle.test {
-            awaitItem() // null (initial value)
-            awaitItem() // Vehicle loaded from repository
-        }
+    fun `GIVEN a non principal vehicle WHEN SelectVehicle event is sent THEN vehicle repository upserts it marked as principal`() = runTest {
+        fakeUserDataRepository.setUserData(
+            UserData(
+                lastUpdate = 123L,
+                vehicles = listOf(
+                    Vehicle(
+                        id = 1L,
+                        fuelType = FuelType.GASOLINE_95,
+                        name = null,
+                        tankCapacity = 40,
+                        vehicleType = VehicleType.CAR,
+                        isPrincipal = true,
+                    ),
+                    Vehicle(
+                        id = 2L,
+                        fuelType = FuelType.DIESEL,
+                        name = "Honda CB500",
+                        tankCapacity = 18,
+                        vehicleType = VehicleType.MOTORCYCLE,
+                        isPrincipal = false,
+                    ),
+                ),
+            )
+        )
+        sut = createViewModel()
 
-        sut.onEvent(DetailStationEvent.UpdateTankCapacity(capacity = 60))
+        sut.onEvent(DetailStationEvent.SelectVehicle(vehicleId = 2L))
         advanceUntilIdle()
 
-        assertEquals(listOf(1L to 60), fakeVehicleRepository.updatedTankCapacities)
+        val expectedVehicle = Vehicle(
+            id = 2L,
+            fuelType = FuelType.DIESEL,
+            name = "Honda CB500",
+            tankCapacity = 18,
+            vehicleType = VehicleType.MOTORCYCLE,
+            isPrincipal = true,
+        )
+        assertEquals(listOf(expectedVehicle), fakeVehicleRepository.upsertedVehicles)
+    }
+
+    @Test
+    fun `GIVEN a vehicle already principal WHEN SelectVehicle event is sent with its id THEN it is upserted again without error`() = runTest {
+        sut.onEvent(DetailStationEvent.SelectVehicle(vehicleId = 1L))
+        advanceUntilIdle()
+
+        assertEquals(1, fakeVehicleRepository.upsertedVehicles.size)
+        assertTrue(fakeVehicleRepository.upsertedVehicles.first().isPrincipal)
+        assertEquals(1L, fakeVehicleRepository.upsertedVehicles.first().id)
+    }
+
+    @Test
+    fun `GIVEN a SelectVehicle event for an unknown vehicle id WHEN handled THEN nothing is upserted`() = runTest {
+        sut.onEvent(DetailStationEvent.SelectVehicle(vehicleId = 999L))
+        advanceUntilIdle()
+
+        assertEquals(emptyList(), fakeVehicleRepository.upsertedVehicles)
+    }
+
+    @Test
+    fun `GIVEN two vehicles with the second one principal WHEN vehicles flow is collected THEN emits the principal vehicle first and marked as selected`() = runTest {
+        fakeUserDataRepository.setUserData(
+            UserData(
+                lastUpdate = 123L,
+                vehicles = listOf(
+                    Vehicle(
+                        id = 1L,
+                        fuelType = FuelType.GASOLINE_95,
+                        name = "Golf VIII",
+                        tankCapacity = 55,
+                        vehicleType = VehicleType.CAR,
+                        isPrincipal = false,
+                    ),
+                    Vehicle(
+                        id = 2L,
+                        fuelType = FuelType.DIESEL,
+                        name = "Honda CB500",
+                        tankCapacity = 18,
+                        vehicleType = VehicleType.MOTORCYCLE,
+                        isPrincipal = true,
+                    ),
+                ),
+            )
+        )
+        sut = createViewModel()
+
+        sut.vehicles.test {
+            assertEquals(emptyList(), awaitItem())
+            val loadedVehicles = awaitItem()
+            assertEquals(2, loadedVehicles.size)
+            assertEquals(2L, loadedVehicles.first().id)
+            assertTrue(loadedVehicles.first().isSelected)
+            assertEquals(1L, loadedVehicles[1].id)
+            assertFalse(loadedVehicles[1].isSelected)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `GIVEN a vehicle WHEN SelectVehicle event is sent THEN analytics logs a VEHICLE_SWITCHED event with vehicle type`() = runTest {
+        val fakeAnalyticsHelper = FakeAnalyticsHelper()
+        sut = createViewModel(analyticsHelper = fakeAnalyticsHelper)
+
+        sut.onEvent(DetailStationEvent.SelectVehicle(vehicleId = 1L))
+        advanceUntilIdle()
+
+        val switchedEvents = fakeAnalyticsHelper.loggedEvents.filter { it.type == AnalyticsEvent.Types.VEHICLE_SWITCHED }
+        assertEquals(1, switchedEvents.size)
+        assertEquals(
+            VehicleType.CAR.name,
+            switchedEvents.first().extras.first { it.key == AnalyticsEvent.ParamKeys.VEHICLE_TYPE }.value,
+        )
     }
 
     @Test
@@ -361,9 +463,7 @@ class DetailStationViewModelTest : CoroutineTest() {
             getStaticMapUrlUseCase = GetStaticMapUrlUseCase(fakeStaticMapRepository),
             addPriceAlertUseCase = AddPriceAlertUseCase(fakePriceAlertRepository),
             removePriceAlertUseCase = RemovePriceAlertUseCase(fakePriceAlertRepository),
-            updateVehicleTankCapacityUseCase = UpdateVehicleTankCapacityUseCase(
-                fakeVehicleRepository
-            ),
+            saveVehicleUseCase = SaveVehicleUseCase(fakeVehicleRepository),
             analyticsHelper = analyticsHelper,
         )
     }

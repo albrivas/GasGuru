@@ -8,4 +8,5 @@
     <string name="my_vehicles">Mis vehículos</string>
     <string name="settings">Ajustes</string>
     <string name="vehicle_add">Añadir vehículo</string>
+    <string name="save">Guardar</string>
 </resources>

@@ -25,3 +25,14 @@ fun AnalyticsHelper.trackAutoStationNavigationStarted(brand: String) {
         )
     )
 }
+
+fun AnalyticsHelper.trackAutoFavoriteSortSelected(criteria: String) {
+    logEvent(
+        AnalyticsEvent(
+            type = AnalyticsEvent.Types.AUTO_FAVORITE_SORT_SELECTED,
+            extras = listOf(
+                AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.TAB, value = criteria),
+            ),
+        )
+    )
+}
