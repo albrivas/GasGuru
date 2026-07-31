@@ -1,2 +1,4 @@
-- Añadido selector de tipo de combustible en el formulario de vehículo
-- Corregido el coste del depósito con el vehículo incorrecto en el detalle de gasolinera
+- Ordenar gasolineras favoritas por precio o distancia en Android Auto
+- Las gasolineras del mapa ahora muestran un color según el precio
+- Cambia de vehículo directamente desde el detalle de la gasolinera
+- Añadido mensaje de estado vacío en favoritos y resultados de búsqueda
