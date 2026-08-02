@@ -54,6 +54,7 @@ import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.feature.profile.generated.resources.Res
 import com.gasguru.feature.profile.generated.resources.my_vehicles
 import com.gasguru.feature.profile.generated.resources.profile
+import com.gasguru.feature.profile.generated.resources.save
 import com.gasguru.feature.profile.generated.resources.settings
 import com.gasguru.feature.profile.generated.resources.theme_mode
 import com.gasguru.feature.profile.generated.resources.vehicle_add
@@ -237,7 +238,7 @@ fun ThemeModeSheet(
     FilterSheet(
         model = FilterSheetModel(
             title = stringResource(Res.string.theme_mode),
-            buttonText = "Save",
+            buttonText = stringResource(Res.string.save),
             isMultiOption = false,
             isMustSelection = true,
             options = themeOptions,

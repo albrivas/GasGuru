@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DirectionsCar
-import androidx.compose.material.icons.outlined.Tune
+import androidx.compose.material.icons.outlined.SwapHoriz
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,11 +30,13 @@ import com.gasguru.core.uikit.components.divider.GasGuruDividerModel
 import com.gasguru.core.uikit.components.fuel_type_chip.FuelTypeChip
 import com.gasguru.core.uikit.components.fuel_type_chip.FuelTypeChipModel
 import com.gasguru.core.uikit.generated.resources.Res
-import com.gasguru.core.uikit.generated.resources.change_litres
+import com.gasguru.core.uikit.generated.resources.change_vehicle
 import com.gasguru.core.uikit.generated.resources.full_tank_cost
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
+import com.gasguru.core.uikit.utils.TestTags
+import com.gasguru.core.uikit.utils.maestroTestTag
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -129,20 +131,20 @@ fun TankCostCard(model: TankCostCardModel, modifier: Modifier = Modifier) = with
                 modifier = Modifier
                     .clip(RoundedCornerShape(8.dp))
                     .background(GasGuruTheme.colors.neutral200)
-                    .clickable { onEditClick() }
-                    .testTag("tank_cost_edit_button")
+                    .clickable { onChangeVehicleClick() }
+                    .maestroTestTag(TestTags.DetailStation.CHANGE_VEHICLE)
                     .padding(horizontal = 12.dp, vertical = 6.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 Icon(
                     modifier = Modifier.size(16.dp),
-                    imageVector = Icons.Outlined.Tune,
+                    imageVector = Icons.Outlined.SwapHoriz,
                     contentDescription = null,
                     tint = GasGuruTheme.colors.textSubtle,
                 )
                 Text(
-                    text = stringResource(Res.string.change_litres),
+                    text = stringResource(Res.string.change_vehicle),
                     style = GasGuruTheme.typography.captionRegular,
                     color = GasGuruTheme.colors.textSubtle,
                 )

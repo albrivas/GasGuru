@@ -14,17 +14,20 @@ import com.gasguru.core.domain.location.GetLastKnownLocationUseCase
 import com.gasguru.core.domain.maps.GetStaticMapUrlUseCase
 import com.gasguru.core.domain.places.GetAddressFromLocationUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
-import com.gasguru.core.domain.vehicle.UpdateVehicleTankCapacityUseCase
+import com.gasguru.core.domain.vehicle.SaveVehicleUseCase
 import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.Vehicle
 import com.gasguru.core.model.data.principalVehicle
 import com.gasguru.core.ui.mapper.toUiModel
+import com.gasguru.core.ui.mapper.toVehicleItemCardModel
+import com.gasguru.core.uikit.components.vehicle_item.VehicleItemCardModel
 import com.gasguru.feature.detail_station.analytics.trackPriceAlertDisabled
 import com.gasguru.feature.detail_station.analytics.trackPriceAlertEnabled
 import com.gasguru.feature.detail_station.analytics.trackStationDetailViewed
 import com.gasguru.feature.detail_station.analytics.trackStationFavorited
 import com.gasguru.feature.detail_station.analytics.trackStationShared
 import com.gasguru.feature.detail_station.analytics.trackStationUnfavorited
+import com.gasguru.feature.detail_station.analytics.trackVehicleSwitched
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -47,7 +50,7 @@ class DetailStationViewModel(
     private val getStaticMapUrlUseCase: GetStaticMapUrlUseCase,
     private val addPriceAlertUseCase: AddPriceAlertUseCase,
     private val removePriceAlertUseCase: RemovePriceAlertUseCase,
-    private val updateVehicleTankCapacityUseCase: UpdateVehicleTankCapacityUseCase,
+    private val saveVehicleUseCase: SaveVehicleUseCase,
     private val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
 
@@ -125,8 +128,8 @@ class DetailStationViewModel(
                 onPriceAlertClick(event.isEnabled)
             }
 
-            is DetailStationEvent.UpdateTankCapacity -> {
-                onUpdateTankCapacity(event.capacity)
+            is DetailStationEvent.SelectVehicle -> {
+                onSelectVehicle(event.vehicleId)
             }
 
             DetailStationEvent.ShareStation -> onShareStation()
@@ -152,9 +155,10 @@ class DetailStationViewModel(
         }
     }
 
-    private fun onUpdateTankCapacity(tankCapacity: Int) = viewModelScope.launch {
-        val currentVehicle = vehicle.value ?: return@launch
-        updateVehicleTankCapacityUseCase(vehicleId = currentVehicle.id, tankCapacity = tankCapacity)
+    private fun onSelectVehicle(vehicleId: Long) = viewModelScope.launch {
+        val selectedVehicle = userDataUseCase().first().vehicles.firstOrNull { it.id == vehicleId } ?: return@launch
+        saveVehicleUseCase(vehicle = selectedVehicle.copy(isPrincipal = true))
+        analyticsHelper.trackVehicleSwitched(vehicleType = selectedVehicle.vehicleType.name)
     }
 
     private fun onShareStation() {
@@ -191,10 +195,20 @@ class DetailStationViewModel(
     )
 
     val vehicle: StateFlow<Vehicle?> = userDataUseCase().map {
-        it.vehicles.firstOrNull()
+        it.principalVehicle()
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = null,
+    )
+
+    val vehicles: StateFlow<List<VehicleItemCardModel>> = userDataUseCase().map { userData ->
+        userData.vehicles
+            .sortedByDescending { currentVehicle -> currentVehicle.isPrincipal }
+            .map { currentVehicle -> currentVehicle.toVehicleItemCardModel(isSelected = currentVehicle.isPrincipal) }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = emptyList(),
     )
 }

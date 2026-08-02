@@ -98,7 +98,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         }
 
         bridge?.refreshStations { success in
-            task.setTaskCompleted(success: success)
+            task.setTaskCompleted(success: success.boolValue)
         }
     }
 }

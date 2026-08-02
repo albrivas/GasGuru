@@ -45,8 +45,6 @@ class AddVehicleViewModel(
             is AddVehicleEvent.SelectVehicleType -> onSelectVehicleType(vehicleType = event.vehicleType)
             is AddVehicleEvent.UpdateVehicleName -> onUpdateVehicleName(name = event.name)
             is AddVehicleEvent.SelectFuelType -> onSelectFuelType(fuelType = event.fuelType)
-            is AddVehicleEvent.OpenCapacityPicker -> onOpenCapacityPicker()
-            is AddVehicleEvent.CloseCapacityPicker -> onCloseCapacityPicker()
             is AddVehicleEvent.ConfirmCapacityValue -> onConfirmCapacityValue(value = event.value)
             is AddVehicleEvent.ToggleMainVehicle -> onToggleMainVehicle()
             is AddVehicleEvent.SaveVehicle -> onSaveVehicle()
@@ -66,21 +64,8 @@ class AddVehicleViewModel(
         _uiState.update { it.copy(selectedFuelType = fuelType) }
     }
 
-    private fun onOpenCapacityPicker() {
-        _uiState.update { currentState ->
-            currentState.copy(
-                showCapacityPicker = true,
-                pickerValue = currentState.selectedCapacity ?: AddVehicleUiState.PICKER_MIN,
-            )
-        }
-    }
-
-    private fun onCloseCapacityPicker() {
-        _uiState.update { it.copy(showCapacityPicker = false) }
-    }
-
     private fun onConfirmCapacityValue(value: Int) {
-        _uiState.update { it.copy(selectedCapacity = value, showCapacityPicker = false) }
+        _uiState.update { it.copy(selectedCapacity = value) }
     }
 
     private fun onToggleMainVehicle() {
@@ -101,7 +86,6 @@ class AddVehicleViewModel(
                     selectedCapacity = vehicle.tankCapacity,
                     isMainVehicle = vehicle.isPrincipal,
                     isOriginallyPrincipal = vehicle.isPrincipal,
-                    pickerValue = vehicle.tankCapacity,
                 )
             }
         }

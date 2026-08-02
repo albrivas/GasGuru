@@ -1,4 +1,4 @@
-- Bug fixes and performance improvements
-- Bug fixes and performance improvements
-- Bug fixes and performance improvements
-- Swipe to delete vehicles from the profile screen
+- Sort favorite stations by price or distance in Android Auto
+- Stations on the map now show a marker color based on price
+- Switch your vehicle directly from the station detail screen
+- Added an empty state message for favorites and search results

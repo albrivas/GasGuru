@@ -31,17 +31,13 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.NotificationsActive
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -71,20 +67,25 @@ import com.gasguru.core.ui.mapper.toPriceUiModel
 import com.gasguru.core.ui.mapper.toUiModel
 import com.gasguru.core.ui.models.FuelTypeUiModel
 import com.gasguru.core.ui.review.rememberInAppReviewManager
-import com.gasguru.core.uikit.components.GasGuruButton
+import com.gasguru.core.uikit.components.bottom_sheet.GasGuruBottomSheet
+import com.gasguru.core.uikit.components.bottom_sheet.GasGuruBottomSheetModel
+import com.gasguru.core.uikit.components.divider.DividerLength
+import com.gasguru.core.uikit.components.divider.DividerThickness
+import com.gasguru.core.uikit.components.divider.GasGuruDivider
+import com.gasguru.core.uikit.components.divider.GasGuruDividerModel
 import com.gasguru.core.uikit.components.fuel_type_chip.FuelTypeChipModel
 import com.gasguru.core.uikit.components.icon.UiKitIcons
 import com.gasguru.core.uikit.components.information_card.InformationCard
 import com.gasguru.core.uikit.components.information_card.InformationCardModel
 import com.gasguru.core.uikit.components.loading.GasGuruLoading
 import com.gasguru.core.uikit.components.loading.GasGuruLoadingModel
-import com.gasguru.core.uikit.components.number_wheel_picker.NumberWheelPicker
-import com.gasguru.core.uikit.components.number_wheel_picker.NumberWheelPickerModel
 import com.gasguru.core.uikit.components.price.PriceItem
 import com.gasguru.core.uikit.components.price.PriceItemModel
 import com.gasguru.core.uikit.components.pulse_dot.PulseDot
 import com.gasguru.core.uikit.components.tank_cost_card.TankCostCard
 import com.gasguru.core.uikit.components.tank_cost_card.TankCostCardModel
+import com.gasguru.core.uikit.components.vehicle_item.VehicleItemCard
+import com.gasguru.core.uikit.components.vehicle_item.VehicleItemCardModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
@@ -94,14 +95,12 @@ import com.gasguru.feature.detail_station.analytics.trackInAppReviewCompleted
 import com.gasguru.feature.detail_station.analytics.trackInAppReviewFailed
 import com.gasguru.feature.detail_station.formatSchedule
 import com.gasguru.feature.detail_station.generated.resources.Res
-import com.gasguru.feature.detail_station.generated.resources.capacity_picker_confirm
-import com.gasguru.feature.detail_station.generated.resources.capacity_picker_range
-import com.gasguru.feature.detail_station.generated.resources.capacity_picker_title
 import com.gasguru.feature.detail_station.generated.resources.direction
 import com.gasguru.feature.detail_station.generated.resources.fuel_types
 import com.gasguru.feature.detail_station.generated.resources.schedule
 import com.gasguru.feature.detail_station.generated.resources.station_detail
 import com.gasguru.feature.detail_station.generated.resources.vehicle_default_name
+import com.gasguru.feature.detail_station.generated.resources.vehicle_picker_title
 import com.gasguru.feature.detail_station.getTimeElapsedString
 import com.gasguru.feature.detail_station.platform.rememberNavigateToMapsAction
 import com.gasguru.feature.detail_station.platform.rememberNotificationPermissionRequester
@@ -121,12 +120,14 @@ internal fun DetailStationScreenRoute(
     val staticMapUrl by viewModel.staticMapUrl.collectAsStateWithLifecycle()
     val lastUpdate by viewModel.lastUpdate.collectAsStateWithLifecycle()
     val vehicle by viewModel.vehicle.collectAsStateWithLifecycle()
+    val vehicles by viewModel.vehicles.collectAsStateWithLifecycle()
 
     DetailStationScreen(
         uiState = uiState,
         staticMapUrl = staticMapUrl,
         lastUpdate = lastUpdate,
         vehicle = vehicle,
+        vehicles = vehicles,
         onBack = { navigationManager.navigateBack() },
         onEvent = viewModel::onEvent,
     )
@@ -138,6 +139,7 @@ internal fun DetailStationScreen(
     staticMapUrl: String?,
     lastUpdate: Long,
     vehicle: Vehicle? = null,
+    vehicles: List<VehicleItemCardModel> = emptyList(),
     onBack: () -> Unit = {},
     onEvent: (DetailStationEvent) -> Unit = {},
 ) {
@@ -193,8 +195,9 @@ internal fun DetailStationScreen(
                         address = uiState.address,
                         lastUpdate = lastUpdate,
                         vehicle = vehicle,
-                        onUpdateTankCapacity = { newCapacity ->
-                            onEvent(DetailStationEvent.UpdateTankCapacity(capacity = newCapacity))
+                        vehicles = vehicles,
+                        onSelectVehicle = { vehicleId ->
+                            onEvent(DetailStationEvent.SelectVehicle(vehicleId = vehicleId))
                         },
                         onNavigateToMaps = { navigateToMaps(stationState.location) },
                     )
@@ -210,19 +213,19 @@ fun DetailStationContent(
     address: String?,
     lastUpdate: Long,
     vehicle: Vehicle? = null,
-    onUpdateTankCapacity: (Int) -> Unit = {},
+    vehicles: List<VehicleItemCardModel> = emptyList(),
+    onSelectVehicle: (Long) -> Unit = {},
     onNavigateToMaps: () -> Unit = {},
 ) {
-    var showCapacitySheet by remember { mutableStateOf(value = false) }
+    var showVehiclePicker by remember { mutableStateOf(value = false) }
 
-    if (showCapacitySheet && vehicle != null) {
-        CapacityPickerSheet(
-            initialCapacity = vehicle.tankCapacity,
-            onDismiss = { showCapacitySheet = false },
-            onConfirm = { newCapacity ->
-                onUpdateTankCapacity(newCapacity)
-                showCapacitySheet = false
+    if (showVehiclePicker) {
+        VehiclePickerBottomSheet(
+            vehicles = vehicles,
+            onSelect = { vehicleId ->
+                onSelectVehicle(vehicleId)
             },
+            onDismiss = { showVehiclePicker = false },
         )
     }
 
@@ -299,7 +302,7 @@ fun DetailStationContent(
                         pricePerLitre = priceModel.formattedPrice,
                         vehicleName = currentVehicle.name.takeUnless { it.isNullOrBlank() }
                             ?: stringResource(Res.string.vehicle_default_name),
-                        onEditClick = { showCapacitySheet = true },
+                        onChangeVehicleClick = { showVehiclePicker = true },
                     ),
                 )
                 Spacer(modifier = Modifier.height(24.dp))
@@ -533,56 +536,48 @@ fun HeaderStation(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun CapacityPickerSheet(
-    initialCapacity: Int,
+private fun VehiclePickerBottomSheet(
+    vehicles: List<VehicleItemCardModel>,
+    onSelect: (Long) -> Unit,
     onDismiss: () -> Unit,
-    onConfirm: (Int) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    var currentCapacity by remember { mutableIntStateOf(value = initialCapacity) }
-
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = GasGuruTheme.colors.neutralWhite,
-    ) {
+    GasGuruBottomSheet(
+        model = GasGuruBottomSheetModel(
+            title = stringResource(Res.string.vehicle_picker_title),
+            onDismiss = onDismiss,
+        ),
+        modifier = modifier,
+    ) { dismiss ->
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-                .padding(bottom = 32.dp),
+                .clip(RoundedCornerShape(16.dp))
+                .background(GasGuruTheme.colors.neutralWhite)
+                .padding(horizontal = 20.dp)
+                .padding(bottom = 12.dp),
         ) {
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = stringResource(Res.string.capacity_picker_title),
-                style = GasGuruTheme.typography.h5,
-                color = GasGuruTheme.colors.neutralBlack,
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = stringResource(Res.string.capacity_picker_range),
-                style = GasGuruTheme.typography.captionRegular,
-                color = GasGuruTheme.colors.neutral600,
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            NumberWheelPicker(
-                model = NumberWheelPickerModel(
-                    min = 40,
-                    max = 999,
-                    initialValue = initialCapacity,
-                    onValueChanged = { newCapacity -> currentCapacity = newCapacity },
-                ),
-                modifier = Modifier
-                    .height(156.dp)
-                    .fillMaxWidth(),
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            GasGuruButton(
-                onClick = { onConfirm(currentCapacity) },
-                text = stringResource(Res.string.capacity_picker_confirm),
-            )
+            vehicles.forEachIndexed { index, vehicleItem ->
+                if (index > 0) {
+                    GasGuruDivider(
+                        model = GasGuruDividerModel(
+                            color = GasGuruTheme.colors.neutral300,
+                            length = DividerLength.INSET,
+                            thickness = DividerThickness.THICK,
+                        ),
+                    )
+                }
+                VehicleItemCard(
+                    modifier = Modifier.maestroTestTag(TestTags.DetailStation.vehiclePickerItem(vehicleItem.id)),
+                    model = vehicleItem,
+                    showChevron = false,
+                    onClick = {
+                        onSelect(vehicleItem.id)
+                        dismiss()
+                    },
+                )
+            }
         }
     }
 }

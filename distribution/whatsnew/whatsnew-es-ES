@@ -1,4 +1,4 @@
-- Corrección de errores y mejoras de rendimiento
-- Corrección de errores y mejoras de rendimiento
-- Corrección de errores y mejoras de rendimiento
-- Desliza para eliminar vehículos desde el perfil
+- Ordenar gasolineras favoritas por precio o distancia en Android Auto
+- Las gasolineras del mapa ahora muestran un color según el precio
+- Cambia de vehículo directamente desde el detalle de la gasolinera
+- Añadido mensaje de estado vacío en favoritos y resultados de búsqueda

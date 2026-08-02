@@ -18,7 +18,7 @@ fun detailStationModule() = module {
             getStaticMapUrlUseCase = get(),
             addPriceAlertUseCase = get(),
             removePriceAlertUseCase = get(),
-            updateVehicleTankCapacityUseCase = get(),
+            saveVehicleUseCase = get(),
             analyticsHelper = get(),
         )
     }

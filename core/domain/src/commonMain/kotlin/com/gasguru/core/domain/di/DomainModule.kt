@@ -35,7 +35,6 @@ import com.gasguru.core.domain.vehicle.SaveDefaultVehicleCapacityUseCase
 import com.gasguru.core.domain.vehicle.SaveDefaultVehicleFuelTypeUseCase
 import com.gasguru.core.domain.vehicle.SaveVehicleUseCase
 import com.gasguru.core.domain.vehicle.UpdateVehicleFuelTypeUseCase
-import com.gasguru.core.domain.vehicle.UpdateVehicleTankCapacityUseCase
 import com.gasguru.core.domain.vehicle.UpdateVehicleUseCase
 import org.koin.dsl.module
 
@@ -93,7 +92,6 @@ fun domainModule() = module {
     factory { SaveVehicleUseCase(vehicleRepository = get()) }
     factory { UpdateVehicleUseCase(vehicleRepository = get()) }
     factory { GetVehiclesUseCase(vehicleRepository = get()) }
-    factory { UpdateVehicleTankCapacityUseCase(vehicleRepository = get()) }
     factory { UpdateVehicleFuelTypeUseCase(vehicleRepository = get()) }
     factory { SaveDefaultVehicleFuelTypeUseCase(vehicleRepository = get()) }
     factory {

@@ -10,9 +10,9 @@ import com.gasguru.core.domain.vehicle.GetVehicleByIdUseCase
 import com.gasguru.core.domain.vehicle.SaveVehicleUseCase
 import com.gasguru.core.model.data.ThemeMode
 import com.gasguru.core.ui.mapper.toUi
+import com.gasguru.core.ui.mapper.toVehicleItemCardModel
 import com.gasguru.core.ui.models.ThemeModeUi
 import com.gasguru.feature.profile.analytics.trackVehicleDeleted
-import com.gasguru.feature.profile.ui.mapper.toVehicleItemCardModel
 import com.gasguru.navigation.manager.NavigationDestination
 import com.gasguru.navigation.manager.NavigationManager
 import kotlinx.coroutines.flow.SharingStarted

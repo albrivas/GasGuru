@@ -161,7 +161,7 @@ D/Analytics: ⚙ [super_properties] primary_fuel_type=GASOLINE_95, vehicle_count
 app                → core:analytics  (MainActivity, StationSyncWorker, ProdDataSourceModule)
 feature:*          → core:analytics  (todos los ViewModels)
 feature:widget     → core:analytics  (WidgetStationClickCallback)
-auto:common        → core:analytics  (GasGuruSession, MapAutomotiveScreen, NearbyStationsScreen, FavoriteStationsScreen)
+auto:common        → core:analytics  (GasGuruSession, MapAutomotiveScreen, NearbyStationsScreen, FavoriteStationsScreen, FavoriteSortCriteriaScreen)
 core:data          → core:analytics  (SyncManager, PriceAlertRepositoryImpl)
 core:network       → core:analytics  (RemoteDataSourceImp)
 core:notifications → core:analytics  (PushNotificationService)
@@ -258,13 +258,14 @@ evento hay que registrarlo en ese `when` para evitar que caiga en `unknown`.
 
 ### vehicle
 
-**Dónde se instrumenta:** `AddVehicleViewModel`, `ProfileViewModel`
+**Dónde se instrumenta:** `AddVehicleViewModel`, `ProfileViewModel`, `DetailStationViewModel`
 
 | Evento | Tipo | Parámetros |
 |--------|------|-----------|
 | Vehículo creado | `VEHICLE_CREATED` | `vehicle_type`, `fuel_type`, `capacity_litres`, `is_principal` |
 | Vehículo editado | `VEHICLE_EDITED` | `vehicle_type`, `fuel_type` |
 | Vehículo eliminado | `VEHICLE_DELETED` | `was_principal: Boolean`, `vehicles_remaining: Int` |
+| Vehículo cambiado desde el detalle de estación | `VEHICLE_SWITCHED` | `vehicle_type: String` |
 
 ---
 
@@ -392,7 +393,7 @@ Solo se registra el error — los eventos de inicio y éxito se eliminaron por s
 
 ### auto
 
-**Dónde se instrumenta:** `GasGuruSession`, `MapAutomotiveScreen`, `NearbyStationsScreen`, `FavoriteStationsScreen`
+**Dónde se instrumenta:** `GasGuruSession`, `MapAutomotiveScreen`, `NearbyStationsScreen`, `FavoriteStationsScreen`, `FavoriteSortCriteriaScreen`
 
 | Evento | Tipo | Parámetros |
 |--------|------|-----------|
@@ -400,6 +401,7 @@ Solo se registra el error — los eventos de inicio y éxito se eliminaron por s
 | Pantalla de gasolineras cercanas abierta | `AUTO_NEARBY_STATIONS_OPENED` | — |
 | Pantalla de favoritos abierta | `AUTO_FAVORITE_STATIONS_OPENED` | — |
 | Navegación a gasolinera iniciada | `AUTO_STATION_NAVIGATION_STARTED` | `station_brand: String` |
+| Criterio de orden de favoritos seleccionado | `AUTO_FAVORITE_SORT_SELECTED` | `tab: String` (`PRICE` / `DISTANCE` / `NONE`) |
 
 ---
 
