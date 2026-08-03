@@ -250,11 +250,17 @@ resolver `get<AppEnvironment>()` sin ninguna maquinaria de build nueva.
 MARKETING_VERSION=3.3.17
 CURRENT_PROJECT_VERSION=94
 PRODUCT_BUNDLE_IDENTIFIER=com.gasguru.mock.debug
-PRODUCT_NAME=GasGuru Mock Debug
+PRODUCT_NAME=GasGuru Mock
 GASGURU_ENV=mock
 CODE_SIGN_ENTITLEMENTS=iosApp/iosApp-Debug.entitlements
 SWIFT_ACTIVE_COMPILATION_CONDITIONS=$(inherited) MOCK
 ```
+
+`PRODUCT_NAME`/`app_name` no distinguen debug/release para el entorno mock (ambos son "GasGuru
+Mock") — a diferencia de prod, que sí lo hace ("GasGuru" / "GasGuru Debug"). Motivo: "GasGuru Mock
+Debug" (18 caracteres) supera el límite recomendado de ~15 caracteres para el nombre del Home
+Screen en iOS, y tanto iOS como Android empiezan a quitar espacios antes de truncar cuando el
+nombre no cabe, produciendo algo ilegible tipo "GasGuruMockD…".
 
 El `#include?` del xcconfig de Pods es obligatorio: CocoaPods nombra sus xcconfig con el nombre
 completo de la configuración de Xcode en minúsculas (`Pods-iosApp.debug-mock.xcconfig`, no
@@ -271,7 +277,7 @@ completo de la configuración de Xcode en minúsculas (`Pods-iosApp.debug-mock.x
 | `./gradlew :app:assembleProdDebug` | APK con Supabase real, versión correcta |
 | `./gradlew :app:testMockDebugUnitTest :app:testProdDebugUnitTest` | Verde ✅ |
 | `./gradlew codeCheck` | Verde ✅ |
-| `./scripts/ios-setup.sh` + `xcodebuild ... -scheme GasGuru-Mock -configuration Debug-Mock` | Compila; `#if MOCK` activo de verdad, "GasGuru Mock Debug", bundle `com.gasguru.mock.debug` |
+| `./scripts/ios-setup.sh` + `xcodebuild ... -scheme GasGuru-Mock -configuration Debug-Mock` | Compila; `#if MOCK` activo de verdad, "GasGuru Mock", bundle `com.gasguru.mock.debug` |
 | `./scripts/ios-setup.sh` + `xcodebuild ... -scheme GasGuru-Prod -configuration Debug` | Compila; Supabase real, "GasGuru Debug", bundle `com.gasguru.debug` |
 | Bump versión | Editar `versions.properties` (Android) **y** los 4 xcconfig de `iosApp/Config/` (iOS) — dos pasos manuales, ver skill `release` |
 

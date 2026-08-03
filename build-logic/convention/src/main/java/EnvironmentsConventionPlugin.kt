@@ -111,7 +111,11 @@ class EnvironmentsConventionPlugin : Plugin<Project> {
         androidComponents.onVariants { variant ->
             val env = environments.first { it.name == variant.flavorName }
             val buildVariant = buildVariants.first { it.isDebug == (variant.buildType == "debug") }
-            val appName = BASE_APP_NAME + (env.nameSuffix ?: "") + (buildVariant.nameSuffix ?: "")
+            // Mock doesn't distinguish debug/release in the app name (both show "GasGuru Mock") —
+            // "GasGuru Mock Debug" exceeds the ~15 character guidance for the Home Screen label
+            // and iOS/Android both start stripping spaces before truncating it.
+            val debugSuffix = if (env.isMock) null else buildVariant.nameSuffix
+            val appName = BASE_APP_NAME + (env.nameSuffix ?: "") + (debugSuffix ?: "")
             variant.resValues.put(
                 variant.makeResValueKey("string", "app_name"),
                 ResValue(appName),
