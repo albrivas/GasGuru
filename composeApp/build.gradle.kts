@@ -5,7 +5,8 @@ plugins {
     kotlin("native.cocoapods")
 }
 
-// Detect mock vs prod from Xcode's CONFIGURATION env var (e.g. "Debug-Mock" / "Release-Mock").
+// Detect mock vs prod from Xcode's CONFIGURATION env var: "Debug-Mock" / "Release-Mock"
+// (the Xcode configuration names declared in iosApp/project.yml).
 // This is set by Xcode when it invokes Gradle to embed the KMP framework.
 val isMockIosBuild = System.getenv("CONFIGURATION")?.contains("Mock", ignoreCase = true) == true
 
@@ -25,9 +26,10 @@ kotlin {
         version = "1.0"
         ios.deploymentTarget = "15.0"
 
-        // Map custom Xcode configurations to native build types so that
-        // the Kotlin/Native cocoapods plugin can resolve them correctly.
-        // Without this, "Debug-Mock" / "Release-Mock" configs break syncFramework.
+        // Map the Mock Xcode configurations to native build types so that the
+        // Kotlin/Native cocoapods plugin can resolve them correctly — "Debug"/"Release"
+        // are resolved by the plugin's own defaults, "Debug-Mock"/"Release-Mock" are not.
+        // Without this, the Mock scheme configs break syncFramework.
         xcodeConfigurationToNativeBuildType["Debug-Mock"] =
             org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType.DEBUG
         xcodeConfigurationToNativeBuildType["Release-Mock"] =
@@ -38,6 +40,11 @@ kotlin {
             isStatic = true
             export(projects.core.analytics)
             export(projects.core.notifications)
+            // MockModuleKt.mockModule() is called directly from Swift (iOSApp.swift, #if MOCK) —
+            // needs to be exported through the umbrella framework, same as the other exports above.
+            if (isMockIosBuild) {
+                export(projects.mocknetwork)
+            }
         }
     }
 
@@ -83,8 +90,9 @@ kotlin {
             implementation(projects.core.components)
             // :mocknetwork (with 12MB JSON) is only linked when building for Mock scheme.
             // iOS-prod stays clean — parity with Android's mockImplementation.
+            // `api`, not `implementation`: framework { export(...) } above requires it.
             if (isMockIosBuild) {
-                implementation(projects.mocknetwork)
+                api(projects.mocknetwork)
             }
         }
         androidUnitTest.dependencies {

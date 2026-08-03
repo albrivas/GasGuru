@@ -45,6 +45,14 @@ kotlin {
         version = "1.0"
         ios.deploymentTarget = "15.0"
 
+        // Same mapping as :composeApp — required so the Kotlin/Native cocoapods plugin can
+        // resolve the Mock scheme's Xcode configurations. "Debug"/"Release" are resolved by
+        // the plugin's own defaults.
+        xcodeConfigurationToNativeBuildType["Debug-Mock"] =
+            org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType.DEBUG
+        xcodeConfigurationToNativeBuildType["Release-Mock"] =
+            org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType.RELEASE
+
         pod("GooglePlaces") {
             version = "~> 8.5"
         }
