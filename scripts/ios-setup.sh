@@ -8,9 +8,6 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-echo "==> Generating iOS .xcconfig files (versions.properties + EnvironmentsConventionPlugin)"
-./gradlew :composeApp:generateIosEnvConfig
-
 echo "==> Running XcodeGen"
 xcodegen generate --spec iosApp/project.yml --project iosApp
 

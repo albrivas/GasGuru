@@ -23,9 +23,9 @@ targets:
         SWIFT_VERSION: "5.0"
         TARGETED_DEVICE_FAMILY: "1,2"
         DEVELOPMENT_TEAM: JKHA7D462N
-    # Bundle id, name, version, entitlements and MOCK flag all come from the .xcconfig generated
-    # by EnvironmentsConventionPlugin (:composeApp:generateIosEnvConfig) — one per (environment,
-    # buildType) pair, kept in sync with the Android flavor/buildType matrix.
+    # Bundle id, name, version, entitlements and MOCK flag all come from the .xcconfig checked
+    # into iosApp/Config/ — one per (environment, buildType) pair, maintained by hand and bumped
+    # alongside versions.properties (see the `release` skill).
     configFiles:
       Debug: Config/gasguru-Prod-Debug.xcconfig
       Release: Config/gasguru-Prod-Release.xcconfig
