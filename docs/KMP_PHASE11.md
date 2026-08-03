@@ -1,5 +1,75 @@
 # KMP Phase 11 — Config unificada Android/iOS (entorno + versionado)
 
+## Cómo funciona hoy
+
+Dos entornos (`prod`/`mock`) × dos build types (`debug`/`release`) = 4 combinaciones, iguales en
+concepto en Android y en iOS, pero cableadas con el mecanismo nativo de cada plataforma.
+
+### 1. Los ficheros específicos de entorno en iOS
+
+Xcode no sabe nada de "flavors" — su unidad de configuración es la `.xcconfig` por **Configuration**
+(el nombre que aparece en el selector de esquema/build). En este proyecto hay 4 Configurations,
+declaradas en `iosApp/project.yml`: `Debug`, `Release`, `Debug-Mock`, `Release-Mock`. Cada una tiene
+su propio `.xcconfig` en `iosApp/Config/`:
+
+```
+iosApp/Config/
+├── gasguru-Prod-Debug.xcconfig
+├── gasguru-Prod-Release.xcconfig
+├── gasguru-Mock-Debug.xcconfig
+└── gasguru-Mock-Release.xcconfig
+```
+
+Cada `.xcconfig` fija, para esa combinación exacta: `PRODUCT_BUNDLE_IDENTIFIER`, `PRODUCT_NAME`,
+`MARKETING_VERSION`/`CURRENT_PROJECT_VERSION`, `GASGURU_ENV`, `CODE_SIGN_ENTITLEMENTS` (apuntando a
+`iosApp-Debug.entitlements` o `iosApp-Release.entitlements`) y `SWIFT_ACTIVE_COMPILATION_CONDITIONS`
+(con el flag `MOCK` solo en las dos variantes mock). `iosApp/project.yml` conecta cada Configuration
+con su `.xcconfig` vía `configFiles:` a nivel de target, y los 2 schemes (`GasGuru-Prod`,
+`GasGuru-Mock`) apuntan cada uno a su par debug/release. `Info.plist` y el código Swift solo leen
+placeholders (`$(MARKETING_VERSION)`, `$(GASGURU_ENV)`, `#if MOCK`) — nunca un valor fijo.
+
+Esto es exactamente lo que Android resuelve con `productFlavors` (`mock`/`prod`) × `buildTypes`
+(`debug`/`release`): mismo concepto, mecanismo distinto porque AGP y Xcode no comparten infraestructura.
+
+### 2. Qué hace el plugin (`EnvironmentsConventionPlugin`)
+
+Los 4 `.xcconfig` de iOS **no se escriben a mano** — los genera `EnvironmentsConventionPlugin.kt`
+(`build-logic/convention/`), aplicado como `gasguru.flavors` en `:app` y `:composeApp`. El plugin:
+
+1. Lee `versions.properties` (única fuente de versión, la misma que bumpean los pipelines de release).
+2. Mantiene, en Kotlin, la lista de entornos (`prod`, `mock`, con sus sufijos de bundle id/nombre) y de
+   build variants (`Debug`, `Release`, con los suyos) — la matriz completa vive en un solo sitio.
+3. En Android (`plugins.withId("com.android.application")`): crea los `productFlavors` y aplica
+   `versionCode`/`versionName`; además fija `app_name` por combinación (flavor, buildType) vía la
+   variant API, porque el `resValue` de un buildType normalmente pisa al de un flavor.
+4. En iOS (solo si el módulo es KMP): registra la tarea `generateIosEnvConfig`, que recorre la misma
+   matriz de entornos × build variants y escribe los 4 `.xcconfig` en `iosApp/Config/` — combinando
+   siempre los mismos ingredientes: versión de `versions.properties`, bundle id/nombre calculados,
+   entitlements y la flag `MOCK` si aplica. Esa tarea corre automáticamente antes de que Xcode
+   incruste el framework de Kotlin (`dependsOn` de `embedAndSignAppleFrameworkForXcode`/`syncFramework`).
+
+En otras palabras: **el plugin es la única fuente de verdad de la matriz de entornos**; Android
+consume esa matriz vía AGP (`productFlavors`), iOS la consume vía `.xcconfig` generados en disco.
+Cambiar un entorno (añadir uno nuevo, cambiar un sufijo) se hace una vez, en Kotlin, y se propaga solo.
+
+### 3. Cómo se conecta con el runtime
+
+Ni AGP ni Xcode saben nada de Koin. La conexión entre "qué build se compiló" y "qué implementación usa
+el código" pasa por cada plataforma por separado, pero converge en el mismo sitio:
+
+- **Android**: el flavor activo selecciona el source set (`app/src/mock/...` o `app/src/prod/...`),
+  y cada uno bindea su propio `remoteDataSourceModule()` en Koin.
+- **iOS**: `SWIFT_ACTIVE_COMPILATION_CONDITIONS=... MOCK` (inyectado por el `.xcconfig` del punto 1)
+  activa `#if MOCK` en `iOSApp.swift`, que elige entre `MockModuleKt.mockModule()` y
+  `KoinInitKt.prodRemoteDataSourceModule()`.
+- **Ambos caminos acaban bindeando lo mismo en Koin**: un `RemoteDataSource` y un `AppEnvironment`
+  (enum `Prod`/`Mock` en `:core:model`). Así, código de `commonMain` que necesite saber el entorno
+  activo simplemente resuelve `get<AppEnvironment>()`, sin ninguna lógica de build involucrada.
+
+El resto de este documento detalla, módulo a módulo, los cambios concretos que llevaron a este diseño.
+
+---
+
 ## Objetivo
 
 Completar la migración KMP cerrando el único pilar que faltaba: la gestión de **flavors/entornos y versionado de forma unificada entre Android e iOS** desde un único punto de verdad.
