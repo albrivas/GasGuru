@@ -31,26 +31,19 @@ placeholders (`$(MARKETING_VERSION)`, `$(GASGURU_ENV)`, `#if MOCK`) — nunca un
 Esto es exactamente lo que Android resuelve con `productFlavors` (`mock`/`prod`) × `buildTypes`
 (`debug`/`release`): mismo concepto, mecanismo distinto porque AGP y Xcode no comparten infraestructura.
 
-### 2. Qué hace el plugin (`EnvironmentsConventionPlugin`)
+### 2. Qué hace el plugin (`EnvironmentsConventionPlugin`) — y qué no hace
 
-Los 4 `.xcconfig` de iOS **no se escriben a mano** — los genera `EnvironmentsConventionPlugin.kt`
-(`build-logic/convention/`), aplicado como `gasguru.flavors` en `:app` y `:composeApp`. El plugin:
+`EnvironmentsConventionPlugin.kt` (`build-logic/convention/`, aplicado como `gasguru.flavors` en
+`:app`) es **Android-only**: lee `versions.properties`, crea los `productFlavors` (`mock`/`prod`),
+aplica `versionCode`/`versionName`, y fija `app_name` por combinación (flavor, buildType) vía la
+variant API (el `resValue` de un buildType normalmente pisa al de un flavor, así que hace falta la
+variant API para que `mockRelease` no se llame igual que `prodRelease`).
 
-1. Lee `versions.properties` (única fuente de versión, la misma que bumpean los pipelines de release).
-2. Mantiene, en Kotlin, la lista de entornos (`prod`, `mock`, con sus sufijos de bundle id/nombre) y de
-   build variants (`Debug`, `Release`, con los suyos) — la matriz completa vive en un solo sitio.
-3. En Android (`plugins.withId("com.android.application")`): crea los `productFlavors` y aplica
-   `versionCode`/`versionName`; además fija `app_name` por combinación (flavor, buildType) vía la
-   variant API, porque el `resValue` de un buildType normalmente pisa al de un flavor.
-4. En iOS (solo si el módulo es KMP): registra la tarea `generateIosEnvConfig`, que recorre la misma
-   matriz de entornos × build variants y escribe los 4 `.xcconfig` en `iosApp/Config/` — combinando
-   siempre los mismos ingredientes: versión de `versions.properties`, bundle id/nombre calculados,
-   entitlements y la flag `MOCK` si aplica. Esa tarea corre automáticamente antes de que Xcode
-   incruste el framework de Kotlin (`dependsOn` de `embedAndSignAppleFrameworkForXcode`/`syncFramework`).
-
-En otras palabras: **el plugin es la única fuente de verdad de la matriz de entornos**; Android
-consume esa matriz vía AGP (`productFlavors`), iOS la consume vía `.xcconfig` generados en disco.
-Cambiar un entorno (añadir uno nuevo, cambiar un sufijo) se hace una vez, en Kotlin, y se propaga solo.
+**El plugin no toca nada de iOS.** Los 4 `.xcconfig` de `iosApp/Config/` son ficheros estáticos,
+escritos a mano y commiteados — nadie los genera. Esto es deliberado, no una limitación: es el patrón
+estándar en proyectos KMP en producción (ver "Por qué no generamos los xcconfig desde Gradle" más
+abajo). Consecuencia práctica: **al bumpear versión, hay que editar `versions.properties` Y los 4
+xcconfig a mano** — ver la skill `release`, que ya incluye este paso.
 
 ### 3. Cómo se conecta con el runtime
 
@@ -68,11 +61,27 @@ el código" pasa por cada plataforma por separado, pero converge en el mismo sit
 
 El resto de este documento detalla, módulo a módulo, los cambios concretos que llevaron a este diseño.
 
+### Por qué no generamos los xcconfig desde Gradle
+
+Una versión anterior de esta fase sí lo hacía: un plugin de Gradle calculaba bundle id/nombre/versión
+en Kotlin y escribía los 4 `.xcconfig` en cada build, enganchado a
+`embedAndSignAppleFrameworkForXcode`/`syncFramework`. Funcionaba, pero es más mecanismo del que el
+ecosistema KMP considera estándar. En los patrones documentados (BuildKonfig, plantilla de Futured,
+guías de Tooploox y sujanpoudel.me), el flujo va al revés: el `.xcconfig` de iOS es estático y
+declara una variable de entorno simple (p. ej. `KMM_FLAVOR=dev`), que se pasa **de iOS hacia Gradle**
+como propiedad (`-Pbuildkonfig.flavor=...`) cuando Xcode invoca el build — nunca al revés. El
+versionado tampoco se sincroniza automáticamente entre plataformas; cada una bumpea la suya.
+
+Se revirtió a ese patrón: los 4 `.xcconfig` son ahora estáticos, y el coste es aceptado
+conscientemente — bumpear la versión de iOS a mano en cada release (ver skill `release`).
+
 ---
 
 ## Objetivo
 
-Completar la migración KMP cerrando el único pilar que faltaba: la gestión de **flavors/entornos y versionado de forma unificada entre Android e iOS** desde un único punto de verdad.
+Completar la migración KMP cerrando el único pilar que faltaba: que iOS tenga su propia gestión de
+**flavors/entornos y versionado**, con la misma matriz conceptual que Android (prod/mock ×
+debug/release) — cada plataforma con su mecanismo nativo, sin un generador cruzado entre ambas.
 
 ---
 
@@ -88,43 +97,43 @@ Completar la migración KMP cerrando el único pilar que faltaba: la gestión de
 
 ## Arquitectura resultante
 
-### Single source of truth
+### Dos fuentes de verdad, una por plataforma
 
 ```
 GasGuru/
-├── versions.properties              ← FUENTE de versión (bumpeada por pipelines, sin cambios)
+├── versions.properties                    ← FUENTE de versión para Android
+│   (bumpeada a mano en cada release, junto con los 4 xcconfig de abajo)
 │
 ├── build-logic/convention/
-│   └── EnvironmentsConventionPlugin.kt   ← FUENTE de entornos (lista Kotlin type-safe)
+│   └── EnvironmentsConventionPlugin.kt    ← FUENTE de entornos Android (lista Kotlin type-safe)
 │       · Lee versions.properties
-│       · Android → productFlavors + versionCode/versionName
-│       · iOS     → genera iosApp/Config/gasguru-{env}.xcconfig
+│       · productFlavors + versionCode/versionName + app_name por variant
 │
-├── app/build.gradle.kts             ← aplica el plugin (Android)
-└── composeApp/build.gradle.kts      ← aplica el plugin (iOS xcconfig + condiciona :mocknetwork)
+├── iosApp/Config/gasguru-{Prod,Mock}-{Debug,Release}.xcconfig   ← FUENTE de entornos iOS
+│   (4 ficheros estáticos, commiteados, mantenidos a mano)
+│
+└── app/build.gradle.kts                   ← aplica el plugin (Android)
 ```
 
 ### División de responsabilidades
 
 | Responsabilidad | Quién |
 |---|---|
-| Fuente de versión | `versions.properties` |
-| Lista de entornos + sufijos | `EnvironmentsConventionPlugin.kt` (Kotlin, type-safe) |
-| Flavors Android + versionCode/Name en APK | `EnvironmentsConventionPlugin` → AGP |
-| xcconfig iOS (versión, bundle id, GASGURU_ENV) | `EnvironmentsConventionPlugin` → tarea `generateIosEnvConfig` |
+| Flavors Android + versionCode/Name en APK | `EnvironmentsConventionPlugin.kt` → AGP |
+| xcconfig iOS (versión, bundle id, GASGURU_ENV) | Ficheros estáticos en `iosApp/Config/`, mantenidos a mano |
 | Excluir `:mocknetwork` de iOS-prod | `composeApp/build.gradle.kts` (`if (isMockIosBuild)`) |
 | Seleccionar data source en iOS en compile-time | `iOSApp.swift` con `#if MOCK` |
 | Leer el entorno activo desde `commonMain` | `AppEnvironment` (enum en `:core:model`), bindeado en Koin |
 
 ### Lo que se unifica y lo que no
 
-Lo compartido entre Android e iOS es el **build**, no el runtime: una única lista `Environment` en
-`EnvironmentsConventionPlugin.kt` se traduce a `productFlavors` de AGP en Android y a `.xcconfig` en
-iOS. La **selección de implementación** sigue siendo nativa de cada plataforma por necesidad — source
-sets de flavor en Android, `#if MOCK` en Swift — pero ambos caminos **convergen en Koin**: los dos
-acaban registrando un `RemoteDataSource` (y un `AppEnvironment`) en el mismo grafo de dependencias.
-Así, el código de `commonMain` nunca pregunta en qué entorno está corriendo — lo recibe por DI — pero
-si necesita saberlo, puede resolver `get<AppEnvironment>()`.
+Android e iOS **no comparten build**: cada plataforma tiene su propia fuente de verdad de entorno
+(`EnvironmentsConventionPlugin.kt` + `productFlavors` en Android, xcconfig estáticos en iOS), y ambas
+listas de valores (sufijos de bundle id, nombre, etc.) se mantienen en paralelo a mano. Lo que sí
+converge es el **runtime**: la selección de implementación es nativa de cada plataforma — source sets
+de flavor en Android, `#if MOCK` en Swift — pero ambos caminos acaban bindeando lo mismo en Koin, un
+`RemoteDataSource` y un `AppEnvironment`. Así, el código de `commonMain` nunca pregunta en qué entorno
+está corriendo — lo recibe por DI — pero si necesita saberlo, puede resolver `get<AppEnvironment>()`.
 
 ---
 
@@ -134,13 +143,12 @@ si necesita saberlo, puede resolver `get<AppEnvironment>()`.
 
 - **`FlavorsConventionPlugin.kt` → eliminado**, sustituido por **`EnvironmentsConventionPlugin.kt`**.
 - Mismo plugin id `gasguru.flavors` — no hay cambio de alias ni de los build.gradle que lo aplican.
-- El nuevo plugin:
+- El plugin es Android-only:
   1. Lee `versions.properties` con `java.util.Properties` (sin deps externas).
   2. Lista `environments` como `data class Environment(name, bundleSuffix, nameSuffix, versionNameSuffix, isMock)`.
   3. Aplica `versionCode`/`versionName` en `android.defaultConfig` (elimina el hardcode `1`/`"1.0"`).
   4. Crea `productFlavors` mock/prod (mismo comportamiento que antes).
-  5. Registra la tarea `generateIosEnvConfig` (grupo `gasguru`) que escribe `.xcconfig` en `iosApp/Config/`.
-  6. Engancha `generateIosEnvConfig` como `dependsOn` de `embedAndSignAppleFrameworkForXcode` y `syncFramework`.
+  5. Fija `app_name` por (flavor, buildType) vía la variant API (`configureAppNamePerVariant`).
 
 ### `:mocknetwork`
 
@@ -152,8 +160,8 @@ si necesita saberlo, puede resolver `get<AppEnvironment>()`.
 
 ### `:composeApp` y `:core:data`
 
-- `:composeApp` aplica `alias(libs.plugins.gasguru.flavors)` (solo el task de iOS; el bloque Android es no-op porque el plugin usa `plugins.withId("com.android.application")`).
-- Detecta el entorno iOS: `val isMockIosBuild = System.getenv("CONFIGURATION")?.contains("Mock", true) == true`.
+- `:composeApp` **no** aplica el plugin de entornos (es Android-only y no-op sin `com.android.application`).
+  Detecta el entorno iOS directamente del entorno de Xcode: `val isMockIosBuild = System.getenv("CONFIGURATION")?.contains("Mock", true) == true`.
 - Añade `:mocknetwork` a `iosMain.dependencies` solo si `isMockIosBuild` → **iOS-prod sin los 12MB**. Se declara como `api`, no `implementation`: `framework { export(projects.mocknetwork) }` (también condicionado a `isMockIosBuild`) lo exige, porque `MockModuleKt.mockModule()` se llama directamente desde Swift y necesita quedar expuesto en el framework `ComposeApp`.
 - Mapping de configs Xcode al build type nativo (necesario para `syncFramework`), en **ambos** módulos que aplican `kotlin("native.cocoapods")` — `:composeApp` y `:core:data` (este último por su pod `GooglePlaces`):
   ```kotlin
@@ -185,13 +193,13 @@ Dos schemes compartidos:
 - **`GasGuru-Prod`**: run→Debug, archive→Release.
 - **`GasGuru-Mock`**: run→Debug-Mock, archive→Release-Mock.
 
-Los xcconfig en `iosApp/Config/` están en `.gitignore` (generados por `generateIosEnvConfig`).
-**`iosApp/iosApp.xcodeproj/` e `iosApp/iosApp.xcworkspace/` también están en `.gitignore`**:
-XcodeGen sobrescribe el `.pbxproj` en cada `generate`, lo que destruye cualquier integración de
-CocoaPods hecha a mano — commitear ambos a la vez solo produce un estado que ninguna de las dos
-herramientas reconoce como suyo. `project.yml` es la única fuente de verdad; el proyecto Xcode se
-regenera con `./scripts/ios-setup.sh` (`generateIosEnvConfig` → `xcodegen generate` → `pod install`,
-en ese orden — invertirlo deja el proyecto sin pods).
+Los xcconfig en `iosApp/Config/` están **commiteados** (son la fuente de verdad de entorno para iOS,
+mantenidos a mano). **`iosApp/iosApp.xcodeproj/` e `iosApp/iosApp.xcworkspace/` sí están en
+`.gitignore`**: XcodeGen sobrescribe el `.pbxproj` en cada `generate`, lo que destruye cualquier
+integración de CocoaPods hecha a mano — commitear ambos a la vez solo produce un estado que ninguna
+de las dos herramientas reconoce como suyo. `project.yml` es la única fuente de verdad del proyecto
+Xcode; se regenera con `./scripts/ios-setup.sh` (`xcodegen generate` → `pod install`, en ese orden —
+invertirlo deja el proyecto sin pods).
 
 ### `iosApp/iosApp/iOSApp.swift`
 
@@ -231,11 +239,11 @@ resolver `get<AppEnvironment>()` sin ninguna maquinaria de build nueva.
 
 ---
 
-## Xcconfig generado — ejemplo `gasguru-Mock-Debug.xcconfig`
+## Xcconfig estático — ejemplo `gasguru-Mock-Debug.xcconfig`
 
 ```
-// Auto-generated by EnvironmentsConventionPlugin — do not edit manually.
-// Source of truth: versions.properties + EnvironmentsConventionPlugin.kt
+// Manually maintained. Bump MARKETING_VERSION/CURRENT_PROJECT_VERSION here
+// alongside versions.properties when releasing (see the `release` skill).
 
 #include? "../Pods/Target Support Files/Pods-iosApp/Pods-iosApp.debug-mock.xcconfig"
 
@@ -263,10 +271,9 @@ completo de la configuración de Xcode en minúsculas (`Pods-iosApp.debug-mock.x
 | `./gradlew :app:assembleProdDebug` | APK con Supabase real, versión correcta |
 | `./gradlew :app:testMockDebugUnitTest :app:testProdDebugUnitTest` | Verde ✅ |
 | `./gradlew codeCheck` | Verde ✅ |
-| `./gradlew :composeApp:generateIosEnvConfig` tras editar `versions.properties` | Regenera los 4 `.xcconfig` (ya no queda UP-TO-DATE con una versión desactualizada) |
 | `./scripts/ios-setup.sh` + `xcodebuild ... -scheme GasGuru-Mock -configuration Debug-Mock` | Compila; `#if MOCK` activo de verdad, "GasGuru Mock Debug", bundle `com.gasguru.mock.debug` |
 | `./scripts/ios-setup.sh` + `xcodebuild ... -scheme GasGuru-Prod -configuration Debug` | Compila; Supabase real, "GasGuru Debug", bundle `com.gasguru.debug` |
-| Bump versión | Editar `versions.properties` → actualiza Android e iOS desde un solo sitio |
+| Bump versión | Editar `versions.properties` (Android) **y** los 4 xcconfig de `iosApp/Config/` (iOS) — dos pasos manuales, ver skill `release` |
 
 ---
 
@@ -280,8 +287,18 @@ completo de la configuración de Xcode en minúsculas (`Pods-iosApp.debug-mock.x
   de los workflows de CI.
 - **Sin CI de iOS.** Ningún workflow ejecuta `xcodegen`/`pod install`/`xcodebuild`; los 4 fallos
   descritos en "Lecciones" solo se detectaron con verificación manual.
+- **Bump de versión manual en dos sitios.** Al aceptar xcconfig estáticos, se acepta también el
+  riesgo que ya causó el bug original (versión de iOS desincronizada). Mitigado documentando el paso
+  en la skill `release`, pero sigue siendo un paso manual, no una garantía del sistema de build.
 
 ## Lecciones
+
+- **Generar `.xcconfig` desde Gradle es más mecanismo del que el ecosistema KMP considera estándar.**
+  Se probó (plugin custom + tarea `generateIosEnvConfig`, matriz 4×, `dependsOn` en el embed de
+  Xcode) y funcionaba, pero el patrón documentado en la comunidad (BuildKonfig, plantilla de
+  Futured, Tooploox, sujanpoudel.me) va al revés: xcconfig estático en iOS, flavor pasado hacia
+  Gradle como propiedad, nunca Gradle escribiendo ficheros de Xcode. Se revirtió a ese patrón — ver
+  "Por qué no generamos los xcconfig desde Gradle" más arriba.
 
 - **Una clave desconocida en `project.yml` no falla.** XcodeGen no valida contra un schema estricto:
   `settings.configs.<config>.baseConfiguration` no existe (la clave correcta es `configFiles:` a

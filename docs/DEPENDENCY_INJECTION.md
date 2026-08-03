@@ -192,7 +192,7 @@ El flavor activo lo configura `EnvironmentsConventionPlugin` en `build-logic/con
 
 #### iOS (schemes Xcode)
 En iOS, el mecanismo es equivalente pero usa `SWIFT_ACTIVE_COMPILATION_CONDITIONS`:
-- El scheme **`GasGuru-Mock`** activa la flag `MOCK` (vía los xcconfig `gasguru-Mock-{Debug,Release}.xcconfig` generados).
+- El scheme **`GasGuru-Mock`** activa la flag `MOCK` (vía los xcconfig estáticos `gasguru-Mock-{Debug,Release}.xcconfig`, commiteados en `iosApp/Config/`).
 - El scheme **`GasGuru-Prod`** no activa `MOCK`.
 
 En `iOSApp.swift`:
