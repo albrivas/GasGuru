@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.gasguru.kmp.compose.library)
     alias(libs.plugins.gasguru.koin)
-    alias(libs.plugins.gasguru.flavors)
     kotlin("native.cocoapods")
 }
 
