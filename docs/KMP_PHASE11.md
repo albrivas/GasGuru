@@ -44,6 +44,17 @@ GasGuru/
 | xcconfig iOS (versión, bundle id, GASGURU_ENV) | `EnvironmentsConventionPlugin` → tarea `generateIosEnvConfig` |
 | Excluir `:mocknetwork` de iOS-prod | `composeApp/build.gradle.kts` (`if (isMockIosBuild)`) |
 | Seleccionar data source en iOS en compile-time | `iOSApp.swift` con `#if MOCK` |
+| Leer el entorno activo desde `commonMain` | `AppEnvironment` (enum en `:core:model`), bindeado en Koin |
+
+### Lo que se unifica y lo que no
+
+Lo compartido entre Android e iOS es el **build**, no el runtime: una única lista `Environment` en
+`EnvironmentsConventionPlugin.kt` se traduce a `productFlavors` de AGP en Android y a `.xcconfig` en
+iOS. La **selección de implementación** sigue siendo nativa de cada plataforma por necesidad — source
+sets de flavor en Android, `#if MOCK` en Swift — pero ambos caminos **convergen en Koin**: los dos
+acaban registrando un `RemoteDataSource` (y un `AppEnvironment`) en el mismo grafo de dependencias.
+Así, el código de `commonMain` nunca pregunta en qué entorno está corriendo — lo recibe por DI — pero
+si necesita saberlo, puede resolver `get<AppEnvironment>()`.
 
 ---
 
@@ -69,35 +80,48 @@ GasGuru/
 - JSON (12 MB): `src/main/assets/` → `src/commonMain/composeResources/files/`.
 - Directorio `src/main/` eliminado.
 
-### `:composeApp`
+### `:composeApp` y `:core:data`
 
-- Aplica `alias(libs.plugins.gasguru.flavors)` (solo el task de iOS; el bloque Android es no-op porque el plugin usa `plugins.withId("com.android.application")`).
+- `:composeApp` aplica `alias(libs.plugins.gasguru.flavors)` (solo el task de iOS; el bloque Android es no-op porque el plugin usa `plugins.withId("com.android.application")`).
 - Detecta el entorno iOS: `val isMockIosBuild = System.getenv("CONFIGURATION")?.contains("Mock", true) == true`.
-- Añade `:mocknetwork` a `iosMain.dependencies` solo si `isMockIosBuild` → **iOS-prod sin los 12MB**.
-- Mapping de configs Xcode al build type nativo (necesario para `syncFramework`):
+- Añade `:mocknetwork` a `iosMain.dependencies` solo si `isMockIosBuild` → **iOS-prod sin los 12MB**. Se declara como `api`, no `implementation`: `framework { export(projects.mocknetwork) }` (también condicionado a `isMockIosBuild`) lo exige, porque `MockModuleKt.mockModule()` se llama directamente desde Swift y necesita quedar expuesto en el framework `ComposeApp`.
+- Mapping de configs Xcode al build type nativo (necesario para `syncFramework`), en **ambos** módulos que aplican `kotlin("native.cocoapods")` — `:composeApp` y `:core:data` (este último por su pod `GooglePlaces`):
   ```kotlin
   xcodeConfigurationToNativeBuildType["Debug-Mock"] = NativeBuildType.DEBUG
   xcodeConfigurationToNativeBuildType["Release-Mock"] = NativeBuildType.RELEASE
   ```
+  "Debug"/"Release" los resuelve el plugin de Kotlin/Native por sus propios defaults; solo hace falta declarar las variantes Mock.
 - `KoinInit.kt` (iosMain): eliminado el binding inline `single<RemoteDataSource> { get<SupabaseRemoteDataSource>() }`. Ahora viene de `platformModules` (Swift).
 - Nueva función pública `prodRemoteDataSourceModule()` en `iosMain` que Swift usa para el scheme prod.
 
 ### `iosApp/project.yml` (XcodeGen)
 
-Cuatro configuraciones de Xcode en vez de dos:
+Cuatro configuraciones de Xcode, **capitalizadas** (coinciden con el nombre que Xcode usa por
+convención y con las claves de `xcodeConfigurationToNativeBuildType`):
 
-| Config | Tipo nativo | xcconfig |
+| Config | Tipo nativo | xcconfig (matriz entorno × buildType) |
 |---|---|---|
-| `debug` | debug | (inline: bundle `.debug`, nombre "GasGuru Debug") |
-| `release` | release | `Config/gasguru-prod.xcconfig` |
-| `debug-mock` | debug | `Config/gasguru-mock.xcconfig` |
-| `release-mock` | release | `Config/gasguru-mock.xcconfig` |
+| `Debug` | debug | `Config/gasguru-Prod-Debug.xcconfig` |
+| `Release` | release | `Config/gasguru-Prod-Release.xcconfig` |
+| `Debug-Mock` | debug | `Config/gasguru-Mock-Debug.xcconfig` |
+| `Release-Mock` | release | `Config/gasguru-Mock-Release.xcconfig` |
+
+Los 4 xcconfig se declaran vía `configFiles:` a nivel de target en `project.yml` — **no** vía
+`settings.configs.<config>.baseConfiguration` (esa clave no existe en XcodeGen; se probó en el primer
+intento de esta fase y XcodeGen la escribía como un build setting sin efecto, dejando el proyecto
+generado sin ningún `.xcconfig` real aplicado — ver "Lecciones" más abajo).
 
 Dos schemes compartidos:
-- **`GasGuru-Prod`**: run→debug, archive→release.
-- **`GasGuru-Mock`**: run→debug-mock, archive→release-mock.
+- **`GasGuru-Prod`**: run→Debug, archive→Release.
+- **`GasGuru-Mock`**: run→Debug-Mock, archive→Release-Mock.
 
-Los xcconfig en `iosApp/Config/` están en `.gitignore` (generados en cada build).
+Los xcconfig en `iosApp/Config/` están en `.gitignore` (generados por `generateIosEnvConfig`).
+**`iosApp/iosApp.xcodeproj/` e `iosApp/iosApp.xcworkspace/` también están en `.gitignore`**:
+XcodeGen sobrescribe el `.pbxproj` en cada `generate`, lo que destruye cualquier integración de
+CocoaPods hecha a mano — commitear ambos a la vez solo produce un estado que ninguna de las dos
+herramientas reconoce como suyo. `project.yml` es la única fuente de verdad; el proyecto Xcode se
+regenera con `./scripts/ios-setup.sh` (`generateIosEnvConfig` → `xcodegen generate` → `pod install`,
+en ese orden — invertirlo deja el proyecto sin pods).
 
 ### `iosApp/iosApp/iOSApp.swift`
 
@@ -110,7 +134,25 @@ let dataSourceModule = KoinInitKt.prodRemoteDataSourceModule()
 bridge = KoinInitKt.doInitKoin(platformModules: [analyticsModule, notificationModule, dataSourceModule])
 ```
 
-La flag `MOCK` la inyecta `SWIFT_ACTIVE_COMPILATION_CONDITIONS=$(inherited) MOCK` en `gasguru-mock.xcconfig`.
+La flag `MOCK` la inyecta `SWIFT_ACTIVE_COMPILATION_CONDITIONS=$(inherited) MOCK` en los xcconfig
+`gasguru-Mock-*`.
+
+### `AppEnvironment` (commonMain)
+
+`enum class AppEnvironment { Prod, Mock }` en `:core:model`. Se bindea en Koin en los mismos módulos
+que ya eligen el `RemoteDataSource` — `mockModule()` (`:mocknetwork`, cubre Android-mock e iOS-mock a
+la vez) y los módulos prod de `:app`/`:composeApp` — así que cualquier código de `commonMain` puede
+resolver `get<AppEnvironment>()` sin ninguna maquinaria de build nueva.
+
+### Entitlements y consumo de `GASGURU_ENV`
+
+- `iosApp/iosApp/iosApp.entitlements` (uno solo, `aps-environment=development` fijo) se sustituyó por
+  `iosApp-Debug.entitlements` / `iosApp-Release.entitlements`, referenciados desde el `xcconfig` de
+  cada config (`CODE_SIGN_ENTITLEMENTS=...`). Solo `Release`/`Release-Mock` usan `production`.
+- `Info.plist`: `CFBundleShortVersionString`/`CFBundleVersion` pasan a `$(MARKETING_VERSION)`/
+  `$(CURRENT_PROJECT_VERSION)` (antes hardcodeados a `1.0`/`1`, la versión de iOS nunca cambiaba). Se
+  añade `GasGuruEnv=$(GASGURU_ENV)`, leíble en runtime vía
+  `Bundle.main.object(forInfoDictionaryKey: "GasGuruEnv")`.
 
 ### CI (`deploy-to-playstore.yml`)
 
@@ -119,19 +161,27 @@ La flag `MOCK` la inyecta `SWIFT_ACTIVE_COMPILATION_CONDITIONS=$(inherited) MOCK
 
 ---
 
-## Xcconfig generado — ejemplo `gasguru-mock.xcconfig`
+## Xcconfig generado — ejemplo `gasguru-Mock-Debug.xcconfig`
 
 ```
 // Auto-generated by EnvironmentsConventionPlugin — do not edit manually.
 // Source of truth: versions.properties + EnvironmentsConventionPlugin.kt
 
-MARKETING_VERSION=3.3.15
-CURRENT_PROJECT_VERSION=92
-PRODUCT_BUNDLE_IDENTIFIER=com.gasguru.mock
-PRODUCT_NAME=GasGuru Mock
+#include? "../Pods/Target Support Files/Pods-iosApp/Pods-iosApp.debug-mock.xcconfig"
+
+MARKETING_VERSION=3.3.17
+CURRENT_PROJECT_VERSION=94
+PRODUCT_BUNDLE_IDENTIFIER=com.gasguru.mock.debug
+PRODUCT_NAME=GasGuru Mock Debug
 GASGURU_ENV=mock
+CODE_SIGN_ENTITLEMENTS=iosApp/iosApp-Debug.entitlements
 SWIFT_ACTIVE_COMPILATION_CONDITIONS=$(inherited) MOCK
 ```
+
+El `#include?` del xcconfig de Pods es obligatorio: CocoaPods nombra sus xcconfig con el nombre
+completo de la configuración de Xcode en minúsculas (`Pods-iosApp.debug-mock.xcconfig`, no
+`Pods-iosApp.debug.xcconfig` — el sufijo `-mock` forma parte del nombre), y sin este include
+`pod install` avisa de que "no pudo fijar la configuración base" y el link de los pods se pierde.
 
 ---
 
@@ -143,14 +193,40 @@ SWIFT_ACTIVE_COMPILATION_CONDITIONS=$(inherited) MOCK
 | `./gradlew :app:assembleProdDebug` | APK con Supabase real, versión correcta |
 | `./gradlew :app:testMockDebugUnitTest :app:testProdDebugUnitTest` | Verde ✅ |
 | `./gradlew codeCheck` | Verde ✅ |
-| Xcode scheme `GasGuru-Mock` | "GasGuru Mock" (bundle `.mock`), datos del JSON local, `#if MOCK` activo |
-| Xcode scheme `GasGuru-Prod` | Supabase real, framework sin JSON de 12MB, `#if MOCK` inactivo |
+| `./gradlew :composeApp:generateIosEnvConfig` tras editar `versions.properties` | Regenera los 4 `.xcconfig` (ya no queda UP-TO-DATE con una versión desactualizada) |
+| `./scripts/ios-setup.sh` + `xcodebuild ... -scheme GasGuru-Mock -configuration Debug-Mock` | Compila; `#if MOCK` activo de verdad, "GasGuru Mock Debug", bundle `com.gasguru.mock.debug` |
+| `./scripts/ios-setup.sh` + `xcodebuild ... -scheme GasGuru-Prod -configuration Debug` | Compila; Supabase real, "GasGuru Debug", bundle `com.gasguru.debug` |
 | Bump versión | Editar `versions.properties` → actualiza Android e iOS desde un solo sitio |
 
 ---
 
+## Deuda conocida (fuera de alcance de este cierre)
+
+- **Secretos no separados por entorno.** Los `BuildKonfig` de `:core:supabase`, `:core:analytics` y
+  `:core:notifications` solo tienen `defaultConfigs` (sin `flavor`): una build mock incrusta las
+  claves reales de Supabase/Mixpanel/OneSignal. El dato en sí no llega a usarse en mock (el
+  `RemoteDataSource` nunca llama a Supabase), pero analytics/push sí podrían contaminar producción
+  desde una build mock. Resolverlo exige un segundo juego de claves y tocar los 3 bloques de secrets
+  de los workflows de CI.
+- **Sin CI de iOS.** Ningún workflow ejecuta `xcodegen`/`pod install`/`xcodebuild`; los 4 fallos
+  descritos en "Lecciones" solo se detectaron con verificación manual.
+
+## Lecciones
+
+- **Una clave desconocida en `project.yml` no falla.** XcodeGen no valida contra un schema estricto:
+  `settings.configs.<config>.baseConfiguration` no existe (la clave correcta es `configFiles:` a
+  nivel de target), y en vez de fallar, XcodeGen la escribió como un build setting de nombre
+  `baseConfiguration` sin ningún efecto. El primer intento de esta fase pasó revisión de código
+  porque el `.pbxproj` generado *parecía* correcto sin abrirlo en Xcode ni compilar. Verificar
+  siempre el `.pbxproj` generado (o compilar de verdad), nunca solo la spec de `project.yml`.
+- **XcodeGen y CocoaPods commiteados juntos se pisan.** `xcodegen generate` sobrescribe
+  `iosApp.xcodeproj` en cada ejecución, lo que borra cualquier integración de pods; si el
+  `.pbxproj` está trackeado, cada regeneración produce un diff enorme y agujeros de integración
+  invisibles hasta el primer build real. Con uno de los dos generado (ahora ambos vía
+  `scripts/ios-setup.sh`) y el otro no tracked, este problema desaparece de raíz.
+
 ## Documentación relacionada
 
 - `docs/CICD.md` — actualizado: step de bump eliminado
-- `docs/DEPENDENCY_INJECTION.md` — actualizado: selección de data source por entorno
+- `docs/DEPENDENCY_INJECTION.md` — actualizado: selección de data source por entorno + `AppEnvironment`
 - `docs/KMP_MIGRATION.md` — Phase 11 añadida en checklist

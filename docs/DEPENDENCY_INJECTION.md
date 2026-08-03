@@ -192,7 +192,7 @@ El flavor activo lo configura `EnvironmentsConventionPlugin` en `build-logic/con
 
 #### iOS (schemes Xcode)
 En iOS, el mecanismo es equivalente pero usa `SWIFT_ACTIVE_COMPILATION_CONDITIONS`:
-- El scheme **`GasGuru-Mock`** activa la flag `MOCK` (vía `gasguru-mock.xcconfig` generado).
+- El scheme **`GasGuru-Mock`** activa la flag `MOCK` (vía los xcconfig `gasguru-Mock-{Debug,Release}.xcconfig` generados).
 - El scheme **`GasGuru-Prod`** no activa `MOCK`.
 
 En `iOSApp.swift`:
@@ -206,6 +206,15 @@ bridge = KoinInitKt.doInitKoin(platformModules: [..., dataSourceModule])
 ```
 
 `KoinInit.kt` (iosMain) ya no cablea `RemoteDataSource` inline; siempre llega de `platformModules`.
+
+#### `AppEnvironment`: el entorno visible desde `commonMain`
+
+Ni el source set de flavor (Android) ni el `#if MOCK` (iOS) son visibles desde código compartido —
+son mecanismos de build, resueltos antes de que exista ningún grafo de Koin común. Para que
+`commonMain` pueda saber en qué entorno corre, `mockModule()` y los módulos prod (`ProdDataSourceModule.kt`
+en Android, `prodRemoteDataSourceModule()` en iOS) bindean también un `AppEnvironment` (enum en
+`:core:model`, `Prod`/`Mock`). Cualquier código común lo resuelve con `get<AppEnvironment>()`. Ver
+[KMP Phase 11](KMP_PHASE11.md).
 
 #### `:mocknetwork` (KMP)
 Tras la migración, `:mocknetwork` es un módulo KMP (`gasguru.kmp.compose.library`):
