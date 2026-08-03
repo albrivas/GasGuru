@@ -236,3 +236,9 @@ tasks/
 
 # Generated iOS xcconfigs (produced by EnvironmentsConventionPlugin at build time)
 iosApp/Config/
+
+# Generated Xcode project (regenerate with ./scripts/ios-setup.sh — XcodeGen + pod install).
+# Tracking this alongside project.yml let XcodeGen and CocoaPods silently overwrite each
+# other's changes; project.yml is now the only source of truth for the Xcode project.
+iosApp/iosApp.xcodeproj/
+iosApp/iosApp.xcworkspace/
