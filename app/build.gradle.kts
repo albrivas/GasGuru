@@ -60,7 +60,8 @@ android {
             isMinifyEnabled = false
             isDebuggable = true
             applicationIdSuffix = ".debug"
-            resValue("string", "app_name", "GasGuru Debug")
+            // app_name per (flavor, buildType) is set by EnvironmentsConventionPlugin
+            // via the variant API — see configureAppNamePerVariant.
             manifestPlaceholders["crashlyticsEnabled"] = true
         }
     }
