@@ -9,6 +9,7 @@ import com.gasguru.core.data.sync.SyncManager
 import com.gasguru.core.database.di.daoModule
 import com.gasguru.core.database.di.databaseModule
 import com.gasguru.core.domain.di.domainModule
+import com.gasguru.core.model.data.AppEnvironment
 import com.gasguru.core.supabase.datasource.RemoteDataSource
 import com.gasguru.core.supabase.datasource.SupabaseRemoteDataSource
 import com.gasguru.core.supabase.di.supabaseModule
@@ -31,6 +32,7 @@ import org.koin.dsl.module
  * via [platformModules] — selected at compile-time with [#if MOCK] in iOSApp.swift.
  */
 fun prodRemoteDataSourceModule() = module {
+    single { AppEnvironment.Prod }
     single<RemoteDataSource> { get<SupabaseRemoteDataSource>() }
 }
 

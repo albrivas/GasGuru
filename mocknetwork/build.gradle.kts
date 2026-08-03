@@ -16,9 +16,15 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.common)
+            implementation(projects.core.model)
             implementation(projects.core.supabase)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.io.arrow.kt.arrow.core)
+        }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.kotest.assertions.core)
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }
