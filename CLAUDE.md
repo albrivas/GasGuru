@@ -84,6 +84,7 @@
 | [KMP Phase 9J](docs/KMP_PHASE9J.md) | iOS background sync: SyncManager.execute() en KoinInit (fix bug alertas offline), IosBridge.refreshStations + BGTaskScheduler (paridad StationSyncWorker), patrón Dispatchers.Main en tests KMP |
 | [KMP Phase 10A](docs/KMP_PHASE10A.md) | `jvm()` en convention plugins: guard composeApp, actuals no-op en jvmMain (13 expects), api coroutines/navigation, lifecycle-runtime-compose, detekt setSource ampliado |
 | [KMP Phase 10B](docs/KMP_PHASE10B.md) | Tests de UI CMP headless en jvmTest: `runComposeUiTest` sin emulador, patrón de migración de BaseTest, resolución de strings en commonTest, exclusión por módulo |
+| [KMP Phase 11](docs/KMP_PHASE11.md) | Config unificada Android/iOS: `EnvironmentsConventionPlugin` (fuente única), `:mocknetwork` KMP, xcconfigs iOS, schemes `GasGuru-Mock`/`GasGuru-Prod`, eliminación de chkfung action |
 | [iOS Bridge](docs/IOS_BRIDGE.md) | Contrato único Swift → KMP: `IosBridge` en `composeApp/iosMain`, cómo añadir métodos, cuándo usarlo vs otros patrones |
 | [Widget](docs/WIDGET.md) | Widget de pantalla de inicio con gasolineras favoritas: arquitectura Glance + WorkManager, ciclo de vida y limitaciones |
 | [Analytics](docs/ANALYTICS.md) | Sistema de analíticas con Mixpanel: arquitectura, catálogo de eventos, uso en ViewModels y Composables |

@@ -286,6 +286,24 @@ androidMain        iosMain
 - [x] Verificar que `testDebugUnitTest` sigue pasando (ViewModel tests no afectados) ✅
 - [ ] PR → develop y merge
 
+### Phase 11: Config unificada Android/iOS (entorno + versionado) ✅
+- [x] `:mocknetwork` migrado a KMP (`gasguru.kmp.compose.library`, JSON → `composeResources/files/`, `Res.readBytes`, sin `androidContext`)
+- [x] `EnvironmentsConventionPlugin` reemplaza `FlavorsConventionPlugin`: lee `versions.properties`, inyecta `versionCode`/`versionName` en Android, `app_name` por (flavor, buildType) vía variant API. Es Android-only — los 4 xcconfig (entorno × buildType) de iOS son estáticos, commiteados en `iosApp/Config/` y mantenidos a mano (patrón estándar KMP: ver "Por qué no generamos los xcconfig desde Gradle" en [KMP Phase 11](KMP_PHASE11.md))
+- [x] `AppEnvironment` (enum en `:core:model`) bindeado en Koin por `mockModule()` y los módulos prod — el entorno activo es legible desde `commonMain` vía `get<AppEnvironment>()`
+- [x] `composeApp/build.gradle.kts`: `:mocknetwork` condicional en `iosMain` (como `api`, no `implementation`) y exportado en el framework solo en Mock; mapping `Debug-Mock`/`Release-Mock` a `NativeBuildType` replicado también en `:core:data` (también usa `kotlin.native.cocoapods`)
+- [x] `KoinInit.kt` (iosMain): `RemoteDataSource` binding quitado del hardcode → viene de `platformModules` (Swift)
+- [x] `iOSApp.swift`: `#if MOCK` selecciona `mockModule()` o `prodRemoteDataSourceModule()` en compile-time
+- [x] `project.yml` (XcodeGen): 4 configs capitalizadas (`Debug`, `Release`, `Debug-Mock`, `Release-Mock`) + 2 schemes compartidos (`GasGuru-Prod`, `GasGuru-Mock`); xcconfigs vía `configFiles:` a nivel de target (la clave `baseConfiguration` del primer intento no existe en XcodeGen y no tenía ningún efecto — ver Lecciones en [KMP Phase 11](KMP_PHASE11.md))
+- [x] Entitlements por config (`iosApp-Debug`/`iosApp-Release`, `aps-environment` development/production) e `Info.plist` con `$(MARKETING_VERSION)`/`$(CURRENT_PROJECT_VERSION)`/`$(GASGURU_ENV)` en vez de hardcodear `1.0`/`1`
+- [x] `iosApp.xcodeproj`/`iosApp.xcworkspace` dejan de trackearse (XcodeGen los sobrescribe en cada `generate`, pisando la integración de CocoaPods); `scripts/ios-setup.sh` los regenera (`xcodegen` → `pod install`, en ese orden)
+- [x] CI: eliminado step `chkfung/android-version-actions` — versión viene de `versions.properties` directamente en Gradle
+- [x] `iosApp/Config/` añadido a `.gitignore` (artefacto de build generado)
+- [x] Verificado con `xcodebuild` real: `GasGuru-Prod`/`Debug` y `GasGuru-Mock`/`Debug-Mock` compilan y resuelven bundle id, nombre y `SWIFT_ACTIVE_COMPILATION_CONDITIONS` correctos
+- [x] `./gradlew :app:testMockDebugUnitTest :app:testProdDebugUnitTest` ✅ | `codeCheck` ✅
+- [ ] PR → develop y merge
+
+Deuda conocida (no bloqueante, documentada en [KMP Phase 11](KMP_PHASE11.md)): secretos de Supabase/Mixpanel/OneSignal no separados por entorno; sin CI de iOS.
+
 ---
 
 ## Grafo de Dependencias y Orden de Migración

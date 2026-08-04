@@ -1,0 +1,12 @@
+// Manually maintained. Bump MARKETING_VERSION/CURRENT_PROJECT_VERSION here
+// alongside versions.properties when releasing (see the `release` skill).
+
+#include? "../Pods/Target Support Files/Pods-iosApp/Pods-iosApp.debug-mock.xcconfig"
+
+MARKETING_VERSION=3.3.17
+CURRENT_PROJECT_VERSION=94
+PRODUCT_BUNDLE_IDENTIFIER=com.gasguru.mock.debug
+PRODUCT_NAME=GasGuru Mock
+GASGURU_ENV=mock
+CODE_SIGN_ENTITLEMENTS=iosApp/iosApp-Debug.entitlements
+SWIFT_ACTIVE_COMPILATION_CONDITIONS=$(inherited) MOCK

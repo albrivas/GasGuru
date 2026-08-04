@@ -37,9 +37,7 @@ android {
 
     defaultConfig {
         applicationId = "com.gasguru"
-        versionCode = 1
-        versionName = "1.0"
-
+        // versionCode and versionName are set by EnvironmentsConventionPlugin from versions.properties
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
@@ -62,7 +60,8 @@ android {
             isMinifyEnabled = false
             isDebuggable = true
             applicationIdSuffix = ".debug"
-            resValue("string", "app_name", "GasGuru Debug")
+            // app_name per (flavor, buildType) is set by EnvironmentsConventionPlugin
+            // via the variant API — see configureAppNamePerVariant.
             manifestPlaceholders["crashlyticsEnabled"] = true
         }
     }

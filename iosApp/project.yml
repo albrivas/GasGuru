@@ -3,6 +3,14 @@ options:
   deploymentTarget:
     iOS: "15.0"
   xcodeVersion: "16"
+configs:
+  # Debug/Release keep their existing semantics (Prod scheme).
+  # Debug-Mock/Release-Mock are the equivalents for the Mock scheme.
+  # Capitalized to match Xcode convention and Kotlin/Native's xcodeConfigurationToNativeBuildType map.
+  Debug: debug
+  Release: release
+  Debug-Mock: debug
+  Release-Mock: release
 targets:
   iosApp:
     type: application
@@ -12,13 +20,43 @@ targets:
     settings:
       base:
         INFOPLIST_FILE: iosApp/Info.plist
-        CODE_SIGN_ENTITLEMENTS: iosApp/iosApp.entitlements
         SWIFT_VERSION: "5.0"
         TARGETED_DEVICE_FAMILY: "1,2"
-      configs:
-        debug:
-          PRODUCT_BUNDLE_IDENTIFIER: com.gasguru.debug
-          PRODUCT_NAME: GasGuru Debug
-        release:
-          PRODUCT_BUNDLE_IDENTIFIER: com.gasguru
-          PRODUCT_NAME: GasGuru
+        DEVELOPMENT_TEAM: JKHA7D462N
+    # Bundle id, name, version, entitlements and MOCK flag all come from the .xcconfig checked
+    # into iosApp/Config/ — one per (environment, buildType) pair, maintained by hand and bumped
+    # alongside versions.properties (see the `release` skill).
+    configFiles:
+      Debug: Config/gasguru-Prod-Debug.xcconfig
+      Release: Config/gasguru-Prod-Release.xcconfig
+      Debug-Mock: Config/gasguru-Mock-Debug.xcconfig
+      Release-Mock: Config/gasguru-Mock-Release.xcconfig
+schemes:
+  GasGuru-Prod:
+    build:
+      targets:
+        iosApp: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
+  GasGuru-Mock:
+    build:
+      targets:
+        iosApp: all
+    run:
+      config: Debug-Mock
+    test:
+      config: Debug-Mock
+    profile:
+      config: Release-Mock
+    analyze:
+      config: Debug-Mock
+    archive:
+      config: Release-Mock
