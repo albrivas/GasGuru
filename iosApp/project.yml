@@ -1,7 +1,7 @@
 name: iosApp
 options:
   deploymentTarget:
-    iOS: "15.0"
+    iOS: "16.0"
   xcodeVersion: "16"
 configs:
   # Debug/Release keep their existing semantics (Prod scheme).

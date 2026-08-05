@@ -30,7 +30,7 @@ class PlacesDataSourceImp(
 
     override fun getLocationPlace(placeId: String): Flow<LatLng?> = flow {
         try {
-            val placeFields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG)
+            val placeFields = listOf(Place.Field.ID, Place.Field.DISPLAY_NAME, Place.Field.LOCATION)
             val request = FetchPlaceRequest.newInstance(placeId, placeFields)
             val response = placesClient.fetchPlace(request).await()
             emit(response.place.location?.let { LatLng(it.latitude, it.longitude) })

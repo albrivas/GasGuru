@@ -23,7 +23,7 @@ kotlin {
         summary = "GasGuru shared Compose Multiplatform layer"
         homepage = "https://github.com/gasguru/GasGuru"
         version = "1.0"
-        ios.deploymentTarget = "15.0"
+        ios.deploymentTarget = "16.0"
 
         // Map the Mock Xcode configurations to native build types so that the
         // Kotlin/Native cocoapods plugin can resolve them correctly — "Debug"/"Release"
