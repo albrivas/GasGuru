@@ -1,10 +1,12 @@
 package com.gasguru.core.data.repository.places
 
 import cocoapods.GooglePlaces.GMSAutocompleteFilter
-import cocoapods.GooglePlaces.GMSAutocompletePrediction
+import cocoapods.GooglePlaces.GMSAutocompleteRequest
+import cocoapods.GooglePlaces.GMSAutocompleteSuggestion
+import cocoapods.GooglePlaces.GMSFetchPlaceRequest
 import cocoapods.GooglePlaces.GMSPlace
-import cocoapods.GooglePlaces.GMSPlaceFieldCoordinate
-import cocoapods.GooglePlaces.GMSPlaceFieldName
+import cocoapods.GooglePlaces.GMSPlacePropertyCoordinate
+import cocoapods.GooglePlaces.GMSPlacePropertyName
 import cocoapods.GooglePlaces.GMSPlacesClient
 import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.SearchPlace
@@ -46,24 +48,25 @@ class PlacesRepositoryIos(
                 val filter = GMSAutocompleteFilter().apply {
                     countries = listOf("ES")
                 }
-                placesClient.findAutocompletePredictionsFromQuery(
-                    query = query,
-                    filter = filter,
-                    sessionToken = null,
-                ) { results, error ->
+                val request = GMSAutocompleteRequest(query = query).apply {
+                    setFilter(filter)
+                    setSessionToken(null)
+                }
+                placesClient.fetchAutocompleteSuggestionsFromRequest(request) { results, error ->
                     if (error != null || results == null) {
                         continuation.resume(emptyList())
-                        return@findAutocompletePredictionsFromQuery
+                        return@fetchAutocompleteSuggestionsFromRequest
                     }
                     @Suppress("UNCHECKED_CAST")
-                    val predictions = results as? List<GMSAutocompletePrediction> ?: emptyList()
+                    val suggestions = results as? List<GMSAutocompleteSuggestion> ?: emptyList()
                     continuation.resume(
-                        predictions
-                            .filter { prediction -> prediction.placeID.isNotBlank() }
-                            .map { prediction ->
+                        suggestions
+                            .mapNotNull { suggestion -> suggestion.placeSuggestion }
+                            .filter { placeSuggestion -> placeSuggestion.placeID.isNotBlank() }
+                            .map { placeSuggestion ->
                                 SearchPlace(
-                                    id = prediction.placeID,
-                                    name = prediction.attributedFullText.string,
+                                    id = placeSuggestion.placeID,
+                                    name = placeSuggestion.attributedFullText.string,
                                 )
                             },
                     )
@@ -74,14 +77,15 @@ class PlacesRepositoryIos(
     private suspend fun fetchPlaceLocation(placeId: String): LatLng =
         withContext(Dispatchers.Main) {
             suspendCancellableCoroutine { continuation ->
-                placesClient.fetchPlaceFromPlaceID(
+                val request = GMSFetchPlaceRequest(
                     placeID = placeId,
-                    placeFields = (GMSPlaceFieldCoordinate or GMSPlaceFieldName),
+                    placeProperties = listOf(GMSPlacePropertyCoordinate, GMSPlacePropertyName),
                     sessionToken = null,
-                ) { place: GMSPlace?, error: NSError? ->
+                )
+                placesClient.fetchPlaceWithRequest(request) { place: GMSPlace?, error: NSError? ->
                     if (error != null || place == null) {
                         continuation.resume(LatLng(latitude = 0.0, longitude = 0.0))
-                        return@fetchPlaceFromPlaceID
+                        return@fetchPlaceWithRequest
                     }
                     val latLng = place.coordinate.useContents {
                         LatLng(latitude = latitude, longitude = longitude)

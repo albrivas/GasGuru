@@ -8,7 +8,7 @@ import org.koin.dsl.module
 
 fun placesModule() = module {
     single<PlacesClient> {
-        Places.initialize(androidContext(), BuildConfig.googleApiKey)
+        Places.initializeWithNewPlacesApiEnabled(androidContext(), BuildConfig.googleApiKey)
         Places.createClient(androidContext())
     }
 }

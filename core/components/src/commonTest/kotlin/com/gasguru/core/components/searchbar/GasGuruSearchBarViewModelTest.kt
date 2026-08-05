@@ -37,13 +37,13 @@ class GasGuruSearchBarViewModelTest {
     fun setUp() {
         placesRepository = FakePlacesRepository().apply {
             setPlacesForQuery(
-                query = "ba",
+                query = "bar",
                 places = listOf(
                     SearchPlace(name = "Barcelona", id = "1"),
                     SearchPlace(name = "Barakaldo", id = "2"),
                 ),
             )
-            setPlacesForQuery(query = "zz", places = emptyList())
+            setPlacesForQuery(query = "zzz", places = emptyList())
         }
 
         recentSearchRepository = FakeOfflineRecentSearchRepository(
@@ -105,10 +105,10 @@ class GasGuruSearchBarViewModelTest {
             assertEquals(SearchResultUiState.Loading, awaitItem())
             assertEquals(SearchResultUiState.EmptyQuery, awaitItem())
 
-            sut.handleEvent(GasGuruSearchBarEvent.UpdateSearchQuery("ba"))
+            sut.handleEvent(GasGuruSearchBarEvent.UpdateSearchQuery("bar"))
             assertTrue(awaitItem() is SearchResultUiState.Success)
 
-            sut.handleEvent(GasGuruSearchBarEvent.UpdateSearchQuery("b"))
+            sut.handleEvent(GasGuruSearchBarEvent.UpdateSearchQuery("ba"))
             assertEquals(SearchResultUiState.EmptyQuery, awaitItem())
         }
     }
@@ -126,7 +126,7 @@ class GasGuruSearchBarViewModelTest {
             assertEquals(SearchResultUiState.Loading, awaitItem())
             assertEquals(SearchResultUiState.EmptyQuery, awaitItem())
 
-            sut.handleEvent(GasGuruSearchBarEvent.UpdateSearchQuery("ba"))
+            sut.handleEvent(GasGuruSearchBarEvent.UpdateSearchQuery("bar"))
 
             val state = awaitItem() as SearchResultUiState.Success
             assertEquals(2, state.places.size)
@@ -147,9 +147,32 @@ class GasGuruSearchBarViewModelTest {
             assertEquals(SearchResultUiState.Loading, awaitItem())
             assertEquals(SearchResultUiState.EmptyQuery, awaitItem())
 
-            sut.handleEvent(GasGuruSearchBarEvent.UpdateSearchQuery("zz"))
+            sut.handleEvent(GasGuruSearchBarEvent.UpdateSearchQuery("zzz"))
 
             assertEquals(SearchResultUiState.EmptySearchResult, awaitItem())
+        }
+    }
+
+    @Test
+    @DisplayName(
+        """
+        GIVEN rapid successive query updates
+        WHEN they happen within the debounce window
+        THEN only the last query reaches the places repository
+        """,
+    )
+    fun debouncesRapidQueryUpdates() = runTest {
+        sut.searchResultUiState.test {
+            assertEquals(SearchResultUiState.Loading, awaitItem())
+            assertEquals(SearchResultUiState.EmptyQuery, awaitItem())
+
+            sut.handleEvent(GasGuruSearchBarEvent.UpdateSearchQuery("b"))
+            sut.handleEvent(GasGuruSearchBarEvent.UpdateSearchQuery("ba"))
+            sut.handleEvent(GasGuruSearchBarEvent.UpdateSearchQuery("bar"))
+
+            val state = awaitItem() as SearchResultUiState.Success
+            assertEquals(2, state.places.size)
+            assertEquals(1, placesRepository.requestedQueries.size)
         }
     }
 
