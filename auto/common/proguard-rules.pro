@@ -1,9 +1,5 @@
 # ProGuard rules for auto.common module
 
-# Hilt
--keep class dagger.hilt.** { *; }
--keep class javax.inject.** { *; }
-
 # AndroidX Auto
 -keep class androidx.car.app.** { *; }
 -dontwarn androidx.car.app.**
