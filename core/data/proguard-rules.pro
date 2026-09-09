@@ -6,7 +6,3 @@
 -keepclassmembers class kotlinx.coroutines.** {
     volatile <fields>;
 }
-
-# Hilt
--keep class dagger.hilt.** { *; }
--keep class javax.inject.** { *; }
