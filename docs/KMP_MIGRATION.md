@@ -54,7 +54,7 @@ androidMain        iosMain
 ```
 
 **Ejemplo aplicado en GasGuru:** `core:analytics` con Mixpanel.  
-**Próximos candidatos:** OneSignal (notificaciones push), Firebase Crashlytics.
+**Próximos candidatos:** OneSignal (notificaciones push).
 
 > **Regla de orden de migración:** Si el módulo A depende de B, y B es Android-only, migrar B primero. Ejemplo: `core:supabase` dependía de `AnalyticsHelper` (Android-only) → se migró `core:analytics` primero, desbloqueando `core:supabase`.
 

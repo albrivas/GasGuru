@@ -1,6 +1,7 @@
 import SwiftUI
 import ComposeApp
 import BackgroundTasks
+import FirebaseCore
 
 @main
 struct iOSApp: App {
@@ -22,6 +23,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
+        FirebaseApp.configure()
         initKoin(launchOptions: launchOptions)
         registerBackgroundTasks()
         scheduleStationSync()
