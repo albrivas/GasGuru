@@ -46,6 +46,7 @@
 | [Dependency Injection](docs/DEPENDENCY_INJECTION.md) | Arquitectura DI con Koin, equivalencias con Hilt, guía para añadir dependencias |
 | [Firebase iOS](docs/FIREBASE_IOS.md) | Integración de Firebase Crashlytics en el target iOS: bundle IDs por configuración, único GoogleService-Info.plist, dónde se inicializa, pendientes |
 | [GitFlow](docs/GITFLOW.md) | Estrategia de branching y flujo de trabajo |
+| [iOS Project Setup](docs/IOS_PROJECT_SETUP.md) | Estructura de proyecto iOS (xcconfig, XcodeGen, schemes) y checklist de código necesario para publicar en App Store |
 | [JaCoCo](docs/JACOCO.md) | Reportes de cobertura de código |
 | [Navigation](docs/NAVIGATION.md) | Arquitectura de navegación |
 | [Obfuscation](docs/OBFUSCATION.md) | Configuración de ofuscación de código |
