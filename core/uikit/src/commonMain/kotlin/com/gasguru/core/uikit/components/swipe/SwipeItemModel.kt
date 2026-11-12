@@ -7,7 +7,7 @@ data class SwipeItemModel(
     val icon: ImageVector,
     val backgroundColor: Color,
     val onClick: () -> Unit,
-    val enableDismissFromEndToStart: Boolean = true,
-    val enableDismissFromStartToEnd: Boolean = true,
     val iconAnimationFile: String? = null,
+    val isRevealed: Boolean = false,
+    val onRevealedChange: (isRevealed: Boolean) -> Unit = {},
 )
