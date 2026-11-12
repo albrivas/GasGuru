@@ -282,7 +282,8 @@ evento hay que registrarlo en ese `when` para evitar que caiga en `unknown`.
 | Tab cambiado (Precio/Distancia) | `MAP_TAB_CHANGED` | `tab: String` |
 | Ruta iniciada | `ROUTE_STARTED` | `station_brand: String` |
 | Ruta cancelada | `ROUTE_CANCELLED` | `station_brand: String` |
-| Búsqueda en esta zona | `SEARCH_THIS_AREA` | `station_count: Int`, `is_truncated: Boolean` (hay más gasolineras que el tope de 100) |
+| Búsqueda en esta zona | `SEARCH_THIS_AREA` | `station_count: Int`, `is_truncated: Boolean` (hay más gasolineras en la zona que el número elegido en el filtro de cercanas) |
+| Ubicación elegida en el mapa (pulsado largo) | `MAP_LOCATION_SELECTED` | — |
 | Permiso de ubicación concedido | `LOCATION_PERMISSION_GRANTED` | — |
 | Permiso de ubicación denegado | `LOCATION_PERMISSION_DENIED` | — |
 
