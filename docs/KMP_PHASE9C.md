@@ -242,6 +242,12 @@ No se tocan:
 
 - **`ImageBitmap` → `UIImage` sin PNG (rendimiento con 50/100 marcadores)**: la primera versión de `toUIImage()` hacía `encodeToData()` (PNG + zlib) y `UIImage(data:)` volvía a decodificar. Perfilado con xctrace en simulador: ~10 ms de hilo principal por marcador → con 100 estaciones un hang de 1,2 s al cargar. Copiar a un `ByteArray` tampoco sirve: ~150 KB por marcador en el heap de Kotlin disparan full GC (stop-the-world). Patrón actual: `asSkiaBitmap().peekPixels()` → `Pixmap.readPixels(RGBA_8888 premul, addr = CGBitmapContextGetData(ctx))` sobre un `CGBitmapContextCreate(data = null, …)` (memoria propiedad de CoreGraphics) → `CGBitmapContextCreateImage` → `UIImage.imageWithCGImage`. Con esto el código de markers desaparece de los hangs del perfil.
 
+### Camera idle y gesto de usuario (`onCameraIdle`, «Buscar en esta zona»)
+
+- `MKMapViewDelegateProtocol` tiene `mapView(_:regionWillChangeAnimated:)` y `mapView(_:regionDidChangeAnimated:)`: ambos son `(MKMapView, Boolean)` en Kotlin y chocan como overloads. Se resuelve con `@ObjCSignatureOverride` (`kotlinx.cinterop`) en las dos.
+- MapKit no expone quién movió la cámara. Se usa el truco de inspeccionar los `gestureRecognizers` de `mapView.subviews.first()`: si alguno está en `Began` o `Ended` durante `regionWillChange`, el cambio lo inició el usuario. El flag se guarda en el delegate y se emite en `regionDidChange` junto con los bounds (`region.center ± span / 2`).
+- Android equivalente: `cameraState.isMoving` pasa a `false` y `cameraMoveStartedReason == GESTURE`.
+
 ## Próximo: Phase 9C.2 — Map Polish
 
 Clustering con `MKClusterAnnotation` + markers con precio y logo de marca rendereados via Core Graphics en un `UIImage`. Ver sección Phase 9C.2 en `docs/KMP_MIGRATION.md`.

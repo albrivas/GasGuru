@@ -14,4 +14,6 @@
     <string name="tab_price">Price</string>
     <string name="tab_distance">Distance</string>
     <string name="route_error_message">An error occurred while calculating the route.</string>
+    <string name="search_this_area">Search this area</string>
+    <string name="area_results_truncated">Zoom in to see all stations</string>
 </resources>

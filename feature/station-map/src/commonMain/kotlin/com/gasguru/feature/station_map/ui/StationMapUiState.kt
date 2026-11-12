@@ -20,6 +20,10 @@ data class StationMapUiState(
     val routeDestinationName: String? = null,
     val userLocationToCenter: LatLng? = null,
     val selectedStationId: Int = -1,
+    val visibleBounds: GeoBounds? = null,
+    val showSearchThisArea: Boolean = false,
+    val isSearchingArea: Boolean = false,
+    val isAreaResultTruncated: Boolean = false,
 )
 
 data class SelectedTabUiState(

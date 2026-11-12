@@ -72,21 +72,38 @@ internal fun MKMapView.isUserGestureInProgress(): Boolean {
 }
 
 @OptIn(ExperimentalForeignApi::class)
-internal fun MKMapView.visibleGeoBounds(): GeoBounds? {
-    val (centerLatitude, centerLongitude, latitudeSpan, longitudeSpan) = region.useContents {
-        listOf(center.latitude, center.longitude, span.latitudeDelta, span.longitudeDelta)
+internal fun MKMapView.visibleGeoBounds(): GeoBounds? = region.useContents {
+    if (span.latitudeDelta <= 0.0 || span.longitudeDelta <= 0.0) {
+        null
+    } else {
+        GeoBounds(
+            southwest = LatLng(
+                latitude = center.latitude - span.latitudeDelta / 2.0,
+                longitude = center.longitude - span.longitudeDelta / 2.0,
+            ),
+            northeast = LatLng(
+                latitude = center.latitude + span.latitudeDelta / 2.0,
+                longitude = center.longitude + span.longitudeDelta / 2.0,
+            ),
+        )
     }
-    if (latitudeSpan <= 0.0 || longitudeSpan <= 0.0) return null
-    return GeoBounds(
-        southwest = LatLng(
-            latitude = centerLatitude - latitudeSpan / 2.0,
-            longitude = centerLongitude - longitudeSpan / 2.0,
-        ),
-        northeast = LatLng(
-            latitude = centerLatitude + latitudeSpan / 2.0,
-            longitude = centerLongitude + longitudeSpan / 2.0,
-        ),
-    )
+}
+
+internal class CameraIdleTracker(
+    private val onCameraIdle: (bounds: GeoBounds, movedByUser: Boolean) -> Unit,
+) {
+    private var regionChangeStartedByUser = false
+
+    fun regionWillChange(mapView: MKMapView) {
+        regionChangeStartedByUser = mapView.isUserGestureInProgress()
+    }
+
+    fun regionDidChange(mapView: MKMapView) {
+        mapView.visibleGeoBounds()?.let { visibleBounds ->
+            onCameraIdle(visibleBounds, regionChangeStartedByUser)
+        }
+        regionChangeStartedByUser = false
+    }
 }
 
 // Skia writes straight into CoreGraphics-owned memory: a PNG round-trip froze the main thread and a
