@@ -51,7 +51,9 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.components.searchbar.GasGuruSearchBar
@@ -231,6 +233,7 @@ internal fun StationMapScreen(
 ) = with(uiState) {
     val peekHeight = 60.dp
     var isSearchActive by remember { mutableStateOf(false) }
+    val hapticFeedback = LocalHapticFeedback.current
     val isRouteActive = route != null || (loading && routeDestinationName != null)
 
     LaunchedEffect(routePlanner) {
@@ -325,6 +328,7 @@ internal fun StationMapScreen(
                     mapBounds = mapBounds,
                     shouldCenterMap = shouldCenterMap,
                     userLocationToCenter = userLocationToCenter,
+                    customPinLocation = customPinLocation,
                     onStationClick = { stationId ->
                         event(StationMapEvent.SelectStation(stationId = stationId))
                         navigateToDetail(stationId)
@@ -333,6 +337,10 @@ internal fun StationMapScreen(
                     onUserLocationCentered = { event(StationMapEvent.OnUserLocationCentered) },
                     onCameraIdle = { visibleBounds, movedByUser ->
                         event(StationMapEvent.CameraIdle(bounds = visibleBounds, movedByUser = movedByUser))
+                    },
+                    onMapLongClick = { pressedLocation ->
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                        event(StationMapEvent.SelectMapLocation(location = pressedLocation))
                     },
                     modifier = Modifier.fillMaxSize(),
                 )
