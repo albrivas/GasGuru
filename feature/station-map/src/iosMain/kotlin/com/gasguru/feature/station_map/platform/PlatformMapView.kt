@@ -88,14 +88,16 @@ actual fun PlatformMapView(
         object : NSObject(), MKMapViewDelegateProtocol {
             var lastRoute: RouteUiModel? = null
             var currentPolyline: MKPolyline? = null
-            var regionChangeStartedByUser = false
+            val cameraIdleTracker = CameraIdleTracker { bounds, movedByUser ->
+                currentOnCameraIdle(bounds, movedByUser)
+            }
 
             @ObjCSignatureOverride
             override fun mapView(
                 mapView: MKMapView,
                 regionWillChangeAnimated: Boolean,
             ) {
-                regionChangeStartedByUser = mapView.isUserGestureInProgress()
+                cameraIdleTracker.regionWillChange(mapView = mapView)
             }
 
             @ObjCSignatureOverride
@@ -103,9 +105,7 @@ actual fun PlatformMapView(
                 mapView: MKMapView,
                 regionDidChangeAnimated: Boolean,
             ) {
-                val visibleBounds = mapView.visibleGeoBounds() ?: return
-                currentOnCameraIdle(visibleBounds, regionChangeStartedByUser)
-                regionChangeStartedByUser = false
+                cameraIdleTracker.regionDidChange(mapView = mapView)
             }
 
             override fun mapView(

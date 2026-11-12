@@ -5,8 +5,11 @@
 package com.gasguru.feature.station_map.ui
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,6 +37,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
@@ -81,6 +85,7 @@ import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.core.uikit.utils.TestTags
 import com.gasguru.core.uikit.utils.maestroTestTag
+import com.gasguru.feature.station_map.generated.resources.area_results_truncated
 import com.gasguru.feature.station_map.generated.resources.filter_brand
 import com.gasguru.feature.station_map.generated.resources.filter_brand_number
 import com.gasguru.feature.station_map.generated.resources.filter_brand_title
@@ -92,11 +97,14 @@ import com.gasguru.feature.station_map.generated.resources.filter_open_now
 import com.gasguru.feature.station_map.generated.resources.filter_schedule
 import com.gasguru.feature.station_map.generated.resources.route_error_message
 import com.gasguru.feature.station_map.generated.resources.route_station_count
+import com.gasguru.feature.station_map.generated.resources.search_this_area
 import com.gasguru.feature.station_map.generated.resources.sheet_button
 import com.gasguru.feature.station_map.generated.resources.tab_distance
 import com.gasguru.feature.station_map.generated.resources.tab_price
 import com.gasguru.feature.station_map.platform.PlatformMapView
 import com.gasguru.feature.station_map.platform.rememberLocationPermissionState
+import com.gasguru.feature.station_map.ui.components.SearchThisAreaButton
+import com.gasguru.feature.station_map.ui.components.SearchThisAreaButtonModel
 import com.gasguru.navigation.LocalDeepLinkStateHolder
 import com.gasguru.navigation.LocalNavigationManager
 import com.gasguru.navigation.manager.NavigationDestination
@@ -323,7 +331,9 @@ internal fun StationMapScreen(
                     },
                     onMapCentered = { event(StationMapEvent.OnMapCentered) },
                     onUserLocationCentered = { event(StationMapEvent.OnUserLocationCentered) },
-                    onCameraIdle = { _, _ -> },
+                    onCameraIdle = { visibleBounds, movedByUser ->
+                        event(StationMapEvent.CameraIdle(bounds = visibleBounds, movedByUser = movedByUser))
+                    },
                     modifier = Modifier.fillMaxSize(),
                 )
                 AnimatedContent(
@@ -372,6 +382,12 @@ internal fun StationMapScreen(
                                 onHeight = { },
                                 filterUiState = filterUiState,
                             )
+                            AreaSearchActions(
+                                isSearchButtonVisible = showSearchThisArea && !isSearchActive,
+                                isLoading = isSearchingArea,
+                                isTruncationHintVisible = isAreaResultTruncated && !isSearchingArea && !isSearchActive,
+                                onSearchClick = { event(StationMapEvent.SearchThisArea) },
+                            )
                         }
                     }
                 }
@@ -385,6 +401,58 @@ internal fun StationMapScreen(
             }
         }
     )
+}
+
+@Composable
+private fun AreaSearchActions(
+    isSearchButtonVisible: Boolean,
+    isLoading: Boolean,
+    isTruncationHintVisible: Boolean,
+    onSearchClick: () -> Unit,
+) {
+    AnimatedVisibility(
+        visible = isSearchButtonVisible || isLoading,
+        enter = fadeIn() + slideInVertically(),
+        exit = fadeOut() + slideOutVertically(),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Box(
+            modifier = Modifier.padding(top = 12.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            SearchThisAreaButton(
+                model = SearchThisAreaButtonModel(
+                    text = stringResource(StationMapRes.string.search_this_area),
+                    isLoading = isLoading,
+                    onClick = onSearchClick,
+                ),
+            )
+        }
+    }
+    AnimatedVisibility(
+        visible = isTruncationHintVisible,
+        enter = fadeIn(),
+        exit = fadeOut(),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Box(
+            modifier = Modifier.padding(top = 12.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            Surface(
+                shape = CircleShape,
+                color = GasGuruTheme.colors.neutralWhite,
+                shadowElevation = 2.dp,
+            ) {
+                Text(
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                    text = stringResource(StationMapRes.string.area_results_truncated),
+                    style = GasGuruTheme.typography.captionRegular,
+                    color = GasGuruTheme.colors.textSubtle,
+                )
+            }
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

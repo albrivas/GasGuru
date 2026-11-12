@@ -240,6 +240,12 @@ No se tocan:
 
 - **Renderizar composable a UIImage para MapKit**: `MKAnnotationView` solo acepta `UIImage`, no composables. Patrón correcto en CMP 1.10+: `rememberGraphicsLayer()` + `Modifier.drawWithContent { graphicsLayer.record { this@drawWithContent.drawContent() } }` en un `Box` oculto (`size(0.dp) + wrapContentSize(unbounded=true)`). Capturar con `graphicsLayer.toImageBitmap()` en un `LaunchedEffect`. Actualizar la annotation view ya mostrada en el `UIKitView.update` block leyendo el `SnapshotStateMap<Int, UIImage>` (triggerea re-ejecución del `update` automáticamente vía Compose snapshot).
 
+### Camera idle y gesto de usuario (`onCameraIdle`, «Buscar en esta zona»)
+
+- `MKMapViewDelegateProtocol` tiene `mapView(_:regionWillChangeAnimated:)` y `mapView(_:regionDidChangeAnimated:)`: ambos son `(MKMapView, Boolean)` en Kotlin y chocan como overloads. Se resuelve con `@ObjCSignatureOverride` (`kotlinx.cinterop`) en las dos.
+- MapKit no expone quién movió la cámara. Se usa el truco de inspeccionar los `gestureRecognizers` de `mapView.subviews.first()`: si alguno está en `Began` o `Ended` durante `regionWillChange`, el cambio lo inició el usuario. El flag se guarda en el delegate y se emite en `regionDidChange` junto con los bounds (`region.center ± span / 2`).
+- Android equivalente: `cameraState.isMoving` pasa a `false` y `cameraMoveStartedReason == GESTURE`.
+
 ## Próximo: Phase 9C.2 — Map Polish
 
 Clustering con `MKClusterAnnotation` + markers con precio y logo de marca rendereados via Core Graphics en un `UIImage`. Ver sección Phase 9C.2 en `docs/KMP_MIGRATION.md`.

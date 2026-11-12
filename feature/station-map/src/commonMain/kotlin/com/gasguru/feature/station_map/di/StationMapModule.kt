@@ -18,6 +18,7 @@ fun stationMapModule() = module {
             saveFilterUseCase = get(),
             getRouteUseCase = get(),
             getFuelStationsInRouteUseCase = get(),
+            getFuelStationsInAreaUseCase = get(),
             defaultDispatcher = get(named(KoinQualifiers.DEFAULT_DISPATCHER)),
             analyticsHelper = get(),
         )

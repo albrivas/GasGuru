@@ -1,47 +1,12 @@
 package com.gasguru.feature.station_map.ui
 
 import app.cash.turbine.test
-import com.gasguru.core.analytics.NoOpAnalyticsHelper
-import com.gasguru.core.data.repository.stations.FuelStationRepository
-import com.gasguru.core.data.repository.stations.OfflineFuelStationRepository
-import com.gasguru.core.data.repository.user.OfflineUserDataRepository
-import com.gasguru.core.database.model.FuelStationEntity
-import com.gasguru.core.database.model.UserDataEntity
-import com.gasguru.core.database.model.VehicleEntity
-import com.gasguru.core.domain.filters.GetFiltersUseCase
-import com.gasguru.core.domain.filters.SaveFilterUseCase
-import com.gasguru.core.domain.fuelstation.FuelStationByLocationUseCase
-import com.gasguru.core.domain.fuelstation.GetFuelStationsInRouteUseCase
-import com.gasguru.core.domain.location.GetCurrentLocationUseCase
-import com.gasguru.core.domain.places.GetLocationPlaceUseCase
-import com.gasguru.core.domain.route.GetRouteUseCase
-import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.model.data.FilterType
-import com.gasguru.core.model.data.FuelStation
-import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.OpeningHours
 import com.gasguru.core.model.data.Route
-import com.gasguru.core.model.data.UserData
-import com.gasguru.core.model.data.Vehicle
-import com.gasguru.core.model.data.VehicleType
-import com.gasguru.core.testing.CoroutineTest
-import com.gasguru.core.testing.fakes.data.database.FakeFavoriteStationDao
-import com.gasguru.core.testing.fakes.data.database.FakeFuelStationDao
-import com.gasguru.core.testing.fakes.data.database.FakePriceAlertDao
-import com.gasguru.core.testing.fakes.data.database.FakeUserDataDao
-import com.gasguru.core.testing.fakes.data.database.FakeVehicleDao
-import com.gasguru.core.testing.fakes.data.filter.FakeFilterRepository
-import com.gasguru.core.testing.fakes.data.location.FakeLocationTracker
-import com.gasguru.core.testing.fakes.data.network.FakeRemoteDataSource
-import com.gasguru.core.testing.fakes.data.places.FakePlacesRepository
-import com.gasguru.core.testing.fakes.data.route.FakeRoutesRepository
-import com.gasguru.core.testing.fakes.data.user.FakeUserDataRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -51,65 +16,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class StationMapViewModelTest : CoroutineTest() {
-
-    private lateinit var sut: StationMapViewModel
-    private lateinit var fakeUserDataRepository: FakeUserDataRepository
-    private lateinit var fakeUserDataDao: FakeUserDataDao
-    private lateinit var fakeVehicleDao: FakeVehicleDao
-    private lateinit var fakeFavoriteStationDao: FakeFavoriteStationDao
-    private lateinit var fakeFuelStationDao: FakeFuelStationDao
-    private lateinit var fakePriceAlertDao: FakePriceAlertDao
-    private lateinit var fakeRoutesRepository: FakeRoutesRepository
-    private lateinit var fakeFilterRepository: FakeFilterRepository
-    private lateinit var fakePlacesRepository: FakePlacesRepository
-    private lateinit var fakeLocationTracker: FakeLocationTracker
-
-    @BeforeTest
-    fun setUp() {
-        fakeUserDataRepository = FakeUserDataRepository(
-            initialUserData = UserData(
-                vehicles = listOf(
-                    Vehicle(
-                        id = 1L,
-                        fuelType = FuelType.GASOLINE_95,
-                        name = null,
-                        tankCapacity = 40,
-                        vehicleType = VehicleType.CAR,
-                        isPrincipal = true,
-                    )
-                )
-            )
-        )
-        fakeUserDataDao = FakeUserDataDao(
-            initialUserData = UserDataEntity(
-                lastUpdate = 0,
-                isOnboardingSuccess = true,
-            )
-        )
-        fakeVehicleDao = FakeVehicleDao(
-            initialVehicles = listOf(
-                VehicleEntity(
-                    id = 1L,
-                    userId = 0L,
-                    name = null,
-                    fuelType = FuelType.GASOLINE_95,
-                    tankCapacity = 40,
-                    vehicleType = VehicleType.CAR,
-                    isPrincipal = true,
-                )
-            ),
-        )
-        fakeFavoriteStationDao = FakeFavoriteStationDao()
-        fakeFuelStationDao = FakeFuelStationDao()
-        fakePriceAlertDao = FakePriceAlertDao()
-        fakeRoutesRepository = FakeRoutesRepository()
-        fakeFilterRepository = FakeFilterRepository()
-        fakePlacesRepository = FakePlacesRepository()
-        fakeLocationTracker = FakeLocationTracker()
-
-        sut = createViewModel()
-    }
+class StationMapViewModelTest : StationMapViewModelTestBase() {
 
     @Test
     fun `GIVEN stations in dao and current location WHEN GetStationByCurrentLocation event is sent THEN stations are loaded and sorted by price`() = runTest {
@@ -546,108 +453,5 @@ class StationMapViewModelTest : CoroutineTest() {
         assertTrue(recordingRepository.requestedLocations.isNotEmpty())
         assertTrue(recordingRepository.requestedLocations.all { requested -> requested == locationB })
         assertEquals(2, sut.state.value.mapStations.size)
-    }
-
-    private fun buildOfflineRepository(): OfflineFuelStationRepository {
-        val offlineUserDataRepository = OfflineUserDataRepository(
-            userDataDao = fakeUserDataDao,
-            favoriteStationDao = fakeFavoriteStationDao,
-            vehicleDao = fakeVehicleDao,
-        )
-        return OfflineFuelStationRepository(
-            fuelStationDao = fakeFuelStationDao,
-            remoteDataSource = FakeRemoteDataSource(),
-            defaultDispatcher = Dispatchers.Main,
-            ioDispatcher = Dispatchers.Main,
-            offlineUserDataRepository = offlineUserDataRepository,
-            favoriteStationDao = fakeFavoriteStationDao,
-            priceAlertDao = fakePriceAlertDao,
-        )
-    }
-
-    private fun createViewModel(
-        fuelStationRepository: FuelStationRepository = buildOfflineRepository(),
-    ): StationMapViewModel {
-        return StationMapViewModel(
-            fuelStationByLocation = FuelStationByLocationUseCase(fuelStationRepository),
-            getUserDataUseCase = GetUserDataUseCase(fakeUserDataRepository),
-            getLocationPlaceUseCase = GetLocationPlaceUseCase(fakePlacesRepository),
-            getCurrentLocationUseCase = GetCurrentLocationUseCase(fakeLocationTracker),
-            getFiltersUseCase = GetFiltersUseCase(fakeFilterRepository),
-            saveFilterUseCase = SaveFilterUseCase(fakeFilterRepository),
-            getRouteUseCase = GetRouteUseCase(fakeRoutesRepository),
-            getFuelStationsInRouteUseCase = GetFuelStationsInRouteUseCase(
-                fuelStationRepository
-            ),
-            defaultDispatcher = Dispatchers.Main,
-            analyticsHelper = NoOpAnalyticsHelper(),
-        )
-    }
-
-    private fun stationEntity(
-        id: Int,
-        latitude: Double,
-        longitude: Double,
-        price: Double,
-        brand: String = "Repsol",
-    ): FuelStationEntity =
-        FuelStationEntity(
-            bioEthanolPercentage = "",
-            esterMethylPercentage = "",
-            postalCode = "",
-            direction = "",
-            schedule = "",
-            idAutonomousCommunity = "",
-            idServiceStation = id,
-            idMunicipality = "",
-            idProvince = "",
-            latitude = latitude,
-            locality = "",
-            longitudeWGS84 = longitude,
-            margin = "",
-            municipality = "",
-            priceBiodiesel = 0.0,
-            priceBioEthanol = 0.0,
-            priceGasNaturalCompressed = 0.0,
-            priceLiquefiedNaturalGas = 0.0,
-            priceLiquefiedPetroleumGas = 0.0,
-            priceGasoilA = 0.0,
-            priceGasoilB = 0.0,
-            priceGasoilPremium = 0.0,
-            priceGasoline95E10 = 0.0,
-            priceGasoline95E5 = price,
-            priceGasoline95E5Premium = 0.0,
-            priceGasoline98E10 = 0.0,
-            priceGasoline98E5 = 0.0,
-            priceHydrogen = 0.0,
-            priceAdblue = 0.0,
-            province = "",
-            referral = "",
-            brandStation = brand,
-            typeSale = "",
-            lastUpdate = 0,
-            isFavorite = false
-        )
-}
-
-private class RecordingFuelStationRepository(
-    private val delegate: FuelStationRepository,
-) : FuelStationRepository by delegate {
-
-    val requestedLocations = mutableListOf<LatLng>()
-
-    override fun getFuelStationByLocation(
-        userLocation: LatLng,
-        maxStations: Int,
-        brands: List<String>,
-        schedule: OpeningHours,
-    ): Flow<List<FuelStation>> {
-        requestedLocations.add(userLocation)
-        return delegate.getFuelStationByLocation(
-            userLocation = userLocation,
-            maxStations = maxStations,
-            brands = brands,
-            schedule = schedule,
-        )
     }
 }
