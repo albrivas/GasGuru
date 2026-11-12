@@ -323,6 +323,7 @@ internal fun StationMapScreen(
                     },
                     onMapCentered = { event(StationMapEvent.OnMapCentered) },
                     onUserLocationCentered = { event(StationMapEvent.OnUserLocationCentered) },
+                    onCameraIdle = { _, _ -> },
                     modifier = Modifier.fillMaxSize(),
                 )
                 AnimatedContent(

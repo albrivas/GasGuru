@@ -16,6 +16,8 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -39,6 +41,7 @@ import com.gasguru.feature.station_map.ui.models.RouteUiModel
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.JointType
+import com.google.maps.android.compose.CameraMoveStartedReason
 import com.google.maps.android.compose.ComposeMapColorScheme
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
@@ -63,11 +66,24 @@ actual fun PlatformMapView(
     onStationClick: (Int) -> Unit,
     onMapCentered: () -> Unit,
     onUserLocationCentered: () -> Unit,
+    onCameraIdle: (bounds: GeoBounds, movedByUser: Boolean) -> Unit,
     modifier: Modifier,
 ) {
     val context = LocalContext.current
     val cameraState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(GoogleLatLng(40.0, -4.0), 5.5f)
+    }
+
+    val currentOnCameraIdle by rememberUpdatedState(onCameraIdle)
+    LaunchedEffect(cameraState) {
+        snapshotFlow { cameraState.isMoving }.collect { isMoving ->
+            if (isMoving) return@collect
+            val visibleBounds = cameraState.projection?.visibleRegion?.latLngBounds ?: return@collect
+            currentOnCameraIdle(
+                visibleBounds.toGeoBounds(),
+                cameraState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE,
+            )
+        }
     }
 
     LaunchedEffect(mapBounds, shouldCenterMap) {
