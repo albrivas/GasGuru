@@ -26,5 +26,6 @@ expect fun PlatformMapView(
     onStationClick: (Int) -> Unit,
     onMapCentered: () -> Unit,
     onUserLocationCentered: () -> Unit,
+    onCameraIdle: (bounds: GeoBounds, movedByUser: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 )

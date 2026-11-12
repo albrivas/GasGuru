@@ -39,6 +39,7 @@ import com.gasguru.feature.station_map.ui.model.GeoBounds
 import com.gasguru.feature.station_map.ui.models.RouteUiModel
 import kotlinx.cinterop.CValue
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.ObjCSignatureOverride
 import kotlinx.cinterop.useContents
 import platform.CoreLocation.CLLocationCoordinate2D
 import platform.MapKit.MKAnnotationProtocol
@@ -72,11 +73,13 @@ actual fun PlatformMapView(
     onStationClick: (Int) -> Unit,
     onMapCentered: () -> Unit,
     onUserLocationCentered: () -> Unit,
+    onCameraIdle: (bounds: GeoBounds, movedByUser: Boolean) -> Unit,
     modifier: Modifier,
 ) {
     val currentOnStationClick by rememberUpdatedState(onStationClick)
     val currentOnMapCentered by rememberUpdatedState(onMapCentered)
     val currentOnUserLocationCentered by rememberUpdatedState(onUserLocationCentered)
+    val currentOnCameraIdle by rememberUpdatedState(onCameraIdle)
     val isDark = GasGuruTheme.colors.isDark
 
     val markerImages = remember { mutableStateMapOf<Int, UIImage>() }
@@ -85,6 +88,25 @@ actual fun PlatformMapView(
         object : NSObject(), MKMapViewDelegateProtocol {
             var lastRoute: RouteUiModel? = null
             var currentPolyline: MKPolyline? = null
+            var regionChangeStartedByUser = false
+
+            @ObjCSignatureOverride
+            override fun mapView(
+                mapView: MKMapView,
+                regionWillChangeAnimated: Boolean,
+            ) {
+                regionChangeStartedByUser = mapView.isUserGestureInProgress()
+            }
+
+            @ObjCSignatureOverride
+            override fun mapView(
+                mapView: MKMapView,
+                regionDidChangeAnimated: Boolean,
+            ) {
+                val visibleBounds = mapView.visibleGeoBounds() ?: return
+                currentOnCameraIdle(visibleBounds, regionChangeStartedByUser)
+                regionChangeStartedByUser = false
+            }
 
             override fun mapView(
                 mapView: MKMapView,

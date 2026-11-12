@@ -8,6 +8,7 @@ import kotlinx.cinterop.CValue
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.useContents
 import org.jetbrains.skia.ColorAlphaType
 import org.jetbrains.skia.ColorType
 import org.jetbrains.skia.ImageInfo
@@ -28,10 +29,15 @@ import platform.CoreLocation.CLLocationCoordinate2DMake
 import platform.MapKit.MKCoordinateRegionMake
 import platform.MapKit.MKCoordinateRegionMakeWithDistance
 import platform.MapKit.MKCoordinateSpanMake
+import platform.MapKit.MKMapView
 import platform.MapKit.MKPolyline
+import platform.UIKit.UIGestureRecognizer
+import platform.UIKit.UIGestureRecognizerStateBegan
+import platform.UIKit.UIGestureRecognizerStateEnded
 import platform.UIKit.UIImage
 import platform.UIKit.UIImageOrientation
 import platform.UIKit.UIScreen
+import platform.UIKit.UIView
 import kotlin.math.abs
 
 @OptIn(ExperimentalForeignApi::class)
@@ -53,6 +59,35 @@ internal fun GeoBounds.toMKCoordinateRegion(): CValue<platform.MapKit.MKCoordina
 @OptIn(ExperimentalForeignApi::class)
 internal fun LatLng.toMKCoordinateRegionCentered(): CValue<platform.MapKit.MKCoordinateRegion> =
     MKCoordinateRegionMakeWithDistance(toCLLocationCoordinate2D(), 1500.0, 1500.0)
+
+// MKMapView exposes no gesture state: its first subview owns the recognizers that react to user touches.
+internal fun MKMapView.isUserGestureInProgress(): Boolean {
+    val gestureHost = subviews.firstOrNull() as? UIView ?: return false
+    return gestureHost.gestureRecognizers.orEmpty()
+        .filterIsInstance<UIGestureRecognizer>()
+        .any { recognizer ->
+            recognizer.state == UIGestureRecognizerStateBegan ||
+                recognizer.state == UIGestureRecognizerStateEnded
+        }
+}
+
+@OptIn(ExperimentalForeignApi::class)
+internal fun MKMapView.visibleGeoBounds(): GeoBounds? {
+    val (centerLatitude, centerLongitude, latitudeSpan, longitudeSpan) = region.useContents {
+        listOf(center.latitude, center.longitude, span.latitudeDelta, span.longitudeDelta)
+    }
+    if (latitudeSpan <= 0.0 || longitudeSpan <= 0.0) return null
+    return GeoBounds(
+        southwest = LatLng(
+            latitude = centerLatitude - latitudeSpan / 2.0,
+            longitude = centerLongitude - longitudeSpan / 2.0,
+        ),
+        northeast = LatLng(
+            latitude = centerLatitude + latitudeSpan / 2.0,
+            longitude = centerLongitude + longitudeSpan / 2.0,
+        ),
+    )
+}
 
 // Skia writes straight into CoreGraphics-owned memory: a PNG round-trip froze the main thread and a
 // ByteArray copy filled the Kotlin heap (~150 KB per marker), triggering full GC pauses.
