@@ -92,3 +92,15 @@ fun AnalyticsHelper.trackRouteCancelled(brand: String?) {
         )
     )
 }
+
+fun AnalyticsHelper.trackSearchThisArea(stationCount: Int, isTruncated: Boolean) {
+    logEvent(
+        AnalyticsEvent(
+            type = AnalyticsEvent.Types.SEARCH_THIS_AREA,
+            extras = listOf(
+                AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.STATION_COUNT, value = stationCount.toString()),
+                AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.IS_TRUNCATED, value = isTruncated.toString()),
+            ),
+        )
+    )
+}

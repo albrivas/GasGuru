@@ -282,6 +282,7 @@ evento hay que registrarlo en ese `when` para evitar que caiga en `unknown`.
 | Tab cambiado (Precio/Distancia) | `MAP_TAB_CHANGED` | `tab: String` |
 | Ruta iniciada | `ROUTE_STARTED` | `station_brand: String` |
 | Ruta cancelada | `ROUTE_CANCELLED` | `station_brand: String` |
+| Búsqueda en esta zona | `SEARCH_THIS_AREA` | `station_count: Int`, `is_truncated: Boolean` (hay más gasolineras que el tope de 100) |
 | Permiso de ubicación concedido | `LOCATION_PERMISSION_GRANTED` | — |
 | Permiso de ubicación denegado | `LOCATION_PERMISSION_DENIED` | — |
 
@@ -444,6 +445,8 @@ Solo se registra el error — los eventos de inicio y éxito se eliminaron por s
 | `theme_mode` | `String` | Modo de tema (LIGHT / DARK / SYSTEM) |
 | `query_length` | `Int` | Longitud de la consulta de búsqueda |
 | `result_count` | `Int` | Número de resultados de búsqueda |
+| `station_count` | `Int` | Gasolineras devueltas por «Buscar en esta zona» |
+| `is_truncated` | `Boolean` | Si el resultado de «Buscar en esta zona» se recortó al tope de gasolineras |
 | `notification_type` | `String` | Tipo de notificación push (ej. `price_alert`) |
 | `error_message` | `String` | Mensaje de la excepción capturada en eventos de error |
 | `error_type` | `String` | Nombre de la clase de la excepción (ej. `RuntimeException`) |
