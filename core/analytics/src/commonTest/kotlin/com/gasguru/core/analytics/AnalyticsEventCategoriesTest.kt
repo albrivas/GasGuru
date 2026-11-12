@@ -115,6 +115,12 @@ class AnalyticsEventCategoriesTest {
         AnalyticsEvent.Categories.fromType(AnalyticsEvent.Types.ROUTE_CANCELLED),
     )
 
+    @Test
+    fun searchThisAreaMapsToMap() = assertEquals(
+        AnalyticsEvent.Categories.MAP,
+        AnalyticsEvent.Categories.fromType(AnalyticsEvent.Types.SEARCH_THIS_AREA),
+    )
+
     // endregion
 
     // region Station Detail
