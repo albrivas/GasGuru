@@ -81,6 +81,8 @@ import com.gasguru.core.uikit.components.filterable_station_list.FilterableStati
 import com.gasguru.core.uikit.components.filterable_station_list.FilterableStationListModel
 import com.gasguru.core.uikit.components.route_navigation_card.RouteNavigationCard
 import com.gasguru.core.uikit.components.route_navigation_card.RouteNavigationCardModel
+import com.gasguru.core.uikit.components.search_area.SearchThisAreaButton
+import com.gasguru.core.uikit.components.search_area.SearchThisAreaButtonModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
@@ -103,8 +105,6 @@ import com.gasguru.feature.station_map.generated.resources.tab_distance
 import com.gasguru.feature.station_map.generated.resources.tab_price
 import com.gasguru.feature.station_map.platform.PlatformMapView
 import com.gasguru.feature.station_map.platform.rememberLocationPermissionState
-import com.gasguru.feature.station_map.ui.components.SearchThisAreaButton
-import com.gasguru.feature.station_map.ui.components.SearchThisAreaButtonModel
 import com.gasguru.navigation.LocalDeepLinkStateHolder
 import com.gasguru.navigation.LocalNavigationManager
 import com.gasguru.navigation.manager.NavigationDestination

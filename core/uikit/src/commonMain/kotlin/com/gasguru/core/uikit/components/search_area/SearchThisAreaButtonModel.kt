@@ -1,4 +1,4 @@
-package com.gasguru.feature.station_map.ui.components
+package com.gasguru.core.uikit.components.search_area
 
 import androidx.compose.runtime.Stable
 
