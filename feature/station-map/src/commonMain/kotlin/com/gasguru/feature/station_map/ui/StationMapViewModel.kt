@@ -81,6 +81,7 @@ class StationMapViewModel(
     val effects: Flow<StationMapEffect> = _effects.receiveAsFlow()
 
     private var routeCalculationJob: Job? = null
+    private var stationsJob: Job? = null
 
     fun handleEvent(event: StationMapEvent) {
         when (event) {
@@ -248,15 +249,22 @@ class StationMapViewModel(
     }
 
     private fun getStationByCurrentLocation() {
-        viewModelScope.launch {
-            getCurrentLocationUseCase()?.let { location ->
-                if (_state.value.route != null) {
-                    centerMapOnLocation(location = location)
-                } else {
-                    _state.update { it.copy(loading = true, listStations = emptyList()) }
-                    getStationByLocation(location = location)
-                }
-            } ?: _state.update { it.copy(loading = false) }
+        if (_state.value.route != null) {
+            viewModelScope.launch {
+                getCurrentLocationUseCase()
+                    ?.let { location -> centerMapOnLocation(location = location) }
+                    ?: _state.update { it.copy(loading = false) }
+            }
+            return
+        }
+        launchStationsQuery {
+            val location = getCurrentLocationUseCase()
+            if (location == null) {
+                _state.update { it.copy(loading = false) }
+                return@launchStationsQuery
+            }
+            _state.update { it.copy(loading = true, listStations = emptyList()) }
+            collectStationsByLocation(location = location)
         }
     }
 
@@ -264,52 +272,61 @@ class StationMapViewModel(
         _state.update { it.copy(userLocationToCenter = location) }
     }
 
-    private fun getStationByPlace(placeId: String) =
-        viewModelScope.launch {
+    private fun getStationByPlace(placeId: String) {
+        launchStationsQuery {
             _state.update { it.copy(loading = true) }
-            getLocationPlaceUseCase(placeId)
-                .catch { _state.update { it.copy(loading = false) } }
-                .collect { location ->
-                    getStationByLocation(location)
-                }
+            val location = try {
+                getLocationPlaceUseCase(placeId).first()
+            } catch (error: CancellationException) {
+                throw error
+            } catch (error: Exception) {
+                _state.update { it.copy(loading = false) }
+                return@launchStationsQuery
+            }
+            collectStationsByLocation(location = location)
         }
+    }
 
-    private fun getStationByLocation(location: LatLng) {
-        viewModelScope.launch {
-            combine(
-                filters,
-                getUserDataUseCase(),
-            ) { filterState, userData ->
-                Pair(filterState, userData)
-            }.collectLatest { (filterState, userData) ->
-                if (_state.value.route != null) return@collectLatest
-                fuelStationByLocation(
-                    userLocation = location,
-                    maxStations = filterState.filterStationsNearby,
-                    brands = filterState.filterBrand,
-                    schedule = filterState.filterSchedule.toDomainModel(),
-                ).catch { error ->
-                    _state.update { it.copy(error = error, loading = false) }
-                }.collect { fuelStations ->
-                    val bounds = calculateBounds(
-                        fuelStations = fuelStations.map { it.location },
-                        location = location,
+    // A single live query at a time: stale collectors would otherwise overwrite the state on filter changes.
+    private fun launchStationsQuery(block: suspend () -> Unit) {
+        stationsJob?.cancel()
+        stationsJob = viewModelScope.launch { block() }
+    }
+
+    private suspend fun collectStationsByLocation(location: LatLng) {
+        combine(
+            filters,
+            getUserDataUseCase(),
+        ) { filterState, userData ->
+            Pair(filterState, userData)
+        }.collectLatest { (filterState, userData) ->
+            if (_state.value.route != null) return@collectLatest
+            fuelStationByLocation(
+                userLocation = location,
+                maxStations = filterState.filterStationsNearby,
+                brands = filterState.filterBrand,
+                schedule = filterState.filterSchedule.toDomainModel(),
+            ).catch { error ->
+                _state.update { it.copy(error = error, loading = false) }
+            }.collect { fuelStations ->
+                val bounds = calculateBounds(
+                    fuelStations = fuelStations.map { it.location },
+                    location = location,
+                )
+                val uiStations = fuelStations.map { station -> station.toUiModel() }
+                _state.update {
+                    it.copy(
+                        mapStations = uiStations,
+                        listStations = sortStationsByTab(
+                            uiStations,
+                            _tabState.value.selectedTab,
+                            userData,
+                        ),
+                        loading = false,
+                        selectedType = userData.principalVehicle().fuelType,
+                        mapBounds = bounds,
+                        shouldCenterMap = true,
                     )
-                    val uiStations = fuelStations.map { station -> station.toUiModel() }
-                    _state.update {
-                        it.copy(
-                            mapStations = uiStations,
-                            listStations = sortStationsByTab(
-                                uiStations,
-                                _tabState.value.selectedTab,
-                                userData,
-                            ),
-                            loading = false,
-                            selectedType = userData.principalVehicle().fuelType,
-                            mapBounds = bounds,
-                            shouldCenterMap = true,
-                        )
-                    }
                 }
             }
         }

@@ -2,6 +2,7 @@ package com.gasguru.feature.station_map.ui
 
 import app.cash.turbine.test
 import com.gasguru.core.analytics.NoOpAnalyticsHelper
+import com.gasguru.core.data.repository.stations.FuelStationRepository
 import com.gasguru.core.data.repository.stations.OfflineFuelStationRepository
 import com.gasguru.core.data.repository.user.OfflineUserDataRepository
 import com.gasguru.core.database.model.FuelStationEntity
@@ -16,8 +17,10 @@ import com.gasguru.core.domain.places.GetLocationPlaceUseCase
 import com.gasguru.core.domain.route.GetRouteUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
 import com.gasguru.core.model.data.FilterType
+import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.LatLng
+import com.gasguru.core.model.data.OpeningHours
 import com.gasguru.core.model.data.Route
 import com.gasguru.core.model.data.UserData
 import com.gasguru.core.model.data.Vehicle
@@ -36,6 +39,7 @@ import com.gasguru.core.testing.fakes.data.route.FakeRoutesRepository
 import com.gasguru.core.testing.fakes.data.user.FakeUserDataRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -44,6 +48,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StationMapViewModelTest : CoroutineTest() {
@@ -514,24 +519,57 @@ class StationMapViewModelTest : CoroutineTest() {
         assertFalse(state.loading)
     }
 
-    private fun createViewModel(): StationMapViewModel {
+    @Test
+    fun `GIVEN place A then place B searched WHEN a filter changes THEN only the query for place B is re-run`() = runTest {
+        val locationA = LatLng(latitude = 37.0, longitude = -5.0)
+        val locationB = LatLng(latitude = 41.0, longitude = -4.0)
+        fakePlacesRepository.setLocationForId(placeId = "place-a", location = locationA)
+        fakePlacesRepository.setLocationForId(placeId = "place-b", location = locationB)
+        fakeFuelStationDao.setStations(
+            listOf(
+                stationEntity(id = 1, latitude = 37.0, longitude = -5.0, price = 1.50),
+                stationEntity(id = 2, latitude = 41.0, longitude = -4.0, price = 1.40),
+            ),
+        )
+        val recordingRepository = RecordingFuelStationRepository(delegate = buildOfflineRepository())
+        sut = createViewModel(fuelStationRepository = recordingRepository)
+
+        sut.handleEvent(StationMapEvent.GetStationByPlace(placeId = "place-a"))
+        advanceUntilIdle()
+        sut.handleEvent(StationMapEvent.GetStationByPlace(placeId = "place-b"))
+        advanceUntilIdle()
+        recordingRepository.requestedLocations.clear()
+
+        sut.handleEvent(StationMapEvent.UpdateNearbyFilter(number = "15"))
+        advanceUntilIdle()
+
+        assertTrue(recordingRepository.requestedLocations.isNotEmpty())
+        assertTrue(recordingRepository.requestedLocations.all { requested -> requested == locationB })
+        assertEquals(2, sut.state.value.mapStations.size)
+    }
+
+    private fun buildOfflineRepository(): OfflineFuelStationRepository {
         val offlineUserDataRepository = OfflineUserDataRepository(
             userDataDao = fakeUserDataDao,
             favoriteStationDao = fakeFavoriteStationDao,
             vehicleDao = fakeVehicleDao,
         )
-        val offlineFuelStationRepository = OfflineFuelStationRepository(
+        return OfflineFuelStationRepository(
             fuelStationDao = fakeFuelStationDao,
             remoteDataSource = FakeRemoteDataSource(),
             defaultDispatcher = Dispatchers.Main,
             ioDispatcher = Dispatchers.Main,
             offlineUserDataRepository = offlineUserDataRepository,
             favoriteStationDao = fakeFavoriteStationDao,
-            priceAlertDao = fakePriceAlertDao
+            priceAlertDao = fakePriceAlertDao,
         )
+    }
 
+    private fun createViewModel(
+        fuelStationRepository: FuelStationRepository = buildOfflineRepository(),
+    ): StationMapViewModel {
         return StationMapViewModel(
-            fuelStationByLocation = FuelStationByLocationUseCase(offlineFuelStationRepository),
+            fuelStationByLocation = FuelStationByLocationUseCase(fuelStationRepository),
             getUserDataUseCase = GetUserDataUseCase(fakeUserDataRepository),
             getLocationPlaceUseCase = GetLocationPlaceUseCase(fakePlacesRepository),
             getCurrentLocationUseCase = GetCurrentLocationUseCase(fakeLocationTracker),
@@ -539,7 +577,7 @@ class StationMapViewModelTest : CoroutineTest() {
             saveFilterUseCase = SaveFilterUseCase(fakeFilterRepository),
             getRouteUseCase = GetRouteUseCase(fakeRoutesRepository),
             getFuelStationsInRouteUseCase = GetFuelStationsInRouteUseCase(
-                offlineFuelStationRepository
+                fuelStationRepository
             ),
             defaultDispatcher = Dispatchers.Main,
             analyticsHelper = NoOpAnalyticsHelper(),
@@ -590,4 +628,26 @@ class StationMapViewModelTest : CoroutineTest() {
             lastUpdate = 0,
             isFavorite = false
         )
+}
+
+private class RecordingFuelStationRepository(
+    private val delegate: FuelStationRepository,
+) : FuelStationRepository by delegate {
+
+    val requestedLocations = mutableListOf<LatLng>()
+
+    override fun getFuelStationByLocation(
+        userLocation: LatLng,
+        maxStations: Int,
+        brands: List<String>,
+        schedule: OpeningHours,
+    ): Flow<List<FuelStation>> {
+        requestedLocations.add(userLocation)
+        return delegate.getFuelStationByLocation(
+            userLocation = userLocation,
+            maxStations = maxStations,
+            brands = brands,
+            schedule = schedule,
+        )
+    }
 }
