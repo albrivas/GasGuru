@@ -39,6 +39,8 @@ import com.gasguru.core.uikit.components.marker.StationMarkerModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.utils.maestroTestTag
 import com.gasguru.feature.station_map.BuildConfig
+import com.gasguru.feature.station_map.generated.resources.Res
+import com.gasguru.feature.station_map.generated.resources.custom_location_marker_description
 import com.gasguru.feature.station_map.ui.model.GeoBounds
 import com.gasguru.feature.station_map.ui.models.RouteUiModel
 import com.google.android.gms.maps.GoogleMapOptions
@@ -53,6 +55,7 @@ import com.google.maps.android.compose.MarkerComposable
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
+import org.jetbrains.compose.resources.stringResource
 import com.google.android.gms.maps.model.LatLng as GoogleLatLng
 
 private const val CUSTOM_PIN_Z_INDEX = 10f
@@ -83,6 +86,7 @@ actual fun PlatformMapView(
 
     val currentOnCameraIdle by rememberUpdatedState(onCameraIdle)
     val currentOnMapLongClick by rememberUpdatedState(onMapLongClick)
+    val customPinDescription = stringResource(resource = Res.string.custom_location_marker_description)
     LaunchedEffect(cameraState) {
         snapshotFlow { cameraState.isMoving }.collect { isMoving ->
             if (isMoving) return@collect
@@ -155,7 +159,7 @@ actual fun PlatformMapView(
                     state = pinState,
                     anchor = Offset(x = 0.5f, y = 1f),
                     zIndex = CUSTOM_PIN_Z_INDEX,
-                    contentDescription = "Custom location marker",
+                    contentDescription = customPinDescription,
                 ) {
                     CustomLocationMarker(model = CustomLocationMarkerModel(contentDescription = null))
                 }
