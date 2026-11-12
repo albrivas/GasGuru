@@ -242,9 +242,17 @@ No se tocan:
 
 ### Camera idle y gesto de usuario (`onCameraIdle`, «Buscar en esta zona»)
 
-- `MKMapViewDelegateProtocol` tiene `mapView(_:regionWillChangeAnimated:)` y `mapView(_:regionDidChangeAnimated:)`: ambos son `(MKMapView, Boolean)` en Kotlin y chocan como overloads. Se resuelve con `@ObjCSignatureOverride` (`kotlinx.cinterop`) en las dos.
-- MapKit no expone quién movió la cámara. Se usa el truco de inspeccionar los `gestureRecognizers` de `mapView.subviews.first()`: si alguno está en `Began` o `Ended` durante `regionWillChange`, el cambio lo inició el usuario. El flag se guarda en el delegate y se emite en `regionDidChange` junto con los bounds (`region.center ± span / 2`).
+- MapKit no expone quién movió la cámara. Los recognizers propios de `MKMapView` viven en subviews privadas que cambian entre versiones de iOS (en iOS 26 el truco de leer `mapView.subviews.first().gestureRecognizers` dejó de funcionar y el botón nunca aparecía).
+- Solución: `MapUserGestureDetector` (`iosMain/.../platform/MapUserGestureDetector.kt`) añade sus propios `UIPanGestureRecognizer`, `UIPinchGestureRecognizer` y `UIRotationGestureRecognizer` pasivos al `MKMapView` (`cancelsTouchesInView = false`, delegate que devuelve `true` en `shouldRecognizeSimultaneouslyWith`). En `Began` marcan un flag pendiente.
+- `CameraIdleTracker` (`Mappers.kt`) consume ese flag en `regionDidChangeAnimated` y emite `onCameraIdle(bounds, movedByUser)`. Ya no hace falta `regionWillChangeAnimated`; el override de `regionDidChangeAnimated` sigue necesitando `@ObjCSignatureOverride` porque choca con otros overloads `(MKMapView, Boolean)`.
 - Android equivalente: `cameraState.isMoving` pasa a `false` y `cameraMoveStartedReason == GESTURE`.
+
+### Long-press: pin en el mapa y gasolineras cercanas
+
+- `PlatformMapView` recibe `customPinLocation: LatLng?` y `onMapLongClick: (LatLng) -> Unit`. El ViewModel (`StationMapEvent.SelectMapLocation`) pone el pin y lanza la query `Nearby` alrededor de ese punto respetando los filtros (nº de cercanas, marcas, horario). La distancia se mide desde el pin.
+- El pin se limpia al pulsar «mi ubicación», buscar un lugar, «Buscar en esta zona» o iniciar una ruta. Durante una ruta el long-press se ignora.
+- Android: `GoogleMap(onMapLongClick = …)` + `MarkerComposable` con `CustomLocationMarker` (`:core:uikit`), anclado en `(0.5, 1)` y `zIndex` por encima de los markers de estaciones.
+- iOS: `MapLongPressHandler` añade un `UILongPressGestureRecognizer` y convierte el punto con `convertPoint(_:toCoordinateFromView:)`. El pin es un `CustomPinAnnotation` cuya imagen se captura del mismo composable `CustomLocationMarker` (patrón GraphicsLayer → `UIImage`), con `centerOffset` = −altura/2 para que la punta caiga en el punto pulsado y `displayPriority = Required` para que MapKit no lo oculte por colisión.
 
 ## Próximo: Phase 9C.2 — Map Polish
 
