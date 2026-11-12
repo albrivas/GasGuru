@@ -411,6 +411,7 @@ class StationMapViewModel(
         getFuelStationsInAreaUseCase(
             bounds = areaBounds,
             referenceLocation = referenceLocation,
+            maxStations = filterState.filterStationsNearby,
             brands = filterState.filterBrand,
             schedule = filterState.filterSchedule.toDomainModel(),
         ).catch { error ->
