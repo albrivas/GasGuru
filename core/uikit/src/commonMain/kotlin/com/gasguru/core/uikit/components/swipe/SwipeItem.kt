@@ -47,6 +47,7 @@ import com.gasguru.core.uikit.generated.resources.swipe_action_delete
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
+import com.gasguru.core.uikit.utils.TestTags
 import com.gasguru.core.uikit.utils.maestroTestTag
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
@@ -162,7 +163,7 @@ private fun SwipeAction(
                 this.contentDescription = contentDescription
                 role = Role.Button
             }
-            .maestroTestTag("swipe_action_delete"),
+            .maestroTestTag(TestTags.Swipe.DELETE_ACTION),
         contentAlignment = Alignment.Center,
     ) {
         if (model.iconAnimationFile != null) {

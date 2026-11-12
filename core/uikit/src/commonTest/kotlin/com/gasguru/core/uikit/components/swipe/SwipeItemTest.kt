@@ -26,11 +26,12 @@ import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.test.swipeRight
 import androidx.compose.ui.unit.dp
 import com.gasguru.core.uikit.theme.MyApplicationTheme
+import com.gasguru.core.uikit.utils.TestTags
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 private const val ROW_TAG = "swipe_row"
-private const val ACTION_TAG = "swipe_action_delete"
+private const val ACTION_TAG = TestTags.Swipe.DELETE_ACTION
 
 @OptIn(ExperimentalTestApi::class)
 class SwipeItemTest {
