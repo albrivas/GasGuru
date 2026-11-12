@@ -236,9 +236,11 @@ No se tocan:
 
 - **`NSData.dataWithBytes` no existe en Kotlin/Native**: el factory method `+[NSData dataWithBytes:length:]` no mapea como `NSData.dataWithBytes(...)`. En su lugar usar `NSData.create(bytes = pinned.addressOf(0), length = n)` (mapea al init `initWithBytes:length:`). Requiere `@OptIn(BetaInteropApi::class)`.
 
-- **`UIImage` capturada de GraphicsLayer aparece 3× demasiado grande**: `GraphicsLayer.toImageBitmap()` captura a la densidad real del dispositivo (2x/3x píxeles). `UIImage.imageWithData(data)` asume escala 1x por defecto → el marker ocupa 3× su tamaño lógico en el mapa. Fix: `UIImage(data = nsData, scale = UIScreen.mainScreen.scale)` para que UIKit interprete la imagen a la densidad correcta.
+- **`UIImage` capturada de GraphicsLayer aparece 3× demasiado grande**: `GraphicsLayer.toImageBitmap()` captura a la densidad real del dispositivo (2x/3x píxeles). `UIImage.imageWithData(data)` asume escala 1x por defecto → el marker ocupa 3× su tamaño lógico en el mapa. Fix: crear la imagen con `UIImage.imageWithCGImage(cgImage, scale = UIScreen.mainScreen.scale, orientation = Up)` para que UIKit interprete los píxeles a la densidad correcta.
 
 - **Renderizar composable a UIImage para MapKit**: `MKAnnotationView` solo acepta `UIImage`, no composables. Patrón correcto en CMP 1.10+: `rememberGraphicsLayer()` + `Modifier.drawWithContent { graphicsLayer.record { this@drawWithContent.drawContent() } }` en un `Box` oculto (`size(0.dp) + wrapContentSize(unbounded=true)`). Capturar con `graphicsLayer.toImageBitmap()` en un `LaunchedEffect`. Actualizar la annotation view ya mostrada en el `UIKitView.update` block leyendo el `SnapshotStateMap<Int, UIImage>` (triggerea re-ejecución del `update` automáticamente vía Compose snapshot).
+
+- **`ImageBitmap` → `UIImage` sin PNG (rendimiento con 50/100 marcadores)**: la primera versión de `toUIImage()` hacía `encodeToData()` (PNG + zlib) y `UIImage(data:)` volvía a decodificar. Perfilado con xctrace en simulador: ~10 ms de hilo principal por marcador → con 100 estaciones un hang de 1,2 s al cargar. Copiar a un `ByteArray` tampoco sirve: ~150 KB por marcador en el heap de Kotlin disparan full GC (stop-the-world). Patrón actual: `asSkiaBitmap().peekPixels()` → `Pixmap.readPixels(RGBA_8888 premul, addr = CGBitmapContextGetData(ctx))` sobre un `CGBitmapContextCreate(data = null, …)` (memoria propiedad de CoreGraphics) → `CGBitmapContextCreateImage` → `UIImage.imageWithCGImage`. Con esto el código de markers desaparece de los hangs del perfil.
 
 ## Próximo: Phase 9C.2 — Map Polish
 
