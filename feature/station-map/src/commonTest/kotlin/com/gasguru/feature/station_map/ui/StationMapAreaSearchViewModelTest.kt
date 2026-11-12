@@ -1,7 +1,6 @@
 package com.gasguru.feature.station_map.ui
 
 import com.gasguru.core.analytics.AnalyticsEvent
-import com.gasguru.core.domain.fuelstation.GetFuelStationsInAreaUseCase
 import com.gasguru.core.model.data.LatLng
 import com.gasguru.core.model.data.Route
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -104,7 +103,7 @@ class StationMapAreaSearchViewModelTest : StationMapViewModelTestBase() {
         val areaRequest = recordingRepository.areaRequests.single()
         assertEquals(madridBounds.toMapBounds(), areaRequest.bounds)
         assertEquals(userLocation, areaRequest.referenceLocation)
-        assertEquals(GetFuelStationsInAreaUseCase.AREA_SEARCH_MAX_STATIONS, areaRequest.maxStations)
+        assertEquals(DEFAULT_NEARBY_FILTER, areaRequest.maxStations)
         val state = sut.state.value
         assertEquals(listOf(1), state.mapStations.map { it.fuelStation.idServiceStation })
         assertFalse(state.shouldCenterMap)
@@ -140,8 +139,8 @@ class StationMapAreaSearchViewModelTest : StationMapViewModelTestBase() {
     }
 
     @Test
-    fun `GIVEN more stations than the area cap WHEN SearchThisArea event is sent THEN result is capped and flagged as truncated`() = runTest {
-        val totalStations = GetFuelStationsInAreaUseCase.AREA_SEARCH_MAX_STATIONS + 1
+    fun `GIVEN more stations than the nearby filter WHEN SearchThisArea event is sent THEN result is capped to the filter and flagged as truncated`() = runTest {
+        val totalStations = DEFAULT_NEARBY_FILTER + 1
         fakeFuelStationDao.setStations(
             (1..totalStations).map { index ->
                 stationEntity(id = index, latitude = 40.4 + index * 0.0001, longitude = -3.7, price = 1.50)
@@ -154,7 +153,7 @@ class StationMapAreaSearchViewModelTest : StationMapViewModelTestBase() {
         sut.handleEvent(StationMapEvent.SearchThisArea)
         advanceUntilIdle()
 
-        assertEquals(GetFuelStationsInAreaUseCase.AREA_SEARCH_MAX_STATIONS, sut.state.value.mapStations.size)
+        assertEquals(DEFAULT_NEARBY_FILTER, sut.state.value.mapStations.size)
         assertTrue(sut.state.value.isAreaResultTruncated)
     }
 
@@ -233,4 +232,20 @@ class StationMapAreaSearchViewModelTest : StationMapViewModelTestBase() {
         assertTrue(sut.state.value.shouldCenterMap)
         assertFalse(sut.state.value.isAreaResultTruncated)
     }
+
+    @Test
+    fun `GIVEN nearby filter set to 25 WHEN SearchThisArea event is sent THEN area query is limited to 25 stations`() = runTest {
+        val recordingRepository = RecordingFuelStationRepository(delegate = buildOfflineRepository())
+        sut = createViewModel(fuelStationRepository = recordingRepository)
+        sut.handleEvent(StationMapEvent.UpdateNearbyFilter(number = "25"))
+        advanceUntilIdle()
+        sut.handleEvent(StationMapEvent.CameraIdle(bounds = madridBounds, movedByUser = true))
+
+        sut.handleEvent(StationMapEvent.SearchThisArea)
+        advanceUntilIdle()
+
+        assertEquals(25, recordingRepository.areaRequests.last().maxStations)
+    }
 }
+
+private const val DEFAULT_NEARBY_FILTER = 10

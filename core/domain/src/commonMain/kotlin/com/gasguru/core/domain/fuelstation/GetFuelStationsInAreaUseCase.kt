@@ -13,18 +13,15 @@ class GetFuelStationsInAreaUseCase(
     operator fun invoke(
         bounds: MapBounds,
         referenceLocation: LatLng,
+        maxStations: Int,
         brands: List<String>,
         schedule: OpeningHours,
     ): Flow<AreaSearchResult> =
         repository.getFuelStationsInArea(
             bounds = bounds,
             referenceLocation = referenceLocation,
-            maxStations = AREA_SEARCH_MAX_STATIONS,
+            maxStations = maxStations,
             brands = brands,
             schedule = schedule,
         )
-
-    companion object {
-        const val AREA_SEARCH_MAX_STATIONS = 100
-    }
 }

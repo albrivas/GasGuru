@@ -31,10 +31,11 @@ class GetFuelStationsInAreaUseCaseTest {
     }
 
     @Test
-    fun delegatesBoundsFiltersAndAreaCapToRepository() = runTest {
+    fun delegatesBoundsFiltersAndMaxStationsToRepository() = runTest {
         sut(
             bounds = bounds,
             referenceLocation = referenceLocation,
+            maxStations = 25,
             brands = listOf("REPSOL"),
             schedule = OpeningHours.OPEN_NOW,
         ).test {
@@ -45,7 +46,7 @@ class GetFuelStationsInAreaUseCaseTest {
         val request = fakeFuelStationRepository.areaRequests.single()
         assertEquals(bounds, request.bounds)
         assertEquals(referenceLocation, request.referenceLocation)
-        assertEquals(GetFuelStationsInAreaUseCase.AREA_SEARCH_MAX_STATIONS, request.maxStations)
+        assertEquals(25, request.maxStations)
         assertEquals(listOf("REPSOL"), request.brands)
         assertEquals(OpeningHours.OPEN_NOW, request.schedule)
     }
@@ -61,6 +62,7 @@ class GetFuelStationsInAreaUseCaseTest {
         sut(
             bounds = bounds,
             referenceLocation = referenceLocation,
+            maxStations = 10,
             brands = emptyList(),
             schedule = OpeningHours.NONE,
         ).test {
