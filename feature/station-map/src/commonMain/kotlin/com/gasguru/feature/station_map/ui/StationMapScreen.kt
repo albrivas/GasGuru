@@ -37,7 +37,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
@@ -87,7 +86,6 @@ import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
 import com.gasguru.core.uikit.utils.TestTags
 import com.gasguru.core.uikit.utils.maestroTestTag
-import com.gasguru.feature.station_map.generated.resources.area_results_truncated
 import com.gasguru.feature.station_map.generated.resources.filter_brand
 import com.gasguru.feature.station_map.generated.resources.filter_brand_number
 import com.gasguru.feature.station_map.generated.resources.filter_brand_title
@@ -393,7 +391,6 @@ internal fun StationMapScreen(
                             AreaSearchActions(
                                 isSearchButtonVisible = showSearchThisArea && !isSearchActive,
                                 isLoading = isSearchingArea,
-                                isTruncationHintVisible = isAreaResultTruncated && !isSearchingArea && !isSearchActive,
                                 onSearchClick = { event(StationMapEvent.SearchThisArea) },
                             )
                         }
@@ -415,7 +412,6 @@ internal fun StationMapScreen(
 private fun AreaSearchActions(
     isSearchButtonVisible: Boolean,
     isLoading: Boolean,
-    isTruncationHintVisible: Boolean,
     onSearchClick: () -> Unit,
 ) {
     AnimatedVisibility(
@@ -435,30 +431,6 @@ private fun AreaSearchActions(
                     onClick = onSearchClick,
                 ),
             )
-        }
-    }
-    AnimatedVisibility(
-        visible = isTruncationHintVisible,
-        enter = fadeIn(),
-        exit = fadeOut(),
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-        Box(
-            modifier = Modifier.padding(top = 12.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            Surface(
-                shape = CircleShape,
-                color = GasGuruTheme.colors.neutralWhite,
-                shadowElevation = 2.dp,
-            ) {
-                Text(
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                    text = stringResource(StationMapRes.string.area_results_truncated),
-                    style = GasGuruTheme.typography.captionRegular,
-                    color = GasGuruTheme.colors.textSubtle,
-                )
-            }
         }
     }
 }

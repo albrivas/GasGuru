@@ -23,7 +23,6 @@ data class StationMapUiState(
     val visibleBounds: GeoBounds? = null,
     val showSearchThisArea: Boolean = false,
     val isSearchingArea: Boolean = false,
-    val isAreaResultTruncated: Boolean = false,
     val customPinLocation: LatLng? = null,
 )
 

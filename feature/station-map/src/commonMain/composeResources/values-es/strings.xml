@@ -15,6 +15,5 @@
     <string name="tab_distance">Distancia</string>
     <string name="route_error_message">Se ha producido un error al calcular la ruta.</string>
     <string name="search_this_area">Buscar en esta zona</string>
-    <string name="area_results_truncated">Acerca el zoom para ver todas las gasolineras</string>
     <string name="custom_location_marker_description">Ubicación seleccionada</string>
 </resources>

@@ -110,7 +110,6 @@ class StationMapAreaSearchViewModelTest : StationMapViewModelTestBase() {
         assertEquals(boundsBeforeSearch, state.mapBounds)
         assertFalse(state.showSearchThisArea)
         assertFalse(state.isSearchingArea)
-        assertFalse(state.isAreaResultTruncated)
     }
 
     @Test
@@ -139,7 +138,7 @@ class StationMapAreaSearchViewModelTest : StationMapViewModelTestBase() {
     }
 
     @Test
-    fun `GIVEN more stations than the nearby filter WHEN SearchThisArea event is sent THEN result is capped to the filter and flagged as truncated`() = runTest {
+    fun `GIVEN more stations than the nearby filter WHEN SearchThisArea event is sent THEN result is capped to the filter`() = runTest {
         val totalStations = DEFAULT_NEARBY_FILTER + 1
         fakeFuelStationDao.setStations(
             (1..totalStations).map { index ->
@@ -154,7 +153,6 @@ class StationMapAreaSearchViewModelTest : StationMapViewModelTestBase() {
         advanceUntilIdle()
 
         assertEquals(DEFAULT_NEARBY_FILTER, sut.state.value.mapStations.size)
-        assertTrue(sut.state.value.isAreaResultTruncated)
     }
 
     @Test
@@ -230,7 +228,6 @@ class StationMapAreaSearchViewModelTest : StationMapViewModelTestBase() {
 
         assertTrue(recordingRepository.areaRequests.isEmpty())
         assertTrue(sut.state.value.shouldCenterMap)
-        assertFalse(sut.state.value.isAreaResultTruncated)
     }
 
     @Test

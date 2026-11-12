@@ -177,7 +177,6 @@ class StationMapViewModel(
                     shouldCenterMap = true,
                     loading = false,
                     showSearchThisArea = false,
-                    isAreaResultTruncated = false,
                 )
             }
         } catch (error: CancellationException) {
@@ -346,7 +345,6 @@ class StationMapViewModel(
                     customPinLocation = location,
                     showSearchThisArea = false,
                     isSearchingArea = false,
-                    isAreaResultTruncated = false,
                 )
             }
             collectStations(query = StationQuery.Nearby(location = location))
@@ -419,7 +417,6 @@ class StationMapViewModel(
                     shouldCenterMap = true,
                     showSearchThisArea = false,
                     isSearchingArea = false,
-                    isAreaResultTruncated = false,
                 )
             }
         }
@@ -456,7 +453,6 @@ class StationMapViewModel(
                     selectedType = userData.principalVehicle().fuelType,
                     shouldCenterMap = false,
                     isSearchingArea = false,
-                    isAreaResultTruncated = result.isTruncated,
                 )
             }
         }
