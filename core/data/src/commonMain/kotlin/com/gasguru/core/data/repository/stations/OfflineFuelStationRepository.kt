@@ -12,8 +12,10 @@ import com.gasguru.core.database.dao.PriceAlertDao
 import com.gasguru.core.database.model.FuelStationEntity
 import com.gasguru.core.database.model.asExternalModel
 import com.gasguru.core.database.model.toLatLng
+import com.gasguru.core.model.data.AreaSearchResult
 import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.LatLng
+import com.gasguru.core.model.data.MapBounds
 import com.gasguru.core.model.data.OpeningHours
 import com.gasguru.core.model.data.principalVehicle
 import com.gasguru.core.supabase.datasource.RemoteDataSource
@@ -81,15 +83,7 @@ class OfflineFuelStationRepository(
                     }
                     .asSequence()
                     .map(FuelStationEntity::asExternalModel)
-                    .filter {
-                        when (schedule) {
-                            OpeningHours.OPEN_NOW -> it.isStationOpen()
-                            OpeningHours.OPEN_24H -> it.schedule.trim()
-                                .uppercase() == "L-D: 24H"
-
-                            OpeningHours.NONE -> true
-                        }
-                    }
+                    .filter { it.matchesSchedule(schedule = schedule) }
                     .take(maxStations)
                     .toList()
 
@@ -108,6 +102,57 @@ class OfflineFuelStationRepository(
                 }
             }
         }.flowOn(defaultDispatcher)
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun getFuelStationsInArea(
+        bounds: MapBounds,
+        referenceLocation: LatLng,
+        maxStations: Int,
+        brands: List<String>,
+        schedule: OpeningHours,
+    ): Flow<AreaSearchResult> =
+        offlineUserDataRepository.userData.flatMapLatest { user ->
+            val fuelType = user.principalVehicle().fuelType
+            fuelStationDao.getFuelStationsInArea(
+                minLat = bounds.southwest.latitude,
+                maxLat = bounds.northeast.latitude,
+                minLng = bounds.southwest.longitude,
+                maxLng = bounds.northeast.longitude,
+                fuelType = fuelType.name,
+                brands = brands.map { it.uppercase() },
+            ).map { items ->
+                val boundsCenter = bounds.center
+                // Fetch one extra station past the cap to know whether the area holds more than we show
+                val candidates = items
+                    .sortedBy { LatLng(latitude = it.latitude, longitude = it.longitudeWGS84).distanceTo(boundsCenter) }
+                    .asSequence()
+                    .map(FuelStationEntity::asExternalModel)
+                    .filter { it.matchesSchedule(schedule = schedule) }
+                    .take(maxStations + 1)
+                    .toList()
+                val isTruncated = candidates.size > maxStations
+                val externalModel = candidates.take(maxStations)
+
+                val (minPrice, maxPrice) = externalModel.calculateFuelPrices(fuelType = fuelType)
+
+                AreaSearchResult(
+                    stations = externalModel.map { fuelStation ->
+                        fuelStation.copy(
+                            priceCategory = fuelStation.getPriceCategory(fuelType, minPrice, maxPrice),
+                            distance = fuelStation.location.distanceTo(referenceLocation),
+                        )
+                    },
+                    isTruncated = isTruncated,
+                )
+            }
+        }.flowOn(defaultDispatcher)
+
+    private fun FuelStation.matchesSchedule(schedule: OpeningHours): Boolean =
+        when (schedule) {
+            OpeningHours.OPEN_NOW -> isStationOpen()
+            OpeningHours.OPEN_24H -> this.schedule.trim().uppercase() == "L-D: 24H"
+            OpeningHours.NONE -> true
+        }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getFuelStationById(id: Int, userLocation: LatLng): Flow<FuelStation> =

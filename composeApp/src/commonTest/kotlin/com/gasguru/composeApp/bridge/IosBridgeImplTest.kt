@@ -4,8 +4,10 @@ import com.gasguru.core.analytics.AnalyticsEvent
 import com.gasguru.core.analytics.AnalyticsHelper
 import com.gasguru.core.data.repository.stations.FuelStationRepository
 import com.gasguru.core.domain.fuelstation.GetFuelStationUseCase
+import com.gasguru.core.model.data.AreaSearchResult
 import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.LatLng
+import com.gasguru.core.model.data.MapBounds
 import com.gasguru.core.model.data.OpeningHours
 import com.gasguru.navigation.deeplink.DeepLinkStateHolder
 import kotlinx.coroutines.Dispatchers
@@ -110,6 +112,13 @@ private class SucceedingFuelStationRepository : FuelStationRepository {
         brands: List<String>,
         schedule: OpeningHours,
     ): Flow<List<FuelStation>> = flowOf(emptyList())
+    override fun getFuelStationsInArea(
+        bounds: MapBounds,
+        referenceLocation: LatLng,
+        maxStations: Int,
+        brands: List<String>,
+        schedule: OpeningHours,
+    ): Flow<AreaSearchResult> = flowOf(AreaSearchResult(stations = emptyList(), isTruncated = false))
     override fun getFuelStationById(id: Int, userLocation: LatLng): Flow<FuelStation> =
         throw UnsupportedOperationException()
     override suspend fun getFuelStationInRoute(
@@ -126,6 +135,13 @@ private class FailingFuelStationRepository : FuelStationRepository {
         brands: List<String>,
         schedule: OpeningHours,
     ): Flow<List<FuelStation>> = flowOf(emptyList())
+    override fun getFuelStationsInArea(
+        bounds: MapBounds,
+        referenceLocation: LatLng,
+        maxStations: Int,
+        brands: List<String>,
+        schedule: OpeningHours,
+    ): Flow<AreaSearchResult> = flowOf(AreaSearchResult(stations = emptyList(), isTruncated = false))
     override fun getFuelStationById(id: Int, userLocation: LatLng): Flow<FuelStation> =
         throw UnsupportedOperationException()
     override suspend fun getFuelStationInRoute(

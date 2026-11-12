@@ -1,8 +1,10 @@
 package com.gasguru.core.domain.fakes
 
 import com.gasguru.core.data.repository.stations.FuelStationRepository
+import com.gasguru.core.model.data.AreaSearchResult
 import com.gasguru.core.model.data.FuelStation
 import com.gasguru.core.model.data.LatLng
+import com.gasguru.core.model.data.MapBounds
 import com.gasguru.core.model.data.OpeningHours
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,9 +19,11 @@ class FakeFuelStationRepository : FuelStationRepository {
         private set
 
     val locationRequests = mutableListOf<Triple<LatLng, Int, OpeningHours>>()
+    val areaRequests = mutableListOf<AreaRequest>()
     val byIdRequests = mutableListOf<Pair<Int, LatLng>>()
     val routeRequests = mutableListOf<Pair<LatLng, List<LatLng>>>()
 
+    private val areaResultFlow = MutableStateFlow(AreaSearchResult(stations = emptyList(), isTruncated = false))
     private var stationById: FuelStation? = null
     private var routeStations: List<FuelStation> = emptyList()
 
@@ -37,6 +41,25 @@ class FakeFuelStationRepository : FuelStationRepository {
         return stationsFlow
     }
 
+    override fun getFuelStationsInArea(
+        bounds: MapBounds,
+        referenceLocation: LatLng,
+        maxStations: Int,
+        brands: List<String>,
+        schedule: OpeningHours,
+    ): Flow<AreaSearchResult> {
+        areaRequests.add(
+            AreaRequest(
+                bounds = bounds,
+                referenceLocation = referenceLocation,
+                maxStations = maxStations,
+                brands = brands,
+                schedule = schedule,
+            ),
+        )
+        return areaResultFlow
+    }
+
     override fun getFuelStationById(id: Int, userLocation: LatLng): Flow<FuelStation> {
         byIdRequests.add(id to userLocation)
         return stationById?.let { flowOf(it) }
@@ -52,6 +75,10 @@ class FakeFuelStationRepository : FuelStationRepository {
         stationsFlow.value = stations
     }
 
+    fun setAreaResult(result: AreaSearchResult) {
+        areaResultFlow.value = result
+    }
+
     fun setStationById(station: FuelStation) {
         stationById = station
     }
@@ -60,3 +87,11 @@ class FakeFuelStationRepository : FuelStationRepository {
         routeStations = stations
     }
 }
+
+data class AreaRequest(
+    val bounds: MapBounds,
+    val referenceLocation: LatLng,
+    val maxStations: Int,
+    val brands: List<String>,
+    val schedule: OpeningHours,
+)
