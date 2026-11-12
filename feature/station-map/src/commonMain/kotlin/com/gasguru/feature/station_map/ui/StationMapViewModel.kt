@@ -345,6 +345,7 @@ class StationMapViewModel(
                     loading = true,
                     customPinLocation = location,
                     showSearchThisArea = false,
+                    isSearchingArea = false,
                     isAreaResultTruncated = false,
                 )
             }
