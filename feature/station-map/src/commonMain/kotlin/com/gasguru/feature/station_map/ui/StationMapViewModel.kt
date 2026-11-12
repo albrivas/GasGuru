@@ -428,11 +428,8 @@ class StationMapViewModel(
         userData: UserData,
         onResult: (AreaSearchResult) -> Unit,
     ) {
-        val areaBounds = bounds.toMapBounds()
-        val referenceLocation = getCurrentLocationUseCase() ?: areaBounds.center
         getFuelStationsInAreaUseCase(
-            bounds = areaBounds,
-            referenceLocation = referenceLocation,
+            bounds = bounds.toMapBounds(),
             maxStations = filterState.filterStationsNearby,
             brands = filterState.filterBrand,
             schedule = filterState.filterSchedule.toDomainModel(),

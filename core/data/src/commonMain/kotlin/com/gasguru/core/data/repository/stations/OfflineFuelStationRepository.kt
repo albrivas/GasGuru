@@ -106,7 +106,6 @@ class OfflineFuelStationRepository(
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getFuelStationsInArea(
         bounds: MapBounds,
-        referenceLocation: LatLng,
         maxStations: Int,
         brands: List<String>,
         schedule: OpeningHours,
@@ -139,7 +138,7 @@ class OfflineFuelStationRepository(
                     stations = externalModel.map { fuelStation ->
                         fuelStation.copy(
                             priceCategory = fuelStation.getPriceCategory(fuelType, minPrice, maxPrice),
-                            distance = fuelStation.location.distanceTo(referenceLocation),
+                            distance = fuelStation.location.distanceTo(boundsCenter),
                         )
                     },
                     isTruncated = isTruncated,

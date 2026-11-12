@@ -102,7 +102,6 @@ class StationMapAreaSearchViewModelTest : StationMapViewModelTestBase() {
 
         val areaRequest = recordingRepository.areaRequests.single()
         assertEquals(madridBounds.toMapBounds(), areaRequest.bounds)
-        assertEquals(userLocation, areaRequest.referenceLocation)
         assertEquals(DEFAULT_NEARBY_FILTER, areaRequest.maxStations)
         val state = sut.state.value
         assertEquals(listOf(1), state.mapStations.map { it.fuelStation.idServiceStation })
@@ -113,16 +112,25 @@ class StationMapAreaSearchViewModelTest : StationMapViewModelTestBase() {
     }
 
     @Test
-    fun `GIVEN no current location WHEN SearchThisArea event is sent THEN bounds center is used as distance reference`() = runTest {
-        val recordingRepository = RecordingFuelStationRepository(delegate = buildOfflineRepository())
-        fakeLocationTracker.setLastKnownLocation(null)
-        sut = createViewModel(fuelStationRepository = recordingRepository)
-        sut.handleEvent(StationMapEvent.CameraIdle(bounds = madridBounds, movedByUser = false))
+    fun `GIVEN user far from the area WHEN SearchThisArea event is sent THEN distances are measured from the area center`() = runTest {
+        fakeFuelStationDao.setStations(
+            listOf(
+                stationEntity(id = 1, latitude = 40.5, longitude = -3.5, price = 1.50),
+                stationEntity(id = 2, latitude = 40.9, longitude = -3.9, price = 1.40),
+            ),
+        )
+        fakeLocationTracker.setLastKnownLocation(LatLng(latitude = 40.0, longitude = -3.0))
+        sut = createViewModel()
+        sut.handleEvent(StationMapEvent.CameraIdle(bounds = madridBounds, movedByUser = true))
 
         sut.handleEvent(StationMapEvent.SearchThisArea)
         advanceUntilIdle()
 
-        assertEquals(madridBounds.toMapBounds().center, recordingRepository.areaRequests.single().referenceLocation)
+        val distanceById = sut.state.value.mapStations.associate { station ->
+            station.fuelStation.idServiceStation to station.fuelStation.distance
+        }
+        assertTrue(distanceById.getValue(1) < 1f)
+        assertTrue(distanceById.getValue(1) < distanceById.getValue(2))
     }
 
     @Test

@@ -22,7 +22,6 @@ class GetFuelStationsInAreaUseCaseTest {
         southwest = LatLng(latitude = 40.0, longitude = -4.0),
         northeast = LatLng(latitude = 41.0, longitude = -3.0),
     )
-    private val referenceLocation = LatLng(latitude = 40.4, longitude = -3.7)
 
     @BeforeTest
     fun setUp() {
@@ -34,7 +33,6 @@ class GetFuelStationsInAreaUseCaseTest {
     fun delegatesBoundsFiltersAndMaxStationsToRepository() = runTest {
         sut(
             bounds = bounds,
-            referenceLocation = referenceLocation,
             maxStations = 25,
             brands = listOf("REPSOL"),
             schedule = OpeningHours.OPEN_NOW,
@@ -45,7 +43,6 @@ class GetFuelStationsInAreaUseCaseTest {
 
         val request = fakeFuelStationRepository.areaRequests.single()
         assertEquals(bounds, request.bounds)
-        assertEquals(referenceLocation, request.referenceLocation)
         assertEquals(25, request.maxStations)
         assertEquals(listOf("REPSOL"), request.brands)
         assertEquals(OpeningHours.OPEN_NOW, request.schedule)
@@ -61,7 +58,6 @@ class GetFuelStationsInAreaUseCaseTest {
 
         sut(
             bounds = bounds,
-            referenceLocation = referenceLocation,
             maxStations = 10,
             brands = emptyList(),
             schedule = OpeningHours.NONE,

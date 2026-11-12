@@ -43,7 +43,6 @@ class FakeFuelStationRepository : FuelStationRepository {
 
     override fun getFuelStationsInArea(
         bounds: MapBounds,
-        referenceLocation: LatLng,
         maxStations: Int,
         brands: List<String>,
         schedule: OpeningHours,
@@ -51,7 +50,6 @@ class FakeFuelStationRepository : FuelStationRepository {
         areaRequests.add(
             AreaRequest(
                 bounds = bounds,
-                referenceLocation = referenceLocation,
                 maxStations = maxStations,
                 brands = brands,
                 schedule = schedule,
@@ -90,7 +88,6 @@ class FakeFuelStationRepository : FuelStationRepository {
 
 data class AreaRequest(
     val bounds: MapBounds,
-    val referenceLocation: LatLng,
     val maxStations: Int,
     val brands: List<String>,
     val schedule: OpeningHours,

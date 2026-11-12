@@ -18,7 +18,6 @@ interface FuelStationRepository {
 
     fun getFuelStationsInArea(
         bounds: MapBounds,
-        referenceLocation: LatLng,
         maxStations: Int,
         brands: List<String>,
         schedule: OpeningHours,

@@ -235,7 +235,6 @@ internal class RecordingFuelStationRepository(
 
     override fun getFuelStationsInArea(
         bounds: MapBounds,
-        referenceLocation: LatLng,
         maxStations: Int,
         brands: List<String>,
         schedule: OpeningHours,
@@ -243,14 +242,12 @@ internal class RecordingFuelStationRepository(
         areaRequests.add(
             AreaRequest(
                 bounds = bounds,
-                referenceLocation = referenceLocation,
                 maxStations = maxStations,
                 brands = brands,
             ),
         )
         return delegate.getFuelStationsInArea(
             bounds = bounds,
-            referenceLocation = referenceLocation,
             maxStations = maxStations,
             brands = brands,
             schedule = schedule,
@@ -260,7 +257,6 @@ internal class RecordingFuelStationRepository(
 
 internal data class AreaRequest(
     val bounds: MapBounds,
-    val referenceLocation: LatLng,
     val maxStations: Int,
     val brands: List<String>,
 )

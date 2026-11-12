@@ -148,7 +148,6 @@ class OfflineFuelStationRepositoryTest {
 
         sut.getFuelStationsInArea(
             bounds = areaBounds,
-            referenceLocation = userLocation,
             maxStations = 10,
             brands = emptyList(),
             schedule = OpeningHours.NONE,
@@ -161,9 +160,9 @@ class OfflineFuelStationRepositoryTest {
     }
 
     @Test
-    fun getFuelStationsInArea_sortsByDistanceToBoundsCenterAndComputesDistanceFromReference() = runTest {
+    fun getFuelStationsInArea_sortsAndComputesDistanceFromBoundsCenter() = runTest {
         val dispatcher = UnconfinedTestDispatcher(testScheduler)
-        // Bounds center latitude is 40.05; station 1 is the farthest from it but the closest to the reference
+        // Bounds center is (40.05, -3.0); station 1 is the farthest from it despite being next to the user
         val stations = listOf(
             stationEntity(id = 1, latitude = 40.0, schedule = ""),
             stationEntity(id = 2, latitude = 40.05, schedule = ""),
@@ -173,15 +172,15 @@ class OfflineFuelStationRepositoryTest {
 
         sut.getFuelStationsInArea(
             bounds = areaBounds,
-            referenceLocation = userLocation,
             maxStations = 10,
             brands = emptyList(),
             schedule = OpeningHours.NONE,
         ).test {
             val result = awaitItem()
             assertEquals(expected = listOf(2, 3, 1), actual = result.stations.map { it.idServiceStation })
-            val distanceById = result.stations.associate { it.idServiceStation to it.distance }
-            assertTrue(distanceById.getValue(1) < distanceById.getValue(2))
+            val distances = result.stations.map { it.distance }
+            assertEquals(expected = distances.sorted(), actual = distances)
+            assertTrue(distances.first() < 1f)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -196,7 +195,6 @@ class OfflineFuelStationRepositoryTest {
 
         sut.getFuelStationsInArea(
             bounds = areaBounds,
-            referenceLocation = userLocation,
             maxStations = 3,
             brands = emptyList(),
             schedule = OpeningHours.NONE,
@@ -218,7 +216,6 @@ class OfflineFuelStationRepositoryTest {
 
         sut.getFuelStationsInArea(
             bounds = areaBounds,
-            referenceLocation = userLocation,
             maxStations = 3,
             brands = emptyList(),
             schedule = OpeningHours.NONE,
@@ -243,7 +240,6 @@ class OfflineFuelStationRepositoryTest {
 
         sut.getFuelStationsInArea(
             bounds = areaBounds,
-            referenceLocation = userLocation,
             maxStations = 2,
             brands = emptyList(),
             schedule = OpeningHours.OPEN_24H,
@@ -266,7 +262,6 @@ class OfflineFuelStationRepositoryTest {
 
         sut.getFuelStationsInArea(
             bounds = areaBounds,
-            referenceLocation = userLocation,
             maxStations = 10,
             brands = listOf("cepsa"),
             schedule = OpeningHours.NONE,
@@ -288,7 +283,6 @@ class OfflineFuelStationRepositoryTest {
 
         sut.getFuelStationsInArea(
             bounds = areaBounds,
-            referenceLocation = userLocation,
             maxStations = 10,
             brands = emptyList(),
             schedule = OpeningHours.NONE,

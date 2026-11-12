@@ -114,7 +114,6 @@ private class SucceedingFuelStationRepository : FuelStationRepository {
     ): Flow<List<FuelStation>> = flowOf(emptyList())
     override fun getFuelStationsInArea(
         bounds: MapBounds,
-        referenceLocation: LatLng,
         maxStations: Int,
         brands: List<String>,
         schedule: OpeningHours,
@@ -137,7 +136,6 @@ private class FailingFuelStationRepository : FuelStationRepository {
     ): Flow<List<FuelStation>> = flowOf(emptyList())
     override fun getFuelStationsInArea(
         bounds: MapBounds,
-        referenceLocation: LatLng,
         maxStations: Int,
         brands: List<String>,
         schedule: OpeningHours,
