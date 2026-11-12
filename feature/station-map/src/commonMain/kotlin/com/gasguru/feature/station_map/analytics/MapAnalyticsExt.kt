@@ -104,3 +104,7 @@ fun AnalyticsHelper.trackSearchThisArea(stationCount: Int, isTruncated: Boolean)
         )
     )
 }
+
+fun AnalyticsHelper.trackMapLocationSelected() {
+    logEvent(AnalyticsEvent(type = AnalyticsEvent.Types.MAP_LOCATION_SELECTED))
+}

@@ -214,6 +214,7 @@ internal class RecordingFuelStationRepository(
 ) : FuelStationRepository by delegate {
 
     val requestedLocations = mutableListOf<LatLng>()
+    val requestedNearbyMaxStations = mutableListOf<Int>()
     val areaRequests = mutableListOf<AreaRequest>()
 
     override fun getFuelStationByLocation(
@@ -223,6 +224,7 @@ internal class RecordingFuelStationRepository(
         schedule: OpeningHours,
     ): Flow<List<FuelStation>> {
         requestedLocations.add(userLocation)
+        requestedNearbyMaxStations.add(maxStations)
         return delegate.getFuelStationByLocation(
             userLocation = userLocation,
             maxStations = maxStations,

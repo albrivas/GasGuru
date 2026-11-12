@@ -24,6 +24,7 @@ data class StationMapUiState(
     val showSearchThisArea: Boolean = false,
     val isSearchingArea: Boolean = false,
     val isAreaResultTruncated: Boolean = false,
+    val customPinLocation: LatLng? = null,
 )
 
 data class SelectedTabUiState(

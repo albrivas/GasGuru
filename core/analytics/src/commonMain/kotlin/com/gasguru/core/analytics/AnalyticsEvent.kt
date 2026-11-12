@@ -41,6 +41,7 @@ data class AnalyticsEvent(
         const val ROUTE_STARTED = "route_started"
         const val ROUTE_CANCELLED = "route_cancelled"
         const val SEARCH_THIS_AREA = "search_this_area"
+        const val MAP_LOCATION_SELECTED = "map_location_selected"
 
         // Station detail
         const val STATION_DETAIL_VIEWED = "station_detail_viewed"
@@ -126,6 +127,7 @@ data class AnalyticsEvent(
             Types.ROUTE_STARTED,
             Types.ROUTE_CANCELLED,
             Types.SEARCH_THIS_AREA,
+            Types.MAP_LOCATION_SELECTED,
             -> MAP
 
             Types.STATION_DETAIL_VIEWED,

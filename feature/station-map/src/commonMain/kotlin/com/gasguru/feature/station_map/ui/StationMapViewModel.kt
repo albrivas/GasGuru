@@ -33,6 +33,7 @@ import com.gasguru.core.ui.sort.sortedByCriteria
 import com.gasguru.feature.station_map.analytics.trackFilterBrandChanged
 import com.gasguru.feature.station_map.analytics.trackFilterNearbyChanged
 import com.gasguru.feature.station_map.analytics.trackFilterScheduleChanged
+import com.gasguru.feature.station_map.analytics.trackMapLocationSelected
 import com.gasguru.feature.station_map.analytics.trackMapTabChanged
 import com.gasguru.feature.station_map.analytics.trackRouteCancelled
 import com.gasguru.feature.station_map.analytics.trackRouteStarted
@@ -109,6 +110,7 @@ class StationMapViewModel(
             is StationMapEvent.SelectStation -> selectStation(stationId = event.stationId)
             is StationMapEvent.CameraIdle -> onCameraIdle(bounds = event.bounds, movedByUser = event.movedByUser)
             is StationMapEvent.SearchThisArea -> searchThisArea()
+            is StationMapEvent.SelectMapLocation -> selectMapLocation(location = event.location)
         }
     }
 
@@ -198,6 +200,7 @@ class StationMapViewModel(
                     listStations = emptyList(),
                     routeDestinationName = destinationName,
                     showSearchThisArea = false,
+                    customPinLocation = null,
                 )
             }
 
@@ -275,7 +278,12 @@ class StationMapViewModel(
                 return@launchStationsQuery
             }
             _state.update {
-                it.copy(loading = true, listStations = emptyList(), showSearchThisArea = false)
+                it.copy(
+                    loading = true,
+                    listStations = emptyList(),
+                    showSearchThisArea = false,
+                    customPinLocation = null,
+                )
             }
             collectStations(query = StationQuery.Nearby(location = location))
         }
@@ -287,7 +295,7 @@ class StationMapViewModel(
 
     private fun getStationByPlace(placeId: String) {
         launchStationsQuery {
-            _state.update { it.copy(loading = true, showSearchThisArea = false) }
+            _state.update { it.copy(loading = true, showSearchThisArea = false, customPinLocation = null) }
             val location = getLocationPlaceUseCase(placeId)
                 .catch { }
                 .firstOrNull()
@@ -323,8 +331,24 @@ class StationMapViewModel(
         val bounds = currentState.visibleBounds ?: return
         if (currentState.route != null) return
         launchStationsQuery {
-            _state.update { it.copy(showSearchThisArea = false, isSearchingArea = true) }
+            _state.update { it.copy(showSearchThisArea = false, isSearchingArea = true, customPinLocation = null) }
             collectStations(query = StationQuery.Area(bounds = bounds))
+        }
+    }
+
+    private fun selectMapLocation(location: LatLng) {
+        if (_state.value.route != null) return
+        analyticsHelper.trackMapLocationSelected()
+        launchStationsQuery {
+            _state.update {
+                it.copy(
+                    loading = true,
+                    customPinLocation = location,
+                    showSearchThisArea = false,
+                    isAreaResultTruncated = false,
+                )
+            }
+            collectStations(query = StationQuery.Nearby(location = location))
         }
     }
 
