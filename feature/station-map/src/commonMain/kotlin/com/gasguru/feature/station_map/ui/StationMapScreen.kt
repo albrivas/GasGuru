@@ -551,7 +551,7 @@ fun ShowFilterSheet(
                     buttonText = stringResource(StationMapRes.string.filter_button),
                     isMultiOption = false,
                     isMustSelection = true,
-                    options = listOf("10", "15", "20", "25", "50", "100"),
+                    options = listOf("10", "15", "20", "25", "50"),
                     optionsSelected = listOf(filterUiState.filterStationsNearby.toString()),
                     onDismiss = { showFilter() },
                     onSaveButton = { event(StationMapEvent.UpdateNearbyFilter(it.first())) },
