@@ -11,4 +11,10 @@ internal fun GeoBounds.toGoogleLatLngBounds(): LatLngBounds =
         .include(GoogleLatLng(northeast.latitude, northeast.longitude))
         .build()
 
+internal fun LatLngBounds.toGeoBounds(): GeoBounds =
+    GeoBounds(
+        southwest = LatLng(latitude = southwest.latitude, longitude = southwest.longitude),
+        northeast = LatLng(latitude = northeast.latitude, longitude = northeast.longitude),
+    )
+
 internal fun LatLng.toGoogleLatLng(): GoogleLatLng = GoogleLatLng(latitude, longitude)

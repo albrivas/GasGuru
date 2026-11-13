@@ -53,6 +53,40 @@ class FakeFuelStationDao(
             station.latitude in minLat..maxLat && station.longitudeWGS84 in minLng..maxLng
         }
 
+    override fun getFuelStationsInAreaWithoutBrandFilter(
+        minLat: Double,
+        maxLat: Double,
+        minLng: Double,
+        maxLng: Double,
+        fuelType: String,
+    ): Flow<List<FuelStationEntity>> =
+        if (shouldThrowError) {
+            flow { error("Error getting fuel stations") }
+        } else {
+            stationsFlow.map { stations ->
+                stations.filter { station -> station.isInside(minLat, maxLat, minLng, maxLng) }
+            }
+        }
+
+    override fun getFuelStationsInAreaWithBrandFilter(
+        minLat: Double,
+        maxLat: Double,
+        minLng: Double,
+        maxLng: Double,
+        fuelType: String,
+        brands: List<String>,
+    ): Flow<List<FuelStationEntity>> =
+        if (shouldThrowError) {
+            flow { error("Error getting fuel stations") }
+        } else {
+            stationsFlow.map { stations ->
+                stations.filter { station ->
+                    station.isInside(minLat, maxLat, minLng, maxLng) &&
+                        brands.any { brand -> station.brandStation.equals(brand, ignoreCase = true) }
+                }
+            }
+        }
+
     fun setStations(stations: List<FuelStationEntity>) {
         stationsFlow.value = stations
     }
@@ -60,4 +94,11 @@ class FakeFuelStationDao(
     fun setShouldThrowError(shouldThrow: Boolean) {
         shouldThrowError = shouldThrow
     }
+
+    private fun FuelStationEntity.isInside(
+        minLat: Double,
+        maxLat: Double,
+        minLng: Double,
+        maxLng: Double,
+    ): Boolean = latitude in minLat..maxLat && longitudeWGS84 in minLng..maxLng
 }

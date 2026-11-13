@@ -5,8 +5,11 @@
 package com.gasguru.feature.station_map.ui
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -47,7 +50,9 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.components.searchbar.GasGuruSearchBar
@@ -76,6 +81,8 @@ import com.gasguru.core.uikit.components.filterable_station_list.FilterableStati
 import com.gasguru.core.uikit.components.filterable_station_list.FilterableStationListModel
 import com.gasguru.core.uikit.components.route_navigation_card.RouteNavigationCard
 import com.gasguru.core.uikit.components.route_navigation_card.RouteNavigationCardModel
+import com.gasguru.core.uikit.components.search_area.SearchThisAreaButton
+import com.gasguru.core.uikit.components.search_area.SearchThisAreaButtonModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
 import com.gasguru.core.uikit.theme.MyApplicationTheme
 import com.gasguru.core.uikit.theme.ThemePreviews
@@ -92,6 +99,7 @@ import com.gasguru.feature.station_map.generated.resources.filter_open_now
 import com.gasguru.feature.station_map.generated.resources.filter_schedule
 import com.gasguru.feature.station_map.generated.resources.route_error_message
 import com.gasguru.feature.station_map.generated.resources.route_station_count
+import com.gasguru.feature.station_map.generated.resources.search_this_area
 import com.gasguru.feature.station_map.generated.resources.sheet_button
 import com.gasguru.feature.station_map.generated.resources.tab_distance
 import com.gasguru.feature.station_map.generated.resources.tab_price
@@ -223,6 +231,7 @@ internal fun StationMapScreen(
 ) = with(uiState) {
     val peekHeight = 60.dp
     var isSearchActive by remember { mutableStateOf(false) }
+    val hapticFeedback = LocalHapticFeedback.current
     val isRouteActive = route != null || (loading && routeDestinationName != null)
 
     LaunchedEffect(routePlanner) {
@@ -317,12 +326,20 @@ internal fun StationMapScreen(
                     mapBounds = mapBounds,
                     shouldCenterMap = shouldCenterMap,
                     userLocationToCenter = userLocationToCenter,
+                    customPinLocation = customPinLocation,
                     onStationClick = { stationId ->
                         event(StationMapEvent.SelectStation(stationId = stationId))
                         navigateToDetail(stationId)
                     },
                     onMapCentered = { event(StationMapEvent.OnMapCentered) },
                     onUserLocationCentered = { event(StationMapEvent.OnUserLocationCentered) },
+                    onCameraIdle = { visibleBounds, movedByUser ->
+                        event(StationMapEvent.CameraIdle(bounds = visibleBounds, movedByUser = movedByUser))
+                    },
+                    onMapLongClick = { pressedLocation ->
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                        event(StationMapEvent.SelectMapLocation(location = pressedLocation))
+                    },
                     modifier = Modifier.fillMaxSize(),
                 )
                 AnimatedContent(
@@ -371,6 +388,11 @@ internal fun StationMapScreen(
                                 onHeight = { },
                                 filterUiState = filterUiState,
                             )
+                            AreaSearchActions(
+                                isSearchButtonVisible = showSearchThisArea && !isSearchActive,
+                                isLoading = isSearchingArea,
+                                onSearchClick = { event(StationMapEvent.SearchThisArea) },
+                            )
                         }
                     }
                 }
@@ -384,6 +406,33 @@ internal fun StationMapScreen(
             }
         }
     )
+}
+
+@Composable
+private fun AreaSearchActions(
+    isSearchButtonVisible: Boolean,
+    isLoading: Boolean,
+    onSearchClick: () -> Unit,
+) {
+    AnimatedVisibility(
+        visible = isSearchButtonVisible || isLoading,
+        enter = fadeIn() + slideInVertically(),
+        exit = fadeOut() + slideOutVertically(),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Box(
+            modifier = Modifier.padding(top = 12.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            SearchThisAreaButton(
+                model = SearchThisAreaButtonModel(
+                    text = stringResource(StationMapRes.string.search_this_area),
+                    isLoading = isLoading,
+                    onClick = onSearchClick,
+                ),
+            )
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -40,6 +40,8 @@ data class AnalyticsEvent(
         const val MAP_TAB_CHANGED = "map_tab_changed"
         const val ROUTE_STARTED = "route_started"
         const val ROUTE_CANCELLED = "route_cancelled"
+        const val SEARCH_THIS_AREA = "search_this_area"
+        const val MAP_LOCATION_SELECTED = "map_location_selected"
 
         // Station detail
         const val STATION_DETAIL_VIEWED = "station_detail_viewed"
@@ -124,6 +126,8 @@ data class AnalyticsEvent(
             Types.MAP_TAB_CHANGED,
             Types.ROUTE_STARTED,
             Types.ROUTE_CANCELLED,
+            Types.SEARCH_THIS_AREA,
+            Types.MAP_LOCATION_SELECTED,
             -> MAP
 
             Types.STATION_DETAIL_VIEWED,
@@ -186,6 +190,8 @@ data class AnalyticsEvent(
         const val BRAND_COUNT = "brand_count"
         const val BRAND_NAMES = "brand_names"
         const val NEARBY_KM = "nearby_km"
+        const val STATION_COUNT = "station_count"
+        const val IS_TRUNCATED = "is_truncated"
         const val SCHEDULE = "schedule"
         const val TAB = "tab"
         const val IS_CURRENT_LOCATION = "is_current_location"

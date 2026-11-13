@@ -13,8 +13,10 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -32,6 +34,8 @@ import com.gasguru.core.ui.models.FuelStationUiModel
 import com.gasguru.core.ui.toColor
 import com.gasguru.core.uikit.components.loading.GasGuruLoading
 import com.gasguru.core.uikit.components.loading.GasGuruLoadingModel
+import com.gasguru.core.uikit.components.marker.CustomLocationMarker
+import com.gasguru.core.uikit.components.marker.CustomLocationMarkerModel
 import com.gasguru.core.uikit.components.marker.StationMarker
 import com.gasguru.core.uikit.components.marker.StationMarkerModel
 import com.gasguru.core.uikit.theme.GasGuruTheme
@@ -39,6 +43,7 @@ import com.gasguru.feature.station_map.ui.model.GeoBounds
 import com.gasguru.feature.station_map.ui.models.RouteUiModel
 import kotlinx.cinterop.CValue
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.ObjCSignatureOverride
 import kotlinx.cinterop.useContents
 import platform.CoreLocation.CLLocationCoordinate2D
 import platform.MapKit.MKAnnotationProtocol
@@ -69,22 +74,44 @@ actual fun PlatformMapView(
     mapBounds: GeoBounds?,
     shouldCenterMap: Boolean,
     userLocationToCenter: LatLng?,
+    customPinLocation: LatLng?,
     onStationClick: (Int) -> Unit,
     onMapCentered: () -> Unit,
     onUserLocationCentered: () -> Unit,
+    onCameraIdle: (bounds: GeoBounds, movedByUser: Boolean) -> Unit,
+    onMapLongClick: (location: LatLng) -> Unit,
     modifier: Modifier,
 ) {
     val currentOnStationClick by rememberUpdatedState(onStationClick)
     val currentOnMapCentered by rememberUpdatedState(onMapCentered)
     val currentOnUserLocationCentered by rememberUpdatedState(onUserLocationCentered)
+    val currentOnCameraIdle by rememberUpdatedState(onCameraIdle)
+    val currentOnMapLongClick by rememberUpdatedState(onMapLongClick)
     val isDark = GasGuruTheme.colors.isDark
 
     val markerImages = remember { mutableStateMapOf<Int, UIImage>() }
+
+    val userGestureDetector = remember { MapUserGestureDetector() }
+    val longPressHandler = remember {
+        MapLongPressHandler(onLongPress = { pressedLocation -> currentOnMapLongClick(pressedLocation) })
+    }
+    var customPinImage by remember { mutableStateOf<UIImage?>(null) }
 
     val mapDelegate = remember {
         object : NSObject(), MKMapViewDelegateProtocol {
             var lastRoute: RouteUiModel? = null
             var currentPolyline: MKPolyline? = null
+            val cameraIdleTracker = CameraIdleTracker(gestureDetector = userGestureDetector) { bounds, movedByUser ->
+                currentOnCameraIdle(bounds, movedByUser)
+            }
+
+            @ObjCSignatureOverride
+            override fun mapView(
+                mapView: MKMapView,
+                regionDidChangeAnimated: Boolean,
+            ) {
+                cameraIdleTracker.regionDidChange(mapView = mapView)
+            }
 
             override fun mapView(
                 mapView: MKMapView,
@@ -112,24 +139,16 @@ actual fun PlatformMapView(
             override fun mapView(
                 mapView: MKMapView,
                 viewForAnnotation: MKAnnotationProtocol,
-            ): MKAnnotationView? {
-                if (viewForAnnotation !is StationAnnotation) return null
-                val view = (
-                    mapView.dequeueReusableAnnotationViewWithIdentifier(
-                        identifier = STATION_MARKER_REUSE_ID,
-                    ) as? MKAnnotationView
-                    )
-                    ?: MKAnnotationView(
-                        annotation = viewForAnnotation,
-                        reuseIdentifier = STATION_MARKER_REUSE_ID,
-                    )
-                view.annotation = viewForAnnotation
-                view.canShowCallout = false
-                val imgHeight = view.image?.size?.useContents { height } ?: 0.0
-                view.centerOffset = platform.CoreGraphics.CGPointMake(0.0, -(imgHeight / 2.0))
-                view.image = markerImages[viewForAnnotation.stationId]
-                    ?: viewForAnnotation.priceCategory.toFallbackImage()
-                return view
+            ): MKAnnotationView? = when (viewForAnnotation) {
+                is CustomPinAnnotation -> mapView.customPinAnnotationView(
+                    annotation = viewForAnnotation,
+                    pinImage = customPinImage,
+                )
+                is StationAnnotation -> mapView.stationAnnotationView(
+                    annotation = viewForAnnotation,
+                    markerImage = markerImages[viewForAnnotation.stationId],
+                )
+                else -> null
             }
         }
     }
@@ -140,6 +159,8 @@ actual fun PlatformMapView(
             showsCompass = false
             showsScale = false
             showsTraffic = false
+            userGestureDetector.attachTo(mapView = this)
+            longPressHandler.attachTo(mapView = this)
         }
     }
 
@@ -183,6 +204,7 @@ actual fun PlatformMapView(
                     },
                 )
             }
+            CustomPinCapture(onImageCaptured = { image -> customPinImage = image })
         }
 
         UIKitView<MKMapView>(
@@ -196,41 +218,8 @@ actual fun PlatformMapView(
                     }
                 mv.showsUserLocation = isLocationPermissionGranted
 
-                // Diff annotations: add new, remove stale
-                val newStationIds = stations.map { it.fuelStation.idServiceStation }.toSet()
-                val existingAnnotations = mv.annotations.filterIsInstance<StationAnnotation>()
-                val existingIds = existingAnnotations.map { it.stationId }.toSet()
-
-                existingAnnotations
-                    .filter { it.stationId !in newStationIds }
-                    .forEach { mv.removeAnnotation(it) }
-
-                stations
-                    .filter { it.fuelStation.idServiceStation !in existingIds }
-                    .forEach { station ->
-                        mv.addAnnotation(
-                            StationAnnotation(
-                                stationId = station.fuelStation.idServiceStation,
-                                priceCategory = station.fuelStation.priceCategory,
-                                storedCoordinate = station.fuelStation.location
-                                    .toCLLocationCoordinate2D(),
-                                stationTitle = station.fuelStation.brandStationName,
-                            )
-                        )
-                    }
-
-                // Update annotation views already on screen when their UIImage arrives
-                existingAnnotations
-                    .filter { it.stationId in newStationIds }
-                    .forEach { annotation ->
-                        markerImages[annotation.stationId]?.let { image ->
-                            (mv.viewForAnnotation(annotation) as? MKAnnotationView)?.let { view ->
-                                view.image = image
-                                val h = image.size.useContents { height }
-                                view.centerOffset = platform.CoreGraphics.CGPointMake(0.0, -(h / 2.0))
-                            }
-                        }
-                    }
+                mv.syncStationAnnotations(stations = stations, markerImages = markerImages)
+                mv.syncCustomPin(pinLocation = customPinLocation, pinImage = customPinImage)
 
                 // Replace polyline overlay only when the route reference changes
                 if (route !== mapDelegate.lastRoute) {
@@ -261,6 +250,23 @@ actual fun PlatformMapView(
                 model = GasGuruLoadingModel(color = GasGuruTheme.colors.primary800),
             )
         }
+    }
+}
+
+@Composable
+private fun CustomPinCapture(onImageCaptured: (UIImage) -> Unit) {
+    val graphicsLayer = rememberGraphicsLayer()
+    Box(
+        modifier = Modifier
+            .wrapContentSize()
+            .drawWithContent {
+                graphicsLayer.record { this@drawWithContent.drawContent() }
+            },
+    ) {
+        CustomLocationMarker(model = CustomLocationMarkerModel(contentDescription = null))
+    }
+    LaunchedEffect(Unit) {
+        graphicsLayer.toImageBitmap().toUIImage()?.let(onImageCaptured)
     }
 }
 
@@ -310,4 +316,57 @@ private class StationAnnotation(
     override fun subtitle(): String? = null
 }
 
+private fun MKMapView.stationAnnotationView(
+    annotation: StationAnnotation,
+    markerImage: UIImage?,
+): MKAnnotationView {
+    val view = dequeueReusableAnnotationViewWithIdentifier(identifier = STATION_MARKER_REUSE_ID)
+        ?: MKAnnotationView(annotation = annotation, reuseIdentifier = STATION_MARKER_REUSE_ID)
+    view.annotation = annotation
+    view.canShowCallout = false
+    val imgHeight = view.image?.size?.useContents { height } ?: 0.0
+    view.centerOffset = platform.CoreGraphics.CGPointMake(0.0, -(imgHeight / 2.0))
+    view.image = markerImage ?: annotation.priceCategory.toFallbackImage()
+    return view
+}
+
 private fun PriceCategory.toFallbackImage(): UIImage? = null
+
+// Diffs station annotations against the current list and refreshes on-screen views once their UIImage arrives.
+private fun MKMapView.syncStationAnnotations(
+    stations: List<FuelStationUiModel>,
+    markerImages: Map<Int, UIImage>,
+) {
+    val newStationIds = stations.map { it.fuelStation.idServiceStation }.toSet()
+    val existingAnnotations = annotations.filterIsInstance<StationAnnotation>()
+    val existingIds = existingAnnotations.map { it.stationId }.toSet()
+
+    existingAnnotations
+        .filter { it.stationId !in newStationIds }
+        .forEach { removeAnnotation(it) }
+
+    stations
+        .filter { it.fuelStation.idServiceStation !in existingIds }
+        .forEach { station ->
+            addAnnotation(
+                StationAnnotation(
+                    stationId = station.fuelStation.idServiceStation,
+                    priceCategory = station.fuelStation.priceCategory,
+                    storedCoordinate = station.fuelStation.location.toCLLocationCoordinate2D(),
+                    stationTitle = station.fuelStation.brandStationName,
+                ),
+            )
+        }
+
+    existingAnnotations
+        .filter { it.stationId in newStationIds }
+        .forEach { annotation ->
+            markerImages[annotation.stationId]?.let { image ->
+                viewForAnnotation(annotation)?.let { view ->
+                    view.image = image
+                    val h = image.size.useContents { height }
+                    view.centerOffset = platform.CoreGraphics.CGPointMake(0.0, -(h / 2.0))
+                }
+            }
+        }
+}

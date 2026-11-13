@@ -1,11 +1,14 @@
 package com.gasguru.feature.station_map.ui.model
 
 import com.gasguru.core.model.data.LatLng
+import com.gasguru.core.model.data.MapBounds
 
 data class GeoBounds(
     val southwest: LatLng,
     val northeast: LatLng,
 ) {
+    fun toMapBounds(): MapBounds = MapBounds(southwest = southwest, northeast = northeast)
+
     companion object {
         fun fromPoints(points: List<LatLng>): GeoBounds? {
             if (points.isEmpty()) return null

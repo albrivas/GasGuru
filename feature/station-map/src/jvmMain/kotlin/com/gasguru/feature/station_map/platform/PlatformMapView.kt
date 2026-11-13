@@ -21,9 +21,12 @@ actual fun PlatformMapView(
     mapBounds: GeoBounds?,
     shouldCenterMap: Boolean,
     userLocationToCenter: LatLng?,
+    customPinLocation: LatLng?,
     onStationClick: (Int) -> Unit,
     onMapCentered: () -> Unit,
     onUserLocationCentered: () -> Unit,
+    onCameraIdle: (bounds: GeoBounds, movedByUser: Boolean) -> Unit,
+    onMapLongClick: (location: LatLng) -> Unit,
     modifier: Modifier,
 ) {
 }
