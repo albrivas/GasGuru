@@ -23,10 +23,12 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -140,12 +142,18 @@ fun SuccessContent(
     onEditVehicle: (Long) -> Unit,
     onDeleteVehicle: (Long) -> Unit,
 ) {
+    var revealedVehicleId by remember { mutableStateOf<Long?>(null) }
+    val scrollState = rememberScrollState()
+    LaunchedEffect(scrollState) {
+        snapshotFlow { scrollState.isScrollInProgress }
+            .collect { isScrolling -> if (isScrolling) revealedVehicleId = null }
+    }
     Column(
         modifier = Modifier
             .background(color = GasGuruTheme.colors.neutral100)
             .fillMaxWidth()
             .statusBarsPadding()
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(scrollState)
             .padding(start = 16.dp, end = 16.dp, top = 32.dp, bottom = 12.dp)
             .pointerInput(Unit) { detectTapGestures { } }, // For overlay map
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -188,8 +196,19 @@ fun SuccessContent(
                         model = SwipeItemModel(
                             icon = Icons.Default.Delete,
                             backgroundColor = GasGuruTheme.colors.red500,
-                            onClick = { onDeleteVehicle(vehicle.id) },
+                            onClick = {
+                                revealedVehicleId = null
+                                onDeleteVehicle(vehicle.id)
+                            },
                             iconAnimationFile = "files/trash_animated.json",
+                            isRevealed = revealedVehicleId == vehicle.id,
+                            onRevealedChange = { isRevealed ->
+                                revealedVehicleId = when {
+                                    isRevealed -> vehicle.id
+                                    revealedVehicleId == vehicle.id -> null
+                                    else -> revealedVehicleId
+                                }
+                            },
                         ),
                     ) {
                         VehicleItemCard(model = vehicle, onClick = { onEditVehicle(vehicle.id) })

@@ -60,22 +60,40 @@ class PriceAlertRepositoryImpl(
             // case 1: Without sync → Remove local
             priceAlertDao.deleteByStationId(stationId = stationId)
         } else if (networkMonitor.isOnline.first()) {
-            // Case 2: Synced + online → Remove local and server
-            priceAlertDao.deleteByStationId(stationId = stationId)
-            supabaseManager.removePriceAlert(stationId = stationId)
+            // Case 2: Synced + online → Remove from server, then local
+            removeSyncedAlert(existingAlert = existingAlert)
         } else {
             // Case 3: Synced + offline → mark as DELETE pending
-            priceAlertDao.insert(
-                PriceAlertEntity(
-                    stationId = stationId,
-                    lastNotifiedPrice = existingAlert.lastNotifiedPrice,
-                    typeModification = ModificationType.DELETE,
-                    isSynced = false,
-                )
-            )
+            markAsPendingDelete(existingAlert = existingAlert)
         }
 
         disableNotificationsIfNoAlerts()
+    }
+
+    private suspend fun removeSyncedAlert(existingAlert: PriceAlertEntity) {
+        try {
+            supabaseManager.removePriceAlert(stationId = existingAlert.stationId)
+            priceAlertDao.deleteByStationId(stationId = existingAlert.stationId)
+        } catch (exception: Exception) {
+            // Server delete failed → keep it as a DELETE pending record so sync() retries it,
+            // instead of losing track of it after an optimistic local delete.
+            analyticsHelper.trackAlertsSyncFailed(
+                errorMessage = exception.message.orEmpty(),
+                errorType = exception::class.simpleName.orEmpty(),
+            )
+            markAsPendingDelete(existingAlert = existingAlert)
+        }
+    }
+
+    private suspend fun markAsPendingDelete(existingAlert: PriceAlertEntity) {
+        priceAlertDao.insert(
+            PriceAlertEntity(
+                stationId = existingAlert.stationId,
+                lastNotifiedPrice = existingAlert.lastNotifiedPrice,
+                typeModification = ModificationType.DELETE,
+                isSynced = false,
+            )
+        )
     }
 
     private suspend fun disableNotificationsIfNoAlerts() {

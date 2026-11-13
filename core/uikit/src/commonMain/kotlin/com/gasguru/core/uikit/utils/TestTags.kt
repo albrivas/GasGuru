@@ -35,4 +35,8 @@ object TestTags {
         const val SHEET = "bottom_sheet"
         const val CLOSE = "bottom_sheet_close"
     }
+
+    object Swipe {
+        const val DELETE_ACTION = "swipe_action_delete"
+    }
 }

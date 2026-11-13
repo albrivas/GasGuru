@@ -8,8 +8,8 @@ Pod::Spec.new do |spec|
     spec.summary                  = 'GasGuru core data layer'
     spec.vendored_frameworks      = 'build/cocoapods/framework/data.framework'
     spec.libraries                = 'c++'
-    spec.ios.deployment_target    = '15.0'
-    spec.dependency 'GooglePlaces', '~> 8.5'
+    spec.ios.deployment_target    = '16.0'
+    spec.dependency 'GooglePlaces', '~> 10.15'
     if !Dir.exist?('build/cocoapods/framework/data.framework') || Dir.empty?('build/cocoapods/framework/data.framework')
         raise "
         Kotlin framework 'data' doesn't exist yet, so a proper Xcode project can't be generated.

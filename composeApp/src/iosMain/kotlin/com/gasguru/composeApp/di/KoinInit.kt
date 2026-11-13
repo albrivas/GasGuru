@@ -9,6 +9,7 @@ import com.gasguru.core.data.sync.SyncManager
 import com.gasguru.core.database.di.daoModule
 import com.gasguru.core.database.di.databaseModule
 import com.gasguru.core.domain.di.domainModule
+import com.gasguru.core.model.data.AppEnvironment
 import com.gasguru.core.supabase.datasource.RemoteDataSource
 import com.gasguru.core.supabase.datasource.SupabaseRemoteDataSource
 import com.gasguru.core.supabase.di.supabaseModule
@@ -25,6 +26,16 @@ import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
+/**
+ * Prod data source module for iOS, wired when the app runs with the Prod scheme.
+ * For Mock builds, Swift passes [com.gasguru.mocknetwork.di.mockModule] instead
+ * via [platformModules] — selected at compile-time with [#if MOCK] in iOSApp.swift.
+ */
+fun prodRemoteDataSourceModule() = module {
+    single { AppEnvironment.Prod }
+    single<RemoteDataSource> { get<SupabaseRemoteDataSource>() }
+}
+
 // Called from Swift as KoinInitKt.doInitKoin(platformModules:).
 // Returns IosBridge — the single contract between Swift and KMP internals.
 fun initKoin(platformModules: List<Module>): IosBridge {
@@ -35,7 +46,6 @@ fun initKoin(platformModules: List<Module>): IosBridge {
                 databaseModule,
                 daoModule,
                 supabaseModule,
-                module { single<RemoteDataSource> { get<SupabaseRemoteDataSource>() } },
                 iosDataModule(),
                 commonDataModule(),
                 domainModule(),
