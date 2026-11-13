@@ -1,4 +1,4 @@
-- Sort favorite stations by price or distance in Android Auto
-- Stations on the map now show a marker color based on price
-- Switch your vehicle directly from the station detail screen
-- Added an empty state message for favorites and search results
+- Swipe a favorite station to reveal the delete button, no more accidental deletions
+- See up to 50 nearby stations on the map
+- Faster and more accurate address search
+- Bug fixes and performance improvements
