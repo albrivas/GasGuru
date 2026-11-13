@@ -66,7 +66,7 @@ gradlePlugin {
         }
         register("environments") {
             id = libs.plugins.gasguru.flavors.get().pluginId
-            implementationClass = "FlavorsConventionPlugin"
+            implementationClass = "EnvironmentsConventionPlugin"
         }
         register("jacoco") {
             id = libs.plugins.gasguru.jacoco.get().pluginId

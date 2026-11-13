@@ -50,20 +50,29 @@ cocoapods {
     summary = "GasGuru core data layer"
     homepage = "https://github.com/gasguru/GasGuru"
     version = "1.0"
-    ios.deploymentTarget = "15.0"
-    pod("GooglePlaces") { version = "~> 8.5" }
+    ios.deploymentTarget = "16.0"
+    pod("GooglePlaces") { version = "~> 10.15" }
 }
 ```
 
-Esto descarga y compila GooglePlaces para cinterop en los tasks de Kotlin/Native. Versión anclada: `8.5.0` (legacy API activa; incluye `findAutocompletePredictionsFromQuery` y `fetchPlaceFromPlaceID`).
+Esto descarga y compila GooglePlaces para cinterop en los tasks de Kotlin/Native.
+
+> **Actualización (Places API (New)):** la versión anclada originalmente era `8.5.0` (API legacy,
+> `findAutocompletePredictionsFromQuery` / `fetchPlaceFromPlaceID`). Con la deprecación anunciada
+> por Google para v11.0 (Q3 2026), se migró a `10.15` — API New,
+> `fetchAutocompleteSuggestionsFromRequest` / `fetchPlaceWithRequest` — y el deployment target subió
+> de iOS 15 a iOS 16 (mínimo exigido desde el pod 10.0). Ver sección "Patrón cinterop" más abajo.
 
 ### Pod en Podfile del iosApp
 
 `GooglePlaces` no se propaga automáticamente desde `core/data.podspec` a `composeApp.podspec`. El motivo: `core/data` es una dependencia KMP interna del framework `ComposeApp`, no un pod referenciado por el Podfile. Para que Xcode pueda linkear `GooglePlaces.framework` al construir `iosApp`, se añade explícitamente al Podfile:
 
 ```ruby
-pod 'GooglePlaces', '~> 8.5'
+pod 'GooglePlaces', '~> 10.15'
 ```
+
+Las dos declaraciones (`core/data/build.gradle.kts` y `iosApp/Podfile`) deben mantenerse
+sincronizadas: si divergen, el cinterop y el linkado de Xcode referencian binarios distintos.
 
 ### Patrón cinterop: `suspendCancellableCoroutine` + `withContext(Dispatchers.Main)`
 
@@ -73,6 +82,19 @@ pod 'GooglePlaces', '~> 8.5'
 - `suspendCancellableCoroutine` para convertir los callbacks ObjC en `suspend fun`.
 - `.flowOn(ioDispatcher)` para ejecutar el flujo fuera del main thread.
 - `.catch { emit(fallback) }` para reproducir el manejo de errores de `PlacesDataSourceImp` Android.
+
+Con la migración a Places API (New) (pod `10.15`), las dos llamadas cambian de método pero no de
+patrón:
+
+- `findAutocompletePredictionsFromQuery(query, filter, sessionToken) { results, error -> }` →
+  `fetchAutocompleteSuggestionsFromRequest(GMSAutocompleteRequest(query).apply { setFilter(...) })`.
+  El resultado ya no es `List<GMSAutocompletePrediction>` sino `List<GMSAutocompleteSuggestion>`;
+  cada sugerencia expone `placeSuggestion: GMSAutocompletePlaceSuggestion?` (nullable), de donde se
+  leen `placeID` y `attributedFullText`.
+- `fetchPlaceFromPlaceID(placeID, placeFields, sessionToken) { place, error -> }` →
+  `fetchPlaceWithRequest(GMSFetchPlaceRequest(placeID, placeProperties, sessionToken))`. La bitmask
+  `GMSPlaceField` (`GMSPlaceFieldCoordinate or GMSPlaceFieldName`) se sustituye por un array de
+  constantes string `GMSPlaceProperty*` (`GMSPlacePropertyCoordinate`, `GMSPlacePropertyName`).
 
 ### Inicialización del SDK en el factory Koin
 

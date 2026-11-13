@@ -18,11 +18,6 @@
     public static ** INSTANCE;
 }
 
-# Hilt
--keep class dagger.hilt.** { *; }
--keep class javax.inject.** { *; }
--keep class * extends dagger.hilt.android.AndroidEntryPoint { *; }
-
 # Firebase
 -keep class com.google.firebase.** { *; }
 -dontwarn com.google.firebase.**

@@ -13,9 +13,11 @@ import com.gasguru.core.domain.search.InsertRecentSearchQueryUseCase
 import com.gasguru.core.model.data.SearchPlace
 import com.gasguru.core.ui.RecentSearchQueriesUiState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -23,7 +25,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 private const val SEARCH_QUERY = "searchQuery"
-private const val SEARCH_QUERY_MIN_LENGTH = 2
+private const val SEARCH_QUERY_MIN_LENGTH = 3
+private const val SEARCH_DEBOUNCE_MILLIS = 300L
 
 class GasGuruSearchBarViewModel(
     private val savedStateHandle: SavedStateHandle,
@@ -36,9 +39,9 @@ class GasGuruSearchBarViewModel(
 
     val searchQuery = savedStateHandle.getStateFlow(key = SEARCH_QUERY, initialValue = "")
 
-    @OptIn(ExperimentalCoroutinesApi::class)
+    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
     val searchResultUiState: StateFlow<SearchResultUiState> =
-        searchQuery.flatMapLatest { query ->
+        searchQuery.debounce(SEARCH_DEBOUNCE_MILLIS).flatMapLatest { query ->
             if (query.length < SEARCH_QUERY_MIN_LENGTH) {
                 flowOf(SearchResultUiState.EmptyQuery)
             } else {

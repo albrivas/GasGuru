@@ -43,10 +43,18 @@ kotlin {
         summary = "GasGuru core data layer"
         homepage = "https://github.com/gasguru/GasGuru"
         version = "1.0"
-        ios.deploymentTarget = "15.0"
+        ios.deploymentTarget = "16.0"
+
+        // Same mapping as :composeApp — required so the Kotlin/Native cocoapods plugin can
+        // resolve the Mock scheme's Xcode configurations. "Debug"/"Release" are resolved by
+        // the plugin's own defaults.
+        xcodeConfigurationToNativeBuildType["Debug-Mock"] =
+            org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType.DEBUG
+        xcodeConfigurationToNativeBuildType["Release-Mock"] =
+            org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType.RELEASE
 
         pod("GooglePlaces") {
-            version = "~> 8.5"
+            version = "~> 10.15"
         }
     }
 
@@ -76,9 +84,9 @@ kotlin {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.turbine)
+            implementation(projects.core.testing)
         }
         androidUnitTest.dependencies {
-            implementation(projects.core.testing)
             runtimeOnly(libs.junit5.engine)
         }
     }

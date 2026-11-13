@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.gasguru.kmp.room)
     alias(libs.plugins.gasguru.koin)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.gasguru.proguard)
 }
 
 android {

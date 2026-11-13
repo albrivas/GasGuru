@@ -144,6 +144,25 @@ class PriceAlertRepositoryImplTest {
     }
 
     @Test
+    fun removePriceAlert_whenSyncedAndOnlineButSupabaseFails_marksAsDeletePendingAndLogsFailure() = runTest {
+        fakeNetworkMonitor.setOnline(online = true)
+        fakeSupabaseManager.shouldThrowOnRemove = RuntimeException("network timeout")
+        fakePriceAlertDao.insert(
+            PriceAlertEntity(stationId = 1, lastNotifiedPrice = 1.50, isSynced = true),
+        )
+
+        sut.removePriceAlert(stationId = 1)
+
+        val pendingDeletes = fakePriceAlertDao.getPendingDeletes()
+        assertEquals(1, pendingDeletes.size)
+        assertEquals(ModificationType.DELETE, pendingDeletes.first().typeModification)
+        val failedEvent = fakeAnalyticsHelper.loggedEvents.find {
+            it.type == AnalyticsEvent.Types.ALERTS_SYNC_FAILED
+        }
+        assertEquals(true, failedEvent != null)
+    }
+
+    @Test
     fun removePriceAlert_whenLastAlert_disablesNotifications() = runTest {
         fakeNetworkMonitor.setOnline(online = true)
         fakePriceAlertDao.insert(

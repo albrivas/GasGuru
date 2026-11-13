@@ -94,3 +94,5 @@ El plugin `gasguru.kmp.compose.library` ya incluye `koin-compose-viewmodel` en `
 ### `SwipeItem` con `iconAnimationFile`
 
 El campo `iconAnimationFile: String?` en `StationListSwipeModel` apunta a un JSON de Lottie via `compottie` (KMP-ready). No requirió cambios.
+
+> **Actualización (swipe-to-reveal)**: `SwipeItem` ya no borra al deslizar. Usa `AnchoredDraggableState` con dos anclas (cerrado / abierto a 80dp): deslizar de derecha a izquierda deja visible el botón de eliminar y el borrado solo ocurre al pulsarlo. Solo hay una fila abierta a la vez (`isRevealed` + `onRevealedChange` en `SwipeItemModel`, gestionado por `StationList` y `ProfileScreen`), se cierra al hacer scroll y al tocar la fila abierta. Incluye una acción de accesibilidad «Eliminar» para borrar sin gesto. Motivo: los usuarios borraban favoritos sin querer al hacer scroll.
