@@ -52,6 +52,10 @@ jobs:
         run: echo $DATA | base64 -di > app/google-services.json
 
       - name: Read version.properties
+        # versionCode/Major/Minor/Patch are still needed for the GitHub Release tag below.
+        # The actual APK versionCode/versionName are now injected directly by
+        # EnvironmentsConventionPlugin which reads versions.properties at Gradle
+        # configuration time — the old chkfung/android-version-actions bump step is gone.
         run: |
           while IFS='=' read -r key value || [[ -n "$key" ]]; do
             echo "Processing $key with value $value"
@@ -62,18 +66,11 @@ jobs:
             esac
           done < versions.properties
 
-      - name: Bump version
-        uses: chkfung/android-version-actions@v1.2.3
-        with:
-          gradlePath: app/build.gradle.kts
-          versionCode: ${{ env.versionCode }}
-          versionName: ${{ env.versionMajor }}.${{ env.versionMinor }}.${{ env.versionPatch }}
-
       - name: Assemble Release Bundle
         run: ./gradlew bundleProdRelease
 
       - name: Sign Release
-        uses: r0adkll/sign-android-release@v1
+        uses: r0adkll/sign-android-release@349ebdef58775b1e0d8099458af0816dc79b6407 # v1
         with:
           releaseDirectory: app/build/outputs/bundle/prodRelease
           signingKeyBase64: ${{ secrets.PLAY_STORE_SIGNING_KEY }}
@@ -82,7 +79,7 @@ jobs:
           keyPassword: ${{ secrets.KEY_PASSWORD }}
 
       - name: Deploy to production
-        uses: r0adkll/upload-google-play@v1.1.3
+        uses: r0adkll/upload-google-play@935ef9c68bb393a8e6116b1575626a7f5be3a7fb # v1.1.3
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_STORE }}
           packageName: com.gasguru
@@ -92,7 +89,7 @@ jobs:
           whatsNewDirectory: distribution/whatsnew
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
         with:
           tag_name: v${{ env.versionMajor }}.${{ env.versionMinor }}.${{ env.versionPatch }}
           name: Release v${{ env.versionMajor }}.${{ env.versionMinor }}.${{ env.versionPatch }}

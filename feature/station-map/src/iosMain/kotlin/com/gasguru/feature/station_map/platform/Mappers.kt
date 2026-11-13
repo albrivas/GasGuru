@@ -4,25 +4,35 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asSkiaBitmap
 import com.gasguru.core.model.data.LatLng
 import com.gasguru.feature.station_map.ui.model.GeoBounds
-import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.CValue
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.memScoped
-import kotlinx.cinterop.usePinned
+import org.jetbrains.skia.ColorAlphaType
+import org.jetbrains.skia.ColorType
+import org.jetbrains.skia.ImageInfo
+import org.jetbrains.skia.Pixmap
+import platform.CoreGraphics.CGBitmapContextCreate
+import platform.CoreGraphics.CGBitmapContextCreateImage
+import platform.CoreGraphics.CGBitmapContextGetBytesPerRow
+import platform.CoreGraphics.CGBitmapContextGetData
+import platform.CoreGraphics.CGColorSpaceCreateDeviceRGB
+import platform.CoreGraphics.CGColorSpaceRelease
+import platform.CoreGraphics.CGContextRelease
+import platform.CoreGraphics.CGImageAlphaInfo
+import platform.CoreGraphics.CGImageRef
+import platform.CoreGraphics.CGImageRelease
+import platform.CoreGraphics.kCGBitmapByteOrder32Big
 import platform.CoreLocation.CLLocationCoordinate2D
 import platform.CoreLocation.CLLocationCoordinate2DMake
-import platform.Foundation.NSData
-import platform.Foundation.create
 import platform.MapKit.MKCoordinateRegionMake
 import platform.MapKit.MKCoordinateRegionMakeWithDistance
 import platform.MapKit.MKCoordinateSpanMake
 import platform.MapKit.MKPolyline
 import platform.UIKit.UIImage
+import platform.UIKit.UIImageOrientation
 import platform.UIKit.UIScreen
 import kotlin.math.abs
-import org.jetbrains.skia.Image as SkiaImage
 
 @OptIn(ExperimentalForeignApi::class)
 internal fun LatLng.toCLLocationCoordinate2D(): CValue<CLLocationCoordinate2D> =
@@ -44,18 +54,49 @@ internal fun GeoBounds.toMKCoordinateRegion(): CValue<platform.MapKit.MKCoordina
 internal fun LatLng.toMKCoordinateRegionCentered(): CValue<platform.MapKit.MKCoordinateRegion> =
     MKCoordinateRegionMakeWithDistance(toCLLocationCoordinate2D(), 1500.0, 1500.0)
 
-@OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
+// Skia writes straight into CoreGraphics-owned memory: a PNG round-trip froze the main thread and a
+// ByteArray copy filled the Kotlin heap (~150 KB per marker), triggering full GC pauses.
+@OptIn(ExperimentalForeignApi::class)
 internal fun ImageBitmap.toUIImage(): UIImage? {
-    val skBitmap = asSkiaBitmap()
-    val skImage = SkiaImage.makeFromBitmap(skBitmap)
-    val data = skImage.encodeToData() ?: return null
-    val bytes = data.bytes
-    if (bytes.isEmpty()) return null
-    val nsData = bytes.usePinned { pinned ->
-        NSData.create(bytes = pinned.addressOf(0), length = bytes.size.toULong())
-    }
-    return UIImage(data = nsData, scale = UIScreen.mainScreen.scale)
+    val cgImage = asSkiaBitmap().peekPixels()?.toCGImage(width = width, height = height) ?: return null
+    return UIImage.imageWithCGImage(
+        cgImage = cgImage,
+        scale = UIScreen.mainScreen.scale,
+        orientation = UIImageOrientation.UIImageOrientationUp,
+    ).also { CGImageRelease(cgImage) }
 }
+
+@OptIn(ExperimentalForeignApi::class)
+private fun Pixmap.toCGImage(width: Int, height: Int): CGImageRef? {
+    val colorSpace = CGColorSpaceCreateDeviceRGB()
+    val bitmapContext = CGBitmapContextCreate(
+        data = null,
+        width = width.toULong(),
+        height = height.toULong(),
+        bitsPerComponent = BITS_PER_COMPONENT,
+        bytesPerRow = (width * RGBA_BYTES_PER_PIXEL).toULong(),
+        space = colorSpace,
+        bitmapInfo = CGImageAlphaInfo.kCGImageAlphaPremultipliedLast.value or kCGBitmapByteOrder32Big,
+    )
+    CGColorSpaceRelease(colorSpace)
+    val contextPixels = CGBitmapContextGetData(bitmapContext)
+    val isCopied = contextPixels != null && readPixels(
+        info = ImageInfo(
+            width = width,
+            height = height,
+            colorType = ColorType.RGBA_8888,
+            alphaType = ColorAlphaType.PREMUL,
+        ),
+        addr = contextPixels.rawValue,
+        rowBytes = CGBitmapContextGetBytesPerRow(bitmapContext).toInt(),
+    )
+    val cgImage = if (isCopied) CGBitmapContextCreateImage(bitmapContext) else null
+    CGContextRelease(bitmapContext)
+    return cgImage
+}
+
+private const val RGBA_BYTES_PER_PIXEL = 4
+private const val BITS_PER_COMPONENT = 8uL
 
 @OptIn(ExperimentalForeignApi::class)
 internal fun createMKPolyline(points: List<LatLng>): MKPolyline = memScoped {

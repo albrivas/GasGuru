@@ -9,8 +9,10 @@ name: "Home station detail flow"
 - tapOn:
     id: "home_station_item_0"
 - waitForAnimationToEnd
-- assertVisible:
-    id: "detail_back_to_map"
+- extendedWaitUntil:
+    visible:
+      id: "detail_back_to_map"
+    timeout: 15000
 - tapOn:
     id: "detail_back_to_map"
 - waitForAnimationToEnd

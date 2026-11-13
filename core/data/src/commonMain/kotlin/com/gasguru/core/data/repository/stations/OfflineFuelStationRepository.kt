@@ -71,6 +71,7 @@ class OfflineFuelStationRepository(
                 fuelType = fuelType.name,
                 brands = brands.map { it.uppercase() },
             ).map { items ->
+                // Lazy pipeline: schedule filter runs before take() so closed stations don't use up the quota
                 val externalModel = items
                     .sortedBy {
                         LatLng(
@@ -78,7 +79,7 @@ class OfflineFuelStationRepository(
                             longitude = it.longitudeWGS84,
                         ).distanceTo(userLocation)
                     }
-                    .take(maxStations)
+                    .asSequence()
                     .map(FuelStationEntity::asExternalModel)
                     .filter {
                         when (schedule) {
@@ -89,6 +90,8 @@ class OfflineFuelStationRepository(
                             OpeningHours.NONE -> true
                         }
                     }
+                    .take(maxStations)
+                    .toList()
 
                 val (minPrice, maxPrice) = externalModel.calculateFuelPrices(fuelType = fuelType)
 

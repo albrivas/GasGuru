@@ -44,7 +44,9 @@
 | [Database Migrations](docs/DATABASE_MIGRATIONS.md) | Historial de migraciones de la DB: qué cambió y por qué en cada versión |
 | [CI/CD](docs/CICD.md) | Integración y despliegue continuo |
 | [Dependency Injection](docs/DEPENDENCY_INJECTION.md) | Arquitectura DI con Koin, equivalencias con Hilt, guía para añadir dependencias |
+| [Firebase iOS](docs/FIREBASE_IOS.md) | Integración de Firebase Crashlytics en el target iOS: bundle IDs por configuración, único GoogleService-Info.plist, dónde se inicializa, pendientes |
 | [GitFlow](docs/GITFLOW.md) | Estrategia de branching y flujo de trabajo |
+| [iOS Project Setup](docs/IOS_PROJECT_SETUP.md) | Estructura de proyecto iOS (xcconfig, XcodeGen, schemes) y checklist de código necesario para publicar en App Store |
 | [JaCoCo](docs/JACOCO.md) | Reportes de cobertura de código |
 | [Navigation](docs/NAVIGATION.md) | Arquitectura de navegación |
 | [Obfuscation](docs/OBFUSCATION.md) | Configuración de ofuscación de código |
@@ -84,6 +86,7 @@
 | [KMP Phase 9J](docs/KMP_PHASE9J.md) | iOS background sync: SyncManager.execute() en KoinInit (fix bug alertas offline), IosBridge.refreshStations + BGTaskScheduler (paridad StationSyncWorker), patrón Dispatchers.Main en tests KMP |
 | [KMP Phase 10A](docs/KMP_PHASE10A.md) | `jvm()` en convention plugins: guard composeApp, actuals no-op en jvmMain (13 expects), api coroutines/navigation, lifecycle-runtime-compose, detekt setSource ampliado |
 | [KMP Phase 10B](docs/KMP_PHASE10B.md) | Tests de UI CMP headless en jvmTest: `runComposeUiTest` sin emulador, patrón de migración de BaseTest, resolución de strings en commonTest, exclusión por módulo |
+| [KMP Phase 11](docs/KMP_PHASE11.md) | Config unificada Android/iOS: `EnvironmentsConventionPlugin` (fuente única), `:mocknetwork` KMP, xcconfigs iOS, schemes `GasGuru-Mock`/`GasGuru-Prod`, eliminación de chkfung action |
 | [iOS Bridge](docs/IOS_BRIDGE.md) | Contrato único Swift → KMP: `IosBridge` en `composeApp/iosMain`, cómo añadir métodos, cuándo usarlo vs otros patrones |
 | [Widget](docs/WIDGET.md) | Widget de pantalla de inicio con gasolineras favoritas: arquitectura Glance + WorkManager, ciclo de vida y limitaciones |
 | [Analytics](docs/ANALYTICS.md) | Sistema de analíticas con Mixpanel: arquitectura, catálogo de eventos, uso en ViewModels y Composables |

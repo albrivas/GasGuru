@@ -10,6 +10,10 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,6 +44,12 @@ fun StationList(
                     listState.animateScrollToItem(0)
                 }
             }
+    }
+
+    var revealedStationId by remember { mutableStateOf<Int?>(null) }
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.isScrollInProgress }
+            .collect { isScrolling -> if (isScrolling) revealedStationId = null }
     }
 
     LazyColumn(
@@ -78,12 +88,21 @@ fun StationList(
                 SwipeItem(
                     modifier = Modifier.animateItem(),
                     model = SwipeItemModel(
-                        enableDismissFromEndToStart = true,
-                        enableDismissFromStartToEnd = true,
                         icon = swipeConfig.icon,
                         backgroundColor = swipeConfig.backgroundColor,
-                        onClick = { swipeConfig.onSwipe(item.idServiceStation) },
+                        onClick = {
+                            revealedStationId = null
+                            swipeConfig.onSwipe(item.idServiceStation)
+                        },
                         iconAnimationFile = swipeConfig.iconAnimationFile,
+                        isRevealed = revealedStationId == item.idServiceStation,
+                        onRevealedChange = { isRevealed ->
+                            revealedStationId = when {
+                                isRevealed -> item.idServiceStation
+                                revealedStationId == item.idServiceStation -> null
+                                else -> revealedStationId
+                            }
+                        },
                     ),
                 ) {
                     stationItem()

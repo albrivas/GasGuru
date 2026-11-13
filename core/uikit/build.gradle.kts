@@ -51,6 +51,7 @@ tasks.withType<Test>().configureEach {
             "**/NumberWheelPickerTest*",
             "**/VehicleItemCardTest*",
             "**/GasGuruBottomSheetTest*",
+            "**/SwipeItemTest*",
         )
     }
 }

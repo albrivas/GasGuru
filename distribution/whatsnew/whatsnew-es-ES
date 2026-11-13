@@ -1,4 +1,4 @@
-- Ordenar gasolineras favoritas por precio o distancia en Android Auto
-- Las gasolineras del mapa ahora muestran un color según el precio
-- Cambia de vehículo directamente desde el detalle de la gasolinera
-- Añadido mensaje de estado vacío en favoritos y resultados de búsqueda
+- Desliza una gasolinera favorita para mostrar el botón de eliminar, sin borrados accidentales
+- Consulta hasta 50 gasolineras cercanas en el mapa
+- Búsqueda de direcciones más rápida y precisa
+- Corrección de errores y mejoras de rendimiento
