@@ -1,8 +1,167 @@
 package com.gasguru.data
 
+import app.cash.turbine.test
 import com.gasguru.core.data.repository.stations.OfflineFuelStationRepository
+import com.gasguru.core.database.model.FuelStationEntity
+import com.gasguru.core.model.data.FuelType
+import com.gasguru.core.model.data.LatLng
+import com.gasguru.core.model.data.OpeningHours
+import com.gasguru.core.model.data.UserData
+import com.gasguru.core.model.data.Vehicle
+import com.gasguru.core.model.data.VehicleType
+import com.gasguru.core.testing.fakes.data.database.FakeFavoriteStationDao
+import com.gasguru.core.testing.fakes.data.database.FakeFuelStationDao
+import com.gasguru.core.testing.fakes.data.database.FakePriceAlertDao
+import com.gasguru.core.testing.fakes.data.network.FakeRemoteDataSource
+import com.gasguru.core.testing.fakes.data.user.FakeUserDataRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
-/**
- * Unit tests for [OfflineFuelStationRepository].
- */
-class OfflineFuelStationRepositoryTest
+@OptIn(ExperimentalCoroutinesApi::class)
+class OfflineFuelStationRepositoryTest {
+
+    private val userLocation = LatLng(latitude = 40.0, longitude = -3.0)
+
+    private fun buildRepository(
+        stations: List<FuelStationEntity>,
+        dispatcher: TestDispatcher,
+    ): OfflineFuelStationRepository = OfflineFuelStationRepository(
+        fuelStationDao = FakeFuelStationDao(initialStations = stations),
+        remoteDataSource = FakeRemoteDataSource(),
+        defaultDispatcher = dispatcher,
+        ioDispatcher = dispatcher,
+        offlineUserDataRepository = FakeUserDataRepository(
+            initialUserData = UserData(
+                vehicles = listOf(
+                    Vehicle(
+                        name = "Car",
+                        fuelType = FuelType.GASOLINE_95,
+                        tankCapacity = 50,
+                        vehicleType = VehicleType.CAR,
+                        isPrincipal = true,
+                    ),
+                ),
+            ),
+        ),
+        favoriteStationDao = FakeFavoriteStationDao(),
+        priceAlertDao = FakePriceAlertDao(),
+    )
+
+    @Test
+    fun getFuelStationByLocation_withOpen24hAndNearerClosedStations_closedStationsDoNotConsumeQuota() =
+        runTest {
+            val dispatcher = UnconfinedTestDispatcher(testScheduler)
+            val nearClosedStations = (1..5).map { index ->
+                stationEntity(
+                    id = index,
+                    latitude = 40.0 + index * 0.001,
+                    schedule = "L-V: 07:00-22:00",
+                )
+            }
+            val farOpen24hStations = (6..10).map { index ->
+                stationEntity(
+                    id = index,
+                    latitude = 40.0 + index * 0.001,
+                    schedule = "L-D: 24H",
+                )
+            }
+            val sut = buildRepository(
+                stations = nearClosedStations + farOpen24hStations,
+                dispatcher = dispatcher,
+            )
+
+            sut.getFuelStationByLocation(
+                userLocation = userLocation,
+                maxStations = 3,
+                brands = emptyList(),
+                schedule = OpeningHours.OPEN_24H,
+            ).test {
+                val stations = awaitItem()
+                assertEquals(expected = listOf(6, 7, 8), actual = stations.map { it.idServiceStation })
+                assertTrue(stations.all { it.schedule == "L-D: 24H" })
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun getFuelStationByLocation_withOpen24hAndFewerMatchesThanMax_returnsAllMatches() = runTest {
+        val dispatcher = UnconfinedTestDispatcher(testScheduler)
+        val stations = listOf(
+            stationEntity(id = 1, latitude = 40.001, schedule = "L-V: 07:00-22:00"),
+            stationEntity(id = 2, latitude = 40.002, schedule = "L-D: 24H"),
+        )
+        val sut = buildRepository(stations = stations, dispatcher = dispatcher)
+
+        sut.getFuelStationByLocation(
+            userLocation = userLocation,
+            maxStations = 10,
+            brands = emptyList(),
+            schedule = OpeningHours.OPEN_24H,
+        ).test {
+            assertEquals(expected = listOf(2), actual = awaitItem().map { it.idServiceStation })
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun getFuelStationByLocation_withNoScheduleFilter_returnsNearestStationsUpToMax() = runTest {
+        val dispatcher = UnconfinedTestDispatcher(testScheduler)
+        val stations = (1..6).map { index ->
+            stationEntity(id = index, latitude = 40.0 + index * 0.001, schedule = "L-V: 07:00-22:00")
+        }
+        val sut = buildRepository(stations = stations.reversed(), dispatcher = dispatcher)
+
+        sut.getFuelStationByLocation(
+            userLocation = userLocation,
+            maxStations = 4,
+            brands = emptyList(),
+            schedule = OpeningHours.NONE,
+        ).test {
+            assertEquals(expected = listOf(1, 2, 3, 4), actual = awaitItem().map { it.idServiceStation })
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    private fun stationEntity(id: Int, latitude: Double, schedule: String) = FuelStationEntity(
+        bioEthanolPercentage = "",
+        esterMethylPercentage = "",
+        postalCode = "",
+        direction = "",
+        schedule = schedule,
+        idAutonomousCommunity = "",
+        idServiceStation = id,
+        idMunicipality = "",
+        idProvince = "",
+        latitude = latitude,
+        locality = "",
+        longitudeWGS84 = -3.0,
+        margin = "",
+        municipality = "",
+        priceBiodiesel = 0.0,
+        priceBioEthanol = 0.0,
+        priceGasNaturalCompressed = 0.0,
+        priceLiquefiedNaturalGas = 0.0,
+        priceLiquefiedPetroleumGas = 0.0,
+        priceGasoilA = 0.0,
+        priceGasoilB = 0.0,
+        priceGasoilPremium = 0.0,
+        priceGasoline95E10 = 0.0,
+        priceGasoline95E5 = 1.5 + id * 0.01,
+        priceGasoline95E5Premium = 0.0,
+        priceGasoline98E10 = 0.0,
+        priceGasoline98E5 = 0.0,
+        priceHydrogen = 0.0,
+        priceAdblue = 0.0,
+        province = "",
+        referral = "",
+        brandStation = "REPSOL",
+        typeSale = "",
+        lastUpdate = 0L,
+        isFavorite = false,
+    )
+}
