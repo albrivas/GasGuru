@@ -1,4 +1,2 @@
-- Swipe a favorite station to reveal the delete button, no more accidental deletions
-- See up to 50 nearby stations on the map
-- Faster and more accurate address search
-- Bug fixes and performance improvements
+- Move the map and tap "Search this area" to see the stations there
+- Press and hold anywhere on the map to drop a pin and find stations nearby

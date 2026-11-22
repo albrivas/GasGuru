@@ -5,7 +5,9 @@ import com.gasguru.core.data.repository.stations.OfflineFuelStationRepository
 import com.gasguru.core.database.model.FuelStationEntity
 import com.gasguru.core.model.data.FuelType
 import com.gasguru.core.model.data.LatLng
+import com.gasguru.core.model.data.MapBounds
 import com.gasguru.core.model.data.OpeningHours
+import com.gasguru.core.model.data.PriceCategory
 import com.gasguru.core.model.data.UserData
 import com.gasguru.core.model.data.Vehicle
 import com.gasguru.core.model.data.VehicleType
@@ -20,6 +22,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -127,7 +130,177 @@ class OfflineFuelStationRepositoryTest {
         }
     }
 
-    private fun stationEntity(id: Int, latitude: Double, schedule: String) = FuelStationEntity(
+    private val areaBounds = MapBounds(
+        southwest = LatLng(latitude = 40.0, longitude = -3.5),
+        northeast = LatLng(latitude = 40.1, longitude = -2.5),
+    )
+
+    @Test
+    fun getFuelStationsInArea_returnsOnlyStationsInsideBounds() = runTest {
+        val dispatcher = UnconfinedTestDispatcher(testScheduler)
+        val stations = listOf(
+            stationEntity(id = 1, latitude = 40.05, schedule = ""),
+            stationEntity(id = 2, latitude = 40.5, schedule = ""),
+            stationEntity(id = 3, latitude = 39.9, schedule = ""),
+            stationEntity(id = 4, latitude = 40.05, schedule = "", longitude = -1.0),
+        )
+        val sut = buildRepository(stations = stations, dispatcher = dispatcher)
+
+        sut.getFuelStationsInArea(
+            bounds = areaBounds,
+            maxStations = 10,
+            brands = emptyList(),
+            schedule = OpeningHours.NONE,
+        ).test {
+            val result = awaitItem()
+            assertEquals(expected = listOf(1), actual = result.stations.map { it.idServiceStation })
+            assertFalse(result.isTruncated)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun getFuelStationsInArea_sortsAndComputesDistanceFromBoundsCenter() = runTest {
+        val dispatcher = UnconfinedTestDispatcher(testScheduler)
+        // Bounds center is (40.05, -3.0); station 1 is the farthest from it despite being next to the user
+        val stations = listOf(
+            stationEntity(id = 1, latitude = 40.0, schedule = ""),
+            stationEntity(id = 2, latitude = 40.05, schedule = ""),
+            stationEntity(id = 3, latitude = 40.08, schedule = ""),
+        )
+        val sut = buildRepository(stations = stations, dispatcher = dispatcher)
+
+        sut.getFuelStationsInArea(
+            bounds = areaBounds,
+            maxStations = 10,
+            brands = emptyList(),
+            schedule = OpeningHours.NONE,
+        ).test {
+            val result = awaitItem()
+            assertEquals(expected = listOf(2, 3, 1), actual = result.stations.map { it.idServiceStation })
+            val distances = result.stations.map { it.distance }
+            assertEquals(expected = distances.sorted(), actual = distances)
+            assertTrue(distances.first() < 1f)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun getFuelStationsInArea_withMoreStationsThanMax_keepsClosestToCenterAndFlagsTruncation() = runTest {
+        val dispatcher = UnconfinedTestDispatcher(testScheduler)
+        val stations = (1..5).map { index ->
+            stationEntity(id = index, latitude = 40.05 + index * 0.001, schedule = "")
+        }
+        val sut = buildRepository(stations = stations.reversed(), dispatcher = dispatcher)
+
+        sut.getFuelStationsInArea(
+            bounds = areaBounds,
+            maxStations = 3,
+            brands = emptyList(),
+            schedule = OpeningHours.NONE,
+        ).test {
+            val result = awaitItem()
+            assertEquals(expected = listOf(1, 2, 3), actual = result.stations.map { it.idServiceStation })
+            assertTrue(result.isTruncated)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun getFuelStationsInArea_withExactlyMaxStations_isNotTruncated() = runTest {
+        val dispatcher = UnconfinedTestDispatcher(testScheduler)
+        val stations = (1..3).map { index ->
+            stationEntity(id = index, latitude = 40.05 + index * 0.001, schedule = "")
+        }
+        val sut = buildRepository(stations = stations, dispatcher = dispatcher)
+
+        sut.getFuelStationsInArea(
+            bounds = areaBounds,
+            maxStations = 3,
+            brands = emptyList(),
+            schedule = OpeningHours.NONE,
+        ).test {
+            val result = awaitItem()
+            assertEquals(expected = 3, actual = result.stations.size)
+            assertFalse(result.isTruncated)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun getFuelStationsInArea_withOpen24h_closedStationsDoNotConsumeQuotaNorCountAsTruncation() = runTest {
+        val dispatcher = UnconfinedTestDispatcher(testScheduler)
+        val closedStations = (1..5).map { index ->
+            stationEntity(id = index, latitude = 40.05 + index * 0.001, schedule = "L-V: 07:00-22:00")
+        }
+        val open24hStations = (6..7).map { index ->
+            stationEntity(id = index, latitude = 40.05 + index * 0.001, schedule = "L-D: 24H")
+        }
+        val sut = buildRepository(stations = closedStations + open24hStations, dispatcher = dispatcher)
+
+        sut.getFuelStationsInArea(
+            bounds = areaBounds,
+            maxStations = 2,
+            brands = emptyList(),
+            schedule = OpeningHours.OPEN_24H,
+        ).test {
+            val result = awaitItem()
+            assertEquals(expected = listOf(6, 7), actual = result.stations.map { it.idServiceStation })
+            assertFalse(result.isTruncated)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun getFuelStationsInArea_withBrandFilter_returnsOnlyMatchingBrand() = runTest {
+        val dispatcher = UnconfinedTestDispatcher(testScheduler)
+        val stations = listOf(
+            stationEntity(id = 1, latitude = 40.05, schedule = "", brand = "REPSOL"),
+            stationEntity(id = 2, latitude = 40.06, schedule = "", brand = "CEPSA"),
+        )
+        val sut = buildRepository(stations = stations, dispatcher = dispatcher)
+
+        sut.getFuelStationsInArea(
+            bounds = areaBounds,
+            maxStations = 10,
+            brands = listOf("cepsa"),
+            schedule = OpeningHours.NONE,
+        ).test {
+            assertEquals(expected = listOf(2), actual = awaitItem().stations.map { it.idServiceStation })
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun getFuelStationsInArea_assignsPriceCategoriesOverReturnedStations() = runTest {
+        val dispatcher = UnconfinedTestDispatcher(testScheduler)
+        val stations = listOf(
+            stationEntity(id = 1, latitude = 40.05, schedule = ""),
+            stationEntity(id = 9, latitude = 40.06, schedule = ""),
+            stationEntity(id = 300, latitude = 45.0, schedule = ""),
+        )
+        val sut = buildRepository(stations = stations, dispatcher = dispatcher)
+
+        sut.getFuelStationsInArea(
+            bounds = areaBounds,
+            maxStations = 10,
+            brands = emptyList(),
+            schedule = OpeningHours.NONE,
+        ).test {
+            val categories = awaitItem().stations.associate { it.idServiceStation to it.priceCategory }
+            assertEquals(expected = PriceCategory.CHEAP, actual = categories.getValue(1))
+            assertEquals(expected = PriceCategory.EXPENSIVE, actual = categories.getValue(9))
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    private fun stationEntity(
+        id: Int,
+        latitude: Double,
+        schedule: String,
+        longitude: Double = -3.0,
+        brand: String = "REPSOL",
+    ) = FuelStationEntity(
         bioEthanolPercentage = "",
         esterMethylPercentage = "",
         postalCode = "",
@@ -139,7 +312,7 @@ class OfflineFuelStationRepositoryTest {
         idProvince = "",
         latitude = latitude,
         locality = "",
-        longitudeWGS84 = -3.0,
+        longitudeWGS84 = longitude,
         margin = "",
         municipality = "",
         priceBiodiesel = 0.0,
@@ -159,7 +332,7 @@ class OfflineFuelStationRepositoryTest {
         priceAdblue = 0.0,
         province = "",
         referral = "",
-        brandStation = "REPSOL",
+        brandStation = brand,
         typeSale = "",
         lastUpdate = 0L,
         isFavorite = false,

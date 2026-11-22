@@ -10,6 +10,7 @@ import com.gasguru.core.domain.fuelstation.GetFavoriteStationsUseCase
 import com.gasguru.core.domain.fuelstation.GetFavoriteStationsWithoutDistanceUseCase
 import com.gasguru.core.domain.fuelstation.GetFuelStationByIdUseCase
 import com.gasguru.core.domain.fuelstation.GetFuelStationUseCase
+import com.gasguru.core.domain.fuelstation.GetFuelStationsInAreaUseCase
 import com.gasguru.core.domain.fuelstation.GetFuelStationsInRouteUseCase
 import com.gasguru.core.domain.fuelstation.RemoveFavoriteStationUseCase
 import com.gasguru.core.domain.fuelstation.SaveFavoriteStationUseCase
@@ -55,6 +56,7 @@ fun domainModule() = module {
     factory { GetFuelStationByIdUseCase(repository = get()) }
     factory { GetFuelStationUseCase(repository = get()) }
     factory { GetFuelStationsInRouteUseCase(repository = get()) }
+    factory { GetFuelStationsInAreaUseCase(repository = get()) }
     factory { GetFavoriteStationsUseCase(repository = get()) }
     factory { GetFavoriteStationsWithoutDistanceUseCase(repository = get()) }
     factory { SaveFavoriteStationUseCase(offlineRepository = get()) }
