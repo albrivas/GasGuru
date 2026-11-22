@@ -1,7 +1,8 @@
 @file:Suppress(
     "LongParameterList", // VM orquesta múltiples UseCases (filtros, ubicación, rutas, analítica).
     "TooManyFunctions", // VM con varios handlers de eventos UI; refactor pendiente (split por dominio).
-    "TooGenericExceptionCaught", // Catches genéricos en boundaries con APIs externas (Maps, location); pendiente tipar errores.
+    "TooGenericExceptionCaught", // Catches genéricos en boundaries con APIs externas; pendiente tipar errores.
+    "CyclomaticComplexMethod", // `when` exhaustivo de eventos UI: crece con cada evento nuevo.
     "TooGenericExceptionThrown", // Mismo motivo; pendiente excepción de dominio propia.
 )
 
@@ -13,11 +14,13 @@ import com.gasguru.core.analytics.AnalyticsHelper
 import com.gasguru.core.domain.filters.GetFiltersUseCase
 import com.gasguru.core.domain.filters.SaveFilterUseCase
 import com.gasguru.core.domain.fuelstation.FuelStationByLocationUseCase
+import com.gasguru.core.domain.fuelstation.GetFuelStationsInAreaUseCase
 import com.gasguru.core.domain.fuelstation.GetFuelStationsInRouteUseCase
 import com.gasguru.core.domain.location.GetCurrentLocationUseCase
 import com.gasguru.core.domain.places.GetLocationPlaceUseCase
 import com.gasguru.core.domain.route.GetRouteUseCase
 import com.gasguru.core.domain.user.GetUserDataUseCase
+import com.gasguru.core.model.data.AreaSearchResult
 import com.gasguru.core.model.data.Filter
 import com.gasguru.core.model.data.FilterType
 import com.gasguru.core.model.data.LatLng
@@ -30,9 +33,11 @@ import com.gasguru.core.ui.sort.sortedByCriteria
 import com.gasguru.feature.station_map.analytics.trackFilterBrandChanged
 import com.gasguru.feature.station_map.analytics.trackFilterNearbyChanged
 import com.gasguru.feature.station_map.analytics.trackFilterScheduleChanged
+import com.gasguru.feature.station_map.analytics.trackMapLocationSelected
 import com.gasguru.feature.station_map.analytics.trackMapTabChanged
 import com.gasguru.feature.station_map.analytics.trackRouteCancelled
 import com.gasguru.feature.station_map.analytics.trackRouteStarted
+import com.gasguru.feature.station_map.analytics.trackSearchThisArea
 import com.gasguru.feature.station_map.analytics.trackStationSelected
 import com.gasguru.feature.station_map.analytics.trackStationSelectedWithoutBrand
 import com.gasguru.feature.station_map.ui.model.GeoBounds
@@ -52,6 +57,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -67,6 +73,7 @@ class StationMapViewModel(
     private val saveFilterUseCase: SaveFilterUseCase,
     private val getRouteUseCase: GetRouteUseCase,
     private val getFuelStationsInRouteUseCase: GetFuelStationsInRouteUseCase,
+    private val getFuelStationsInAreaUseCase: GetFuelStationsInAreaUseCase,
     private val defaultDispatcher: CoroutineDispatcher,
     private val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
@@ -81,6 +88,7 @@ class StationMapViewModel(
     val effects: Flow<StationMapEffect> = _effects.receiveAsFlow()
 
     private var routeCalculationJob: Job? = null
+    private var stationsJob: Job? = null
 
     fun handleEvent(event: StationMapEvent) {
         when (event) {
@@ -100,6 +108,9 @@ class StationMapViewModel(
             is StationMapEvent.CancelRoute -> cancelRoute()
             is StationMapEvent.ChangeTab -> changeTab(selectedTab = event.selected)
             is StationMapEvent.SelectStation -> selectStation(stationId = event.stationId)
+            is StationMapEvent.CameraIdle -> onCameraIdle(bounds = event.bounds, movedByUser = event.movedByUser)
+            is StationMapEvent.SearchThisArea -> searchThisArea()
+            is StationMapEvent.SelectMapLocation -> selectMapLocation(location = event.location)
         }
     }
 
@@ -165,6 +176,7 @@ class StationMapViewModel(
                     mapBounds = bounds,
                     shouldCenterMap = true,
                     loading = false,
+                    showSearchThisArea = false,
                 )
             }
         } catch (error: CancellationException) {
@@ -186,6 +198,8 @@ class StationMapViewModel(
                     loading = true,
                     listStations = emptyList(),
                     routeDestinationName = destinationName,
+                    showSearchThisArea = false,
+                    customPinLocation = null,
                 )
             }
 
@@ -248,15 +262,29 @@ class StationMapViewModel(
     }
 
     private fun getStationByCurrentLocation() {
-        viewModelScope.launch {
-            getCurrentLocationUseCase()?.let { location ->
-                if (_state.value.route != null) {
-                    centerMapOnLocation(location = location)
-                } else {
-                    _state.update { it.copy(loading = true, listStations = emptyList()) }
-                    getStationByLocation(location = location)
-                }
-            } ?: _state.update { it.copy(loading = false) }
+        if (_state.value.route != null) {
+            viewModelScope.launch {
+                getCurrentLocationUseCase()
+                    ?.let { location -> centerMapOnLocation(location = location) }
+                    ?: _state.update { it.copy(loading = false) }
+            }
+            return
+        }
+        launchStationsQuery {
+            val location = getCurrentLocationUseCase()
+            if (location == null) {
+                _state.update { it.copy(loading = false) }
+                return@launchStationsQuery
+            }
+            _state.update {
+                it.copy(
+                    loading = true,
+                    listStations = emptyList(),
+                    showSearchThisArea = false,
+                    customPinLocation = null,
+                )
+            }
+            collectStations(query = StationQuery.Nearby(location = location))
         }
     }
 
@@ -264,55 +292,172 @@ class StationMapViewModel(
         _state.update { it.copy(userLocationToCenter = location) }
     }
 
-    private fun getStationByPlace(placeId: String) =
-        viewModelScope.launch {
-            _state.update { it.copy(loading = true) }
-            getLocationPlaceUseCase(placeId)
-                .catch { _state.update { it.copy(loading = false) } }
-                .collect { location ->
-                    getStationByLocation(location)
-                }
+    private fun getStationByPlace(placeId: String) {
+        launchStationsQuery {
+            _state.update { it.copy(loading = true, showSearchThisArea = false, customPinLocation = null) }
+            val location = getLocationPlaceUseCase(placeId)
+                .catch { }
+                .firstOrNull()
+            if (location == null) {
+                _state.update { it.copy(loading = false) }
+                return@launchStationsQuery
+            }
+            collectStations(query = StationQuery.Nearby(location = location))
         }
+    }
 
-    private fun getStationByLocation(location: LatLng) {
-        viewModelScope.launch {
-            combine(
-                filters,
-                getUserDataUseCase(),
-            ) { filterState, userData ->
-                Pair(filterState, userData)
-            }.collectLatest { (filterState, userData) ->
-                if (_state.value.route != null) return@collectLatest
-                fuelStationByLocation(
-                    userLocation = location,
-                    maxStations = filterState.filterStationsNearby,
-                    brands = filterState.filterBrand,
-                    schedule = filterState.filterSchedule.toDomainModel(),
-                ).catch { error ->
-                    _state.update { it.copy(error = error, loading = false) }
-                }.collect { fuelStations ->
-                    val bounds = calculateBounds(
-                        fuelStations = fuelStations.map { it.location },
-                        location = location,
-                    )
-                    val uiStations = fuelStations.map { station -> station.toUiModel() }
-                    _state.update {
-                        it.copy(
-                            mapStations = uiStations,
-                            listStations = sortStationsByTab(
-                                uiStations,
-                                _tabState.value.selectedTab,
-                                userData,
-                            ),
-                            loading = false,
-                            selectedType = userData.principalVehicle().fuelType,
-                            mapBounds = bounds,
-                            shouldCenterMap = true,
-                        )
-                    }
-                }
+    // A single live query at a time: stale collectors would otherwise overwrite the state on filter changes.
+    private fun launchStationsQuery(block: suspend () -> Unit) {
+        stationsJob?.cancel()
+        stationsJob = viewModelScope.launch { block() }
+    }
+
+    private fun onCameraIdle(bounds: GeoBounds, movedByUser: Boolean) {
+        _state.update { current ->
+            val canOfferAreaSearch = movedByUser &&
+                current.route == null &&
+                !current.loading &&
+                !current.isSearchingArea
+            current.copy(
+                visibleBounds = bounds,
+                showSearchThisArea = current.showSearchThisArea || canOfferAreaSearch,
+            )
+        }
+    }
+
+    private fun searchThisArea() {
+        val currentState = _state.value
+        val bounds = currentState.visibleBounds ?: return
+        if (currentState.route != null) return
+        launchStationsQuery {
+            _state.update { it.copy(showSearchThisArea = false, isSearchingArea = true, customPinLocation = null) }
+            collectStations(query = StationQuery.Area(bounds = bounds))
+        }
+    }
+
+    private fun selectMapLocation(location: LatLng) {
+        if (_state.value.route != null) return
+        analyticsHelper.trackMapLocationSelected()
+        launchStationsQuery {
+            _state.update {
+                it.copy(
+                    loading = true,
+                    customPinLocation = location,
+                    showSearchThisArea = false,
+                    isSearchingArea = false,
+                )
+            }
+            collectStations(query = StationQuery.Nearby(location = location))
+        }
+    }
+
+    private suspend fun collectStations(query: StationQuery) {
+        var hasTrackedAreaSearch = false
+        combine(
+            filters,
+            getUserDataUseCase(),
+        ) { filterState, userData ->
+            Pair(filterState, userData)
+        }.collectLatest { (filterState, userData) ->
+            if (_state.value.route != null) return@collectLatest
+            when (query) {
+                is StationQuery.Nearby -> collectNearbyStations(
+                    location = query.location,
+                    filterState = filterState,
+                    userData = userData,
+                )
+
+                is StationQuery.Area -> collectAreaStations(
+                    bounds = query.bounds,
+                    filterState = filterState,
+                    userData = userData,
+                    onResult = { result ->
+                        if (!hasTrackedAreaSearch) {
+                            hasTrackedAreaSearch = true
+                            analyticsHelper.trackSearchThisArea(
+                                stationCount = result.stations.size,
+                                isTruncated = result.isTruncated,
+                            )
+                        }
+                    },
+                )
             }
         }
+    }
+
+    private suspend fun collectNearbyStations(
+        location: LatLng,
+        filterState: FilterUiState,
+        userData: UserData,
+    ) {
+        fuelStationByLocation(
+            userLocation = location,
+            maxStations = filterState.filterStationsNearby,
+            brands = filterState.filterBrand,
+            schedule = filterState.filterSchedule.toDomainModel(),
+        ).catch { error ->
+            _state.update { it.copy(error = error, loading = false) }
+        }.collect { fuelStations ->
+            val bounds = calculateBounds(
+                fuelStations = fuelStations.map { it.location },
+                location = location,
+            )
+            val uiStations = fuelStations.map { station -> station.toUiModel() }
+            _state.update {
+                it.copy(
+                    mapStations = uiStations,
+                    listStations = sortStationsByTab(
+                        uiStations,
+                        _tabState.value.selectedTab,
+                        userData,
+                    ),
+                    loading = false,
+                    selectedType = userData.principalVehicle().fuelType,
+                    mapBounds = bounds,
+                    shouldCenterMap = true,
+                    showSearchThisArea = false,
+                    isSearchingArea = false,
+                )
+            }
+        }
+    }
+
+    private suspend fun collectAreaStations(
+        bounds: GeoBounds,
+        filterState: FilterUiState,
+        userData: UserData,
+        onResult: (AreaSearchResult) -> Unit,
+    ) {
+        getFuelStationsInAreaUseCase(
+            bounds = bounds.toMapBounds(),
+            maxStations = filterState.filterStationsNearby,
+            brands = filterState.filterBrand,
+            schedule = filterState.filterSchedule.toDomainModel(),
+        ).catch { error ->
+            _state.update { it.copy(error = error, loading = false, isSearchingArea = false) }
+        }.collect { result ->
+            val uiStations = result.stations.map { station -> station.toUiModel() }
+            onResult(result)
+            _state.update {
+                it.copy(
+                    mapStations = uiStations,
+                    listStations = sortStationsByTab(
+                        uiStations,
+                        _tabState.value.selectedTab,
+                        userData,
+                    ),
+                    loading = false,
+                    selectedType = userData.principalVehicle().fuelType,
+                    shouldCenterMap = false,
+                    isSearchingArea = false,
+                )
+            }
+        }
+    }
+
+    private sealed interface StationQuery {
+        data class Nearby(val location: LatLng) : StationQuery
+        data class Area(val bounds: GeoBounds) : StationQuery
     }
 
     private fun calculateBounds(fuelStations: List<LatLng>, location: LatLng): GeoBounds? =

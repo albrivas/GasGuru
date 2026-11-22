@@ -8,6 +8,7 @@ import kotlinx.cinterop.CValue
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.useContents
 import org.jetbrains.skia.ColorAlphaType
 import org.jetbrains.skia.ColorType
 import org.jetbrains.skia.ImageInfo
@@ -28,6 +29,7 @@ import platform.CoreLocation.CLLocationCoordinate2DMake
 import platform.MapKit.MKCoordinateRegionMake
 import platform.MapKit.MKCoordinateRegionMakeWithDistance
 import platform.MapKit.MKCoordinateSpanMake
+import platform.MapKit.MKMapView
 import platform.MapKit.MKPolyline
 import platform.UIKit.UIImage
 import platform.UIKit.UIImageOrientation
@@ -53,6 +55,36 @@ internal fun GeoBounds.toMKCoordinateRegion(): CValue<platform.MapKit.MKCoordina
 @OptIn(ExperimentalForeignApi::class)
 internal fun LatLng.toMKCoordinateRegionCentered(): CValue<platform.MapKit.MKCoordinateRegion> =
     MKCoordinateRegionMakeWithDistance(toCLLocationCoordinate2D(), 1500.0, 1500.0)
+
+@OptIn(ExperimentalForeignApi::class)
+internal fun MKMapView.visibleGeoBounds(): GeoBounds? = region.useContents {
+    if (span.latitudeDelta <= 0.0 || span.longitudeDelta <= 0.0) {
+        null
+    } else {
+        GeoBounds(
+            southwest = LatLng(
+                latitude = center.latitude - span.latitudeDelta / 2.0,
+                longitude = center.longitude - span.longitudeDelta / 2.0,
+            ),
+            northeast = LatLng(
+                latitude = center.latitude + span.latitudeDelta / 2.0,
+                longitude = center.longitude + span.longitudeDelta / 2.0,
+            ),
+        )
+    }
+}
+
+internal class CameraIdleTracker(
+    private val gestureDetector: MapUserGestureDetector,
+    private val onCameraIdle: (bounds: GeoBounds, movedByUser: Boolean) -> Unit,
+) {
+    fun regionDidChange(mapView: MKMapView) {
+        val movedByUser = gestureDetector.consumePendingUserGesture()
+        mapView.visibleGeoBounds()?.let { visibleBounds ->
+            onCameraIdle(visibleBounds, movedByUser)
+        }
+    }
+}
 
 // Skia writes straight into CoreGraphics-owned memory: a PNG round-trip froze the main thread and a
 // ByteArray copy filled the Kotlin heap (~150 KB per marker), triggering full GC pauses.

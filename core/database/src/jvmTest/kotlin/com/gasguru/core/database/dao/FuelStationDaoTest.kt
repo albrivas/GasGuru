@@ -268,6 +268,66 @@ class FuelStationDaoTest {
     @Test
     @DisplayName(
         """
+        GIVEN stations inside and outside bounds
+        WHEN getting stations in area without brands
+        THEN emits only the stations inside the bounds with a price for the fuel type
+        """
+    )
+    fun getFuelStationsInArea_withoutBrands_returnsOnlyStationsInsideBounds() = runTest {
+        val inside = testFuelStationEntity(brand = "Repsol", isFavorite = false, idServiceStation = 1)
+            .copy(latitude = 40.4168, longitudeWGS84 = -3.7038)
+        val outside = testFuelStationEntity(brand = "Cepsa", isFavorite = false, idServiceStation = 2)
+            .copy(latitude = 52.52, longitudeWGS84 = 13.405)
+        val insideWithoutPrice = testFuelStationEntity(brand = "Cepsa", isFavorite = false, idServiceStation = 3)
+            .copy(latitude = 40.5, longitudeWGS84 = -3.5, priceGasoline95E5 = 0.0)
+        fuelStationDao.insertFuelStation(listOf(inside, outside, insideWithoutPrice))
+
+        fuelStationDao.getFuelStationsInArea(
+            minLat = 40.0,
+            maxLat = 41.0,
+            minLng = -4.0,
+            maxLng = -3.0,
+            fuelType = FuelType.GASOLINE_95.name,
+            brands = emptyList(),
+        ).test {
+            assertEquals(listOf(inside), awaitItem())
+            cancel()
+        }
+    }
+
+    @Test
+    @DisplayName(
+        """
+        GIVEN two stations of different brands inside bounds
+        WHEN getting stations in area with a lowercase brand filter
+        THEN emits only the matching brand ignoring case
+        """
+    )
+    fun getFuelStationsInArea_withBrands_returnsMatchingBrandInsideBounds() = runTest {
+        val repsol = testFuelStationEntity(brand = "Repsol", isFavorite = false, idServiceStation = 1)
+            .copy(latitude = 40.4, longitudeWGS84 = -3.7)
+        val cepsa = testFuelStationEntity(brand = "Cepsa", isFavorite = false, idServiceStation = 2)
+            .copy(latitude = 40.5, longitudeWGS84 = -3.6)
+        val farRepsol = testFuelStationEntity(brand = "Repsol", isFavorite = false, idServiceStation = 3)
+            .copy(latitude = 52.52, longitudeWGS84 = 13.405)
+        fuelStationDao.insertFuelStation(listOf(repsol, cepsa, farRepsol))
+
+        fuelStationDao.getFuelStationsInArea(
+            minLat = 40.0,
+            maxLat = 41.0,
+            minLng = -4.0,
+            maxLng = -3.0,
+            fuelType = FuelType.GASOLINE_95.name,
+            brands = listOf("REPSOL"),
+        ).test {
+            assertEquals(listOf(repsol), awaitItem())
+            cancel()
+        }
+    }
+
+    @Test
+    @DisplayName(
+        """
         GIVEN empty database
         WHEN getting stations in bounds
         THEN returns empty list

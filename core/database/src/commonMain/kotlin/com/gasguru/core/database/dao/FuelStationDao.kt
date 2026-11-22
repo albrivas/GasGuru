@@ -81,4 +81,69 @@ interface FuelStationDao {
         maxLng: Double,
         fuelType: String,
     ): List<FuelStationEntity>
+
+    fun getFuelStationsInArea(
+        minLat: Double,
+        maxLat: Double,
+        minLng: Double,
+        maxLng: Double,
+        fuelType: String,
+        brands: List<String>,
+    ): Flow<List<FuelStationEntity>> {
+        return if (brands.isEmpty()) {
+            getFuelStationsInAreaWithoutBrandFilter(minLat, maxLat, minLng, maxLng, fuelType)
+        } else {
+            getFuelStationsInAreaWithBrandFilter(minLat, maxLat, minLng, maxLng, fuelType, brands)
+        }
+    }
+
+    @Query(
+        "SELECT * FROM `fuel-station` WHERE " +
+            "latitude BETWEEN :minLat AND :maxLat AND " +
+            "longitudeWGS84 BETWEEN :minLng AND :maxLng AND " +
+            "(" +
+            "(:fuelType = 'GASOLINE_95' AND priceGasoline95E5 > 0) OR " +
+            "(:fuelType = 'GASOLINE_95_PREMIUM' AND priceGasoline95E5Premium > 0) OR " +
+            "(:fuelType = 'GASOLINE_95_E10' AND priceGasoline95E10 > 0) OR " +
+            "(:fuelType = 'GASOLINE_98' AND priceGasoline98E5 > 0) OR " +
+            "(:fuelType = 'GASOLINE_98_PREMIUM' AND priceGasoline98E10 > 0) OR " +
+            "(:fuelType = 'DIESEL' AND priceGasoilA > 0) OR " +
+            "(:fuelType = 'DIESEL_PLUS' AND priceGasoilPremium > 0) OR " +
+            "(:fuelType = 'GASOIL_B' AND priceGasoilB > 0) OR " +
+            "(:fuelType = 'ADBLUE' AND priceAdblue > 0)" +
+            ")"
+    )
+    fun getFuelStationsInAreaWithoutBrandFilter(
+        minLat: Double,
+        maxLat: Double,
+        minLng: Double,
+        maxLng: Double,
+        fuelType: String,
+    ): Flow<List<FuelStationEntity>>
+
+    @Query(
+        "SELECT * FROM `fuel-station` WHERE " +
+            "latitude BETWEEN :minLat AND :maxLat AND " +
+            "longitudeWGS84 BETWEEN :minLng AND :maxLng AND " +
+            "(" +
+            "(:fuelType = 'GASOLINE_95' AND priceGasoline95E5 > 0) OR " +
+            "(:fuelType = 'GASOLINE_95_PREMIUM' AND priceGasoline95E5Premium > 0) OR " +
+            "(:fuelType = 'GASOLINE_95_E10' AND priceGasoline95E10 > 0) OR " +
+            "(:fuelType = 'GASOLINE_98' AND priceGasoline98E5 > 0) OR " +
+            "(:fuelType = 'GASOLINE_98_PREMIUM' AND priceGasoline98E10 > 0) OR " +
+            "(:fuelType = 'DIESEL' AND priceGasoilA > 0) OR " +
+            "(:fuelType = 'DIESEL_PLUS' AND priceGasoilPremium > 0) OR " +
+            "(:fuelType = 'GASOIL_B' AND priceGasoilB > 0) OR " +
+            "(:fuelType = 'ADBLUE' AND priceAdblue > 0)" +
+            ")" +
+            " AND brandStation COLLATE NOCASE IN (:brands)"
+    )
+    fun getFuelStationsInAreaWithBrandFilter(
+        minLat: Double,
+        maxLat: Double,
+        minLng: Double,
+        maxLng: Double,
+        fuelType: String,
+        brands: List<String>,
+    ): Flow<List<FuelStationEntity>>
 }
