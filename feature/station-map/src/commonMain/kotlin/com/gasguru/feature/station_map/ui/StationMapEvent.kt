@@ -1,5 +1,8 @@
 package com.gasguru.feature.station_map.ui
 
+import com.gasguru.core.model.data.LatLng
+import com.gasguru.feature.station_map.ui.model.GeoBounds
+
 sealed class StationMapEvent {
     data object GetStationByCurrentLocation : StationMapEvent()
     data class GetStationByPlace(val placeId: String) : StationMapEvent()
@@ -17,4 +20,7 @@ sealed class StationMapEvent {
     data object CancelRoute : StationMapEvent()
     data class ChangeTab(val selected: StationSortTab) : StationMapEvent()
     data class SelectStation(val stationId: Int) : StationMapEvent()
+    data class CameraIdle(val bounds: GeoBounds, val movedByUser: Boolean) : StationMapEvent()
+    data object SearchThisArea : StationMapEvent()
+    data class SelectMapLocation(val location: LatLng) : StationMapEvent()
 }
