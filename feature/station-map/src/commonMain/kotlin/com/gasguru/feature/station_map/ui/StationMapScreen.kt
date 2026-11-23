@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -42,6 +43,8 @@ import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -51,8 +54,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gasguru.core.components.searchbar.GasGuruSearchBar
@@ -233,6 +243,21 @@ internal fun StationMapScreen(
     var isSearchActive by remember { mutableStateOf(false) }
     val hapticFeedback = LocalHapticFeedback.current
     val isRouteActive = route != null || (loading && routeDestinationName != null)
+    val density = LocalDensity.current
+    var mapContainerTopPx by remember { mutableFloatStateOf(0f) }
+    var mapContainerHeightPx by remember { mutableIntStateOf(0) }
+    var topOverlayBottomPx by remember { mutableFloatStateOf(0f) }
+    var dragHandleHeightPx by remember { mutableIntStateOf(0) }
+    val sheetContentMaxHeight = calculateSheetContentMaxHeight(
+        mapContainerTopPx = mapContainerTopPx,
+        mapContainerHeightPx = mapContainerHeightPx,
+        topOverlayBottomPx = topOverlayBottomPx,
+        dragHandleHeightPx = dragHandleHeightPx,
+        density = density,
+    )
+    val onTopOverlayPositioned: (LayoutCoordinates) -> Unit = { overlayCoordinates ->
+        topOverlayBottomPx = overlayCoordinates.positionInRoot().y + overlayCoordinates.size.height
+    }
 
     LaunchedEffect(routePlanner) {
         if (routePlanner != null) {
@@ -257,11 +282,16 @@ internal fun StationMapScreen(
         sheetShadowElevation = 32.dp,
         sheetPeekHeight = if (isSearchActive) 0.dp else peekHeight,
         sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
-        sheetDragHandle = { DragHandle() },
+        sheetDragHandle = {
+            DragHandle(
+                modifier = Modifier.onSizeChanged { dragHandleSize -> dragHandleHeightPx = dragHandleSize.height },
+            )
+        },
         sheetContent = {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .heightIn(max = sheetContentMaxHeight)
                     .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
@@ -314,7 +344,11 @@ internal fun StationMapScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(color = GasGuruTheme.colors.neutral300),
+                    .background(color = GasGuruTheme.colors.neutral300)
+                    .onGloballyPositioned { mapContainerCoordinates ->
+                        mapContainerTopPx = mapContainerCoordinates.positionInRoot().y
+                        mapContainerHeightPx = mapContainerCoordinates.size.height
+                    },
             ) {
                 PlatformMapView(
                     stations = mapStations,
@@ -362,12 +396,14 @@ internal fun StationMapScreen(
                                 duration = route?.durationText,
                                 onClose = { event(StationMapEvent.CancelRoute) },
                             ),
-                            modifier = Modifier.padding(
-                                start = 16.dp,
-                                end = 16.dp,
-                                top = 56.dp,
-                                bottom = 16.dp,
-                            ),
+                            modifier = Modifier
+                                .padding(
+                                    start = 16.dp,
+                                    end = 16.dp,
+                                    top = 56.dp,
+                                    bottom = 16.dp,
+                                )
+                                .onGloballyPositioned(onTopOverlayPositioned),
                         )
                     } else {
                         Column {
@@ -385,7 +421,7 @@ internal fun StationMapScreen(
                             FilterGroup(
                                 modifier = Modifier,
                                 event = event,
-                                onHeight = { },
+                                onPositioned = onTopOverlayPositioned,
                                 filterUiState = filterUiState,
                             )
                             AreaSearchActions(
@@ -433,6 +469,21 @@ private fun AreaSearchActions(
             )
         }
     }
+}
+
+// The expanded sheet sits at (container height - sheet height), so capping its height keeps it below the overlay.
+internal fun calculateSheetContentMaxHeight(
+    mapContainerTopPx: Float,
+    mapContainerHeightPx: Int,
+    topOverlayBottomPx: Float,
+    dragHandleHeightPx: Int,
+    density: Density,
+    gapBelowOverlay: Dp = 8.dp,
+): Dp {
+    if (mapContainerHeightPx == 0 || topOverlayBottomPx == 0f) return Dp.Unspecified
+    val overlayBottomInContainerPx = topOverlayBottomPx - mapContainerTopPx
+    val availableHeightPx = mapContainerHeightPx - overlayBottomInContainerPx - dragHandleHeightPx
+    return with(density) { availableHeightPx.toDp() - gapBelowOverlay }.coerceAtLeast(0.dp)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -491,7 +542,7 @@ fun FloatingButtons(
 private fun FilterGroup(
     filterUiState: FilterUiState,
     event: (StationMapEvent) -> Unit,
-    onHeight: (Int) -> Unit,
+    onPositioned: (LayoutCoordinates) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showFilter by remember { mutableStateOf(false) }
@@ -507,7 +558,7 @@ private fun FilterGroup(
     LazyRow(
         modifier = modifier
             .fillMaxWidth()
-            .onGloballyPositioned { onHeight(it.size.height) },
+            .onGloballyPositioned(onPositioned),
         contentPadding = PaddingValues(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
